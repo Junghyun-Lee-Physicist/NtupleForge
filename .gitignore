@@ -3,3 +3,6 @@
 
 # macOS system files
 .DS_Store
+
+# Others
+**/__pycache__/

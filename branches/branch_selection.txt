@@ -5,4 +5,3 @@ keep event
 keep nJet
 keep MET_pt
 keep Jet_*
-keep HLT_*

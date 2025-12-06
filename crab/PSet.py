@@ -1,4 +1,3 @@
-# this fake PSet is needed for local test and for crab
 import FWCore.ParameterSet.Config as cms
 process = cms.Process('NANO')
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(),)
