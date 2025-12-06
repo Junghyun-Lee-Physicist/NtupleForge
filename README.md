@@ -24,7 +24,7 @@
    git cms-addpkg PhysicsTools/NanoAODTools
    
    # Clone NtupleForge
-   git clone [https://github.com/Junghyun-Lee-Physicist/NtupleForge.git](https://github.com/Junghyun-Lee-Physicist/NtupleForge.git)
+   git clone https://github.com/Junghyun-Lee-Physicist/NtupleForge.git
    
    # Compile to setup environment
    scram b -j 8
