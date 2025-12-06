@@ -6,7 +6,7 @@
 
 ## 🛠️ Setup
 
-1. Prepare a CMSSW area, check out the official NanoAOD tools, and clone `NtupleForge`.
+Prepare a CMSSW area, check out the official NanoAOD tools, and clone `NtupleForge`.
    *(Note: `scram b` is required to compile and update python paths)*
 
 > [!NOTE]
