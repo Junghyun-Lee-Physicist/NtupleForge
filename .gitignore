@@ -1,0 +1,5 @@
+# ROOT files
+*.root
+
+# macOS system files
+.DS_Store

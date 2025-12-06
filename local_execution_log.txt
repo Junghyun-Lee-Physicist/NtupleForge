@@ -1,0 +1,45 @@
+Will write selected trees to /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+06-Dec-2025 18:02:40 CET  Initiating request to open file root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/549451D9-10EC-704C-8568-23FF9D40C9F4.root
+Pre-select 1068 entries out of 50000 (2.14%)
+Processed 1068 preselected entries from root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/549451D9-10EC-704C-8568-23FF9D40C9F4.root (50000 entries). Finally selected 1068 entries
+Done /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/549451D9-10EC-704C-8568-23FF9D40C9F4Skim.root
+06-Dec-2025 18:03:42 CET  Initiating request to open file root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/AC357503-8E32-0445-89E6-D3BD6BB1B5DC.root
+Pre-select 1057 entries out of 50000 (2.11%)
+
+
+
+
+Processed 1057 preselected entries from root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/AC357503-8E32-0445-89E6-D3BD6BB1B5DC.root (50000 entries). Finally selected 1057 entries
+Done /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/AC357503-8E32-0445-89E6-D3BD6BB1B5DCSkim.root
+06-Dec-2025 18:06:50 CET  Initiating request to open file root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/A86FD660-3852-2049-94F6-71F92FE6BC99.root
+Pre-select 1048 entries out of 50000 (2.10%)
+
+
+
+
+
+
+
+
+
+
+Processed 1048 preselected entries from root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/A86FD660-3852-2049-94F6-71F92FE6BC99.root (50000 entries). Finally selected 1048 entries
+Done /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/A86FD660-3852-2049-94F6-71F92FE6BC99Skim.root
+Total time 2695.9 sec. to process 150000 events. Rate = 55.6 Hz.
+Adding file /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/549451D9-10EC-704C-8568-23FF9D40C9F4Skim.root
+Adding file /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/AC357503-8E32-0445-89E6-D3BD6BB1B5DCSkim.root
+Adding file /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/A86FD660-3852-2049-94F6-71F92FE6BC99Skim.root
+Merging Events
+missing: []
+ Additional: []
+missing: []
+ Additional: []
+Merging LuminosityBlocks
+Merging Runs
+missing: []
+ Additional: []
+missing: []
+ Additional: []
+Merging MetaData
+Merging ParameterSets
+Merging tag
