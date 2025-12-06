@@ -61,11 +61,20 @@ def main():
 
 ## 🔧 Arguments Reference
 
+| **Argument**               | **Description**                                                           | **Example**                  |
+| -------------------------- | ------------------------------------------------------------------------- | ---------------------------- |
+| `output_dir`               | Destination for output files.                                             | `./output`                   |
+| `input_files`              | ROOT files or `.txt` lists.                                               | `input.root`                 |
+| `--output-file`            | Merge all outputs into this filename.                                     | `merged.root`                |
+| `-c`, `--cut`              | TTree cut string applied **first**.                                       | `"nJet>0"`                   |
+| `-b`, `--branch-selection` | File with keep/drop rules.                                                | `branches/keep_and_drop.txt` |
+| `-I`, `--imports`          | Modules to load. Format: `pkg.mod` (implies `modules`) or `pkg.mod:NAME`. | `modules.jets_met:MODULES`   |
+| `-N`, `--max-events`       | Max events to process.                                                    | `100`                        |
+| `--no-out`                 | Do not write ROOT file (testing).                                         | (Flag)                       |
 
+## 🚀 Usage Examples
 
-🚀 Usage Examples
-
-1. Simple Skim (Using Noop Module)
+### 1. Simple Skim (Using Noop Module)
 
 Apply cuts and drop branches without any complex analysis logic. Explicitly using modules.noop makes the command intent clear.
 
@@ -76,7 +85,7 @@ python3 scripts/run_postproc.py output_skim input.root \
   -I modules.noop
 ```
 
-2. Running Custom Modules
+### 2. Running Custom Modules
 
 Load a module defined as MODULES inside modules/jets_met.py.
 
@@ -86,7 +95,7 @@ python3 scripts/run_postproc.py output_dev input.root \
   --max-events 1000
 ```
 
-3. Merging Outputs (Hadd)
+### 3. Merging Outputs (Hadd)
 
 Process multiple files and merge them immediately.
 
@@ -100,7 +109,7 @@ python3 scripts/run_postproc.py output_merged input_*.root \
 
 Use crab/submit_crab.py to submit jobs. It packages the scripts, modules, and branches directories automatically.
 
-Step 1: Create Sample List
+### Step 1: Create Sample List
 
 File: `samples.txt`
 
@@ -109,7 +118,7 @@ File: `samples.txt`
 /DyJetsToLL_.../RunII.../NANOAODSIM
 ```
 
-Step 2: Submit
+### Step 2: Submit
 
 ```
 python3 crab/submit_crab.py \
