@@ -9,6 +9,11 @@
 1. Prepare a CMSSW area, check out the official NanoAOD tools, and clone `NtupleForge`.
    *(Note: `scram b` is required to compile and update python paths)*
 
+> [!NOTE]
+   > **Environment Check**: Before installing CMSSW, please log in to **lxplus8** (`ssh <user>@lxplus8.cern.ch`) or set up a Singularity container using `cmssw-el8`.
+   > This step is mandatory because `CMSSW_14_2_1` requires the **el8_amd64_gcc12** architecture.
+
+
    ```bash
    cmsrel CMSSW_14_2_1
    cd CMSSW_14_2_1/src
