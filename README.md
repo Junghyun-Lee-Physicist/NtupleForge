@@ -35,10 +35,10 @@ Prepare a CMSSW area, check out the official NanoAOD tools, and clone `NtupleFor
 
 Ensure your environment is ready before running scripts.
 
-1. `cmsenv` (CMSSW environment)
+1. Activate lxplus8 or Singularity using cmssw-el8 to build an Alma9 environment.
 
-2. Activate lxplus8 or Singularity using cmssw-el8 to build an Alma9 environment.
-  
+2. `cmsenv` (CMSSW environment)
+ 
 3. `voms-proxy-init --voms cms` (If accessing remote files)
 
 ## 📂 Project Structure
