@@ -27,7 +27,7 @@ python3 scripts/run_postproc.py \
   $OUTDIR \
   $INPUT_FILES \
   --cut "nJet>4 && MET_pt>200" \
-  --branch-selection configs/branch_selection.txt \
+  --branch-selection branches/keep_and_drop.txt \
   --max-events 1000 \
   --postfix "_TestSkim" \
   --compression "LZ4:4"
