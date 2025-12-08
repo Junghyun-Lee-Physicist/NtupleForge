@@ -48,8 +48,8 @@ NtupleForge/
 ├── scripts/               # Executables (run_postproc.py, dump_branches.py)
 ├── modules/               # Python analysis modules (e.g., jets_met.py, noop.py)
 ├── branches/              # Branch selection files (e.g., keep_and_drop.txt)
+├── dataSetPath/           # Sample lists (.txt)
 ├── crab/                  # CRAB submission utilities
-└── configs/               # (Optional) Other configuration files
 ```
 
 ## 🧠 Code Architecture
@@ -109,7 +109,7 @@ Apply cuts and drop branches without any complex analysis logic. Explicitly usin
 
 ```
 python3 scripts/run_postproc.py output_skim input.root \
-  -c "nMuon > 1" \
+  -c "nJet > 2" \
   -b branches/keep_and_drop.txt \
   -I modules.noop
 ```
@@ -134,20 +134,36 @@ python3 scripts/run_postproc.py output_merged input_*.root \
   -c "MET_pt > 100"
 ```
 
-## 🦀 CRAB Submission
+### 4. Validate Output
+Check how many events survived the skim.
+```
+python3 scripts/validate_events.py "output_local/*.root"
+```
 
-Use crab/submit_crab.py to submit jobs. It packages the scripts, modules, and branches directories automatically.
+## 🦀 CRAB Submission & Resubmission
 
-### Step 1: Create Sample List
+The crab/submit_crab.py script is a Smart Manager.
 
-File: `samples.txt`
+It reads datasets from dataSetPath/.
+
+It iterates through the list.
+
+If a task already exists, it attempts to RESUBMIT failed jobs.
+
+If a task is new, it SUBMITS it.
+
+### Step 1: Prepare Sample List
+
+Place your list in `dataSetPath/samples.txt`.
 
 ```
 /TTToSemiLeptonic_.../RunII.../NANOAODSIM
 /DyJetsToLL_.../RunII.../NANOAODSIM
 ```
 
-### Step 2: Submit
+### Step 2: Run Manager
+
+You can run this command multiple times. It will submit new tasks and fix broken ones automatically.
 
 ```
 python3 crab/submit_crab.py \
@@ -156,6 +172,11 @@ python3 crab/submit_crab.py \
   --site T3_KR_KNU \
   --cut "nJet > 3" \
   --branch-sel branches/keep_and_drop.txt \
-  --imports modules.jets_met:MODULES \
-  --units-per-job 1
+  --imports modules.jets_met:MODULES
 ```
+
+🔍 Debugging Tips
+
+- Arguments Check: Check `stdout` of a running job to see the "Command Line Arguments Received" section.
+
+Failures: If a job fails, just run the submit command again. The script will detect the existing directory and trigger `crab resubmit`.

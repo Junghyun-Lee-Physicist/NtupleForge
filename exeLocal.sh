@@ -22,23 +22,19 @@ echo "Output Directory: $OUTDIR"
 echo "======================================================"
 
 # 3. Python 스크립트 실행
-# -c: 간단한 Cut 적용 (예: Jet이 1개 이상)
-# -b: Branch Selection 적용 (Slimming)
-# -N: 테스트용으로 1000개 이벤트만 처리
-# 모듈(-I) 옵션은 생략하여 순수 Skim/Slim만 수행
-
+# 주의: 줄바꿈(\) 뒤에는 절대로 공백(스페이스)이 있으면 안 됩니다!
 python3 scripts/run_postproc.py \
   $OUTDIR \
   $INPUT_FILES \
   --cut "nJet>4 && MET_pt>200" \
-  --branch-selection branches/keep_and_drop.txt \
+  --branch-selection configs/branch_selection.txt \
   --max-events 1000 \
   --postfix "_TestSkim" \
-  --output-file test_MergedSkim.root \
-  --compression "LZ4:4" 
+  --compression "LZ4:4"
 
-# Tip: 속도 테스트를 위해 압축 방식을 LZ4:4로 설정했습니다. (기본값 LZMA:9는 느림)
+# 위 python3 명령어는 여기서 끝납니다.
 
 echo "======================================================"
 echo "Job Finished. Checking output..."
 ls -lh $OUTDIR
+

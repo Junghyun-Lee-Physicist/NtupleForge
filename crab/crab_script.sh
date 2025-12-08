@@ -6,7 +6,7 @@ echo "PWD: " $PWD
 
 # Setup Python Path for current dir (where modules/ folder is unpacked)
 export PYTHONPATH=$PYTHONPATH:$PWD
-
+ 
 # Parse Args
 JOBREPORT=$1
 shift
