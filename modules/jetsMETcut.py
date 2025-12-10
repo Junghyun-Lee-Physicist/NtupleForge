@@ -2,9 +2,10 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
 class JetsMETBasicCut(Module):
     """
-    Filters events based on Jet multiplicity and MET pt.
+    [Event Selector Module]
+    Hardcoding cuts here is safer than passing strings via CRAB arguments.
     """
-    def __init__(self, njet_thr=4, met_thr=200.0):
+    def __init__(self, njet_thr=3, met_thr=0.0): # Default cut values
         self.njet_thr = int(njet_thr)
         self.met_thr  = float(met_thr)
         self._warned = set()
@@ -19,11 +20,21 @@ class JetsMETBasicCut(Module):
             return default
 
     def analyze(self, event):
+        """
+        Returns True (Keep Event) or False (Drop Event)
+        """
         njet = self._read_or(event, "nJet", 0)
         met  = self._read_or(event, "MET_pt", 0.0)
         
-        # Keep event if it passes both cuts
-        return (njet > self.njet_thr) and (met > self.met_thr)
+        # --- CUT LOGIC ---
+        # Modify your cuts logic here directly
+        if njet < self.njet_thr:
+            return False
+        if met < self.met_thr:
+            return False
+            
+        return True
 
-# Define the list using uppercase MODULES convention
-MODULES = [JetsMETBasicCut(njet_thr=4, met_thr=200.0)]
+# Define configuration
+# You can change default values here
+MODULES = [JetsMETBasicCut(njet_thr=8, met_thr=200.0)]

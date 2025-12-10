@@ -31,7 +31,7 @@ Prepare a CMSSW area, check out the official NanoAOD tools, and clone `NtupleFor
    cd NtupleForge
    ```
 
-## ⚠️ Pre-Check before Running the program
+## ⚠️ Prerequisites
 
 Ensure your environment is ready before running scripts.
 
@@ -50,8 +50,8 @@ Recommended directory layout for organizing your analysis:
 ```
 NtupleForge/
 ├── scripts/               # Executables (run_postproc.py, dump_branches.py)
-├── modules/               # Python analysis modules (e.g., jets_met.py, noop.py)
-├── branches/              # Branch selection files (e.g., keep_and_drop.txt)
+├── modules/               # Python analysis modules (e.g., jetsMETcut.py, noop.py)
+├── branches/              # Branch selection files (e.g., branch_keep_and_drop.txt)
 ├── dataSetPath/           # Sample lists (.txt)
 ├── crab/                  # CRAB submission utilities
 ```
@@ -92,51 +92,74 @@ def main():
     p.run()
 ```
 
-## 🔧 Arguments Reference
+## 🚀 Local Quick Start
 
-| **Argument**               | **Description**                                                           | **Example**                  |
-| -------------------------- | ------------------------------------------------------------------------- | ---------------------------- |
-| `output_dir`               | Destination for output files.                                             | `./output`                   |
-| `input_files`              | ROOT files or `.txt` lists.                                               | `input.root`                 |
-| `--output-file`            | Merge all outputs into this filename.                                     | `merged.root`                |
-| `-c`, `--cut`              | TTree cut string applied **first**.                                       | `"nJet>0"`                   |
-| `-b`, `--branch-selection` | File with keep/drop rules.                                                | `branches/keep_and_drop.txt` |
-| `-I`, `--imports`          | Modules to load. Format: `pkg.mod` (implies `modules`) or `pkg.mod:NAME`. | `modules.jets_met:MODULES`   |
-| `-N`, `--max-events`       | Max events to process.                                                    | `100`                        |
-| `--no-out`                 | Do not write ROOT file (testing).                                         | (Flag)                       |
+### Scenario A: Simple Slimming (No-Op)
 
-## 🚀 Usage Examples
+Performs only branch selection (Keep/Drop) without any event filtering logic. Uses `modules.noop`.
 
-### 1. Simple Skim (Using Noop Module)
-
-Apply cuts and drop branches without any complex analysis logic. Explicitly using modules.noop makes the command intent clear.
+- **Module**: `modules.noop` (No cut logic)
+    
+- **Branch Selection**: `branches/branch_keep_and_drop.txt`
+    
+- **Max Events**: 1000
+    
 
 ```
-python3 scripts/run_postproc.py output_skim input.root \
-  -c "nJet > 2" \
-  -b branches/keep_and_drop.txt \
-  -I modules.noop
+# Syntax: python3 scripts/run_postproc.py [INPUTs...] -b [BRANCH_SEL] -I [MODULE] -N [MAX_EVENTS]
+python3 scripts/run_postproc.py \
+  root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/549451D9-10EC-704C-8568-23FF9D40C9F4.root \
+  -b branches/branch_keep_and_drop.txt \
+  -I modules.noop \
+  -N 1000
 ```
 
-### 2. Running Custom Modules
+### Scenario B: Merge Mode (Hadd) with Offset
 
-Load a module defined as MODULES inside modules/jets_met.py.
+Processes multiple inputs and merges them into a single output file using the `-o` flag. Starts processing from the 100th entry.
+
+- **Module**: `modules.noop`
+    
+- **Branch Selection**: `branches/branch_keep_and_drop.txt`
+    
+- **Output**: Merged into `skimmed_merged.root`
+    
+- **First Entry**: 100
+    
+- **Max Events**: 1000
+    
 
 ```
-python3 scripts/run_postproc.py output_dev input.root \
-  -I modules.jets_met:MODULES \
-  --max-events 1000
+python3 scripts/run_postproc.py \
+  root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/549451D9-10EC-704C-8568-23FF9D40C9F4.root \
+  root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/AC357503-8E32-0445-89E6-D3BD6BB1B5DC.root \
+  -b branches/branch_keep_and_drop.txt \
+  -I modules.noop \
+  -o skimmed_merged.root \
+  --first-entry 100 \
+  -N 1000
 ```
 
-### 3. Merging Outputs (Hadd)
+### Scenario C: Basic Split Mode with Module
 
-Process multiple files and merge them immediately.
+Runs the `jetsMETcut` module to apply cuts. Input files are processed individually, producing one output file per input.
+
+- **Module**: `modules.jetsMETcut:MODULES` (Applies Jet/MET cuts)
+    
+- **Branch Selection**: `branches/branch_keep_and_drop.txt`
+    
+- **Max Events**: 1000
+    
 
 ```
-python3 scripts/run_postproc.py output_merged input_*.root \
-  --output-file final_skim.root \
-  -c "MET_pt > 100"
+python3 scripts/run_postproc.py \
+  root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/549451D9-10EC-704C-8568-23FF9D40C9F4.root \
+  root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/AC357503-8E32-0445-89E6-D3BD6BB1B5DC.root \
+  -b branches/branch_keep_and_drop.txt \
+  -I modules.jetsMETcut:MODULES \
+  -N 1000
 ```
+
 
 ### 4. Validate Output
 Check how many events survived the skim.
@@ -169,14 +192,15 @@ Place your list in `dataSetPath/samples.txt`.
 
 You can run this command multiple times. It will submit new tasks and fix broken ones automatically.
 
+Note: We do NOT pass --cut anymore. The cut is inside modules.jetsMETcut.
+
 ```
 python3 crab/submit_crab.py \
-  --name "Campagin_v1" \
+  --name "Campagin_v4_ModuleCut" \
   --sample-list samples.txt \
   --site T3_KR_KNU \
-  --cut "nJet > 3" \
-  --branch-sel branches/keep_and_drop.txt \
-  --imports modules.jets_met:MODULES
+  --branch-sel branches/branch_keep_and_drop.txt \
+  --imports modules.jetsMETcut:MODULES
 ```
 
 🔍 Debugging Tips

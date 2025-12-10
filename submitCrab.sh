@@ -1,7 +1,7 @@
 python3 crab/submit_crab.py \
-  --name "Campagin_v1" \
+  --name "Campagin_v6_ModuleCut" \
   --sample-list samples.txt \
   --site T3_KR_KNU \
-  --cut "nJet > 3 && Jet_pt > 200" \
-  --branch-sel branches/keep_and_drop.txt \
-  --imports modules.jets_met:MODULES
+  --branch-sel branches/branch_keep_and_drop.txt \
+  --imports modules.jetsMETcut:MODULES
+

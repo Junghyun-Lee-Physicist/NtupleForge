@@ -4,9 +4,9 @@ echo "=== NtupleForge CRAB Script ==="
 echo "Host: " `hostname`
 echo "PWD: " $PWD
 
-# Setup Python Path for current dir (where modules/ folder is unpacked)
+# Setup Python Path
 export PYTHONPATH=$PYTHONPATH:$PWD
- 
+
 # Parse Args
 JOBREPORT=$1
 shift
@@ -20,7 +20,7 @@ do
     if [[ "$arg" == *.root ]]; then
         FILES="$FILES $arg"
     elif [[ "$arg" == *.xml ]]; then
-        echo "Skip JobReport: $arg"
+        echo "Skipping JobReport: $arg"
     else
         FLAGS="$FLAGS $arg"
     fi
@@ -33,8 +33,7 @@ $FULL_CMD
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -ne 0 ]; then
-    echo "ERROR: PostProcessing failed with code $EXIT_CODE"
-    # CRAB will detect non-zero exit code and mark job as failed (retry-able)
+    echo "ERROR: Failed code $EXIT_CODE"
     exit $EXIT_CODE
 fi
 
