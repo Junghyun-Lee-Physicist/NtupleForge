@@ -1,14 +1,27 @@
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
+from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
+import ROOT
 
-class JetsMETBasicCut(Module):
+class JetsMETCut(Module):
     """
-    [Event Selector Module]
-    Hardcoding cuts here is safer than passing strings via CRAB arguments.
+    [Event Selector & Producer Module]
+    1. Filters events based on MET and Jet criteria.
+    2. Adds a new branch 'nGoodJet' (number of jets passing selection).
     """
-    def __init__(self, njet_thr=3, met_thr=0.0): # Default cut values
+    def __init__(self, njet_thr=4, met_thr=150.0, jet_pt_thr=30.0, jet_eta_thr=2.4):
         self.njet_thr = int(njet_thr)
         self.met_thr  = float(met_thr)
+        self.jet_pt_thr = float(jet_pt_thr)
+        self.jet_eta_thr = float(jet_eta_thr)
         self._warned = set()
+
+    def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
+        """
+        Called when a new file is opened. Declare new branches here.
+        """
+        self.out = wrappedOutputTree
+        # 새로운 브랜치 'nGoodJet' 추가 (Integer 타입)
+        self.out.branch("nGoodJet", "I")
 
     def _read_or(self, event, name, default):
         try:
@@ -21,20 +34,51 @@ class JetsMETBasicCut(Module):
 
     def analyze(self, event):
         """
-        Returns True (Keep Event) or False (Drop Event)
+        Process event: Apply cuts AND fill new branches.
         """
-        njet = self._read_or(event, "nJet", 0)
-        met  = self._read_or(event, "MET_pt", 0.0)
+        # 1. MET Cut
+        met_pt = self._read_or(event, "MET_pt", 0.0)
+        if met_pt < self.met_thr:
+            return False
+
+        # 2. Jet Selection
+        try:
+            jets = Collection(event, "Jet")
+        except Exception as e:
+            if "Jet" not in self._warned:
+                print(f"[WARN] Failed to load Jet collection: {e}")
+                self._warned.add("Jet")
+            return False
+
+        good_jet_count = 0
         
-        # --- CUT LOGIC ---
-        # Modify your cuts logic here directly
-        if njet < self.njet_thr:
-            return False
-        if met < self.met_thr:
-            return False
+        for jet in jets:
+            # Kinematic Cuts
+            if jet.pt < self.jet_pt_thr:
+                continue
+            if abs(jet.eta) > self.jet_eta_thr:
+                continue
             
+            # Jet ID Cut
+            try:
+                if jet.jetId < 6:
+                    continue
+            except AttributeError:
+                 if "Jet_jetId" not in self._warned:
+                    print("[WARN] Jet_jetId branch missing. Skipping ID cut.")
+                    self._warned.add("Jet_jetId")
+
+            good_jet_count += 1
+
+        # 3. Fill New Branch (컷 적용 전에 저장하거나, 통과한 이벤트만 저장)
+        # 컷을 통과한 이벤트에 대해서만 값이 저장됩니다.
+        self.out.fillBranch("nGoodJet", good_jet_count)
+
+        # 4. Final nJet Cut
+        if good_jet_count < self.njet_thr:
+            return False
+
         return True
 
-# Define configuration
-# You can change default values here
-MODULES = [JetsMETBasicCut(njet_thr=8, met_thr=200.0)]
+# Configuration
+MODULES = [JetsMETCut(njet_thr=4, met_thr=150.0, jet_pt_thr=30.0, jet_eta_thr=2.4)]
