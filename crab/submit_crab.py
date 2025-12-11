@@ -1,119 +1,180 @@
+#!/usr/bin/env python3
+"""
+NtupleForge CRAB Manager
+=============================
+[Description]
+Reads a YAML configuration file and manages CRAB jobs (Submit, Status, Resubmit).
+Uses 'crab/crab_script.py' as the worker node wrapper.
+
+[Usage]
+python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml
+python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml --status
+"""
+
 import os
+import sys
 import argparse
-import time
-from CRABClient.UserUtilities import config
+import yaml
+import shutil
+import logging
+import subprocess
+from CRABClient.UserUtilities import config, getUsername
 from CRABAPI.RawCommand import crabCommand
+
 try:
     from http.client import HTTPException
 except ImportError:
     from httplib import HTTPException
 
-def submit_or_resubmit(args):
+# Logging Setup
+logging.basicConfig(level=logging.INFO, format='[submit_crab] : %(message)s')
+logger = logging.getLogger("Submitter")
+
+def check_voms():
+    """Checks if VOMS proxy is valid."""
+    try:
+        subprocess.run(["voms-proxy-info", "--exists"], check=True, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError:
+        logger.error("VOMS Proxy missing or expired.")
+        logger.error("Run: voms-proxy-init --voms cms --valid 168:00")
+        sys.exit(1)
+
+def main(args):
+    check_voms()
+
+    # 1. Load Configuration
+    if not os.path.exists(args.config):
+        logger.error(f"Config file not found: {args.config}")
+        sys.exit(1)
+
+    with open(args.config, 'r') as f:
+        try:
+            cfg = yaml.safe_load(f)
+        except yaml.YAMLError as e:
+            logger.error(f"YAML Error: {e}")
+            sys.exit(1)
+
+    common = cfg.get('common', {})
+    datasets = cfg.get('datasets', {})
+    
+    logger.info(f"Loaded Configuration: {args.config}")
+    logger.info(f"Common Work Area: {common.get('jobID', 'crab_projects')}")
+    logger.info(f"Target Datasets: {len(datasets)}")
+    logger.info("="*60)
+
+    # 2. Setup CRAB Configuration
     conf = config()
     
-    # --- [3] Log & Output Location Configuration ---
-    # CRAB logs will be saved under: <work_area>/crab_<requestName>/
-    # Example: crab_projects/crab_Campagin_v1_TTToSemiLeptonic/crab.log
+    # -- General --
     conf.General.transferOutputs = True
     conf.General.transferLogs = True
-    conf.General.workArea = args.work_area
-
-    # --- JobType ---
-    conf.JobType.pluginName = 'Analysis'
-    conf.JobType.psetName = 'crab/PSet.py' 
-    conf.JobType.scriptExe = 'crab/crab_script.sh' 
-    conf.JobType.maxMemoryMB = 2500
-    conf.JobType.maxJobRuntimeMin = 600
+    conf.General.workArea = common.get('jobID', 'crab_projects_default_name')
     
-    # --- Data ---
-    conf.Data.inputDBS = 'global'
-    conf.Data.splitting = 'FileBased'
-    conf.Data.unitsPerJob = args.units_per_job
-    conf.Data.outputDatasetTag = args.name
-    conf.Site.storageSite = args.site
-    conf.Data.publication = False
-    conf.Data.outLFNDirBase = f"/store/user/junghyun/ttHHSlimed/"
-
-
-    # --- Files to Ship ---
+    # -- JobType --
+    conf.JobType.pluginName = 'Analysis'
+    conf.JobType.psetName = 'crab/PSet.py'
+    
+    # [KEY] Use the separated Python wrapper
+    conf.JobType.scriptExe = 'crab/crab_script.py' 
+    
+    conf.JobType.maxMemoryMB = common.get('max_memory', 2500)
+    conf.JobType.maxJobRuntimeMin = common.get('max_runtime', 600)
+    
+    # Files to ship to worker node
+    # Note: We ship 'scripts/run_postproc.py' explicitly.
+    # CRAB will flatten directory structure, placing it in root dir on worker.
     conf.JobType.inputFiles = ['scripts/run_postproc.py']
+    
     if os.path.exists('modules'): conf.JobType.inputFiles.append('modules')
     if os.path.exists('branches'): conf.JobType.inputFiles.append('branches')
-    if args.branch_sel and 'branches' not in args.branch_sel:
-        conf.JobType.inputFiles.append(args.branch_sel)
-
-    # --- [2] Argument Management (Clean) ---
-    # Create arguments file inside the 'crab' folder to avoid cluttering root
-    # or use a hidden file. Here we generate it in the CWD but remove it later or keep it for debug.
-    # Let's verify arguments first.
     
-    args_file_name = "crab_args.txt"
-    with open(args_file_name, "w") as f:
-        if args.branch_sel: 
-            f.write(f"-b\n{os.path.basename(args.branch_sel)}\n")
-        if args.imports:
-            f.write("-I\n")
-            for imp in args.imports: f.write(f"{imp}\n")
-        if args.max_events: 
-            f.write(f"-N\n{args.max_events}\n")
-        if args.postfix: 
-            f.write(f"--postfix\n{args.postfix}\n")
-            
-    conf.JobType.inputFiles.append(args_file_name)
-    conf.JobType.scriptArgs = [] # Keep empty to bypass server validation
+    # Explicit branch selection file if not in 'branches/'
+    branch_sel = common.get('branch_selection')
+    if branch_sel and 'branches' not in branch_sel:
+         conf.JobType.inputFiles.append(branch_sel)
 
-    # --- Dataset List ---
-    # Look in dataSetPath/
-    list_path = os.path.join("dataSetPath", args.sample_list)
-    if not os.path.exists(list_path):
-        print(f"[Error] Sample list not found in dataSetPath/: {args.sample_list}")
-        return
+    # -- Arguments File Generation --
+    # To avoid HTTP 400 errors, we write arguments to a file and ship it.
+    args_file = "crab_args.txt"
+    with open(args_file, "w") as f:
+        if branch_sel: f.write(f"-b\n{os.path.basename(branch_sel)}\n")
+        if common.get('module'): f.write(f"-I\n{common.get('module')}\n")
+        if common.get('max_events'): f.write(f"-N\n{common.get('max_events')}\n")
+        # Note: Output filename is enforced in wrapper to 'tree.root' for merging
+    
+    conf.JobType.inputFiles.append(args_file)
+    conf.JobType.scriptArgs = [] # Empty to rely on file injection
 
-    with open(list_path, 'r') as f:
-        datasets = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+    # -- Data & Site --
+    conf.Data.inputDBS = 'global'
+    conf.Data.splitting = common.get('splitting', 'EventAwareLumiBased')
+    conf.Data.unitsPerJob = common.get('units_per_job', 50000)
+    conf.Data.publication = False
+    
+    username = getUsername()
+    base_out = common.get('output_base', f'/store/user/{username}/')
+    conf.Data.outLFNDirBase = base_out
+    
+    conf.Site.storageSite = common.get('site', 'T3_KR_KNU')
 
-    print(f"Found {len(datasets)} datasets.")
-
-    # --- Main Loop ---
-    for dataset in datasets:
-        ds_parts = dataset.split('/')
-        req_name = f"{args.name}_{ds_parts[1]}" if len(ds_parts) >= 3 else f"{args.name}_{dataset.replace('/', '_')}"
-        req_name = req_name[:95]
+    # 3. Process Jobs
+    for short_name, dataset in datasets.items():
+        # Clean request name
+        campaign_name = os.path.splitext(os.path.basename(args.config))[0]
+        req_name = f"{campaign_name}_{short_name}"
+        req_name = req_name.replace("-", "_")[:95]
         
         conf.General.requestName = req_name
         conf.Data.inputDataset = dataset
+        conf.Data.outputDatasetTag = short_name
         
-        project_dir = os.path.join(args.work_area, "crab_" + req_name)
+        project_dir = os.path.join(conf.General.workArea, "crab_" + req_name)
         
-        if os.path.exists(project_dir):
-            print(f"Project exists: {project_dir}")
-            print(" -> Attempting RESUBMIT")
+        print(f"[{short_name}]")
+        print(f"Dataset: {dataset}")
+
+        # -- STATUS Check --
+        if args.status:
+            if os.path.isdir(project_dir):
+                logger.info("Action: Checking STATUS")
+                try:
+                    subprocess.run(["crab", "status", "-d", project_dir], check=True)
+                except:
+                    logger.error("Status check failed.")
+            else:
+                logger.warning("Project directory not found. Not submitted yet.")
+            print("-" * 60)
+            continue
+
+        # -- SUBMIT / RESUBMIT Logic --
+        if os.path.isdir(project_dir):
+            logger.info(f"Project exists at {project_dir}")
+            logger.info("Action: RESUBMIT")
             try:
                 crabCommand('resubmit', dir=project_dir)
+            except HTTPException as hte:
+                logger.error(f"Resubmit Failed: {hte.headers}")
             except Exception as e:
-                print(f" -> Resubmit Failed: {e}")
+                logger.error(f"Resubmit Failed: {e}")
         else:
-            print(f"Creating new project: {req_name}")
-            print(" -> Attempting SUBMIT")
+            logger.info("New Project. Action: SUBMIT")
             try:
                 crabCommand('submit', config=conf)
+            except HTTPException as hte:
+                logger.error(f"Submit Failed: {hte.headers}")
             except Exception as e:
-                print(f" -> Submit Failed: {e}")
-                
-    # Optional: Clean up args file? 
-    # os.remove(args_file_name) # Uncomment if you want it gone, but keeping it helps debugging
+                logger.error(f"Submit Failed: {e}")
+        
+        print("-" * 60)
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--name", required=True)
-    parser.add_argument("--sample-list", required=True)
-    parser.add_argument("--site", required=True)
-    parser.add_argument("--work-area", default="crab_projects")
-    parser.add_argument("--branch-sel")
-    parser.add_argument("--imports", nargs="+")
-    parser.add_argument("--units-per-job", type=int, default=1)
-    parser.add_argument("--max-events", type=int)
-    parser.add_argument("--postfix", default="_Skim")
+    # Cleanup temp file
+    if os.path.exists(args_file):
+        os.remove(args_file)
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="YAML based CRAB Manager")
+    parser.add_argument("-c", "--config", required=True, help="Path to YAML config")
+    parser.add_argument("--status", action="store_true", help="Check status instead of submit")
+    
     args = parser.parse_args()
-    submit_or_resubmit(args)
+    main(args)

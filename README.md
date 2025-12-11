@@ -52,8 +52,8 @@ NtupleForge/
 ├── scripts/               # Executables (run_postproc.py, dump_branches.py)
 ├── modules/               # Python analysis modules (e.g., jetsMETcut.py, noop.py)
 ├── branches/              # Branch selection files (e.g., branch_keep_and_drop.txt)
-├── dataSetPath/           # Sample lists (.txt)
 ├── crab/                  # CRAB submission utilities
+├── crabConfig/            # Configuration for CRAB
 ```
 
 ## 🧠 Code Architecture
@@ -91,6 +91,51 @@ def main():
     # 5. Run Event Loop
     p.run()
 ```
+
+## 🔧 Configuration
+
+### 1. Key User Arguments
+
+These are the arguments you will use most frequently via the command line.
+
+- **`input_files`**: A list of ROOT file paths. Supports both XRootD (`root://`) and local paths.
+    
+- **`-I`, `--imports`**: Python modules to load. Here, a **"module"** refers to Python code that applies cuts, calculates new variables, or modifies branches.
+    
+    - **Format**: `package.module:LIST_NAME` (e.g., `modules.jetsMETcut:MODULES`).
+        
+    - **Default**: If `:LIST_NAME` is omitted, the script looks for a list named `modules` by default.
+        
+- **`-b`, `--branch-selection`**: Path to a text file defining rules for keeping or dropping branches.
+    
+- **`-o`, `--output-file`**: (Optional) Target filename for merging. If provided, all input files are merged into this single output file.
+    
+
+### 2. Internal Defaults (Hardcoded)
+
+To minimize errors during CRAB submission, the following settings are fixed inside `scripts/run_postproc.py`. You can enable or modify them by editing the script directly.
+
+- **Output Directory**: Always set to the current directory (`.`) to ensure compatibility with CRAB worker nodes.
+    
+- **Cut String**: `None`. You have two safe options to apply cuts:
+    
+    1. **Modify the script**: Replace `None` with your string directly in `scripts/run_postproc_v2.py`.
+        
+        - _Example 1 (Simple)_: `CUT_STRING = "nJet > 2"` (Only keep events with more than 2 jets)
+            
+        - _Example 2 (Complex)_: `CUT_STRING = "nJet > 2 && MET_pt > 100 && abs(Jet_eta[0]) < 2.4"` (Events with >2 Jets, MET > 100, and leading Jet within tracker acceptance)
+            
+    2. **Use Modules**: Implement logic inside your Python module (e.g., `if event.nJet < 2: return False`).
+        
+    
+    - _Note_: Avoid passing complex cut strings via command line arguments to prevent CRAB submission errors.
+        
+- **Postfix**: `_Skim` (Applies only when not merging).
+    
+- **Compression**: `LZMA:9` (High compression). This is the default setting in `NanoAODTools`.
+    
+- **Friend Mode**: `False`.
+
 
 ## 🚀 Local Quick Start
 
@@ -160,51 +205,31 @@ python3 scripts/run_postproc.py \
   -N 1000
 ```
 
+## 🦀 CRAB Submission
 
-### 4. Validate Output
-Check how many events survived the skim.
-```
-python3 scripts/validate_events.py "output_local/*.root"
-```
+The submission script is a **Smart Manager** that handles submission, status check, and auto-resubmission.
 
-## 🦀 CRAB Submission & Resubmission
+### YAML Configuration
 
-The crab/submit_crab.py script is a Smart Manager.
+The CRAB jobs are defined in a YAML file (e.g., `crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml`).
 
-It reads datasets from dataSetPath/.
+- **`common`**: Settings shared across all jobs (site, output path, modules, etc.).
+    
+- **`datasets`**: List of datasets to process.
+    
 
-It iterates through the list.
+**Important**: The `module` and `branch_selection` fields in the YAML file are passed as arguments (`-I` and `-b`) to the `run_postproc.py` script on the worker node. Ensure these paths and module names are correct.
 
-If a task already exists, it attempts to RESUBMIT failed jobs.
+### Commands
 
-If a task is new, it SUBMITS it.
-
-### Step 1: Prepare Sample List
-
-Place your list in `dataSetPath/samples.txt`.
+**1. Submit / Auto-Resubmit** Submits new jobs or resubmits failed ones automatically.
 
 ```
-/TTToSemiLeptonic_.../RunII.../NANOAODSIM
-/DyJetsToLL_.../RunII.../NANOAODSIM
+python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml
 ```
 
-### Step 2: Run Manager
-
-You can run this command multiple times. It will submit new tasks and fix broken ones automatically.
-
-Note: We do NOT pass --cut anymore. The cut is inside modules.jetsMETcut.
+**2. Check Status** Checks the status of all jobs defined in the YAML file.
 
 ```
-python3 crab/submit_crab.py \
-  --name "Campagin_v4_ModuleCut" \
-  --sample-list samples.txt \
-  --site T3_KR_KNU \
-  --branch-sel branches/branch_keep_and_drop.txt \
-  --imports modules.jetsMETcut:MODULES
+python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml --status
 ```
-
-🔍 Debugging Tips
-
-- Arguments Check: Check `stdout` of a running job to see the "Command Line Arguments Received" section.
-
-Failures: If a job fails, just run the submit command again. The script will detect the existing directory and trigger `crab resubmit`.

@@ -27,6 +27,12 @@ Usage Examples:
         -I modules.jetsMETcut:MODULES \
         --output-file merged_skim.root
 
+[Note on YAML Configuration]
+When submitting jobs via CRAB using 'submit_crab.py', the arguments for this script 
+(such as --imports and --branch-selection) are derived from the YAML config file 
+(e.g., 'crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml'). 
+Make sure the values in the YAML file correctly point to existing files and modules.
+
 Author: Junghyun Lee (NtupleForge)
 """
 
