@@ -22,9 +22,9 @@ common:
   branch_selection: "branches/branch_keep_and_drop.txt"
   
   # Job Splitting (Auto-merge based on event count)
-  splitting: "EventAwareLumiBased"
-  units_per_job: 50000  # Target: ~50k events per output file
-  
+  splitting: "FileBased"
+  units_per_job: 1 # 1 job per file
+
   # Max events for testing (remove or comment out for full run)
   # max_events: 1000
 

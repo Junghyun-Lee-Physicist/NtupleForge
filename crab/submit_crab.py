@@ -108,16 +108,20 @@ def main(args):
     # -- Data & Site --
     conf.Data.inputDBS = 'global'
     conf.Data.splitting = common.get('splitting', 'EventAwareLumiBased')
-    conf.Data.unitsPerJob = common.get('units_per_job', 50000)
     conf.Data.publication = False
+
+    # 1. Store values retrieved from YAML in variables
+    user_units = common.get('units_per_job', 50000)
     
-    if conf.Data.splitting == 'FileBased' and unitsPerJob > 100:
-        logger.warning(f"⚠️ Warning: Splitting is 'FileBased' but units_per_job is {unitsPerJob}.")
-        logger.warning("   -> This means 1 job will process {unitsPerJob} files.")
+    # 2. Logic Check (Safety Device when FileBased)
+    if conf.Data.splitting == 'FileBased' and user_units > 100:
+        logger.warning(f"⚠️ Warning: Splitting is 'FileBased' but units_per_job is {user_units}.")
+        logger.warning("   -> This means 1 job will process {user_units} files.")
         logger.warning("   -> Resetting to 1 file per job for safety. Check your YAML!")
         conf.Data.unitsPerJob = 1
     else:
-        conf.Data.unitsPerJob = unitsPerJob
+        conf.Data.unitsPerJob = user_units    
+
 
 
     username = getUsername()
