@@ -86,15 +86,22 @@ def main():
 
     if os.path.exists(args_file):
         logger.info(f"Loading arguments from {args_file}")
-        # Pass file directly using @ syntax
-        extra_flags.append(f"@{args_file}")
-        
-        # [Output Policy]
-        # We enforce merging into 'tree.root' so CRAB handles the final rename.
-        # This ensures one output file per CRAB job.
+        try:
+            with open(args_file, "r") as f:
+                # Read lines, strip whitespace, and ignore empty lines
+                for line in f:
+                    clean_line = line.strip()
+                    if clean_line:
+                        extra_flags.append(clean_line)
+        except Exception as e:
+            logger.error(f"Failed to read args file: {e}")
+            sys.exit(1)
+            
+        # [Output Policy] Enforce merging into 'tree.root'
         extra_flags.append("--output-file=tree.root")
     else:
         logger.warning(f"{args_file} not found. Running with defaults.")
+
 
     # ------------------------------------------------------------------
     # 5. Execution

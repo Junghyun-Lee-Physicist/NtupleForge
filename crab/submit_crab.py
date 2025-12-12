@@ -111,6 +111,15 @@ def main(args):
     conf.Data.unitsPerJob = common.get('units_per_job', 50000)
     conf.Data.publication = False
     
+    if conf.Data.splitting == 'FileBased' and unitsPerJob > 100:
+        logger.warning(f"⚠️ Warning: Splitting is 'FileBased' but units_per_job is {unitsPerJob}.")
+        logger.warning("   -> This means 1 job will process {unitsPerJob} files.")
+        logger.warning("   -> Resetting to 1 file per job for safety. Check your YAML!")
+        conf.Data.unitsPerJob = 1
+    else:
+        conf.Data.unitsPerJob = unitsPerJob
+
+
     username = getUsername()
     base_out = common.get('output_base', f'/store/user/{username}/')
     conf.Data.outLFNDirBase = base_out
