@@ -70,4 +70,4 @@ class JetsMETCut(Module):
 
 # Configuration
 # Default: nJet >= 4, MET > 150
-MODULES = [JetsMETCut(njet_thr=4, met_thr=150.0)]
+MODULES = [JetsMETCut(njet_thr=6, met_thr=300.0)]

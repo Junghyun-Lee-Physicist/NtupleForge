@@ -3,4 +3,4 @@
 # Use this when you want to run the post-processor without any additional analysis modules,
 # for example, when performing only event skimming (cuts) or branch slimming.
 
-modules = []
+MODULES = []

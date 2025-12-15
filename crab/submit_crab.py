@@ -68,126 +68,177 @@ def main(args):
     # -- General --
     conf.General.transferOutputs = True
     conf.General.transferLogs = True
-    conf.General.workArea = common.get('jobID', 'crab_projects_default_name')
+    conf.General.workArea = common.get('jobID', 'crab_projects')
     
     # -- JobType --
     conf.JobType.pluginName = 'Analysis'
     conf.JobType.psetName = 'crab/PSet.py'
-    
-    # [KEY] Use the separated Python wrapper
     conf.JobType.scriptExe = 'crab/crab_script.py' 
-    
     conf.JobType.maxMemoryMB = common.get('max_memory', 2500)
     conf.JobType.maxJobRuntimeMin = common.get('max_runtime', 600)
-    
+
+
+    # ------------------------------------------------------
+    # Input Filename Logic
+    # ------------------------------------------------------
     # Files to ship to worker node
-    # Note: We ship 'scripts/run_postproc.py' explicitly.
     # CRAB will flatten directory structure, placing it in root dir on worker.
-    conf.JobType.inputFiles = ['scripts/run_postproc.py']
+    conf.JobType.inputFiles = ['scripts/run_postproc.py'] # Main Script
+
+    # ------------------------------------------------------
+    # Module Handling (List-based YAML)
+    # ------------------------------------------------------
+    # YAML Format: analysis_module: ["modules/jetsMETcut.py", "MODULES"]
     
-    if os.path.exists('modules'): conf.JobType.inputFiles.append('modules')
-    if os.path.exists('branches'): conf.JobType.inputFiles.append('branches')
+    module_cfg = common.get('analysis_module') # Returns a list: [path, list_name]
+    worker_module_arg = None # Will store string "jetsMETcut:MODULES" for worker
+
+    if module_cfg and len(module_cfg) == 2:
+        local_path = module_cfg[0]  # e.g., "modules/jetsMETcut.py"
+        list_var   = module_cfg[1]  # e.g., "MODULES"
+
+        if os.path.exists(local_path):
+            conf.JobType.inputFiles.append(local_path)
+            logger.info(f"Adding Module File: {local_path}")
+            
+            # Prepare Argument for Worker Node
+            # Worker sees flat files. "modules/jetsMETcut.py" -> "jetsMETcut.py"
+            # Argument format: "jetsMETcut:MODULES" (drop extension, append list var)
+            file_basename = os.path.basename(local_path) # jetsMETcut.py
+            module_name_only = os.path.splitext(file_basename)[0] # jetsMETcut
+            worker_module_arg = f"{module_name_only}:{list_var}"
+            
+        else:
+            logger.error(f"CRITICAL: Module file not found at {local_path}")
+            sys.exit(1)
+    elif module_cfg:
+        logger.error(f"YAML Error: 'analysis_module' must be a list with 2 elements [path, list_name]. Got: {module_cfg}")
+        sys.exit(1)
+
+    # ------------------------------------------------------
+    # Branch File Handling
+    # ------------------------------------------------------
+    branch_sel = common.get('branch_file') # Renamed from branch_path
     
-    # Explicit branch selection file if not in 'branches/'
-    branch_sel = common.get('branch_selection')
-    if branch_sel and 'branches' not in branch_sel:
-         conf.JobType.inputFiles.append(branch_sel)
+    if branch_sel:
+        if os.path.exists(branch_sel):
+            conf.JobType.inputFiles.append(branch_sel)
+            logger.info(f"Adding Branch File: {branch_sel}")
+        else:
+            logger.error(f"CRITICAL: Branch file not found at {branch_sel}")
+            sys.exit(1)
+            
+    # Add YAML Config (Provenance)
+    conf.JobType.inputFiles.append(args.config)
+
+
+    # ------------------------------------------------------
+    # Output Filename Logic
+    # ------------------------------------------------------
+    # Get output filename from YAML or default to 'tree.root'
+    out_name = common.get('output_filename', 'tree.root')
+    if not out_name:
+        out_name = 'tree.root'
+
 
     # -- Arguments File Generation --
-    # To avoid HTTP 400 errors, we write arguments to a file and ship it.
     args_file = "crab_args.txt"
     with open(args_file, "w") as f:
-        if branch_sel: f.write(f"-b\n{os.path.basename(branch_sel)}\n")
-        if common.get('module'): f.write(f"-I\n{common.get('module')}\n")
-        if common.get('max_events'): f.write(f"-N\n{common.get('max_events')}\n")
-        # Note: Output filename is enforced in wrapper to 'tree.root' for merging
-    
+        # Branch Arg
+        if branch_sel: 
+            f.write(f"-b\n{os.path.basename(branch_sel)}\n")
+        
+        # Module Arg (Optimized)
+        if worker_module_arg: 
+            f.write(f"-I\n{worker_module_arg}\n")
+            
+        if common.get('max_events'): 
+            f.write(f"-N\n{common.get('max_events')}\n")
+
+        # Pass the output filename to the worker node script
+        f.write(f"--output-file={out_name}\n")
+
     conf.JobType.inputFiles.append(args_file)
-    conf.JobType.scriptArgs = [] # Empty to rely on file injection
+    conf.JobType.scriptArgs = [] 
+
+    # ------------------------------------------------------
+    # Output Files Configuration (Provenance)
+    # ------------------------------------------------------
+    # Instruct CRAB to transfer these files back to the output storage.
+    # 1. tree.root: Main output file
+    # 2. crab_args.txt: List of arguments used for the job
+    # 3. YAML Config: The configuration file used for submission
+    conf.JobType.outputFiles = [
+        'tree.root',
+        'crab_args.txt',
+        os.path.basename(args.config)
+    ]
 
     # -- Data & Site --
     conf.Data.inputDBS = 'global'
-    conf.Data.splitting = common.get('splitting', 'EventAwareLumiBased')
+    
+    # [FIX] Splitting Logic (Automatic vs FileBased)
+    conf.Data.splitting = common.get('splitting', 'Automatic')
+    
+    # units_per_job means different things:
+    # Automatic -> Minutes (e.g., 180)
+    # FileBased -> Number of Files (e.g., 1)
+    user_units = common.get('units_per_job', 180) # Default 180 mins
+    
+    conf.Data.unitsPerJob = user_units
     conf.Data.publication = False
 
-    # 1. Store values retrieved from YAML in variables
-    user_units = common.get('units_per_job', 50000)
-    
-    # 2. Logic Check (Safety Device when FileBased)
-    if conf.Data.splitting == 'FileBased' and user_units > 100:
-        logger.warning(f"⚠️ Warning: Splitting is 'FileBased' but units_per_job is {user_units}.")
-        logger.warning("   -> This means 1 job will process {user_units} files.")
-        logger.warning("   -> Resetting to 1 file per job for safety. Check your YAML!")
-        conf.Data.unitsPerJob = 1
-    else:
-        conf.Data.unitsPerJob = user_units    
-
-
-
     username = getUsername()
-    base_out = common.get('output_base', f'/store/user/{username}/')
-    conf.Data.outLFNDirBase = base_out
-    
+    base_out = common.get('output_base', '')
+    if base_out:
+         conf.Data.outLFNDirBase = f'/store/user/{username}/{base_out.lstrip("/")}'
+    else:
+         conf.Data.outLFNDirBase = f'/store/user/{username}/'
+
     conf.Site.storageSite = common.get('site', 'T3_KR_KNU')
 
     # 3. Process Jobs
     for short_name, dataset in datasets.items():
-        # Clean request name
         campaign_name = os.path.splitext(os.path.basename(args.config))[0]
-        req_name = f"{campaign_name}_{short_name}"
-        req_name = req_name.replace("-", "_")[:95]
-        
+        req_name = f"{campaign_name}_{short_name}".replace("-", "_")[:95]
+
         conf.General.requestName = req_name
         conf.Data.inputDataset = dataset
         conf.Data.outputDatasetTag = short_name
-        
-        project_dir = os.path.join(conf.General.workArea, "crab_" + req_name)
-        
-        print(f"[{short_name}]")
-        print(f"Dataset: {dataset}")
 
-        # -- STATUS Check --
+        project_dir = os.path.join(conf.General.workArea, "crab_" + req_name)
+
+        print(f"[{short_name}] Processing...")
+
         if args.status:
             if os.path.isdir(project_dir):
-                logger.info("Action: Checking STATUS")
                 try:
                     subprocess.run(["crab", "status", "-d", project_dir], check=True)
-                except:
-                    logger.error("Status check failed.")
+                except: pass
             else:
-                logger.warning("Project directory not found. Not submitted yet.")
-            print("-" * 60)
+                logger.warning("Project not found.")
             continue
 
-        # -- SUBMIT / RESUBMIT Logic --
         if os.path.isdir(project_dir):
-            logger.info(f"Project exists at {project_dir}")
-            logger.info("Action: RESUBMIT")
+            logger.info("Resubmitting...")
             try:
                 crabCommand('resubmit', dir=project_dir)
-            except HTTPException as hte:
-                logger.error(f"Resubmit Failed: {hte.headers}")
             except Exception as e:
                 logger.error(f"Resubmit Failed: {e}")
         else:
-            logger.info("New Project. Action: SUBMIT")
+            logger.info("Submitting...")
             try:
                 crabCommand('submit', config=conf)
-            except HTTPException as hte:
-                logger.error(f"Submit Failed: {hte.headers}")
             except Exception as e:
                 logger.error(f"Submit Failed: {e}")
-        
-        print("-" * 60)
 
-    # Cleanup temp file
     if os.path.exists(args_file):
         os.remove(args_file)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="YAML based CRAB Manager")
     parser.add_argument("-c", "--config", required=True, help="Path to YAML config")
-    parser.add_argument("--status", action="store_true", help="Check status instead of submit")
-    
+    parser.add_argument("--status", action="store_true", help="Check status")
     args = parser.parse_args()
-    main(args)
+    main(args)    
+

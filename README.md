@@ -49,11 +49,19 @@ Recommended directory layout for organizing your analysis:
 
 ```
 NtupleForge/
-├── scripts/               # Executables (run_postproc.py, dump_branches.py)
-├── modules/               # Python analysis modules (e.g., jetsMETcut.py, noop.py)
-├── branches/              # Branch selection files (e.g., branch_keep_and_drop.txt)
-├── crab/                  # CRAB submission utilities
-├── crabConfig/            # Configuration for CRAB
+├── scripts/
+│   └── run_postproc.py       # Main executable for post-processing
+├── modules/
+│   ├── jetsMETcut.py         # Example simple analyzer module containing logic class & list
+│   └── noop.py               # Empty module
+├── branches/
+│   └── branch_keep_and_drop.txt
+├── crab/
+│   ├── submit_crab.py        # CRAB submission manager (reads YAML)
+│   ├── crab_script.py        # Worker node wrapper script
+│   └── PSet.py               # Fake parameter set for CRAB
+└── crabConfig/
+    └── campaign_ttbar_SemiLeptonic.yaml  # Example campaign YAML configuration for CRAB
 ```
 
 ## 🧠 Code Architecture
@@ -91,6 +99,25 @@ def main():
     # 5. Run Event Loop
     p.run()
 ```
+
+## 🧬 Module Structure (modules)
+
+Analysis modules inherit from the `Module` class of `NanoAODTools`.
+Locally, we store them in **`modules/`** directory to follow the standard NanoAODTools convention.
+**Note:** When running on CRAB, inputs are flattened, so modules run as top-level files on the worker node.
+
+**Implementation (`modules/jets_met.py`):**
+```python
+from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
+
+class JetSelection(Module):
+    def analyze(self, event):
+        return True 
+
+# The framework loads this LIST variable
+MODULES = [JetSelection()]
+```
+
 
 ## 🔧 Configuration
 
@@ -225,11 +252,11 @@ The CRAB jobs are defined in a YAML file (e.g., `crabConfig/campaign_ttbar_SemiL
 **1. Submit / Auto-Resubmit** Submits new jobs or resubmits failed ones automatically.
 
 ```
-python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml
+python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic.yaml
 ```
 
 **2. Check Status** Checks the status of all jobs defined in the YAML file.
 
 ```
-python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml --status
+python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic.yaml --status
 ```
