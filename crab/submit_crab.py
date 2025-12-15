@@ -75,7 +75,10 @@ def main(args):
     conf.JobType.psetName = 'crab/PSet.py'
     conf.JobType.scriptExe = 'crab/crab_script.py' 
     conf.JobType.maxMemoryMB = common.get('max_memory', 2500)
-    conf.JobType.maxJobRuntimeMin = common.get('max_runtime', 600)
+    
+    splitting_mode = common.get('splitting', 'Automatic')
+    if splitting_mode != 'Automatic':
+        conf.JobType.maxJobRuntimeMin = common.get('max_runtime', 600)
 
 
     # ------------------------------------------------------
@@ -178,7 +181,7 @@ def main(args):
     conf.Data.inputDBS = 'global'
     
     # [FIX] Splitting Logic (Automatic vs FileBased)
-    conf.Data.splitting = common.get('splitting', 'Automatic')
+    conf.Data.splitting = splitting_mode
     
     # units_per_job means different things:
     # Automatic -> Minutes (e.g., 180)
@@ -210,6 +213,7 @@ def main(args):
 
         print(f"[{short_name}] Processing...")
 
+        # -- STATUS Action --
         if args.status:
             if os.path.isdir(project_dir):
                 try:
@@ -219,6 +223,7 @@ def main(args):
                 logger.warning("Project not found.")
             continue
 
+        # -- SUBMIT / RESUBMIT Logic --
         if os.path.isdir(project_dir):
             logger.info("Resubmitting...")
             try:
@@ -232,6 +237,23 @@ def main(args):
             except Exception as e:
                 logger.error(f"Submit Failed: {e}")
 
+        # -- KILL Action --
+        if args.kill:
+            if os.path.isdir(project_dir):
+                logger.info("Action: KILLING Task")
+                try:
+                    crabCommand('kill', dir=project_dir)
+                    logger.info("Kill command sent successfully.")
+                except HTTPException as hte:
+                    logger.error(f"Kill Failed: {hte.headers}")
+                except Exception as e:
+                    logger.error(f"Kill Failed: {e}")
+            else:
+                logger.warning(f"Project directory not found (nothing to kill): {project_dir}")
+            print("-" * 60)
+            continue
+
+    # Cleanup temp file
     if os.path.exists(args_file):
         os.remove(args_file)
 
@@ -239,6 +261,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="YAML based CRAB Manager")
     parser.add_argument("-c", "--config", required=True, help="Path to YAML config")
     parser.add_argument("--status", action="store_true", help="Check status")
+    parser.add_argument("--kill", action="store_true", help="Kill all jobs defined in the config")
     args = parser.parse_args()
     main(args)    
 
