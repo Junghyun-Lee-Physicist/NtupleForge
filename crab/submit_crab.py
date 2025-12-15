@@ -169,11 +169,11 @@ def main(args):
     # Output Files Configuration (Provenance)
     # ------------------------------------------------------
     # Instruct CRAB to transfer these files back to the output storage.
-    # 1. tree.root: Main output file
+    # 1. out_name: Main output file
     # 2. crab_args.txt: List of arguments used for the job
     # 3. YAML Config: The configuration file used for submission
     conf.JobType.outputFiles = [
-        'tree.root',
+        out_name,            
         'crab_args.txt',
         os.path.basename(args.config)
     ]
