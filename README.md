@@ -244,7 +244,6 @@ The CRAB jobs are defined in a YAML file (e.g., `crabConfig/campaign_crabTest.ya
     
 - **`datasets`**: List of datasets to process.
     
-
 **Important**: The `module` and `branch_selection` fields in the YAML file are passed as arguments (`-I` and `-b`) to the `run_postproc.py` script on the worker node. Ensure these paths and module names are correct.
 
 ### Commands
@@ -269,3 +268,32 @@ python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic.yaml
 ```
 
 This command iterates through all datasets listed in the YAML file and sends a crab kill command to their respective project directories.
+
+## 🔄 Update / Known Issues (Dec 15, 2025)
+
+### ⚠️ CRAB Stageout Error: Output Filename Mismatch
+
+A critical issue has been identified where a mismatch between the `output_filename` defined in the YAML configuration and the Output Module settings in `PSet.py` causes the job to fail during the **Stageout** phase, even if the processing itself was successful.
+
+**Error Log Snippet:**
+
+Plaintext
+
+```
+====== Starting to check if user output files exist.
+Output file slimmed.root exists.
+Output file crab_args.txt exists.
+ERROR: Output file tree.root does not exist.
+Setting stageout wrapper exit info to {'exit_code': 60302, 'exit_acronym': 'FAILED', ...}
+```
+
+**Cause:**
+
+- While the YAML config instructed the script to generate `slimmed.root`, CRAB's internal configuration (derived from `PSet.py`) still expected the default `tree.root`. Consequently, CRAB flagged the job as failed because it could not locate `tree.root`, ignoring the successfully created `slimmed.root`.
+    
+
+**Future Plans:**
+
+- To resolve this permanently, I am considering implementing an **automated synchronization logic** within `submit_crab.py`.
+    
+- The goal is to dynamically override the Output Filename in `PSet.py` with the value provided in the YAML configuration at submission time. This will ensure consistency between the configuration and the actual CMSSW execution, preventing human errors and stageout failures.
