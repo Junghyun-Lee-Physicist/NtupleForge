@@ -7,8 +7,9 @@ Reads a YAML configuration file and manages CRAB jobs (Submit, Status, Resubmit)
 Uses 'crab/crab_script.py' as the worker node wrapper.
 
 [Usage]
-python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml
-python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml --status
+python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml
+python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml --status
+python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml --kill
 """
 
 import os
@@ -202,8 +203,7 @@ def main(args):
 
     # 3. Process Jobs
     for short_name, dataset in datasets.items():
-        campaign_name = os.path.splitext(os.path.basename(args.config))[0]
-        req_name = f"{campaign_name}_{short_name}".replace("-", "_")[:95]
+        req_name = short_name.replace("-", "_")
 
         conf.General.requestName = req_name
         conf.Data.inputDataset = dataset

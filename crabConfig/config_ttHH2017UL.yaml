@@ -1,0 +1,89 @@
+# Campaign Configuration
+# ===========================
+common:
+  jobID: "campaign_ttHH2017UL_15thDec2025_v1"
+  site: "T3_KR_KNU"
+  output_base: "ttHH2017UL_15thDec2025_v1" 
+
+  # Processing Configuration
+  # ---------------------------------------------------------------------------
+  # [Why Path & List?]
+  # 1. Path ("modules/jets_met.py"): Local path to the python file containing analysis logic.
+  # 2. List Name ("MODULES"): The variable name inside the python file.
+  #    IMPORTANT: This list must contain INSTANCES of classes that inherit from
+  #    'PhysicsTools.NanoAODTools.postprocessing.framework.eventloop.Module'.
+  #    The PostProcessor iterates over this list to execute the analysis logic.
+  # ---------------------------------------------------------------------------
+  
+  # Format: [ "Local_File_Path", "List_Variable_Name" ]
+  analysis_module: ["modules/noop.py", "MODULES"]
+  
+  # Path to the branch keep/drop text file
+  branch_file: "branches/branch_ttHHto4b_hadronic_2017UL.txt"
+
+  # [Output Configuration]
+  # Define the name of the output ROOT file.
+  # If left empty or undefined, it defaults to 'tree.root'.
+  output_filename: "slimmed.root"
+
+  # Job Splitting
+  # ---------------------------------------------------------------------------
+  # "Automatic": CRAB calculates splitting based on runtime (units_per_job = minutes).
+  # "FileBased": You define how many files per job (units_per_job = file count).
+  # ---------------------------------------------------------------------------
+  ##splitting: "Automatic"
+  splitting: "FileBased"
+  
+  # If splitting is "Automatic", this is target runtime in minutes (e.g., 180 min --> minimum value).
+  # If splitting is "FileBased", this is files per job (e.g., 1 or 2).
+  ##units_per_job: 180
+  units_per_job: 1
+
+datasets:
+
+  # --- Signle ---
+  TTHHto4b: "/TTHHTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+
+  # --- Key Backgrounds [ ttbar ] ---
+  TTbar_SemiLep: "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTbar_Hadronic: "/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTbar_DiLep: "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- QCD (HT Binned) - Crucial for Hadronic Channel ---
+  QCD_HT200to300: "/QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  QCD_HT300to500: "/QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  QCD_HT500to700: "/QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  QCD_HT700to1000: "/QCD_HT700to1000_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  QCD_HT1000to1500: "/QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  QCD_HT1500to2000: "/QCD_HT1500to2000_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  QCD_HT2000toInf: "/QCD_HT2000toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- Rare Top / Higgs Processes ---
+  TTZHTo4b: "/TTZHTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TTZZTo4b: "/TTZZTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TT4b: "/TT4b_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  ttHTobb: "/ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TTZToBB: "/TTZToBB_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TTWJetsToQQ: "/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- Multi-Boson / Rare ---
+  TTWW: "/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTWH: "/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TTWZ: "/TTWZ_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTTW: "/TTTW_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TTTT: "/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TTbb_4f: "/TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- Data (JetHT) ---
+  JetHT_Run2017B: "/JetHT/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  JetHT_Run2017C: "/JetHT/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  JetHT_Run2017D: "/JetHT/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  JetHT_Run2017E: "/JetHT/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  JetHT_Run2017F: "/JetHT/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+
+  # --- Data (BTagCSV) ---
+  BTagCSV_Run2017B: "/BTagCSV/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  BTagCSV_Run2017C: "/BTagCSV/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  BTagCSV_Run2017D: "/BTagCSV/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  BTagCSV_Run2017E: "/BTagCSV/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  BTagCSV_Run2017F: "/BTagCSV/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"

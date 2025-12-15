@@ -1,0 +1,47 @@
+# Campaign Configuration
+# ===========================
+common:
+  jobID: "campaign_forTest"
+  site: "T3_KR_KNU"
+  output_base: "crabTest" 
+
+  # Processing Configuration
+  # ---------------------------------------------------------------------------
+  # [Why Path & List?]
+  # 1. Path ("modules/jets_met.py"): Local path to the python file containing analysis logic.
+  # 2. List Name ("MODULES"): The variable name inside the python file.
+  #    IMPORTANT: This list must contain INSTANCES of classes that inherit from
+  #    'PhysicsTools.NanoAODTools.postprocessing.framework.eventloop.Module'.
+  #    The PostProcessor iterates over this list to execute the analysis logic.
+  # ---------------------------------------------------------------------------
+  
+  # Format: [ "Local_File_Path", "List_Variable_Name" ]
+  ##analysis_module: ["modules/jetsMETcut.py", "MODULES"]
+  analysis_module: ["modules/noop.py", "MODULES"]
+  
+  # Path to the branch keep/drop text file
+  branch_file: "branches/branch_keep_and_drop.txt"
+
+  # [Output Configuration]
+  # Define the name of the output ROOT file.
+  # If left empty or undefined, it defaults to 'tree.root'.
+  output_filename: "tree.root"
+
+  # Job Splitting
+  # ---------------------------------------------------------------------------
+  # "Automatic": CRAB calculates splitting based on runtime (units_per_job = minutes).
+  # "FileBased": You define how many files per job (units_per_job = file count).
+  # ---------------------------------------------------------------------------
+  ##splitting: "Automatic"
+  splitting: "FileBased"
+  
+  # If splitting is "Automatic", this is target runtime in minutes (e.g., 180 min).
+  # If splitting is "FileBased", this is files per job (e.g., 1 or 2).
+  ##units_per_job: 180
+  units_per_job: 1
+
+datasets:
+  TTbar_SemiLep:  "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTbar_Hadronic: "/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTHHto4b:       "/TTHHTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TTHtobb:        "/ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
