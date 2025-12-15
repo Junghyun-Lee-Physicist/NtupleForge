@@ -1,88 +1,131 @@
 #!/usr/bin/env python3
+"""
+Script: validate_events.py
+Description:
+    Validates skim efficiency by aggregating 'Events' vs 'Runs' tree information across multiple ROOT files.
+    
+    [Methodology]
+    1. Output Events (Skimmed): Counted from 'Events' tree (num_entries).
+    2. Input Events (Gen/Raw):  Aggregated from 'Runs' tree ('genEventCount' branch).
+    
+    Why aggregate?
+    - CRAB jobs split processing across multiple files.
+    - Each output file's 'Runs' tree contains the meta-info (gen weights, counts) ONLY for the lumi-blocks processed in that file.
+    - Therefore, to get the correct total efficiency, we must SUM the gen counts from all files.
+
+Usage:
+    python3 validate_events.py "output_dir/*.root"
+"""
+
 import uproot
 import argparse
 import glob
 import os
 import sys
+import numpy as np
 
 def validate(file_pattern):
-    """
-    Reads Output ROOT files and checks 'Events' tree entries vs 'Runs' tree info.
-    """
     # Expand wildcard pattern
-    files = glob.glob(file_pattern)
+    files = sorted(glob.glob(file_pattern))
     if not files:
-        print(f"[Error] No files found matching pattern: {file_pattern}")
+        print(f"[ERROR] No files found matching pattern: {file_pattern}")
         return
 
-    print(f"[Info] Found {len(files)} files. analyzing...")
-    
-    # Header
     print("="*100)
-    print(f"{'File Name':<50} | {'Gen (Raw)':<12} | {'Skimmed':<10} | {'Eff (%)':<8}")
+    print(f" VALIDATION REPORT")
+    print(f" Target Pattern: {file_pattern}")
+    print(f" Found Files   : {len(files)}")
+    print("="*100)
+    print(f"{'File Name':<50} | {'Gen (Partial)':<15} | {'Skimmed':<10} | {'Step Eff':<8}")
     print("-" * 100)
 
-    total_gen = 0
-    total_skim = 0
-    valid_files = 0
+    # Accumulators for Global Stats
+    global_gen_sum = 0
+    global_skim_sum = 0
+    valid_files_count = 0
+    is_data = False
 
-    for fpath in sorted(files):
+    for fpath in files:
         fname = os.path.basename(fpath)
         try:
             with uproot.open(fpath) as f:
-                # 1. Get Skimmed Count (Output Events)
+                # -------------------------------------------------------
+                # 1. Get Skimmed Count (The Output)
+                # -------------------------------------------------------
                 if "Events" in f:
                     skim_count = f["Events"].num_entries
                 else:
+                    print(f"[WARNING] 'Events' tree missing in {fname}")
                     skim_count = 0
                 
-                # 2. Get Generated Count (Original Events)
-                # NanoAOD stores meta-info in 'Runs' tree
-                gen_count = 0
+                # -------------------------------------------------------
+                # 2. Get Generated/Processed Count (The Input)
+                # -------------------------------------------------------
+                # We iterate 'Runs' tree to sum up genEventCount.
+                # In NanoAOD, 'Runs' tree stores sums per run/lumi block.
+                local_gen_count = 0
+                
                 if "Runs" in f:
-                    runs = f["Runs"]
-                    # Usually 'genEventCount' exists for MC. 
-                    # For Data, it might be missing or we assume raw input count.
-                    keys = runs.keys()
+                    runs_tree = f["Runs"]
+                    keys = runs_tree.keys()
+                    
                     if "genEventCount" in keys:
-                        # genEventCount is stored per Run/Lumi, so we sum it up
-                        gen_count = int(runs["genEventCount"].array().sum())
+                        # MC Case: Sum up gen events processed in this specific file/job
+                        # .array() loads data, np.sum calculates the total
+                        local_gen_count = int(np.sum(runs_tree["genEventCount"].array()))
                     else:
-                        # Fallback for Data or if branch missing
-                        # If we can't find genCount, we can't calculate efficiency properly
-                        # but we can show skim count.
-                        gen_count = -1 
-                
-                # Output Row
-                if gen_count > 0:
-                    eff = (skim_count / gen_count) * 100
-                    print(f"{fname:<50} | {gen_count:<12} | {skim_count:<10} | {eff:.2f}%")
-                    total_gen += gen_count
+                        # Data Case: 'genEventCount' usually doesn't exist.
+                        # For Data, efficiency is usually 100% relative to input trigger path, 
+                        # but strictly speaking, we compare skim vs input.
+                        # Here we assume it's data and might treat Gen as 'Unknown' or 0
+                        is_data = True
+                        local_gen_count = 0 
                 else:
-                    print(f"{fname:<50} | {'Unknown':<12} | {skim_count:<10} | {'N/A':<8}")
-                
-                total_skim += skim_count
-                valid_files += 1
+                    print(f"[WARNING] 'Runs' tree missing in {fname}")
+
+                # -------------------------------------------------------
+                # 3. Print Per-File Statistics
+                # -------------------------------------------------------
+                if local_gen_count > 0:
+                    step_eff = (skim_count / local_gen_count) * 100
+                    print(f"{fname:<50} | {local_gen_count:<15} | {skim_count:<10} | {step_eff:.2f}%")
+                    global_gen_sum += local_gen_count
+                else:
+                    # If Data or missing info
+                    print(f"{fname:<50} | {'N/A (Data?)':<15} | {skim_count:<10} | {'-'}")
+
+                global_skim_sum += skim_count
+                valid_files_count += 1
 
         except Exception as e:
-            print(f"{fname:<50} | {'ERROR':<12} | {str(e)}")
+            print(f"{fname:<50} | {'[READ ERROR]':<15} | {str(e)}")
+
+    # -------------------------------------------------------
+    # 4. Final Aggregated Summary
+    # -------------------------------------------------------
+    print("=" * 100)
+    print("                      AGGREGATED SUMMARY                      ")
+    print("=" * 100)
+    print(f" Total Files Successfully Read : {valid_files_count}")
+    print(f" Total SKIMMED Events (Output) : {global_skim_sum:,}")
+    
+    if not is_data and global_gen_sum > 0:
+        total_eff = (global_skim_sum / global_gen_sum) * 100
+        print(f" Total GEN Events     (Input)  : {global_gen_sum:,}")
+        print("-" * 60)
+        print(f" >> GLOBAL EFFICIENCY          : {total_eff:.6f} %")
+    elif is_data:
+        print(f" Total GEN Events     (Input)  : N/A (Appears to be DATA)")
+        print("-" * 60)
+        print(f" >> GLOBAL EFFICIENCY          : N/A")
+    else:
+        print(f" [WARNING] Could not determine Input Event counts. Check 'Runs' tree.")
 
     print("=" * 100)
-    
-    # Final Summary
-    print(f"Total Files Processed: {valid_files}")
-    if total_gen > 0:
-        total_eff = (total_skim / total_gen) * 100
-        print(f"TOTAL GEN Events     : {total_gen}")
-        print(f"TOTAL SKIM Events    : {total_skim}")
-        print(f"Overall Efficiency   : {total_eff:.4f}%")
-    else:
-        print(f"TOTAL SKIM Events    : {total_skim}")
-        print("Overall Efficiency   : N/A (Could not determine Gen count, maybe Data?)")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Validate Skim Efficiency")
-    parser.add_argument("pattern", help="File pattern (e.g. 'output/*.root')")
+    parser = argparse.ArgumentParser(description="Validate Skim Efficiency by chaining Runs and Events info.")
+    parser.add_argument("pattern", help="File pattern to match (e.g. 'output_dir/*.root')")
     args = parser.parse_args()
     
     validate(args.pattern)

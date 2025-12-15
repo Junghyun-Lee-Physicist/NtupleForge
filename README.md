@@ -106,7 +106,7 @@ Analysis modules inherit from the `Module` class of `NanoAODTools`.
 Locally, we store them in **`modules/`** directory to follow the standard NanoAODTools convention.
 **Note:** When running on CRAB, inputs are flattened, so modules run as top-level files on the worker node.
 
-**Implementation (`modules/jets_met.py`):**
+**Implementation (`modules/jetsMETcut.py`):**
 ```python
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
@@ -238,7 +238,7 @@ The submission script is a **Smart Manager** that handles submission, status che
 
 ### YAML Configuration
 
-The CRAB jobs are defined in a YAML file (e.g., `crabConfig/campaign_ttbar_SemiLeptonic_v1.yaml`).
+The CRAB jobs are defined in a YAML file (e.g., `crabConfig/campaign_crabTest.yaml`).
 
 - **`common`**: Settings shared across all jobs (site, output path, modules, etc.).
     
@@ -252,11 +252,11 @@ The CRAB jobs are defined in a YAML file (e.g., `crabConfig/campaign_ttbar_SemiL
 **1. Submit / Auto-Resubmit** Submits new jobs or resubmits failed ones automatically.
 
 ```
-python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic.yaml
+python3 crab/submit_crab.py --config crabConfig/campaign_crabTest.yaml
 ```
 
 **2. Check Status** Checks the status of all jobs defined in the YAML file.
 
 ```
-python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic.yaml --status
+python3 crab/submit_crab.py --config crabConfig/campaign_crabTest.yaml --status
 ```
