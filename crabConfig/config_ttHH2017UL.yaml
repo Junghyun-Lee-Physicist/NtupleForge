@@ -1,9 +1,9 @@
 # Campaign Configuration
 # ===========================
 common:
-  jobID: "campaign_ttHH2017UL_15thDec2025_v4_newBranch"
+  jobID: "campaign_ttHH2017UL_15thDec2025_v5_addGenWgtNFlag"
   site: "T3_KR_KNU"
-  output_base: "ttHH2017UL_15thDec2025_v4_newBranch" 
+  output_base: "ttHH2017UL_15thDec2025_v5_addGenWgtNFlag" 
 
   # Processing Configuration
   # ---------------------------------------------------------------------------

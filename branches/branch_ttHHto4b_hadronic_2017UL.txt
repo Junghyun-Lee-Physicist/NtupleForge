@@ -155,6 +155,7 @@ keep Flag_EcalDeadCellTriggerPrimitiveFilter
 keep Flag_BadPFMuonFilter
 keep Flag_BadPFMuonDzFilter
 keep Flag_eeBadScFilter
+keep Flag_ecalBadCalibFilter
 
 # Triggers (Adjust based on year, generally keep Signal & Control triggers) [cite: 152, 168]
 keep HLT_PFHT* # Hadronic Signal Triggers [cite: 169]
@@ -170,6 +171,7 @@ keep HLT_QuadPFJet*
 # Variables below exist only in MC and are vital for corrections [cite: 145, 175]
 # ---------------------------------------------------------
 keep Generator_weight          # Base event weight [cite: 176]
+keep genWeight                 # Same as Generator_weight, but it might contain negative weight, We need to study this branch
 keep LHEPdfWeight              # PDF uncertainty weights [cite: 116]
 keep LHEScaleWeight            # QCD Scale uncertainty weights [cite: 117]
 keep L1PreFiringWeight_Nom     # L1 Prefiring Correction [cite: 118]
