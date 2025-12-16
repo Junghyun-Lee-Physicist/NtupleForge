@@ -1,9 +1,9 @@
 # Campaign Configuration
 # ===========================
 common:
-  jobID: "campaign_ttHH2017UL_15thDec2025_v3"
+  jobID: "campaign_ttHH2017UL_15thDec2025_v4_newBranch"
   site: "T3_KR_KNU"
-  output_base: "ttHH2017UL_15thDec2025_v3" 
+  output_base: "ttHH2017UL_15thDec2025_v4_newBranch" 
 
   # Processing Configuration
   # ---------------------------------------------------------------------------
@@ -87,3 +87,11 @@ datasets:
   BTagCSV_Run2017D: "/BTagCSV/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
   BTagCSV_Run2017E: "/BTagCSV/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
   BTagCSV_Run2017F: "/BTagCSV/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+
+  # --- Data (SingleMuon) ---
+  SingleMuon_Run2017B: "/SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017C: "/SingleMuon/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017D: "/SingleMuon/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017E: "/SingleMuon/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017F: "/SingleMuon/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+

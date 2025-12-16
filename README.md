@@ -61,7 +61,7 @@ NtupleForge/
 │   ├── crab_script.py        # Worker node wrapper script
 │   └── PSet.py               # Fake parameter set for CRAB
 └── crabConfig/
-    └── campaign_ttbar_SemiLeptonic.yaml  # Example campaign YAML configuration for CRAB
+    └── config_ttbar_SemiLeptonic.yaml  # Example YAML configuration for CRAB
 ```
 
 ## 🧠 Code Architecture
@@ -238,7 +238,7 @@ The submission script is a **Smart Manager** that handles submission, status che
 
 ### YAML Configuration
 
-The CRAB jobs are defined in a YAML file (e.g., `crabConfig/campaign_crabTest.yaml`).
+The CRAB jobs are defined in a YAML file (e.g., `crabConfig/config_crabTest.yaml`).
 
 - **`common`**: Settings shared across all jobs (site, output path, modules, etc.).
     
@@ -251,20 +251,20 @@ The CRAB jobs are defined in a YAML file (e.g., `crabConfig/campaign_crabTest.ya
 **1. Submit / Auto-Resubmit** Submits new jobs or resubmits failed ones automatically.
 
 ```Bash
-python3 crab/submit_crab.py --config crabConfig/campaign_crabTest.yaml
+python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml
 ```
 
 **2. Check Status** Checks the status of all jobs defined in the YAML file.
 
 ```Bash
-python3 crab/submit_crab.py --config crabConfig/campaign_crabTest.yaml --status
+python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml --status
 ```
 
 **3. Kill All Jobs**
 If you need to stop all running jobs defined in a specific campaign configuration (e.g., due to wrong settings or priority changes), use the --kill flag.
 
 ```Bash
-python3 crab/submit_crab.py --config crabConfig/campaign_ttbar_SemiLeptonic.yaml --kill
+python3 crab/submit_crab.py --config crabConfig/config_ttbar_SemiLeptonic.yaml --kill
 ```
 
 This command iterates through all datasets listed in the YAML file and sends a crab kill command to their respective project directories.
