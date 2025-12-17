@@ -165,6 +165,11 @@ keep HLT_Ele* # Electron Reference Triggers [cite: 169]
 keep HLT_Mu*
 keep HLT_DiPFJet*
 keep HLT_QuadPFJet*
+# Triggers present exclusively in the B period data
+keep HLT_PFHT430_SixJet40_BTagCSV_p080
+keep HLT_PFHT380_SixJet32_DoubleBTagCSV_p075
+keep HLT_HT300PT30_QuadJet_75_60_45_40_TripeCSV_p07
+
 
 # ---------------------------------------------------------
 # 7. MC Only Truth & Weights
