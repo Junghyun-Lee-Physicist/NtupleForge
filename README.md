@@ -42,6 +42,7 @@ Ensure your environment is ready before running scripts.
 3. `voms-proxy-init --voms cms` (If accessing remote files)
 
 4. Set up crab environment using
+
 `source /cvmfs/cms.cern.ch/crab3/crab.sh`
 
 ## 📂 Project Structure
