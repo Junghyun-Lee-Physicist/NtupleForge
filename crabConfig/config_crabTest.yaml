@@ -22,11 +22,6 @@ common:
   # Path to the branch keep/drop text file
   branch_file: "branches/branch_keep_and_drop.txt"
 
-  # [Output Configuration]
-  # Define the name of the output ROOT file.
-  # If left empty or undefined, it defaults to 'tree.root'.
-  output_filename: "tree.root"
-
   # Job Splitting
   # ---------------------------------------------------------------------------
   # "Automatic": CRAB calculates splitting based on runtime (units_per_job = minutes).

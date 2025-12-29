@@ -139,10 +139,8 @@ def main(args):
     # ------------------------------------------------------
     # Output Filename Logic
     # ------------------------------------------------------
-    # Get output filename from YAML or default to 'tree.root'
-    out_name = common.get('output_filename', 'tree.root')
-    if not out_name:
-        out_name = 'tree.root'
+    # Default output filename (should match process.output.fileName in the PSet)
+    out_name = "slimmedNtuple.root"
 
 
     # -- Arguments File Generation --
@@ -159,9 +157,6 @@ def main(args):
         if common.get('max_events'): 
             f.write(f"-N\n{common.get('max_events')}\n")
 
-        # Pass the output filename to the worker node script
-        f.write(f"--output-file={out_name}\n")
-
     conf.JobType.inputFiles.append(args_file)
     conf.JobType.scriptArgs = [] 
 
@@ -174,8 +169,8 @@ def main(args):
     # 3. YAML Config: The configuration file used for submission
     conf.JobType.outputFiles = [
         out_name,            
-        'crab_args.txt',
-        os.path.basename(args.config)
+        ##'crab_args.txt',
+        ##os.path.basename(args.config)
     ]
 
     # -- Data & Site --
@@ -187,7 +182,8 @@ def main(args):
     # units_per_job means different things:
     # Automatic -> Minutes (e.g., 180)
     # FileBased -> Number of Files (e.g., 1)
-    user_units = common.get('units_per_job', 180) # Default 180 mins
+    user_units = common.get('units_per_job', 1)
+    ##user_units = common.get('units_per_job', 180) # Default 180 mins
     
     conf.Data.unitsPerJob = user_units
     conf.Data.publication = False

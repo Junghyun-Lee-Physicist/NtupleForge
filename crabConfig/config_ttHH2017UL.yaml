@@ -1,9 +1,9 @@
 # Campaign Configuration
 # ===========================
 common:
-  jobID: "campaign_ttHH2017UL_15thDec2025_v5_addGenWgtNFlag"
+  jobID: "campaign_ttHH2017UL_29thDec2025_v7"
   site: "T3_KR_KNU"
-  output_base: "ttHH2017UL_15thDec2025_v5_addGenWgtNFlag" 
+  output_base: "ttHH2017UL_29thDec2025_v7" 
 
   # Processing Configuration
   # ---------------------------------------------------------------------------
@@ -20,11 +20,6 @@ common:
   
   # Path to the branch keep/drop text file
   branch_file: "branches/branch_ttHHto4b_hadronic_2017UL.txt"
-
-  # [Output Configuration]
-  # Define the name of the output ROOT file.
-  # If left empty or undefined, it defaults to 'tree.root'.
-  output_filename: "tree.root"
 
   # Job Splitting
   # ---------------------------------------------------------------------------
