@@ -157,6 +157,9 @@ def main(args):
         if common.get('max_events'): 
             f.write(f"-N\n{common.get('max_events')}\n")
 
+        # Pass the output filename to the worker node script
+        f.write(f"--output-file={out_name}\n")
+
     conf.JobType.inputFiles.append(args_file)
     conf.JobType.scriptArgs = [] 
 

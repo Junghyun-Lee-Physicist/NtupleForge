@@ -1,9 +1,9 @@
 # Campaign Configuration
 # ===========================
 common:
-  jobID: "campaign_ttHH2017UL_29thDec2025_v7"
+  jobID: "campaign_ttHH2017UL_30thDec2025_v8"
   site: "T3_KR_KNU"
-  output_base: "ttHH2017UL_29thDec2025_v7" 
+  output_base: "ttHH2017UL_30thDec2025_v8" 
 
   # Processing Configuration
   # ---------------------------------------------------------------------------
