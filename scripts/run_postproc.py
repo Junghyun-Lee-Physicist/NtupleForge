@@ -105,7 +105,6 @@ def main():
     COMPRESSION = "LZMA:9"    # Compression algorithm (Use "LZ4:4" for faster testing)
     FRIEND      = False       # Run in friend tree mode
     NO_OUT      = False       # If True, skip writing output file (for debugging)
-    JUST_COUNT  = False       # If True, only count events and exit
 
     # -------------------------------------------------------------------------
     # Validation & Loading
@@ -193,7 +192,7 @@ def main():
             friend=FRIEND,
             postfix=POSTFIX,
             noOut=NO_OUT,
-            justcount=JUST_COUNT,
+            justcount=False, # If True, only count events and exit. At the same time, the fwkJobReport variable must be set to False.
             maxEntries=args.max_events,
             firstEntry=args.first_entry,
             haddFileName=args.output_file, # Triggers merge if not None
