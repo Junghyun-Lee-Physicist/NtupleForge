@@ -1,0 +1,4 @@
+grep running crab_status.log
+grep transferring crab_status.log
+grep failed crab_status.log
+grep finished crab_status.log
