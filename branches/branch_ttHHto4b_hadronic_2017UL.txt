@@ -177,6 +177,7 @@ keep HLT_HT300PT30_QuadJet_75_60_45_40_TripeCSV_p07
 # ---------------------------------------------------------
 keep Generator_weight          # Base event weight [cite: 176]
 keep genWeight                 # Same as Generator_weight, but it might contain negative weight, We need to study this branch
+keep genTtbarId                 # ttbar categorization ID from GenTtbarCategorizer [cite: 146]
 keep LHEPdfWeight              # PDF uncertainty weights [cite: 116]
 keep LHEScaleWeight            # QCD Scale uncertainty weights [cite: 117]
 keep L1PreFiringWeight_Nom     # L1 Prefiring Correction [cite: 118]
@@ -202,3 +203,5 @@ keep GenJet_pt
 keep GenJet_eta
 keep GenJet_phi
 keep GenJet_mass
+keep GenJet_hadronFlavour       # Jet hadron flavor (5=b) for ttbar categorization [cite: 112]
+keep GenJet_partonFlavour       # Jet parton flavor
