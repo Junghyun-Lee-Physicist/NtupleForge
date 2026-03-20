@@ -1,0 +1,64 @@
+# Campaign Configuration
+# ===========================
+common:
+  jobID: "campaign_ttHH2017UL_19thMarch2026_v10_ext"
+  site: "T3_KR_KNU"
+  output_base: "ttHH2017UL_19thMarch2026_v10_ext" 
+
+  # Processing Configuration
+  # ---------------------------------------------------------------------------
+  # [Why Path & List?]
+  # 1. Path ("modules/jets_met.py"): Local path to the python file containing analysis logic.
+  # 2. List Name ("MODULES"): The variable name inside the python file.
+  #    IMPORTANT: This list must contain INSTANCES of classes that inherit from
+  #    'PhysicsTools.NanoAODTools.postprocessing.framework.eventloop.Module'.
+  #    The PostProcessor iterates over this list to execute the analysis logic.
+  # ---------------------------------------------------------------------------
+  
+  # Format: [ "Local_File_Path", "List_Variable_Name" ]
+  #  analysis_module: ["modules/noop.py", "MODULES"]
+  analysis_module: ["modules/ttbarCategorizer.py", "MODULES"]
+  
+  # Path to the branch keep/drop text file
+  branch_file: "branches/branch_ttHHto4b_hadronic_2017UL.txt"
+
+  # Job Splitting
+  # ---------------------------------------------------------------------------
+  # "Automatic": CRAB calculates splitting based on runtime (units_per_job = minutes).
+  # "FileBased": You define how many files per job (units_per_job = file count).
+  # ---------------------------------------------------------------------------
+  ##splitting: "Automatic"
+  splitting: "FileBased"
+  
+  # If splitting is "Automatic", this is target runtime in minutes (e.g., 180 min --> minimum value).
+  # If splitting is "FileBased", this is files per job (e.g., 1 or 2).
+  ##units_per_job: 180
+  units_per_job: 1
+
+datasets:
+
+  # --- TTbb 4FS - SemiLeptonic, DiLeptonic ---
+  TTbb_SemiLep: "/TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTbb_DiLep: "/TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- Single top ---
+  ST_t_top: "/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  ST_t_antitop: "/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  ST_tW_top: "/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  ST_tW_antitop: "/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  ST_s_lep: "/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  ST_s_had: "/ST_s-channel_4f_hadronicDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- Diboson (WW, WZ, ZZ)
+  WW: "/WW_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  WZ: "/WZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  ZZ: "/ZZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- V+jets(hadronic decay)
+  WJetsToQQ_HT400to600: "/WJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  WJetsToQQ_HT600to800: "/WJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  WJetsToQQ_HT800toInf: "/WJetsToQQ_HT-800toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  ZJetsToQQ_HT400to600: "/ZJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  ZJetsToQQ_HT600to800: "/ZJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  ZJetsToQQ_HT800toInf: "/ZJetsToQQ_HT-800toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+
