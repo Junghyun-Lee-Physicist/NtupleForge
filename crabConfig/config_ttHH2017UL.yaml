@@ -16,7 +16,7 @@ common:
   # ---------------------------------------------------------------------------
   
   # Format: [ "Local_File_Path", "List_Variable_Name" ]
-  analysis_module: ["modules/noop.py", "MODULES"]
+  analysis_module: ["modules/ttbarCategorizer.py", "MODULES"]
   
   # Path to the branch keep/drop text file
   branch_file: "branches/branch_ttHHto4b_hadronic_2017UL.txt"

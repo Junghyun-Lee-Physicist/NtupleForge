@@ -205,3 +205,17 @@ keep GenJet_phi
 keep GenJet_mass
 keep GenJet_hadronFlavour       # Jet hadron flavor (5=b) for ttbar categorization [cite: 112]
 keep GenJet_partonFlavour       # Jet parton flavor
+
+# ---------------------------------------------------------
+# 8. tt+jets Categorization (TTbarJetCategorizer module output)
+# Branches added by modules/ttbarCategorizer.py
+# ---------------------------------------------------------
+keep ttCat_LF                   # tt + light flavour
+keep ttCat_cc                   # tt + charm
+keep ttCat_b                    # tt + 1 b-jet (1 B hadron)
+keep ttCat_2b                   # tt + 1 b-jet (>=2 merged B hadrons)
+keep ttCat_bb                   # tt + 2 additional b-jets
+keep ttCat_bbb                  # tt + 3 additional b-jets
+keep ttCat_4b                   # tt + >=4 additional b-jets
+keep ttCat_noTTJets             # non-tt event
+keep nAdditionalBJets           # number of additional b-jets from gen info
