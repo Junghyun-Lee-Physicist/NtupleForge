@@ -219,3 +219,5 @@ keep ttCat_bbb                  # tt + 3 additional b-jets
 keep ttCat_4b                   # tt + >=4 additional b-jets
 keep ttCat_noTTJets             # non-tt event
 keep nAdditionalBJets           # number of additional b-jets from gen info
+keep nAdditionalBHadrons        # number of additional B hadrons (non-top-ancestor)
+keep nAdditionalCJets           # number of additional c-jets from gen info
