@@ -95,11 +95,29 @@ class TTbarJetCategorizer(Module):
         # cache which gen-level branches are available
         names = {b.GetName() for b in inputTree.GetListOfBranches()}
         self._has_genTtbarId = "genTtbarId" in names
-        self._has_genPart = "nGenPart" in names
-        self._has_genJet = "nGenJet" in names
+        self._has_genPart = "GenPart_pdgId" in names
+        self._has_genJet = "GenJet_pt" in names
 
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree) -> None:
         pass
+
+    # ------------------------------------------------------------------
+    # helper: robust array size (never trust nGenPart / nGenJet counters)
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _safe_len(branch) -> int:
+        """Return the length of a NanoAOD array branch.
+
+        The scalar counter branches (nGenPart, nGenJet) can be corrupted
+        (e.g. nGenPart=32760, nGenJet=0) in some tree-stream
+        configurations.  Reading ``len(event.GenPart_pdgId)`` is reliable
+        because the underlying ROOT TBranch stores the correct entry count
+        independently of the scalar counter leaf.
+        """
+        try:
+            return len(branch)
+        except TypeError:
+            return 0
 
     # ------------------------------------------------------------------
     # helper: deltaR^2 (skip the sqrt - only needed for threshold)
@@ -158,11 +176,11 @@ class TTbarJetCategorizer(Module):
     # ------------------------------------------------------------------
     # helper: check whether a GenPart has a top-quark ancestor
     # ------------------------------------------------------------------
-    def _has_top_ancestor(self, event, idx: int, max_depth: int = 30) -> bool:
+    def _has_top_ancestor(self, event, idx: int, nGP: int, max_depth: int = 30) -> bool:
         cur = idx
         for _ in range(max_depth):
             mother = event.GenPart_genPartIdxMother[cur]
-            if mother < 0 or mother >= event.nGenPart:
+            if mother < 0 or mother >= nGP:
                 return False
             if abs(event.GenPart_pdgId[mother]) == 6:
                 return True
@@ -176,7 +194,8 @@ class TTbarJetCategorizer(Module):
         if not self._has_genPart:
             return False
         found_t = found_tbar = False
-        for i in range(event.nGenPart):
+        nGP = self._safe_len(event.GenPart_pdgId)
+        for i in range(nGP):
             pid = event.GenPart_pdgId[i]
             if pid == 6:
                 found_t = True
@@ -194,14 +213,17 @@ class TTbarJetCategorizer(Module):
         if not (self._has_genPart and self._has_genJet):
             return (0, 0)
 
+        nGP = self._safe_len(event.GenPart_pdgId)
+        nGJ = self._safe_len(event.GenJet_pt)
+
         # Step 1: collect additional (non-top-ancestor) last-copy B hadrons
         add_bh: list[tuple[float, float]] = []
-        for i in range(event.nGenPart):
+        for i in range(nGP):
             if not self._is_b_hadron(event.GenPart_pdgId[i]):
                 continue
             if not ((event.GenPart_statusFlags[i] >> 13) & 1):   # isLastCopy
                 continue
-            if self._has_top_ancestor(event, i):
+            if self._has_top_ancestor(event, i, nGP):
                 continue
             add_bh.append((event.GenPart_eta[i], event.GenPart_phi[i]))
 
@@ -210,7 +232,7 @@ class TTbarJetCategorizer(Module):
 
         # Step 2: gen b-jets in acceptance
         bjet_indices: list[int] = []
-        for j in range(event.nGenJet):
+        for j in range(nGJ):
             if event.GenJet_hadronFlavour[j] != 5:
                 continue
             if event.GenJet_pt[j] < self.GEN_JET_PT_MIN:
@@ -248,13 +270,16 @@ class TTbarJetCategorizer(Module):
         if not (self._has_genPart and self._has_genJet):
             return 0
 
+        nGP = self._safe_len(event.GenPart_pdgId)
+        nGJ = self._safe_len(event.GenJet_pt)
+
         add_ch: list[tuple[float, float]] = []
-        for i in range(event.nGenPart):
+        for i in range(nGP):
             if not self._is_c_hadron(event.GenPart_pdgId[i]):
                 continue
             if not ((event.GenPart_statusFlags[i] >> 13) & 1):
                 continue
-            if self._has_top_ancestor(event, i):
+            if self._has_top_ancestor(event, i, nGP):
                 continue
             add_ch.append((event.GenPart_eta[i], event.GenPart_phi[i]))
 
@@ -262,7 +287,7 @@ class TTbarJetCategorizer(Module):
             return 0
 
         cjet_indices: list[int] = []
-        for j in range(event.nGenJet):
+        for j in range(nGJ):
             if event.GenJet_hadronFlavour[j] != 4:
                 continue
             if event.GenJet_pt[j] < self.GEN_JET_PT_MIN:
@@ -351,7 +376,8 @@ class TTbarJetCategorizer(Module):
             return True
 
         # --- Primary path: full GenPart-based categorization ---
-        if self._has_genPart and self._has_genJet and event.nGenPart > 0:
+        nGP = self._safe_len(event.GenPart_pdgId) if self._has_genPart else 0
+        if self._has_genPart and self._has_genJet and nGP > 0:
             # Step 1: check for tt pair
             if not self._event_has_tt_pair(event):
                 self._fill("ttCat_noTTJets", -1, -1, -1)
