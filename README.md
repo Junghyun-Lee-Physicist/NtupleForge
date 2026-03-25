@@ -269,6 +269,51 @@ python3 crab/submit_crab.py --config crabConfig/config_ttHH2017UL.yaml --kill
 
 This command iterates through all datasets listed in the YAML file and sends a crab kill command to their respective project directories.
 
+## 🧬 tt+jets Event Categorizer (`modules/ttbarCategorizer.py`)
+
+Classifies tt+jets events into sub-categories based on the flavour of additional jets **not** originating from top-quark decays, following CMS AN-2022/122 (ttHH→4b) and CMS AN-19-094 (ttH→bb).
+
+### Categories
+| Category   | Definition |
+|------------|------------|
+| `tt+LF`    | No additional heavy-flavour jets |
+| `tt+cc`    | Additional charm jet(s), no additional b-jets |
+| `tt+b`     | 1 additional b-jet from a single B hadron |
+| `tt+2b`    | 1 additional b-jet from ≥2 overlapping B hadrons (collinear g→bb) |
+| `tt+bb`    | Exactly 2 additional b-jets |
+| `tt+bbb`   | Exactly 3 additional b-jets (ttHH-specific) |
+| `tt+4b`    | ≥4 additional b-jets (ttHH-specific) |
+| `noTTJets` | Non-tt events |
+
+### Output Branches
+`ttCat_LF`, `ttCat_cc`, `ttCat_b`, `ttCat_2b`, `ttCat_bb`, `ttCat_bbb`, `ttCat_4b`, `ttCat_noTTJets` (Bool),
+`nAdditionalBJets`, `nAdditionalBHadrons`, `nMatchedBHadrons`, `nAdditionalCJets` (Int).
+
+### Usage
+```bash
+# Standard mode
+python3 scripts/run_postproc.py <input.root> \
+  -I modules.ttbarCategorizer:MODULES \
+  -b branches/branch_ttHHto4b_hadronic_2017UL.txt -N 1000
+
+# Debug mode (per-event logging + end-of-job cross-validation summary)
+python3 scripts/run_postproc.py <input.root> \
+  -I modules.ttbarCategorizer:MODULES_DEBUG \
+  -b branches/branch_ttHHto4b_hadronic_2017UL.txt -N 1000
+```
+
+### Standalone Test Script
+```bash
+python3 scripts/test_ttbar_categorizer.py <input.root> --max-events 50
+```
+
+### Key Implementation Details
+- **Primary path**: GenPart-based B-hadron ancestry tracing + ΔR matching to GenJets (pT > 20 GeV, |η| < 2.4)
+- **Fallback path**: `genTtbarId`-based when GenPart is absent (resolves up to tt+bb only)
+- **tt+2b fix**: Uses per-jet B-hadron count (single jet with ≥2 matched B hadrons), not total B-hadron count
+- **Cross-validation**: Debug mode compares GenPart-based result with genTtbarId, reports agreement stats
+- **Robust counters**: Uses `len(event.GenPart_pdgId)` instead of `nGenPart` scalar (which can be corrupted)
+
 ## 🔄 Update / Known Issues (Dec 15, 2025)
 
 ### ⚠️ CRAB Stageout Error: Output Filename Mismatch
