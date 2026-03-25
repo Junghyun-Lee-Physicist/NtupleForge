@@ -10,9 +10,8 @@ Prepare a CMSSW area, check out the official NanoAOD tools, and clone `NtupleFor
    *(Note: `scram b` is required to compile and update python paths)*
 
 > [!NOTE]
-   > **Environment Check**: Before installing CMSSW, please log in to **lxplus8** (`ssh <user>@lxplus8.cern.ch`) or set up a Singularity container using `cmssw-el8`.
-   > This step is mandatory because `CMSSW_14_2_1` requires the **el8_amd64_gcc12** architecture.
-
+> **Environment Check**: Before installing CMSSW, please log in to **lxplus8** (`ssh <user>@lxplus8.cern.ch`) or set up a Singularity container using `cmssw-el8`.
+> This step is mandatory because `CMSSW_14_2_1` requires the **el8_amd64_gcc12** architecture.
 
    ```bash
    cmsrel CMSSW_14_2_1
@@ -35,7 +34,7 @@ Prepare a CMSSW area, check out the official NanoAOD tools, and clone `NtupleFor
 
 Ensure your environment is ready before running scripts.
 
-1. Activate lxplus8 or Singularity using cmssw-el8 to build an Alma9 environment.
+1. Activate lxplus8 or Singularity using `cmssw-el8` to build an AlmaLinux 8 (el8) environment.
 
 2. `cmsenv` (CMSSW environment)
  
@@ -50,18 +49,21 @@ Recommended directory layout for organizing your analysis:
 ```
 NtupleForge/
 ├── scripts/
-│   └── run_postproc.py       # Main executable for post-processing
+│   ├── run_postproc.py               # Main executable for post-processing
+│   └── test_ttbar_categorizer.py     # Standalone test for tt+jets categorizer
 ├── modules/
-│   ├── jetsMETcut.py         # Example simple analyzer module containing logic class & list
-│   └── noop.py               # Empty module
+│   ├── ttbarCategorizer.py           # tt+jets event categorizer (AN-2022/122, AN-19-094)
+│   ├── jetsMETcut.py                 # Example simple analyzer module
+│   └── noop.py                       # Empty module
 ├── branches/
-│   └── branch_keep_and_drop.txt
+│   ├── branch_keep_and_drop.txt
+│   └── branch_ttHHto4b_hadronic_2017UL.txt
 ├── crab/
-│   ├── submit_crab.py        # CRAB submission manager (reads YAML)
-│   ├── crab_script.py        # Worker node wrapper script
-│   └── PSet.py               # Fake parameter set for CRAB
+│   ├── submit_crab.py                # CRAB submission manager (reads YAML)
+│   ├── crab_script.py                # Worker node wrapper script
+│   └── PSet.py                       # Fake parameter set for CRAB
 └── crabConfig/
-    └── config_ttHH2017UL.yaml  # YAML configuration for CRAB
+    └── config_ttHH2017UL.yaml        # YAML configuration for CRAB
 ```
 
 ## 🧠 Code Architecture
@@ -146,7 +148,7 @@ To minimize errors during CRAB submission, the following settings are fixed insi
     
 - **Cut String**: `None`. You have two safe options to apply cuts:
     
-    1. **Modify the script**: Replace `None` with your string directly in `scripts/run_postproc_v2.py`.
+    1. **Modify the script**: Replace `None` with your string directly in `scripts/run_postproc.py`.
         
         - _Example 1 (Simple)_: `CUT_STRING = "nJet > 2"` (Only keep events with more than 2 jets)
             
@@ -314,15 +316,13 @@ python3 scripts/test_ttbar_categorizer.py <input.root> --max-events 50
 - **Cross-validation**: Debug mode compares GenPart-based result with genTtbarId, reports agreement stats
 - **Robust counters**: Uses `len(event.GenPart_pdgId)` instead of `nGenPart` scalar (which can be corrupted)
 
-## 🔄 Update / Known Issues (Dec 15, 2025)
+## 🔄 Known Issues
 
-### ⚠️ CRAB Stageout Error: Output Filename Mismatch
+### ⚠️ CRAB Stageout Error: Output Filename Mismatch (Reported Dec 15, 2025)
 
-A critical issue has been identified where a mismatch between the `output_filename` defined in the YAML configuration and the Output Module settings in `PSet.py` causes the job to fail during the **Stageout** phase, even if the processing itself was successful.
+A mismatch between the `output_filename` defined in the YAML configuration and the Output Module settings in `PSet.py` causes the job to fail during the **Stageout** phase, even if the processing itself was successful.
 
 **Error Log Snippet:**
-
-Plaintext
 
 ```
 ====== Starting to check if user output files exist.
@@ -342,3 +342,4 @@ Setting stageout wrapper exit info to {'exit_code': 60302, 'exit_acronym': 'FAIL
 - To resolve this permanently, I am considering implementing an **automated synchronization logic** within `submit_crab.py`.
     
 - The goal is to dynamically override the Output Filename in `PSet.py` with the value provided in the YAML configuration at submission time. This will ensure consistency between the configuration and the actual CMSSW execution, preventing human errors and stageout failures.
+
