@@ -14,6 +14,7 @@ python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml --kill
 
 import os
 import sys
+import glob
 import argparse
 import yaml
 import shutil
@@ -104,7 +105,36 @@ def main(args):
         if os.path.exists(local_path):
             conf.JobType.inputFiles.append(local_path)
             logger.info(f"Adding Module File: {local_path}")
-            
+
+            # ------------------------------------------------------
+            # Auto-include helper modules from the same directory.
+            #
+            # CRAB worker flattens the sandbox into the worker's cwd,
+            # so any helper module that the analysis module imports
+            # must be shipped explicitly. Convention: private helpers
+            # in modules/ start with a single underscore (e.g.
+            # modules/_nanoaod_compat.py), mirroring the standard
+            # Python "private module" naming. Any file matching
+            # modules_dir/_*.py is added to the sandbox automatically.
+            #
+            # The analysis module file itself must use a dual-mode
+            # import (try relative, except ImportError fall back to
+            # absolute) to handle both contexts.
+            # ------------------------------------------------------
+            module_dir = os.path.dirname(local_path) or "."
+            helper_files = sorted(
+                glob.glob(os.path.join(module_dir, "_*.py"))
+            )
+            # Drop dunder files (e.g. __init__.py); we only want the
+            # single-underscore "private module" convention.
+            helper_files = [
+                h for h in helper_files
+                if not os.path.basename(h).startswith("__")
+            ]
+            for h in helper_files:
+                conf.JobType.inputFiles.append(h)
+                logger.info(f"  -> Auto-included helper: {h}")
+
             # Prepare Argument for Worker Node
             # Worker sees flat files. "modules/jetsMETcut.py" -> "jetsMETcut.py"
             # Argument format: "jetsMETcut:MODULES" (drop extension, append list var)
@@ -262,5 +292,4 @@ if __name__ == "__main__":
     parser.add_argument("--status", action="store_true", help="Check status")
     parser.add_argument("--kill", action="store_true", help="Kill all jobs defined in the config")
     args = parser.parse_args()
-    main(args)    
-
+    main(args)

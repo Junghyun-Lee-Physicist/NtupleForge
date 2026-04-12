@@ -207,48 +207,18 @@ keep GenJet_hadronFlavour       # Jet hadron flavor (5=b) for ttbar categorizati
 keep GenJet_partonFlavour       # Jet parton flavor
 
 # ---------------------------------------------------------
-# 8. ttbar Categorization (modules/ttbarCategorizer.py output)
-#
-# Two parallel branch sets are written for every event:
-#
-#   ttCat_*       : primary categorization, derived from genTtbarId
-#                   (CMS GenHFHadronMatcher / GenTtbarCategorizer output).
-#                   This is the AN-cited tool. Downstream stitching and
-#                   histogram splitting MUST use these branches.
-#
-#   ttCatXval_*   : independent cross-check, derived from raw GenPart and
-#                   GenJet info via a Python re-implementation of the
-#                   "additional b/c jet" logic. Used ONLY for validation
-#                   and algorithmic-systematic studies. NEVER used for
-#                   stitching or histogram decisions.
-#
-# Both sets share the same five categories. The naming uses jet/hadron
-# explicit suffixes to avoid the historical "tt+2b" ambiguity (the "2"
-# refers to b-hadrons inside one jet, not to the number of b-jets).
-#
-# Each event has exactly one True in each set on real ttbar samples;
-# both sets are all-False on non-ttbar events. The two source codes
-# (ttCatSource, ttCatXvalSource) record which path produced the result
-# and why it might be missing.
-#
-# Required input branches (kept above): genTtbarId, GenPart_*, GenJet_*.
-#
-# See modules/ttbarCategorizer.py for the full categorization rules and
-# README_ntuplizer.md for the architectural rationale.
+# 8. tt+jets Categorization (TTbarJetCategorizer module output)
+# Branches added by modules/ttbarCategorizer.py
 # ---------------------------------------------------------
-
-# Primary set (genTtbarId)
-keep ttCat_LightFlavour         # no additional b/c jets
-keep ttCat_AddCjet              # >=1 additional c-jet, no additional b-jet
-keep ttCat_Add1Bjet_1Had        # 1 additional b-jet containing 1 b-hadron
-keep ttCat_Add1Bjet_2Had        # 1 additional b-jet containing >=2 b-hadrons (collinear g->bb)
-keep ttCat_Add2Bjet             # >=2 additional b-jets
-keep ttCatSource                # 0=GENTTBARID, 2=NO_TTBAR, 3=NO_GENTTBARID
-
-# Cross-check set (GenPart algorithm — VALIDATION ONLY, never for stitching)
-keep ttCatXval_LightFlavour
-keep ttCatXval_AddCjet
-keep ttCatXval_Add1Bjet_1Had
-keep ttCatXval_Add1Bjet_2Had
-keep ttCatXval_Add2Bjet
-keep ttCatXvalSource            # 0=GENPART, 2=NO_TTBAR, 3=NO_GENINFO
+keep ttCat_LF                   # tt + light flavour
+keep ttCat_cc                   # tt + charm
+keep ttCat_b                    # tt + 1 b-jet (1 B hadron)
+keep ttCat_2b                   # tt + 1 b-jet (>=2 merged B hadrons)
+keep ttCat_bb                   # tt + 2 additional b-jets
+keep ttCat_bbb                  # tt + 3 additional b-jets
+keep ttCat_4b                   # tt + >=4 additional b-jets
+keep ttCat_noTTJets             # non-tt event
+keep nAdditionalBJets           # number of additional b-jets from gen info
+keep nAdditionalBHadrons        # number of additional B hadrons (non-top-ancestor)
+keep nMatchedBHadrons           # number of B hadrons matched to GenJets (DR < 0.4)
+keep nAdditionalCJets           # number of additional c-jets from gen info
