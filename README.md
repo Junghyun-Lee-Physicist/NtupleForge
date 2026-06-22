@@ -82,19 +82,40 @@ Jobs are defined in a YAML file under [`crabConfig/`](crabConfig/). The
 `run_postproc.py` (`-I` / `-b`) on the worker.
 
 ```bash
-# Submit new jobs / auto-resubmit failed ones
+# Submit. For tasks that already exist, this AUTO-RESUBMITS their failed jobs
+# (submit-vs-resubmit is decided per task by whether its CRAB project dir exists),
+# so re-running the same command after a submission resubmits failures.
 python3 crab/submit_crab.py --config crabConfig/config_ttHH2017UL.yaml
 
-# Check status of all jobs in the config
+# Explicit resubmit of failed jobs only (skips the submit path)
+python3 crab/submit_crab.py --config crabConfig/config_ttHH2017UL.yaml --resubmit
+
+# Full 'crab status' for every task
 python3 crab/submit_crab.py --config crabConfig/config_ttHH2017UL.yaml --status
+
+# Compact per-sample job-state report (easier to read than --status)
+python3 crab/submit_crab.py --config crabConfig/config_ttHH2017UL.yaml --report
 
 # Kill all jobs in the config
 python3 crab/submit_crab.py --config crabConfig/config_ttHH2017UL.yaml --kill
 ```
 
-`script/parse_crab_status.py` summarizes a saved `crab status` log into a
-per-task table; add `--show-lines` for the raw status lines (running /
-transferring / failed / finished):
+`--report` queries CRAB and prints one row per sample with how many jobs are
+`done` (finished) / `run` / `idle` / `transf` (transferring) / `fail` / `other`,
+plus a totals row. Any CRAB state the script doesn't recognise lands in `other`
+and triggers a warning naming it (add it to `REPORT_COLUMNS` /
+`KNOWN_OTHER_STATES` in `crab/submit_crab.py`).
+
+> **⚠️ Memory / walltime failures:** plain (re)submit uses **default** resources,
+> so jobs that failed on memory or walltime will fail again. Resubmit those by
+> hand in the project dir with raised limits, e.g.
+> `crab resubmit -d <workArea>/crab_<reqName> --maxmemory=4000 --maxjobruntime=2700`.
+> The submit/resubmit run prints this reminder too; see
+> [`docs/troubleshooting.md`](docs/troubleshooting.md) (CRAB resubmit).
+
+`script/parse_crab_status.py` is the offline counterpart: it summarizes an
+already-saved `crab status` log (no live query); add `--show-lines` for the raw
+status lines (running / transferring / failed / finished):
 
 ```bash
 python3 script/parse_crab_status.py crab_status.log

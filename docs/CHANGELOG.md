@@ -22,6 +22,19 @@ knowledge lives in `docs/`.
   `branches/branch_keep_all.txt` (`keep *`); live
   `crabConfig/config_ttHH2017UL.yaml` switched to `modules/noop.py` +
   `branch_keep_all.txt` (dataset list preserved, campaign id → `fullNano_v19`).
+- **`crabConfig/config_ttHH2017UL.yaml` dataset list extended** (2026-06-22)
+  to cover ttH-style and ttHH SL/DL (leptonic) selections, not just ttHH→4b
+  fully-hadronic. Added (UL17 NanoAODv9, names resolved via dasgoclient):
+  tH signals `tHq`/`tHW` and `ttHToNonbb` (AN-19-094 Tab.7-8); `ttZH`/`ttZZ`
+  ext1 productions (combine with base for stats); leptonic ttV
+  `TTWJetsToLNu`/`TTZToLLNuNu` (nominal
+  TuneCP5 only); full leptonic `WJetsToLNu` HT-binned set (base+ext, 21 tasks)
+  and `DYJetsToLL_M-50` HT-binned set (8 tasks). Single top was already
+  complete (6 channels); inclusive `ttHTobb` already covers all tt decays, so
+  no tt-decay-split ttH samples were added (those are SL/DL DNN-training-only,
+  AN-19-094 Tab.7, and would double-count against the inclusive in baseline).
+  **Open items:** low-mass `DYJetsToLL_M-10to50` and leptonic data
+  (SingleElectron/DoubleMuon/DoubleEG/MuonEG) not yet added.
 - **`scripts/` renamed to `script/`**, containing the essential driver
   `run_postproc.py` and the CRAB status summarizer `parse_crab_status.py`
   (moved in from the top level). Path updated in `crab/submit_crab.py`,
@@ -34,6 +47,15 @@ knowledge lives in `docs/`.
   the developer guide. All deep material moved into `docs/`.
 
 ### Added
+- **`crab/submit_crab.py` gained `--report` and `--resubmit`** (2026-06-22).
+  `--report` queries CRAB and prints a compact per-sample job-state table
+  (done/run/idle/transf/fail/other + totals) — easier to read than full
+  `crab status`; unrecognised CRAB states fall into `other` and raise a warning
+  naming them (extend `REPORT_COLUMNS`/`KNOWN_OTHER_STATES`). `--resubmit`
+  explicitly resubmits failed jobs in existing tasks (the default submit path
+  still auto-resubmits existing tasks). Every submit/resubmit run now prints a
+  reminder that memory/walltime failures need a manual
+  `crab resubmit --maxmemory/--maxjobruntime` (see troubleshooting A10).
 - `docs/` reorganized into the documentation categories:
   - `DeveloperGuideline.md` — contributor rules (read all docs first; log every change
     and every problem; which doc each record goes in).

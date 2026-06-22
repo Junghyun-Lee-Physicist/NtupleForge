@@ -146,6 +146,29 @@ shim (deep dive: [`nanoaod_compat.md`](nanoaod_compat.md)).
 - **Status.** Harmless (the `MODULES` value is what runs); align the
   docstring/defaults when convenient.
 
+### A10. CRAB resubmit keeps failing on memory / walltime
+
+- **Symptom.** A handful of jobs stay `failed`; re-running submit (or
+  `--resubmit`) resubmits them and they fail again the same way. Typical
+  CRAB/HTCondor exit codes: **50660** (job used too much memory), **50664**
+  (job ran past the wall-clock limit), **50661** (too much disk).
+- **Cause.** `submit_crab.py` issues a **plain** `crabCommand('resubmit', …)`
+  with **default** resources — by design, to keep the tool simple. A plain
+  resubmit re-runs the job under the *same* limits, so a memory/walltime
+  failure recurs.
+- **Fix.** Resubmit those tasks **by hand** with raised limits, directly in the
+  CRAB project dir:
+  ```bash
+  crab resubmit -d <workArea>/crab_<reqName> \
+    --maxmemory=4000 --maxjobruntime=2700
+  ```
+  Tune `--maxmemory` (MB) / `--maxjobruntime` (min) to the failure. Transient
+  site/stageout failures (not resource-related) do *not* need this — a plain
+  resubmit is enough.
+- **Note.** `submit_crab.py` prints this reminder at the end of every
+  submit/resubmit run so it is hard to miss. `--report` makes the failing
+  tasks easy to spot (non-zero `fail` column).
+
 ---
 
 ## Part B — Validation
