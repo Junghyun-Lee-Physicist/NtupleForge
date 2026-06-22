@@ -141,17 +141,17 @@ every change (CHANGELOG) and every problem+fix (troubleshooting) as you go.
 ```
 NtupleForge/
 ├── script/
-│   ├── run_postproc.py         # the driver (only script shipped to CRAB)
-│   └── parse_crab_status.py    # CRAB status-log summarizer (--show-lines)
+│   ├── run_postproc.py           # the driver (only script shipped to CRAB)
+│   └── parse_crab_status.py      # CRAB status-log summarizer (--show-lines)
 ├── modules/
-│   ├── noop.py                 # empty module — passthrough / slim only
-│   └── jetsMETcut.py           # example skim-cut (gatekeeper) module
+│   ├── noop.py                   # empty module — passthrough / slim only
+│   └── jetsMETcut.py             # example skim-cut (gatekeeper) module
 ├── branches/
-│   ├── branch_keep_all.txt     # keep * — full passthrough (default)
-│   └── branch_keep_and_drop.txt# minimal slimming example
-├── crab/                       # CRAB3 submission glue (submit/worker/PSet)
-├── crabConfig/*.yaml           # CRAB campaign configs (dataset lists)
-└── docs/                       # ← all technical docs + legacy archive
+│   ├── branch_keep_all.txt       # keep * — full passthrough (default)
+│   └── branch_keep_and_drop.txt  # minimal slimming example
+├── crab/                         # CRAB3 submission glue (submit/worker/PSet)
+├── crabConfig/*.yaml             # CRAB campaign configs (dataset lists)
+└── docs/                         # ← all technical docs + legacy archive
 ```
 
 See [`docs/`](docs/) for everything else.
