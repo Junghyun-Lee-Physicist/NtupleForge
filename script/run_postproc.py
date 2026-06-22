@@ -17,21 +17,46 @@ Mechanism:
 
 Usage Examples:
     # 1. Basic Split Mode (One output per input)
-    python3 scripts/run_postproc.py input1.root input2.root \
+    python3 script/run_postproc.py input1.root input2.root \
         -b branches/branch_keep_and_drop.txt \
         -I modules.jetsMETcut:MODULES
 
     # 2. Merge Mode (Hadd multiple inputs into one output)
-    python3 scripts/run_postproc.py input*.root \
+    python3 script/run_postproc.py input*.root \
         -b branches/branch_keep_and_drop.txt \
         -I modules.jetsMETcut:MODULES \
         --output-file merged_skim.root
+
+    # 3. Local validation run with ttbarCategorizer debug CSV
+    python3 script/run_postproc.py input.root \
+        -b branches/branch_ttHHto4b_hadronic_2017UL.txt \
+        -I modules.ttbarCategorizer:MODULES \
+        -N 1000 \
+        --ttcat-debug-csv \
+        --ttcat-debug-csv-path /tmp/ttcat_check.csv
 
 [Note on YAML Configuration]
 When submitting jobs via CRAB using 'submit_crab.py', the arguments for this script 
 (such as --imports and --branch-selection) are derived from the YAML config file 
 (e.g., 'crabConfig/config_crabTest.yaml'). 
 Make sure the values in the YAML file correctly point to existing files and modules.
+
+[Branch Selection Policy — INPUT vs OUTPUT]
+The keep/drop file passed via -b is applied ONLY to the OUTPUT tree
+(`outputbranchsel`). The INPUT tree is NOT filtered (`branchsel=None`),
+so modules can freely read any branch present in the source NanoAOD,
+including gen-level branches (GenPart_*, GenJet_*, genTtbarId) needed
+for ttbar categorization.
+
+Why this matters:
+    Setting `branchsel=args.branch_selection` (the previous behaviour)
+    applied `drop *` to BOTH input and output. The driver then re-
+    enabled only the listed `keep` branches on the input tree, but
+    the way nanoAOD-tools normalizes wildcard rules vs explicit names
+    sometimes left vector branches in a "hasattr=True / len()=0"
+    zombie state. Result: 1000/1000 events fell into the NOGEN path
+    of ttbarCategorizer despite GenPart being listed in keep rules.
+    See debugging session 2026-04-06.
 
 Author: Junghyun Lee (NtupleForge)
 """
@@ -77,7 +102,7 @@ def main():
     parser.add_argument("-I", "--imports", type=str, nargs="+", required=True,
                         help="Modules to import (Format: 'module_name:list_name', e.g., modules.jetsMETcut:MODULES)")
     parser.add_argument("-b", "--branch-selection", type=str, required=True,
-                        help="Path to branch selection file (keep/drop rules)")
+                        help="Path to branch selection file (keep/drop rules for OUTPUT tree only)")
 
     # [2] Optional Output Configuration
     # If provided, triggers 'hadd' to merge all outputs into this filename.
@@ -91,7 +116,64 @@ def main():
     parser.add_argument("--first-entry", type=int, default=0,
                         help="Index of the first event to process. Default is 0.")
 
+    # [3] ttbarCategorizer Options
+    # ────────────────────────────────────────────────────────────────────
+    # These flags control the optional debug behaviour of the
+    # TtbarCategorizer module (modules/ttbarCategorizer.py). They are
+    # passed to the module via environment variables, which the
+    # `make_default_module()` factory reads when constructing the
+    # MODULES list at import time.
+    #
+    # The categorizer ALWAYS writes both branch sets (`ttCat_*` and
+    # `ttCatXval_*`) regardless of these flags. The flags only control
+    # the optional CSV dump and the endJob stderr report.
+    # ────────────────────────────────────────────────────────────────────
+    parser.add_argument(
+        "--ttcat-debug-csv",
+        action="store_true",
+        help="Enable per-event ttbarCategorizer debug CSV. The CSV "
+             "duplicates information already in the ntuple branches; "
+             "use only for interactive local validation. NOT staged out "
+             "by CRAB — do not enable for production jobs."
+    )
+    parser.add_argument(
+        "--ttcat-debug-csv-path",
+        type=str,
+        default=None,
+        help="Output path for the ttcat debug CSV (only effective with "
+             "--ttcat-debug-csv). Default: ./ttcat_debug.csv"
+    )
+    parser.add_argument(
+        "--ttcat-quiet",
+        action="store_true",
+        help="Suppress the ttbarCategorizer endJob stderr report "
+             "(source distribution + category counts + confusion matrix)."
+    )
+
     args = parser.parse_args()
+
+    # ────────────────────────────────────────────────────────────────────
+    # Pass ttcat options through to the module via environment variables.
+    # This is set BEFORE module imports happen below, so make_default_module()
+    # sees the updated environment when it constructs the categorizer.
+    # ────────────────────────────────────────────────────────────────────
+    if args.ttcat_debug_csv:
+        os.environ["TTCAT_DEBUG_CSV"] = "1"
+        logger.info("ttcat: debug CSV ENABLED")
+        if args.ttcat_debug_csv_path:
+            os.environ["TTCAT_DEBUG_CSV_PATH"] = args.ttcat_debug_csv_path
+            logger.info(f"ttcat: debug CSV path = {args.ttcat_debug_csv_path}")
+        else:
+            logger.info("ttcat: debug CSV path = ./ttcat_debug.csv (default)")
+    elif args.ttcat_debug_csv_path:
+        logger.warning(
+            "--ttcat-debug-csv-path was given without --ttcat-debug-csv; "
+            "the path will be ignored."
+        )
+
+    if args.ttcat_quiet:
+        os.environ["TTCAT_QUIET"] = "1"
+        logger.info("ttcat: endJob report SUPPRESSED")
 
     # -------------------------------------------------------------------------
     # Hardcoded Configuration (Default Settings)
@@ -113,6 +195,7 @@ def main():
     # 1. Validate Branch Selection File
     if os.path.exists(args.branch_selection):
         logger.info(f"Branch Selection File loaded: {args.branch_selection}")
+        logger.info(f"  -> Applied to: OUTPUT tree only (input is read in full)")
         # Preview first 3 lines
         try:
             with open(args.branch_selection, 'r') as f:
@@ -185,7 +268,17 @@ def main():
             outputDir=OUTPUT_DIR,
             inputFiles=args.input_files,
             cut=CUT_STRING,
-            branchsel=args.branch_selection,
+            # ─────────────────────────────────────────────────────────
+            # branchsel       = INPUT  tree filter   -> None (= read all)
+            # outputbranchsel = OUTPUT tree filter   -> keep/drop file
+            #
+            # Do NOT pass the keep/drop file as `branchsel`. That would
+            # apply `drop *` to the input tree as well and disable
+            # GenPart_*/GenJet_*/genTtbarId reads, breaking modules
+            # like ttbarCategorizer that need gen-level information.
+            # See module docstring of run_postproc.py for full context.
+            # ─────────────────────────────────────────────────────────
+            branchsel=None,
             outputbranchsel=args.branch_selection,
             modules=active_modules,
             compression=COMPRESSION,

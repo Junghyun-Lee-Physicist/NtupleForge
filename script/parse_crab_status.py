@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 # parse_crab_status.py
 #
+# Parse a saved `crab status` log into a per-task summary, and optionally dump
+# the raw status lines (absorbs the old checkCrabstatusCommand.txt grep recipes).
+#
 # Usage examples:
-#   python3 parse_crab_status.py crab_status.log
-#   cat crab_status.log | python3 parse_crab_status.py -
+#   python3 script/parse_crab_status.py crab_status.log
+#   cat crab_status.log | python3 script/parse_crab_status.py -
 #
 # Optional:
-#   python3 parse_crab_status.py crab_status.log --complete-statuses finished transferred
-#   python3 parse_crab_status.py crab_status.log --json out.json
+#   python3 script/parse_crab_status.py crab_status.log --complete-statuses finished transferred
+#   python3 script/parse_crab_status.py crab_status.log --show-lines
+#   python3 script/parse_crab_status.py crab_status.log --show-lines --status-keywords running failed
+#   python3 script/parse_crab_status.py crab_status.log --json out.json
 
 from __future__ import annotations
 import argparse
@@ -90,12 +95,37 @@ def parse_tasks(lines: list[str]) -> dict[str, dict]:
 def fmt_int(x: int | None) -> str:
     return "-" if x is None else str(x)
 
+def grep_status_lines(lines: list[str], keywords: list[str]) -> "OrderedDict[str, list[str]]":
+    """Return matching raw log lines grouped by keyword (case-insensitive).
+
+    Replaces the manual ``grep running crab_status.log`` / ``grep failed ...``
+    recipes from the old checkCrabstatusCommand.txt: a single pass collects the
+    lines for every keyword so the report can show them inline.
+    """
+    out: "OrderedDict[str, list[str]]" = OrderedDict((k, []) for k in keywords)
+    lowered = [(k, k.lower()) for k in keywords]
+    for raw in lines:
+        line = raw.rstrip("\n")
+        ll = line.lower()
+        for k, kl in lowered:
+            if kl in ll:
+                out[k].append(line.strip())
+    return out
+
 def main():
     ap = argparse.ArgumentParser(description="Parse CRAB 'status' output log and summarize job states.")
     ap.add_argument("logfile", help="Path to crab status log file, or '-' for stdin")
     ap.add_argument("--complete-statuses", nargs="+", default=["finished"],
                     help="Which statuses count as 'complete' (default: finished). Example: --complete-statuses finished transferred")
     ap.add_argument("--json", dest="json_out", default=None, help="Write full parsed result to a JSON file")
+    ap.add_argument("--show-lines", action="store_true",
+                    help="Also print the raw log lines matching the status keywords, grouped "
+                         "by keyword. Absorbs the old checkCrabstatusCommand.txt grep recipes "
+                         "(grep running/transferring/failed/finished ...) into one report.")
+    ap.add_argument("--status-keywords", nargs="+",
+                    default=["running", "transferring", "failed", "finished"],
+                    help="Keywords scanned by --show-lines (default: running transferring "
+                         "failed finished).")
     args = ap.parse_args()
 
     if args.logfile == "-":
@@ -157,6 +187,20 @@ def main():
     for k in status_keys:
         print(f"  - {k:>14}: {grand[k]}")
     print()
+
+    # Raw matching lines (absorbs checkCrabstatusCommand.txt). Off by default
+    # to keep the summary clean on large logs; enable with --show-lines.
+    if args.show_lines:
+        grouped = grep_status_lines(content, args.status_keywords)
+        print("=" * 100)
+        print(f"Raw lines matching keywords: {', '.join(args.status_keywords)}")
+        print("=" * 100)
+        for kw, matched in grouped.items():
+            print(f"\n[{kw}]  ({len(matched)} line(s))")
+            print("-" * 100)
+            for ln in matched:
+                print(f"  {ln}")
+        print()
 
     if args.json_out:
         out = {

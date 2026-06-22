@@ -88,7 +88,7 @@ def main(args):
     # ------------------------------------------------------
     # Files to ship to worker node
     # CRAB will flatten directory structure, placing it in root dir on worker.
-    conf.JobType.inputFiles = ['scripts/run_postproc.py'] # Main Script
+    conf.JobType.inputFiles = ['script/run_postproc.py'] # Main Script
 
     # ------------------------------------------------------
     # Module Handling (List-based YAML)

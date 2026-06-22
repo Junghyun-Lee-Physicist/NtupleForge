@@ -1,9 +1,9 @@
 # Campaign Configuration
 # ===========================
 common:
-  jobID: "campaign_ttHH2017UL_fullNano_v19"
+  jobID: "campaign_ttHH2017UL_08thApr2026_v18"
   site: "T3_KR_KNU"
-  output_base: "ttHH2017UL_fullNano_v19" 
+  output_base: "ttHH2017UL_08thApr2026_v18" 
 
   # Processing Configuration
   # ---------------------------------------------------------------------------
@@ -16,10 +16,10 @@ common:
   # ---------------------------------------------------------------------------
   
   # Format: [ "Local_File_Path", "List_Variable_Name" ]
-  analysis_module: ["modules/noop.py", "MODULES"]
+  analysis_module: ["modules/ttbarCategorizer.py", "MODULES"]
   
   # Path to the branch keep/drop text file
-  branch_file: "branches/branch_keep_all.txt"
+  branch_file: "branches/branch_ttHHto4b_hadronic_2017UL.txt"
 
   # Job Splitting
   # ---------------------------------------------------------------------------

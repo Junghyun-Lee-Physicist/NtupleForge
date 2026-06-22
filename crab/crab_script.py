@@ -62,9 +62,9 @@ def main():
     else:
         os.environ["PYTHONPATH"] = cwd
 
-    # Also attempt to add 'scripts' directory if it exists (though usually flattened)
-    if os.path.exists("scripts"):
-        os.environ["PYTHONPATH"] = f"{cwd}/scripts:{os.environ['PYTHONPATH']}"
+    # Also attempt to add 'script' directory if it exists (though usually flattened)
+    if os.path.exists("script"):
+        os.environ["PYTHONPATH"] = f"{cwd}/script:{os.environ['PYTHONPATH']}"
 
     logger.info(f"PYTHONPATH set to: {os.environ['PYTHONPATH']}")
 
@@ -96,8 +96,8 @@ def main():
     if os.path.exists(script_name):
         main_script = script_name
         logger.info(f"Found main script in PWD: {main_script}")
-    elif os.path.exists(f"scripts/{script_name}"):
-        main_script = f"scripts/{script_name}"
+    elif os.path.exists(f"script/{script_name}"):
+        main_script = f"script/{script_name}"
         logger.info(f"Found main script in subfolder: {main_script}")
     else:
         logger.error(f"CRITICAL: {script_name} not found!")

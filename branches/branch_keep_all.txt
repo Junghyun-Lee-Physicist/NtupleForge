@@ -1,0 +1,19 @@
+# =============================================================================
+# Full NanoAOD passthrough — keep every branch.
+# =============================================================================
+# This is the default output branch selection for the current NtupleForge
+# direction: the post-processor copies the input NanoAOD through unchanged
+# (no slimming, no skim, no extra branches). tt+jets categorization is now
+# performed downstream in the main analyzer, not here.
+#
+# The driver (scripts/run_postproc.py) requires a -b file, so this file
+# exists to express "keep everything" explicitly. In NanoAOD-tools branch
+# selection, any branch that matches no rule is kept by default; the single
+# `keep *` below makes that intent explicit and self-documenting.
+#
+# For the historical slimming list that NtupleForge used while it produced
+# ttCat_* branches, see:
+#   docs/legacy/code/branches/branch_ttHHto4b_hadronic_2017UL.txt
+#   docs/legacy_ttbar_pipeline.md
+# =============================================================================
+keep *
