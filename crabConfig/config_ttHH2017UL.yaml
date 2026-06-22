@@ -1,9 +1,9 @@
 # Campaign Configuration
 # ===========================
 common:
-  jobID: "campaign_ttHH2017UL_fullNano_v19"
+  jobID: "campaign_ttHH2017UL_fullNano_v20"
   site: "T3_KR_KNU"
-  output_base: "ttHH2017UL_fullNano_v19" 
+  output_base: "ttHH2017UL_fullNano_v20"
 
   # Processing Configuration
   # ---------------------------------------------------------------------------
@@ -14,10 +14,10 @@ common:
   #    'PhysicsTools.NanoAODTools.postprocessing.framework.eventloop.Module'.
   #    The PostProcessor iterates over this list to execute the analysis logic.
   # ---------------------------------------------------------------------------
-  
+
   # Format: [ "Local_File_Path", "List_Variable_Name" ]
   analysis_module: ["modules/noop.py", "MODULES"]
-  
+
   # Path to the branch keep/drop text file
   branch_file: "branches/branch_keep_all.txt"
 
@@ -28,7 +28,7 @@ common:
   # ---------------------------------------------------------------------------
   ##splitting: "Automatic"
   splitting: "FileBased"
-  
+
   # If splitting is "Automatic", this is target runtime in minutes (e.g., 180 min --> minimum value).
   # If splitting is "FileBased", this is files per job (e.g., 1 or 2).
   ##units_per_job: 180
@@ -36,15 +36,34 @@ common:
 
 datasets:
 
-  # --- Signle ---
+  # ===========================================================================
+  # Organised by physics process. Decay channels of the same process are kept
+  # together (cf. TTbar_* and TTbb_* blocks below).
+  # Leptonic-selection additions (tH, ttH-nonbb, leptonic ttV, W/DY -> l) were
+  # resolved via dasgoclient on UL17 NanoAODv9 (2026-06-22).
+  # Refs: ttH AN-19-094 (Tab.7,8,15,16-22), ttHH AN-2022-122 (Tab.11).
+  # ===========================================================================
+
+  # --- Signal (ttHH) ---
   TTHHto4b: "/TTHHTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
 
-  # --- Key Backgrounds [ ttbar ] ---
+  # --- ttbar inclusive (5FS, powheg+pythia8) [ Key Backgrounds ] ---
   TTbar_SemiLep: "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   TTbar_Hadronic: "/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   TTbar_DiLep: "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
 
-  # --- QCD (HT Binned) - Crucial for Hadronic Channel ---
+  # --- tt+bb (4FS, Powheg-OpenLoops+pythia8) ---
+  # All three decay channels grouped, parallel to TTbar_* above.
+  # NB: key renamed TTbb_4f -> TTbb_Hadronic for consistency (all three are 4FS,
+  #     so the old "_4f" suffix was ambiguous). grep downstream for the old key
+  #     (output dirs / file lists / branch suffixes) if it was referenced anywhere.
+  # NB: tt+bb (4FS) overlaps the tt+>=1b component of inclusive ttbar. If both are
+  #     used, remove the overlap via gen-level categorisation to avoid double counting.
+  TTbb_SemiLep: "/TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTbb_Hadronic: "/TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTbb_DiLep: "/TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- QCD multijet (HT binned) - crucial for the hadronic channel ---
   QCD_HT200to300: "/QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   QCD_HT300to500: "/QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   QCD_HT500to700: "/QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
@@ -53,27 +72,38 @@ datasets:
   QCD_HT1500to2000: "/QCD_HT1500to2000_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   QCD_HT2000toInf: "/QCD_HT2000toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
 
-  # --- Rare Top / Higgs Processes ---
-  TTZHTo4b: "/TTZHTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
-  TTZZTo4b: "/TTZZTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
-  TT4b: "/TT4b_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  # --- ttH (M125) ---
   ttHTobb: "/ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  ttHToNonbb: "/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+
+  # --- tH (single-top + H) [ ttH selection; AN-19-094 Tab.7-8 ] ---
+  tHq: "/THQ_ctcvcp_4f_Hincl_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  tHW: "/THW_ctcvcp_5f_Hincl_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- ttV, hadronic V decay (for the all-hadronic channel) ---
   TTZToBB: "/TTZToBB_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
   TTWJetsToQQ: "/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
 
-  # --- Multi-Boson / Rare ---
+  # --- ttV, leptonic V decay (for SL/DL; AN-19-094 Tab.22) ---
+  # Nominal TuneCP5 only; CR1/CR2/up/down (systematic tunes) intentionally excluded.
+  TTWJetsToLNu: "/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTZToLLNuNu: "/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+
+  # --- ttVV / rare tt+X (tt+VH, tt+VV, multi-top, tt+4b) ---
+  # NOTE: TTZHTo4b / TTZZTo4b each have a base + ext1 production; combine BOTH for statistics.
+  TTZHTo4b: "/TTZHTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TTZHTo4b_ext1: "/TTZHTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v1/NANOAODSIM"
+  TTZZTo4b: "/TTZZTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  TTZZTo4b_ext1: "/TTZZTo4b_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v1/NANOAODSIM"
   TTWW: "/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   TTWH: "/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
   TTWZ: "/TTWZ_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   TTTW: "/TTTW_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
   TTTT: "/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
-  TTbb_4f: "/TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  # TT4b: tt + additional b's (madgraph LO). Distinct from the Powheg-OpenLoops tt+bb set above.
+  TT4b: "/TT4b_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
 
-  # --- TTbb 4FS - SemiLeptonic, DiLeptonic ---
-  TTbb_SemiLep: "/TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
-  TTbb_DiLep: "/TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
-
-  # --- Single top ---
+  # --- Single top (non-Higgs) ---
   ST_t_top: "/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   ST_t_antitop: "/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   ST_tW_top: "/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
@@ -81,18 +111,56 @@ datasets:
   ST_s_lep: "/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   ST_s_had: "/ST_s-channel_4f_hadronicDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
 
-  # --- Diboson (WW, WZ, ZZ)
+  # --- Diboson (WW, WZ, ZZ) ---
   WW: "/WW_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   WZ: "/WZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
   ZZ: "/ZZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
 
-  # --- V+jets(hadronic decay)
+  # --- V+jets, V->qq (hadronic), HT binned ---
   WJetsToQQ_HT400to600: "/WJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
   WJetsToQQ_HT600to800: "/WJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
   WJetsToQQ_HT800toInf: "/WJetsToQQ_HT-800toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
   ZJetsToQQ_HT400to600: "/ZJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
   ZJetsToQQ_HT600to800: "/ZJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
   ZJetsToQQ_HT800toInf: "/ZJetsToQQ_HT-800toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+
+  # --- W+jets, W->lnu (leptonic), gen-HT binned [ for SL/DL; AN-19-094 Tab.16-17 ] ---
+  # base + ext combined for statistics (each ext is a separate CRAB task).
+  # low-HT bins (70-200) kept for completeness; prune if a high offline-HT cut also
+  # applies to the leptonic channels (cf. the QCD HT discussion).
+  WJetsToLNu_HT70To100: "/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  WJetsToLNu_HT70To100_ext1: "/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v3/NANOAODSIM"
+  WJetsToLNu_HT100To200: "/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  WJetsToLNu_HT100To200_ext1: "/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v3/NANOAODSIM"
+  WJetsToLNu_HT200To400: "/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  WJetsToLNu_HT200To400_ext1: "/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v3/NANOAODSIM"
+  WJetsToLNu_HT400To600: "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  WJetsToLNu_HT400To600_ext1: "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM"
+  WJetsToLNu_HT400To600_ext2: "/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM"
+  WJetsToLNu_HT600To800: "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  WJetsToLNu_HT600To800_ext1: "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM"
+  WJetsToLNu_HT600To800_ext2: "/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM"
+  WJetsToLNu_HT800To1200: "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v3/NANOAODSIM"
+  WJetsToLNu_HT800To1200_ext1: "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM"
+  WJetsToLNu_HT800To1200_ext2: "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM"
+  WJetsToLNu_HT1200To2500: "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  WJetsToLNu_HT1200To2500_ext1: "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v2/NANOAODSIM"
+  WJetsToLNu_HT1200To2500_ext2: "/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM"
+  WJetsToLNu_HT2500ToInf: "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  WJetsToLNu_HT2500ToInf_ext1: "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext1-v3/NANOAODSIM"
+  WJetsToLNu_HT2500ToInf_ext2: "/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9_ext2-v3/NANOAODSIM"
+
+  # --- Z+jets / DY, Z->ll (M-50, leptonic), gen-HT binned [ for SL/DL; AN-19-094 Tab.18-19 ] ---
+  # PSweights variant; base only (no ext on DAS). Same low-HT caveat as W+jets.
+  # NOTE: low-mass DYJetsToLL_M-10to50 not included; add separately if DL needs it.
+  DYJetsToLL_M50_HT70to100: "/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  DYJetsToLL_M50_HT100to200: "/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  DYJetsToLL_M50_HT200to400: "/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  DYJetsToLL_M50_HT400to600: "/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  DYJetsToLL_M50_HT600to800: "/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  DYJetsToLL_M50_HT800to1200: "/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  DYJetsToLL_M50_HT1200to2500: "/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  DYJetsToLL_M50_HT2500toInf: "/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
 
   # --- Data (JetHT) ---
   JetHT_Run2017B: "/JetHT/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
