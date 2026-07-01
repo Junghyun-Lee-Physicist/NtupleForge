@@ -68,6 +68,16 @@ tied to a reason; keep `01_STATUS.md`/`03_CHANGELOG.md`/`04_DECISIONS.md` curren
 mark unknowns **OPEN** rather than inventing them; never silently reopen a
 **DECIDED** item.
 
+**Renaming or moving a file? Grep the build/submit layer first.** File names/paths
+are load-bearing where the CRAB submit/build scripts reference them by glob or
+hardcoded path (not by import), so a rename can silently drop a file from the
+sandbox or break a driver — and it fails only on the worker, not in this container.
+Before any rename/move in the live tree, `git grep` the old name/stem and any
+matching glob across `crab/`, `script/`, `crabConfig/`, `modules/`; update every hit
+in the same change; and flag that a real CRAB job must confirm it. Prefer
+decoupling name from behavior. Full checklist: `08_DeveloperGuideline.md` Rule 7
+(this exact class of bug is logged in `06_troubleshooting.md` A0).
+
 ## 8. Reproducibility notes
 Integer/categorization branches must match MiniAOD/SSBGen **exactly**; float
 branches match to **`float32`** precision only (SSBGen computes in 32-bit; the

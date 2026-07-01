@@ -99,11 +99,49 @@ so there is a single source of truth; until that lands, this rule stands.)
 
 ---
 
+## Rule 7 — Renaming or moving a file? Grep the build/submit scripts first
+
+File paths and **names** are load-bearing in places that are easy to forget,
+because the CRAB submit/build layer references files by glob or by hardcoded
+path, not by import. Renaming or moving a file can silently drop it from the
+sandbox or point a driver at a path that no longer exists — and it will **not**
+fail locally; it fails only on the worker, minutes into a real submission.
+
+This actually happened: renaming `modules/_nanoaod_compat.py` →
+`modules/nanoaod_branch_access.py` dropped the leading underscore that
+`submit_crab.py` used to auto-include helpers (`glob("modules/_*.py")`), so the
+helper was never shipped and every job died at import
+(see [`06_troubleshooting.md`](06_troubleshooting.md) §A0).
+
+**Before you rename or move any file in the live tree, grep for it** — the name,
+the stem, and any glob that could match it:
+
+```bash
+git grep -n -e 'oldname'  -e 'oldstem'  -e '_\*\.py'  -e 'inputFiles' -- \
+    crab/ script/ crabConfig/ modules/
+```
+
+Check specifically:
+- **`crab/submit_crab.py`** — `inputFiles`, the helper-shipping glob, `branch_file`,
+  the module-name derivation (basename → `-I` arg), `psetName`, `scriptExe`.
+- **`script/run_postproc.py`** — any path/default it assumes.
+- **`crabConfig/*.yaml`** — `analysis_module`, `branch_file` paths.
+- **PSet / output-name** couplings (Rule 6).
+
+Then update every hit **in the same commit**, and — because none of this can be
+verified in a container without CRAB — say so and re-run one real CRAB job to
+confirm. Prefer decoupling name from behavior (e.g. ship *all* sibling helpers,
+not files matching a name pattern) so the next rename cannot break shipping.
+
+---
+
 ## Before you commit (quick self-check)
 
 - [ ] CHANGELOG entry added (Rule 2).
 - [ ] Any new bug/fix recorded in troubleshooting (Rule 3).
 - [ ] Relevant doc(s) updated (Rule 4).
+- [ ] Renamed/moved a file? Grepped `crab/`, `script/`, `crabConfig/` for the
+      old name/stem and any matching glob (Rule 7).
 - [ ] Live Python still imports/compiles
       (`python3 -m py_compile script/*.py modules/*.py crab/*.py`).
 - [ ] Internal doc links resolve. A quick checker:

@@ -15,6 +15,38 @@ shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
 
 ## Part A — Incident log
 
+### A0. Renamed PyROOT helper not shipped to CRAB worker → import fails
+
+- **Symptom.** First `config_CPV2017UL` CRAB submission: every job fails fast
+  (~16 s, exit 195). `run_postproc` log shows
+  `Failed to import module 'ssbGenCategorizer': attempted relative import with no
+  known parent package`. The branch-selection file loads fine just before.
+- **Signature.** The module's flat import `from nanoaod_branch_access import …`
+  raised `ImportError` (helper absent on the worker), so the relative fallback
+  `from .nanoaod_branch_access import …` ran and raised *"attempted relative import
+  with no known parent package"* — because CRAB imports the analysis module **flat**
+  (top-level, no parent package).
+- **Root cause (two coupled bugs).** (1) **Shipping:** `crab/submit_crab.py`
+  auto-included helpers by globbing `modules/_*.py` — a *single-underscore*
+  convention. Renaming `_nanoaod_compat.py` → `nanoaod_branch_access.py` (dropping
+  the underscore, for a clearer name) silently removed it from that glob, so the
+  helper was never put in the sandbox. (2) **Import:** the module tried a relative
+  import as fallback, which can never work in CRAB's flat import context.
+- **Fix.** (1) `submit_crab.py` now ships **every** sibling `.py` in the module's
+  directory (except the analysis module and dunders), decoupling a helper's name
+  from whether it ships. (2) `ssbGenCategorizer.py` puts its own directory on
+  `sys.path` via `__file__` before importing, so the flat import resolves the
+  sibling regardless of package context:
+  ```python
+  import os, sys
+  sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+  from nanoaod_branch_access import to_int, safe_len
+  ```
+- **Validated by.** In-container simulation of CRAB's `importlib.import_module(
+  "ssbGenCategorizer")` (flat, helper dir not pre-on-path) now imports cleanly; the
+  sandbox helper-glob now lists `nanoaod_branch_access.py`. Confirm on lxplus with a
+  real resubmission.
+
 ### A1. `UChar_t` branches compare as `bytes`, silently → wrong category
 
 - **Symptom.** 1000/1000 `TTHHTo4b` signal events classified as `tt+LF`. No

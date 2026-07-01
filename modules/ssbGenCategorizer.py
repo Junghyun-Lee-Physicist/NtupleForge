@@ -56,6 +56,7 @@ from __future__ import annotations
 
 import math
 import os
+import sys
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
@@ -64,9 +65,17 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 #             proxies, so `x == 5` / `if x:` silently misbehave.
 #  * safe_len : scalar counters (nGenPart, ...) are unreliable as lengths in the
 #               raw-proxy mode; take the length from the array instead.
+#
+# CRAB flattens the sandbox and imports this module FLAT (top-level, no parent
+# package), so a relative import cannot work on the worker. Put this file's own
+# directory on sys.path so the sibling helper is found regardless of how the
+# module was loaded (flat on CRAB, or as `modules.ssbGenCategorizer` locally).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
 try:
-    from nanoaod_branch_access import to_int, safe_len            # flat import (CRAB)
-except ImportError:                                          # local package import
+    from nanoaod_branch_access import to_int, safe_len       # flat (same dir on sys.path)
+except ImportError:                                          # local package context
     from .nanoaod_branch_access import to_int, safe_len
 
 # GenPart_statusFlags bit (NanoAODv9). Only the two we use are named here.

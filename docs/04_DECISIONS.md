@@ -20,6 +20,11 @@
   stays the unnumbered index. (b) Add `00_PROMPT.md`, the AI/contributor working
   agreement. (c) Rename the PyROOT helper `_nanoaod_compat.py` →
   `nanoaod_branch_access.py` (role-clear name); keep the archived legacy copy's name.
+  **This required decoupling helper *shipping* from *naming*:** `crab/submit_crab.py`
+  used to auto-include helpers by globbing `modules/_*.py`, so the leading underscore
+  was load-bearing (dropping it broke the CRAB sandbox — see `06_troubleshooting.md`
+  A0). It now ships every sibling `.py`, and `ssbGenCategorizer.py` hardens its import
+  with a `__file__`-based `sys.path` insert for CRAB's flat import context.
   (d) Rename the CPV branch lists `branchlist_Run2_{Data,MC}.txt` →
   `branch_CPV_Run2_{Data,MC}.txt`. (e) Add off-by-default guarded logging to the
   categorizer (`SSBGENCAT_DEBUG=N`).

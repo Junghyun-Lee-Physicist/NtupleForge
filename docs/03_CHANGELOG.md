@@ -72,6 +72,19 @@ D-2026-06-28-miniaod-reference).
   per-event derived quantities for the first N events, then stays silent (never logs
   unboundedly in the event loop). Off by default.
 
+### Fixed
+- **CRAB import failure of the renamed helper** (first `config_CPV2017UL` submission
+  failed fast with *"attempted relative import with no known parent package"*). Two
+  coupled causes: (1) `crab/submit_crab.py` auto-included helpers only via
+  `glob("modules/_*.py")`, so dropping the leading underscore in the rename removed
+  `nanoaod_branch_access.py` from the sandbox; (2) the module's relative-import
+  fallback cannot work in CRAB's flat (top-level) import context. Fix: `submit_crab.py`
+  now ships **every** sibling `.py` (except the analysis module and dunders), and
+  `ssbGenCategorizer.py` puts its own dir on `sys.path` via `__file__` before importing.
+  See `06_troubleshooting.md` A0. Follow-up: generalized this class of bug into
+  **Rule 7 (rename/move safety)** in `08_DeveloperGuideline.md`, `00_PROMPT.md` §7, and
+  the documentation contract §8.3 (flag hidden glob/hardcoded-path file couplings).
+
 ---
 
 ## [Unreleased] — Full-NanoAOD passthrough + docs restructure

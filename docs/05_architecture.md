@@ -153,22 +153,27 @@ be imported as `modules.<name>`. **On a CRAB worker the sandbox is
 flattened** into the worker's cwd, so the same module is imported as a
 top-level file `<name>`. Two conventions handle this split:
 
-- **Dual-mode helper import.** A module that imports a private helper must
-  try the package-relative import first and fall back to the flat import:
+- **Robust helper import (flat / CRAB-safe).** CRAB flattens the sandbox and
+  imports the analysis module *flat* (top-level, no parent package), so a relative
+  import fails on the worker. Put the module's own directory on `sys.path` via
+  `__file__`, then import the sibling helper:
 
   ```python
-  try:
-      from nanoaod_branch_access import to_int, safe_len   # flat (CRAB); relative in a package
-  except ImportError:
-      # (see modules/nanoaod_branch_access.py)
+  import os, sys
+  _HERE = os.path.dirname(os.path.abspath(__file__))
+  if _HERE not in sys.path:
+      sys.path.insert(0, _HERE)
+  from nanoaod_branch_access import to_int, safe_len
   ```
 
-- **Private-helper naming.** Helper modules that an analysis module imports
-  live in `modules/` (e.g. `nanoaod_branch_access.py`, the PyROOT read helpers).
-  `crab/submit_crab.py` auto-includes every `modules/_*.py` in the CRAB
-  sandbox, so helpers ride along without being listed in the YAML. (Why a
-  helper shim is sometimes needed at all is its own story —
-  see [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).)
+- **Helper shipping (co-location, not naming).** `crab/submit_crab.py` auto-includes
+  **every** sibling `.py` in the analysis module's directory (except the module
+  itself and dunders) in the CRAB sandbox, so helpers ride along without being
+  listed in the YAML. (Previously only `modules/_*.py` shipped, which coupled a
+  helper's *name* to whether it shipped — renaming a helper without the leading
+  underscore silently dropped it and broke the job at import time; see
+  [`06_troubleshooting.md`](06_troubleshooting.md).) Why a helper shim is needed at
+  all is its own story — see [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).
 
 Driver/CLI-flag plumbing without coupling the driver to a specific class is
 done with the **env-var contract + factory** pattern: the driver sets

@@ -63,7 +63,10 @@ print(leaf.GetTypeName())   # 'UChar_t'  →  needs coercion
 **Fix.** Coerce at every comparison site with `to_int()`:
 
 ```python
-from nanoaod_branch_access import to_int   # (flat import on CRAB; relative in a package)
+# CRAB imports the analysis module flat, so make the sibling helper importable:
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from nanoaod_branch_access import to_int
 
 if to_int(event.Jet_jetId[j]) < 4:
     continue

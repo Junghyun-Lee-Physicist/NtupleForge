@@ -166,28 +166,28 @@ def main(args):
             # ------------------------------------------------------
             # Auto-include helper modules from the same directory.
             #
-            # CRAB worker flattens the sandbox into the worker's cwd,
-            # so any helper module that the analysis module imports
-            # must be shipped explicitly. Convention: private helpers
-            # in modules/ start with a single underscore (e.g.
-            # modules/_nanoaod_compat.py), mirroring the standard
-            # Python "private module" naming. Any file matching
-            # modules_dir/_*.py is added to the sandbox automatically.
+            # CRAB flattens the sandbox into the worker's cwd, so any
+            # helper module the analysis module imports must be shipped
+            # explicitly. We ship EVERY sibling ".py" in the module
+            # directory (except the analysis module itself and dunders).
             #
-            # The analysis module file itself must use a dual-mode
-            # import (try relative, except ImportError fall back to
-            # absolute) to handle both contexts.
+            # NOTE: previously only files matching "_*.py" were auto-
+            # included, which coupled a helper's *name* to whether it
+            # shipped — renaming a helper without a leading underscore
+            # silently dropped it from the sandbox and broke the job at
+            # import time. Naming is now decoupled from shipping.
+            #
+            # The analysis module must still resolve the helper import
+            # in a flat/top-level context (CRAB imports it flat): put
+            # its own directory on sys.path via __file__, then import.
             # ------------------------------------------------------
             module_dir = os.path.dirname(local_path) or "."
+            analysis_basename = os.path.basename(local_path)
             helper_files = sorted(
-                glob.glob(os.path.join(module_dir, "_*.py"))
+                h for h in glob.glob(os.path.join(module_dir, "*.py"))
+                if os.path.basename(h) != analysis_basename
+                and not os.path.basename(h).startswith("__")
             )
-            # Drop dunder files (e.g. __init__.py); we only want the
-            # single-underscore "private module" convention.
-            helper_files = [
-                h for h in helper_files
-                if not os.path.basename(h).startswith("__")
-            ]
             for h in helper_files:
                 conf.JobType.inputFiles.append(h)
                 logger.info(f"  -> Auto-included helper: {h}")
