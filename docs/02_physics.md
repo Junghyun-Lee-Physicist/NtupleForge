@@ -2,7 +2,7 @@
 
 The physics motivation behind NtupleForge's analysis target and the tt+jets
 categorization scheme. This is the "why"; the implementation ("how") is in
-[`legacy_ttbar_pipeline.md`](legacy_ttbar_pipeline.md).
+[`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md).
 
 ---
 
@@ -128,7 +128,7 @@ tt+4b — and that **matches the AN's per-event resolution**. A raw-GenPart
 algorithm *could* separate bbb from 4b (it counts b-jets directly), so if a
 future analysis needs the split the capability exists; only a branch
 declaration would need extending. See
-[`legacy_ttbar_pipeline.md`](legacy_ttbar_pipeline.md) §2 for that algorithm.
+[`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md) §2 for that algorithm.
 
 ---
 

@@ -4,12 +4,12 @@ This is the consolidated record of **every problem hit during development**,
 with its symptom, the actual error/log signature, the root cause, the fix,
 and how the fix was validated — followed by how the pipeline's **validation**
 mechanisms work. When you hit a new problem, add an entry here (see
-[`DeveloperGuideline.md`](DeveloperGuideline.md)).
+[`08_DeveloperGuideline.md`](08_DeveloperGuideline.md)).
 
 Many of these surfaced together during the 2026-04-06/07 ttbarCategorizer
 debugging session ("five infrastructure bugs in sequence"); two of them are
 also captured in code as the [`_nanoaod_compat.py`](legacy/code/modules/_nanoaod_compat.py)
-shim (deep dive: [`nanoaod_compat.md`](nanoaod_compat.md)).
+shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
 
 ---
 
@@ -41,7 +41,7 @@ shim (deep dive: [`nanoaod_compat.md`](nanoaod_compat.md)).
 - **Fix.** Use `safe_len(branch, branch_name=...)` — a 3-tier fallback
   (`len()` → `GetSize()` → indexing probe) instead of raw `len()`.
 - **Validated by.** Loops iterate over the true element count; self-test in
-  `_nanoaod_compat.py` (`python -m _nanoaod_compat`).
+  `nanoaod_branch_access.py` (`python -m nanoaod_branch_access`).
 
 ### A3. Scalar counters (`nGenPart`, `nGenJet`) are not a reliable length
 
@@ -71,7 +71,7 @@ shim (deep dive: [`nanoaod_compat.md`](nanoaod_compat.md)).
   on input — present but empty.
 - **Fix.** Never filter the input tree: `branchsel=None` (read everything),
   `outputbranchsel=<keep/drop file>` (filter only the output). See
-  [`architecture.md`](architecture.md) §7.
+  [`05_architecture.md`](05_architecture.md) §7.
 - **Validated by.** endJob source distribution showed `GENTTBARID` ≈ 100% on
   MC ttbar, and the per-category counts matched expectations.
 
@@ -229,7 +229,7 @@ the `Runs` tree through, so each file carries the partial `genEventCount` for
 its lumi-blocks). The tool that did this, its method, and its important limits
 (unweighted count only; full-run only; cannot detect entirely-missing jobs)
 are documented with the now-archived
-[`legacy_ttbar_pipeline.md`](legacy_ttbar_pipeline.md) §8 →
+[`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md) §8 →
 [`legacy/code/tools/validate_events.py`](legacy/code/tools/validate_events.py).
 The current full-passthrough pipeline has no skim to measure; copy the tool
 back into `script/` if you reintroduce one.

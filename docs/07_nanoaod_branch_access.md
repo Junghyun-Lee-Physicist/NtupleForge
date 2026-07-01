@@ -1,14 +1,14 @@
-# Why `_nanoaod_compat.py` Existed
+# NanoAOD branch access (`nanoaod_branch_access.py`) — the PyROOT gotchas it guards
 
-> **Status: archived.** In the current full-NanoAOD-passthrough direction no
-> Python module reads NanoAOD vector branches, so the shim is no longer
-> imported by anything. It is kept verbatim at
-> [`legacy/code/modules/_nanoaod_compat.py`](legacy/code/modules/_nanoaod_compat.py)
-> and documented here because the two bugs it fixed **will recur** the moment
-> anyone writes a new module that reads vector branches from Python (e.g. a
-> future categorizer, a gen-level filter, a jet-cleaning module). If you write
-> such a module, copy this shim back into `modules/` and import from it — do
-> not re-discover these bugs the hard way.
+> **Status: ACTIVE.** `modules/nanoaod_branch_access.py` provides the two
+> mandatory PyROOT-level read helpers (`to_int`, `safe_len`) used by
+> `modules/ssbGenCategorizer.py`. It was originally written for the retired
+> ttbar categorizer under the name `_nanoaod_compat.py` (kept verbatim at
+> [`legacy/code/modules/_nanoaod_compat.py`](legacy/code/modules/_nanoaod_compat.py))
+> and **re-instated under this clearer name** when the CPV gen categorizer began
+> reading NanoAOD vector branches again. The two bugs it fixes **recur** for any
+> new module that reads vector branches from Python — always import from this
+> module, never re-discover them the hard way.
 
 ---
 
@@ -63,7 +63,7 @@ print(leaf.GetTypeName())   # 'UChar_t'  →  needs coercion
 **Fix.** Coerce at every comparison site with `to_int()`:
 
 ```python
-from ._nanoaod_compat import to_int   # or flat import on CRAB
+from nanoaod_branch_access import to_int   # (flat import on CRAB; relative in a package)
 
 if to_int(event.Jet_jetId[j]) < 4:
     continue
@@ -93,7 +93,7 @@ everything as `tt+LF`.
 never the counter:
 
 ```python
-from ._nanoaod_compat import safe_len
+from nanoaod_branch_access import safe_len
 
 n = safe_len(event.GenPart_pdgId, branch_name="GenPart_pdgId")
 for i in range(n):
@@ -132,7 +132,7 @@ simple: **never write `int(event.SomeBranch[i])` or `len(event.SomeVector)`
 raw — import `to_int` / `safe_len` from the shim.** The verbatim source and
 its self-test are at
 [`legacy/code/modules/_nanoaod_compat.py`](legacy/code/modules/_nanoaod_compat.py)
-(run it directly — `python -m _nanoaod_compat` — to execute the self-test).
+(run the active module directly — `python -m nanoaod_branch_access` — to execute the self-test; the archived copy retains the old name).
 
 ---
 
@@ -143,5 +143,5 @@ Discovered during ttbarCategorizer debugging (project transcript
 the two captured in the shim are the ones that recur outside categorization.
 The other three (input-branch zombie state, `hasattr` raising `RuntimeError`,
 and the broken scalar counters) are documented where they were fixed — see
-[`architecture.md`](architecture.md) §7 and
-[`legacy_ttbar_pipeline.md`](legacy_ttbar_pipeline.md).
+[`05_architecture.md`](05_architecture.md) §7 and
+[`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md).

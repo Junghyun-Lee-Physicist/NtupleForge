@@ -4,65 +4,55 @@ Technical documentation for NtupleForge. The top-level
 [`../README.md`](../README.md) covers only setup and the commands needed to
 run the pipeline; everything deeper lives here.
 
-> **Editing the code?** Read **[`DeveloperGuideline.md`](DeveloperGuideline.md)** first, then
-> read the rest of this directory before making changes (Rule 0).
+Docs are **numbered in reading order** (`NN_name.md`) — read them in sequence to
+understand the project and its latest state. See the documentation contract
+`DOCUMENTATION_GUIDELINE` (§3.1 numbering, §8 the prompt doc).
 
-## Contents
+> **Editing the code?** Read **[`00_PROMPT.md`](00_PROMPT.md)** (the AI/contributor
+> working agreement) and **[`08_DeveloperGuideline.md`](08_DeveloperGuideline.md)**
+> first, then the rest in order before making changes.
 
-- **[DeveloperGuideline.md](DeveloperGuideline.md)** — Guidelines for anyone editing
-  NtupleForge: read all docs first, log every change (CHANGELOG) and every
-  problem+fix (troubleshooting), and which doc each kind of record goes in.
+## Reading order
 
-- **[architecture.md](architecture.md)** — The framework NtupleForge sits on:
-  where the CMS `PostProcessor` lives in CMSSW and what it does, the per-event
-  `Module` event loop, how the `modules/` directory is organized, **a
-  copy-followable how-to for writing your own module (adding branches /
-  applying cuts)**, and the critical input-vs-output branch-selection rule.
-
-- **[physics.md](physics.md)** — The physics basis: the ttHH→4b analysis
-  target, why tt+jets is categorized, 5FS/4FS sample stitching, the five
-  category definitions, the `genTtbarId` encoding, and why five categories and
-  not seven.
-
-- **[legacy_ttbar_pipeline.md](legacy_ttbar_pipeline.md)** — Full
-  implementation record of the retired tt+jets categorization pipeline (custom
-  `Module` + custom branches + slimming list + optional skim cut), the
-  two-algorithm design, and a checklist to rebuild an equivalent. Verbatim
-  source under [`legacy/code/`](legacy/code/).
-
-- **[troubleshooting.md](troubleshooting.md)** — The consolidated incident log
-  (every bug hit during development: symptom, error signature, root cause, fix,
-  validation) and how the pipeline's validation mechanisms work (cross-check
-  confusion matrix, debug CSV, skim-efficiency checking).
-
-- **[nanoaod_compat.md](nanoaod_compat.md)** — Why the PyROOT compatibility
-  shim (`_nanoaod_compat.py`) was needed: `UChar_t` branches returning `bytes`
-  instead of `int`, and raw `TTreeReaderArray` proxies with no `len()`.
-  Essential reading before any future module reads NanoAOD vector branches
-  from Python.
-
-- **[CHANGELOG.md](CHANGELOG.md)** — Curated change history, including the
-  shift to full-NanoAOD passthrough and carried-forward known issues.
-
-## Mapping to the five documentation categories
-
-| Category | Document |
-|---|---|
-| Update log | [CHANGELOG.md](CHANGELOG.md) |
-| Code structure, logic & how it works (incl. how to add branches/cuts) | [architecture.md](architecture.md) |
-| Legacy ttbar categorization (detailed) | [legacy_ttbar_pipeline.md](legacy_ttbar_pipeline.md) |
-| Problem log, fixes & validation | [troubleshooting.md](troubleshooting.md) |
-| Physics basis | [physics.md](physics.md) |
-
-(Plus [DeveloperGuideline.md](DeveloperGuideline.md) for contributor rules and
-[nanoaod_compat.md](nanoaod_compat.md) for the PyROOT shim deep-dive.)
+- **[00_PROMPT.md](00_PROMPT.md)** — Working agreement for AI/contributors: persona,
+  the reference of truth (MiniAOD), what this environment can't do (no ROOT/compile),
+  and the validation + change-notification duties. Read first.
+- **[01_STATUS.md](01_STATUS.md)** — "Where are we right now?": active workstreams
+  (ttHH, CPV) and the open next-steps list.
+- **[02_physics.md](02_physics.md)** — Physics basis: the ttHH→4b analysis target,
+  why tt+jets is categorized, 5FS/4FS stitching, the five categories, the
+  `genTtbarId` encoding, and why five and not seven.
+- **[03_CHANGELOG.md](03_CHANGELOG.md)** — Curated change history (append-only),
+  including the full-NanoAOD passthrough shift and the CPV categorizer.
+- **[04_DECISIONS.md](04_DECISIONS.md)** — Decision log: the *why* behind non-obvious
+  choices, with alternatives and DECIDED/PROPOSED/OPEN/DEPRECATED status. Append-only.
+- **[05_architecture.md](05_architecture.md)** — The framework NtupleForge sits on:
+  the CMS `PostProcessor`, the per-event `Module` loop, how `modules/` is organized,
+  **a copy-followable how-to for writing a module (adding branches / cuts)**, and the
+  input-vs-output branch-selection rule.
+- **[ssb_gencat/](ssb_gencat/README.md)** — Component reference for the CPV gen-level
+  categorizer (`modules/ssbGenCategorizer.py`): module + branches
+  ([01_module.md](ssb_gencat/01_module.md)), the MiniAOD-faithfulness audit, and the
+  verbatim MiniAOD origin. Validated by `script/validate_ssbgencat.py`.
+- **[06_troubleshooting.md](06_troubleshooting.md)** — Consolidated incident log
+  (every bug: symptom, signature, root cause, fix, validation) and how validation works.
+- **[07_nanoaod_branch_access.md](07_nanoaod_branch_access.md)** — The mandatory
+  PyROOT read helpers (`modules/nanoaod_branch_access.py`: `to_int`, `safe_len`) and
+  the two pitfalls they guard (`UChar_t`-as-bytes; unreliable scalar counters).
+  Essential before any module reads NanoAOD vector branches from Python.
+- **[08_DeveloperGuideline.md](08_DeveloperGuideline.md)** — Contributor rules: read
+  all docs first, log every change (changelog) and every problem+fix (troubleshooting),
+  and which doc each record goes in.
+- **[09_legacy_ttbar_pipeline.md](09_legacy_ttbar_pipeline.md)** — Full record of the
+  retired tt+jets categorization pipeline (custom `Module` + branches + slimming list +
+  skim cut) and a rebuild checklist. Verbatim source under [`legacy/code/`](legacy/code/).
 
 ## The `legacy/` archive
 
-[`legacy/code/`](legacy/code/) holds verbatim, **unmaintained** copies of the
-code that ran the old categorization pipeline — the categorizer module, the
-compat shim, the slimming branch list, the branch inventories, and the
-original CRAB config. Nothing here is on the build or import path; it is
-reference material. To rebuild a similar pipeline, copy the relevant files
-back into the live tree (checklist in
-[legacy_ttbar_pipeline.md](legacy_ttbar_pipeline.md) §9).
+[`legacy/code/`](legacy/code/) holds verbatim, **unmaintained** copies of the code
+that ran the old categorization pipeline — the categorizer module, the compat shim
+(archived under its original name `_nanoaod_compat.py`), the slimming branch list,
+the branch inventories, and the original CRAB config. Nothing here is on the build
+or import path; it is reference material. To rebuild a similar pipeline, copy the
+relevant files back into the live tree (checklist in
+[09_legacy_ttbar_pipeline.md](09_legacy_ttbar_pipeline.md) §9).

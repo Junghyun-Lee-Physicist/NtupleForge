@@ -15,7 +15,7 @@
 | File | What it is |
 |------|------------|
 | [`legacy/code/modules/ttbarCategorizer.py`](legacy/code/modules/ttbarCategorizer.py) | The categorizer module (962 lines, final 5-category version). |
-| [`legacy/code/modules/_nanoaod_compat.py`](legacy/code/modules/_nanoaod_compat.py) | PyROOT compat shim it depended on (see [`../nanoaod_compat.md`](nanoaod_compat.md)). |
+| [`legacy/code/modules/_nanoaod_compat.py`](legacy/code/modules/_nanoaod_compat.py) | PyROOT compat shim it depended on (see [`../07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)). |
 | [`legacy/code/branches/branch_ttHHto4b_hadronic_2017UL.txt`](legacy/code/branches/branch_ttHHto4b_hadronic_2017UL.txt) | The slimming keep/drop list (output branches + required gen inputs). |
 | [`legacy/code/branches/branch_2017UL/`](legacy/code/branches/branch_2017UL/) | MC-vs-data branch inventories used to build the keep list. |
 | [`legacy/code/crabConfig/config_ttHH2017UL_categorizer.yaml`](legacy/code/crabConfig/config_ttHH2017UL_categorizer.yaml) | The CRAB campaign config that ran the categorizer over all datasets. |
@@ -29,12 +29,12 @@ The other standalone QA scripts that accompanied this pipeline were removed
 
 ---
 
-## 1. Physics — see `physics.md`
+## 1. Physics — see `02_physics.md`
 
 The full physics rationale (why categorize tt+jets, 5FS/4FS sample stitching,
 the five-category definitions, the `genTtbarId` encoding, and why five
 categories and not seven) now lives in its own document:
-**[`physics.md`](physics.md)**. This file covers only the *implementation* of
+**[`02_physics.md`](02_physics.md)**. This file covers only the *implementation* of
 that scheme. A one-paragraph recap, so this document stands alone:
 
 > The analysis is **ttHH → 4b, fully hadronic, 2017 UL**. The tt+jets
@@ -93,7 +93,7 @@ events, with residual disagreement concentrated at the 51/52/53 boundary
    ancestor** in its mother chain.
 2. **Find gen b-jets in acceptance**: `GenJet_hadronFlavour == 5`,
    `pT > 20`, `|η| < 2.4`. (`GenJet_hadronFlavour` is `UChar_t` → must be
-   read through `to_int()`; see [`../nanoaod_compat.md`](nanoaod_compat.md).)
+   read through `to_int()`; see [`../07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).)
 3. **ΔR-match** each additional B-hadron to the closest b-jet within ΔR < 0.4.
 4. **Count** distinct matched b-jets, and b-hadrons per jet.
 5. **C-jets** are handled the same way, but only if there is no additional
@@ -434,5 +434,5 @@ reintroduce a skim.
    with the live `script/parse_crab_status.py`).
 
 For the framework mechanics underlying every step above, see
-[`architecture.md`](architecture.md). For the compat shim, see
-[`nanoaod_compat.md`](nanoaod_compat.md).
+[`05_architecture.md`](05_architecture.md). For the compat shim, see
+[`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).

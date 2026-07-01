@@ -4,5 +4,5 @@
 `Events.num_entries` vs Σ `Runs.genEventCount`, summed across files).
 **Unmaintained**, archived because the current pipeline is a full passthrough
 with no skim to measure. Method, usage, and its important limits are
-documented in [`../../../legacy_ttbar_pipeline.md`](../../../legacy_ttbar_pipeline.md)
+documented in [`../../../09_legacy_ttbar_pipeline.md`](../../../09_legacy_ttbar_pipeline.md)
 §8. Copy it back into `script/` if a skim is reintroduced.

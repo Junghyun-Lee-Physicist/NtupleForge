@@ -22,7 +22,7 @@ tt+jets categorization is done downstream in the main analyzer. The
 historical configuration — a categorizer module that wrote `ttCat_*`
 branches, plus an aggressive slimming list, plus an optional skim cut — is
 preserved verbatim under [`legacy/code/`](legacy/code/) and documented in
-[`legacy_ttbar_pipeline.md`](legacy_ttbar_pipeline.md).
+[`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md).
 
 ---
 
@@ -158,24 +158,24 @@ top-level file `<name>`. Two conventions handle this split:
 
   ```python
   try:
-      from ._nanoaod_compat import to_int, safe_len   # local: package
+      from nanoaod_branch_access import to_int, safe_len   # flat (CRAB); relative in a package
   except ImportError:
-      from _nanoaod_compat import to_int, safe_len    # CRAB: flat cwd
+      # (see modules/nanoaod_branch_access.py)
   ```
 
 - **Private-helper naming.** Helper modules that an analysis module imports
-  are named with a leading underscore (e.g. `_nanoaod_compat.py`).
+  live in `modules/` (e.g. `nanoaod_branch_access.py`, the PyROOT read helpers).
   `crab/submit_crab.py` auto-includes every `modules/_*.py` in the CRAB
   sandbox, so helpers ride along without being listed in the YAML. (Why a
   helper shim is sometimes needed at all is its own story —
-  see [`nanoaod_compat.md`](nanoaod_compat.md).)
+  see [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).)
 
 Driver/CLI-flag plumbing without coupling the driver to a specific class is
 done with the **env-var contract + factory** pattern: the driver sets
 environment variables from its argparse flags, and the module's
 `make_default_module()` factory reads them at import time when building
 `MODULES`. The legacy categorizer uses this for its debug flags; see
-[`legacy_ttbar_pipeline.md`](legacy_ttbar_pipeline.md) §"CLI flags".
+[`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md) §"CLI flags".
 
 ---
 
@@ -210,7 +210,7 @@ class MyVars(Module):
     def analyze(self, event):
         # nJet / Jet_pt are scalar/Float NanoAOD branches → safe to read
         # directly. (For UChar_t or vector branches read through the compat
-        # shim — see nanoaod_compat.md.)
+        # shim — see 07_nanoaod_branch_access.md.)
         njet = event.nJet
         ht = 0.0
         for i in range(njet):
@@ -303,14 +303,14 @@ fake-rate studies.
 ### 6.4 The four rules that prevent silent failures
 
 Every one of these is a real bug we hit (full incident log:
-[`troubleshooting.md`](troubleshooting.md)):
+[`06_troubleshooting.md`](06_troubleshooting.md)):
 
 1. **Capture `self.out` yourself** in `beginFile`; declare all branches there.
 2. **Reset/fill every declared branch on every event** — an unset branch
    keeps a stale value.
 3. **Read `UChar_t` and vector branches through the compat shim** (`to_int`,
    `safe_len`), never `int(event.X[i])` / `len(event.Vec)` raw — see
-   [`nanoaod_compat.md`](nanoaod_compat.md).
+   [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).
 4. **Detect optional input branches via `inputTree.GetListOfBranches()`**,
    not `hasattr(event, name)` (the Event wrapper raises `RuntimeError` on a
    missing branch, which `hasattr` does not catch, crashing the job).
@@ -386,7 +386,7 @@ passthrough locally and on CRAB.
 - CMSSW NanoAODTools framework:
   <https://github.com/cms-sw/cmssw/tree/CMSSW_14_2_X/PhysicsTools/NanoAODTools>
 - For the categorization physics and the full historical pipeline (module +
-  branch list + skim cut), see [`legacy_ttbar_pipeline.md`](legacy_ttbar_pipeline.md).
+  branch list + skim cut), see [`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md).
 - For why the PyROOT compatibility shim existed, see
-  [`nanoaod_compat.md`](nanoaod_compat.md).
-- For the change history, see [`CHANGELOG.md`](CHANGELOG.md).
+  [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).
+- For the change history, see [`03_CHANGELOG.md`](03_CHANGELOG.md).

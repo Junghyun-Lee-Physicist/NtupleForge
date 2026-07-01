@@ -13,8 +13,8 @@ Before your first edit in a session, read **every** file in
 [`docs/`](README.md). The bugs documented here are subtle and recur (silent
 `UChar_t` failures, zombie input branches, `hasattr` crashes, counter
 unreliability). Reading first is cheaper than rediscovering them. Start with
-[`README.md`](README.md) (this index) → [`architecture.md`](architecture.md)
-→ [`troubleshooting.md`](troubleshooting.md).
+[`README.md`](README.md) (this index) → [`05_architecture.md`](05_architecture.md)
+→ [`06_troubleshooting.md`](06_troubleshooting.md).
 
 ## Rule 1 — The top-level `README.md` stays minimal
 
@@ -26,7 +26,7 @@ yourself adding a paragraph of explanation to the README, it belongs in a
 
 ## Rule 2 — Every change gets a CHANGELOG entry
 
-When you change code, add an entry to [`CHANGELOG.md`](CHANGELOG.md) under
+When you change code, add an entry to [`03_CHANGELOG.md`](03_CHANGELOG.md) under
 **[Unreleased]** recording:
 
 - **what** part of the code changed (file / function / module),
@@ -40,7 +40,7 @@ bound let nonexistent codes fall through to `AddCjet`."*
 ## Rule 3 — Every problem gets a troubleshooting entry
 
 When you hit a bug, a crash, a confusing log, or a CRAB failure, add an entry
-to [`troubleshooting.md`](troubleshooting.md) Part A using the existing
+to [`06_troubleshooting.md`](06_troubleshooting.md) Part A using the existing
 template:
 
 - **Symptom** — what you observed.
@@ -59,13 +59,13 @@ Leaving a record is the default, not an afterthought. Route it by topic:
 
 | What you did / found | Where it goes |
 |---|---|
-| Any code change | [`CHANGELOG.md`](CHANGELOG.md) (always) |
-| A bug / crash / failure + its fix | [`troubleshooting.md`](troubleshooting.md) Part A |
-| A new validation method or a limit of an existing one | [`troubleshooting.md`](troubleshooting.md) Part B |
-| Changed how the framework/driver/modules work, or a new module pattern | [`architecture.md`](architecture.md) |
-| A PyROOT / NanoAOD-tools access quirk and its workaround | [`nanoaod_compat.md`](nanoaod_compat.md) |
-| A physics definition, category, or sample-stitching decision | [`physics.md`](physics.md) |
-| Anything about the retired categorization pipeline | [`legacy_ttbar_pipeline.md`](legacy_ttbar_pipeline.md) |
+| Any code change | [`03_CHANGELOG.md`](03_CHANGELOG.md) (always) |
+| A bug / crash / failure + its fix | [`06_troubleshooting.md`](06_troubleshooting.md) Part A |
+| A new validation method or a limit of an existing one | [`06_troubleshooting.md`](06_troubleshooting.md) Part B |
+| Changed how the framework/driver/modules work, or a new module pattern | [`05_architecture.md`](05_architecture.md) |
+| A PyROOT / NanoAOD-tools access quirk and its workaround | [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md) |
+| A physics definition, category, or sample-stitching decision | [`02_physics.md`](02_physics.md) |
+| Anything about the retired categorization pipeline | [`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md) |
 | New run command / changed CLI surface | [`../README.md`](../README.md) **and** CHANGELOG |
 
 If a change touches several of these, update all of them — they cross-link, so
@@ -79,14 +79,14 @@ below).
   Keep it minimal — only what is needed to run, plus illustrative examples.
 - **`docs/legacy/code/`** is verbatim, **unmaintained** reference. Do not wire
   it into the build or import path. To revive something, copy it into the live
-  tree (checklist: [`legacy_ttbar_pipeline.md`](legacy_ttbar_pipeline.md) §9)
+  tree (checklist: [`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md) §9)
   and then it follows all the rules above.
 
 ## Rule 6 — Keep the CRAB output filename in sync across both places
 
 The output filename is hardcoded in **two** files and they **must match**, or
 CRAB stageout fails with exit `60302` (it validates the staged file against
-the PSet output name — see [`troubleshooting.md`](troubleshooting.md) §A7):
+the PSet output name — see [`06_troubleshooting.md`](06_troubleshooting.md) §A7):
 
 - `crab/PSet.py` — `process.output = cms.OutputModule("PoolOutputModule",
   fileName = cms.untracked.string("<name>"))`
