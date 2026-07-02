@@ -98,30 +98,30 @@ skim을 적용하려면 cut 모듈을 끼우십시오 — 예제:
 ```bash
 # 제출. 이미 존재하는 task는 실패 job을 AUTO-RESUBMIT합니다
 # (task별 CRAB project dir 존재 여부로 submit/resubmit이 결정됨).
-python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL.yaml
+python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL_MC.yaml
 
 # 실패 job만 명시적으로 재제출
-python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL.yaml --resubmit
+python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL_MC.yaml --resubmit
 
 # task별 full 'crab status'
-python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL.yaml --status
+python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL_MC.yaml --status
 
 # sample별 압축 요약 리포트 (--status보다 읽기 쉬움)
-python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL.yaml --report
+python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL_MC.yaml --report
 
 # config에 정의된 모든 job kill
-python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL.yaml --kill
+python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL_MC.yaml --kill
 ```
 
 ttHH passthrough 캠페인은 `--config crabConfig/config_ttHH2017UL.yaml`로 동일하게
 관리합니다.
 
-> **⚠️ Data / MC 분리 (TopCPV):** `topCPVCategorizer`는 **MC 전용**입니다.
-> data는 gen 모듈 없이(`modules/noop.py` 등) `branch_CPV_Run2_Data.txt`로
-> 돌려야 합니다. 모듈에 data가 들어와도 이제 crash 대신 no-op으로 넘어가지만
-> (2026-07-01 수정, `docs/05_troubleshooting.md` A11), 그렇게 돌리면 아무
-> 파생 branch도 안 생기므로 config 자체를 tier별로 분리하십시오
-> (`docs/01_STATUS.md` OPEN #3).
+> **⚠️ Data / MC 분리 (TopCPV):** config가 **tier별로 분리**되어 있습니다
+> (2026-07-02): data는 `config_CPV<era>_Data.yaml`(noop +
+> `branch_CPV_Run2_Data.txt`), MC는 `config_CPV<era>_MC.yaml`(gen 모듈 +
+> `branch_CPV_Run2_MC.txt`)로 제출하십시오. `topCPVCategorizer`는 **MC
+> 전용**이며, data가 들어와도 crash 대신 no-op이지만(2026-07-01 수정,
+> `docs/05_troubleshooting.md` A11) 그것은 안전망이지 정상 경로가 아닙니다.
 
 `--report`는 CRAB에 질의해 sample당 한 줄로 `done`(finished) / `run` / `idle` /
 `transf`(transferring) / `fail` / `other` 개수와 총계를 출력합니다. 인식하지

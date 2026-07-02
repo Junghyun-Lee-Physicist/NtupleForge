@@ -9,6 +9,20 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-02: CPV configs split per tier (_Data / _MC)
+
+### Changed
+- **`crabConfig/config_CPV<era>UL.yaml` (combined) → `config_CPV<era>_Data.yaml`
+  + `config_CPV<era>_MC.yaml`** for all four eras; combined files removed.
+  Data configs: `modules/noop.py` + `branches/branch_CPV_Run2_Data.txt`;
+  MC configs: `modules/topCPVCategorizer.py` + `branches/branch_CPV_Run2_MC.txt`.
+  Split by DAS tier suffix; dataset counts preserved (30+73 / 15+75 / 29+73 /
+  12+74). Closes the per-tier OPEN item and the config half of incident A11
+  (`03_DECISIONS.md` → D-2026-07-02-per-tier-configs). YAML-parse verified
+  in-container; **unverified on CRAB** — submit one small data task first.
+
+---
+
 ## [Unreleased] — 2026-07-01: TopCPV rename, CRAB crash fixes, docs restructure
 
 ### Changed (rename — no logic change by itself)

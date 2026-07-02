@@ -2,7 +2,7 @@
 
 > **Purpose:** the single place to answer "where are we right now?" for any
 > contributor (human or AI) joining cold. **Audience:** all. **Updated:**
-> 2026-07-01. Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
+> 2026-07-02. Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
 
 ## Active workstreams
 
@@ -24,9 +24,12 @@
 - **TopCPV C++ (companion):** the standalone `TopCPVCategorizer` was updated in
   lockstep (same restorations). **Must be compiled on lxplus** — there is no ROOT
   in the dev container, so the C++ is syntax-reviewed but not compile-tested.
-- **Configs:** `crabConfig/config_CPV{2016preVFPUL,2016postVFPUL,2017UL,2018UL}.yaml`
-  — datasets transcribed from the user lists (NanoAODv9). **Datasets final;
-  `common:` fields are placeholders.**
+- **Configs:** per-tier since 2026-07-02 —
+  `crabConfig/config_CPV{2016preVFPUL,2016postVFPUL,2017UL,2018UL}_{Data,MC}.yaml`
+  (Data = noop + Data branch list; MC = gen module + MC branch list; see
+  D-2026-07-02-per-tier-configs). Datasets transcribed from the user lists
+  (NanoAODv9) and DAS-verified 2026-07-01. **Datasets + per-tier wiring final;
+  jobID/output_base/splitting are placeholders.**
 - **Branch lists:** `branches/branch_CPV_Run2_{Data,MC}.txt` added.
 - **Validation tool:** `script/validate_topcpvcat.py`.
 
@@ -40,14 +43,11 @@
    NanoAODv9 file (module output vs standalone TopCPV `GenCatTree`). Ints must
    match exactly; floats within tol.
 2. **Config `common:` fields.** Set jobID / output_base / splitting for real.
-3. **Per-tier `branch_file` + module split (URGENT — caused A11).** Data and MC
-   need different branch lists AND different module lists; the schema holds one
-   of each (currently MC + gen module), so the 2026-07-01 submission ran data
-   with the MC branch list and the MC-only gen module
-   (`05_troubleshooting.md` A11). The module now no-ops on data instead of
-   crashing, but the ntuples would still be produced without the intended data
-   branch list. Split into `_Data`/`_MC` configs or extend the schema before
-   resubmitting data.
+3. **Per-tier `branch_file` + module split — DONE 2026-07-02.** Configs split
+   into `config_CPV<era>_Data.yaml` (noop + Data branch list) and
+   `config_CPV<era>_MC.yaml` (gen module + MC branch list); combined files
+   removed (`03_DECISIONS.md` → D-2026-07-02-per-tier-configs). Remaining:
+   **verify with one real data CRAB task** (YAML-parse tested only).
 4. **Dataset-path anomalies to verify on DAS** (normalized/flagged by the loader,
    cannot be checked offline):
    - 2016postVFP MC `QCD_Pt_170to300_TuneCP5_13TeV_pythia8`: campaign has `104X`

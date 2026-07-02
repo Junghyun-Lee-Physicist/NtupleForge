@@ -11,6 +11,30 @@
 
 ---
 
+## D-2026-07-02-per-tier-configs — CPV configs split into _Data / _MC files
+**DECIDED · 2026-07-02 · closes the OPEN item in D-2026-06-27-cpv-configs; root fix for A11**
+
+- **Context.** The combined `config_CPV<era>UL.yaml` held ONE `branch_file` and
+  ONE `analysis_module` for a mixed data+MC `datasets:` block, so the
+  2026-07-01 submission ran data with the MC branch list and the MC-only gen
+  module (`05_troubleshooting.md` A11). The module-side no-op guard prevents
+  the crash but not the wrong branch list.
+- **Decision.** Each era config is split by DAS tier (path suffix `/NANOAOD` =
+  data, `/NANOAODSIM` = MC) into
+  `config_CPV<era>_Data.yaml` — `modules/noop.py` + `branch_CPV_Run2_Data.txt` —
+  and `config_CPV<era>_MC.yaml` — `modules/topCPVCategorizer.py` +
+  `branch_CPV_Run2_MC.txt`. The combined files are **removed** so the mixed
+  wiring cannot be resubmitted by habit. Dataset counts preserved
+  (2016preVFP 30+73, 2016postVFP 15+75, 2017UL 29+73, 2018UL 12+74). jobID /
+  output_base placeholders carry a `_Data`/`_MC` suffix so the two campaigns
+  don't share a tag by accident.
+- **Alternatives.** Extending the schema (per-tier sections in one YAML +
+  `submit_crab.py` changes) → rejected for now: more code on the submission
+  path for the same effect; two files per era is explicit and needs zero code.
+  Revisit if per-tier fields multiply.
+- **Status.** YAML-parse verified in-container; **a real CRAB submission must
+  confirm** (no CRABClient here).
+
 ## D-2026-07-01-rename-topcpv — rename ssbGenCategorizer → topCPVCategorizer; SSBAnalyzer preserved
 **DECIDED · 2026-07-01**
 

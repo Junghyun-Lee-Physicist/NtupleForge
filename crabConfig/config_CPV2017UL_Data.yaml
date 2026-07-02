@@ -1,0 +1,61 @@
+# ==========================================================================
+# CPV (top CP-violation) analysis — 2017UL, NanoAODv9 — DATA ONLY
+# ==========================================================================
+# This file is the DATA half of the former combined config_CPV2017UL.yaml,
+# split per tier on 2026-07-02 (docs/03_DECISIONS.md → D-2026-07-02-per-tier-configs;
+# incident: docs/05_troubleshooting.md A11 — data was submitted with the MC
+# branch list and the MC-only gen module).
+#
+# STATUS — what is final vs. placeholder
+# --------------------------------------
+# FINAL : the `datasets:` entries (sample name + DAS path), transcribed from
+#         the user-provided 2017UL lists (NanoAODv9); all paths verified on DAS
+#         2026-07-01 (check_das_datasets.sh, 102/102 OK for 2017UL).
+# FINAL : analysis_module / branch_file — per-tier wiring:
+#         Data -> modules/noop.py            + branches/branch_CPV_Run2_Data.txt
+#         MC   -> modules/topCPVCategorizer.py + branches/branch_CPV_Run2_MC.txt
+#         (the gen categorizer is MC-only; never add it here if this is the
+#          Data file — see docs/TopCPV/01_module.md "MC-only behaviour")
+# PLACEHOLDER (analyst to set): jobID / output_base tags, splitting / units_per_job.
+# NanoAODv9 now; migrate to NanoAODv15 later (campaign strings will change).
+# ==========================================================================
+common:
+  jobID: "TEMP_CPV2017UL_Data_v0"
+  site: "T3_KR_KNU"
+  output_base: "TEMP_CPV2017UL_Data_v0"
+  analysis_module: ["modules/noop.py", "MODULES"]
+  branch_file: "branches/branch_CPV_Run2_Data.txt"
+  splitting: "FileBased"
+  units_per_job: 1
+
+datasets:
+  # --- Data (NANOAOD) ---
+  SingleElectron_Run2017B: "/SingleElectron/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleElectron_Run2017C: "/SingleElectron/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleElectron_Run2017D: "/SingleElectron/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleElectron_Run2017E: "/SingleElectron/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleElectron_Run2017F: "/SingleElectron/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017B: "/SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017C: "/SingleMuon/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017D: "/SingleMuon/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017E: "/SingleMuon/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017F: "/SingleMuon/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017G: "/SingleMuon/Run2017G-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  SingleMuon_Run2017H: "/SingleMuon/Run2017H-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2017B: "/DoubleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2017C: "/DoubleMuon/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2017D: "/DoubleMuon/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2017E: "/DoubleMuon/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2017F: "/DoubleMuon/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2017G: "/DoubleMuon/Run2017G-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2017H: "/DoubleMuon/Run2017H-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleEG_Run2017B: "/DoubleEG/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleEG_Run2017C: "/DoubleEG/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleEG_Run2017D: "/DoubleEG/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleEG_Run2017E: "/DoubleEG/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleEG_Run2017F: "/DoubleEG/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  MuonEG_Run2017B: "/MuonEG/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  MuonEG_Run2017C: "/MuonEG/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  MuonEG_Run2017D: "/MuonEG/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  MuonEG_Run2017E: "/MuonEG/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  MuonEG_Run2017F: "/MuonEG/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD"

@@ -1,53 +1,34 @@
 # ==========================================================================
-# CPV (top CP-violation) analysis — 2016postVFPUL, NanoAODv9
+# CPV (top CP-violation) analysis — 2016postVFPUL, NanoAODv9 — MC ONLY
 # ==========================================================================
-# Naming: config_CPV2016postVFPUL  (kept distinct from ttHH file lists: config_ttHH*)
+# This file is the MC half of the former combined config_CPV2016postVFPUL.yaml,
+# split per tier on 2026-07-02 (docs/03_DECISIONS.md → D-2026-07-02-per-tier-configs;
+# incident: docs/05_troubleshooting.md A11 — data was submitted with the MC
+# branch list and the MC-only gen module).
 #
 # STATUS — what is final vs. placeholder
 # --------------------------------------
-# FINAL : only the `datasets:` entries (sample name + DAS path), transcribed
-#         from the user-provided 2016postVFPUL lists (NanoAODv9). Paths flagged with a
-#         NOTE comment had a transcription artifact normalized — verify on DAS.
-# PLACEHOLDER (analyst to set): everything in `common:` below.
-#   - jobID / output_base       : temporary tags
-#   - analysis_module           : -> modules/topCPVCategorizer.py (TopCPV port)
-#   - branch_file               : Data and MC use DIFFERENT branch lists:
-#         Data -> branches/branch_CPV_Run2_Data.txt
-#         MC   -> branches/branch_CPV_Run2_MC.txt
-#     The single-field schema holds only ONE. Wire per-type later (split into
-#     _Data/_MC configs, or extend the schema to pick by tier). Set to the MC
-#     list by default since the categorizer is MC-only.
-#   - splitting / units_per_job : temporary
+# FINAL : the `datasets:` entries (sample name + DAS path), transcribed from
+#         the user-provided 2016postVFPUL lists (NanoAODv9); all paths verified on DAS
+#         2026-07-01 (check_das_datasets.sh, 102/102 OK for 2017UL).
+# FINAL : analysis_module / branch_file — per-tier wiring:
+#         Data -> modules/noop.py            + branches/branch_CPV_Run2_Data.txt
+#         MC   -> modules/topCPVCategorizer.py + branches/branch_CPV_Run2_MC.txt
+#         (the gen categorizer is MC-only; never add it here if this is the
+#          Data file — see docs/TopCPV/01_module.md "MC-only behaviour")
+# PLACEHOLDER (analyst to set): jobID / output_base tags, splitting / units_per_job.
 # NanoAODv9 now; migrate to NanoAODv15 later (campaign strings will change).
 # ==========================================================================
 common:
-  jobID: "TEMP_CPV2016postVFPUL_v0"
+  jobID: "TEMP_CPV2016postVFPUL_MC_v0"
   site: "T3_KR_KNU"
-  output_base: "TEMP_CPV2016postVFPUL_v0"
+  output_base: "TEMP_CPV2016postVFPUL_MC_v0"
   analysis_module: ["modules/topCPVCategorizer.py", "MODULES"]
-  branch_file: "branches/branch_CPV_Run2_MC.txt"   # TEMP (MC list); Data uses branch_CPV_Run2_Data.txt
+  branch_file: "branches/branch_CPV_Run2_MC.txt"
   splitting: "FileBased"
   units_per_job: 1
 
 datasets:
-
-  # --- Data (NANOAOD) ---
-  SingleElectron_Run2016F: "/SingleElectron/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  SingleElectron_Run2016G: "/SingleElectron/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  SingleElectron_Run2016H: "/SingleElectron/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  SingleMuon_Run2016F: "/SingleMuon/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  SingleMuon_Run2016G: "/SingleMuon/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  SingleMuon_Run2016H: "/SingleMuon/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  DoubleMuon_Run2016F: "/DoubleMuon/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  DoubleMuon_Run2016G: "/DoubleMuon/Run2016G-UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD"
-  DoubleMuon_Run2016H: "/DoubleMuon/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  DoubleEG_Run2016F: "/DoubleEG/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  DoubleEG_Run2016G: "/DoubleEG/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  DoubleEG_Run2016H: "/DoubleEG/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  MuonEG_Run2016F: "/MuonEG/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  MuonEG_Run2016G: "/MuonEG/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-  MuonEG_Run2016H: "/MuonEG/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
-
   # --- MC (NANOAODSIM) ---
   WJetsToLNu_TuneCP5_amcatnloFXFX: "/WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v2/NANOAODSIM"
   WJetsToLNu_TuneCP5_madgraphMLM: "/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM"

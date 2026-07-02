@@ -1,0 +1,44 @@
+# ==========================================================================
+# CPV (top CP-violation) analysis — 2018UL, NanoAODv9 — DATA ONLY
+# ==========================================================================
+# This file is the DATA half of the former combined config_CPV2018UL.yaml,
+# split per tier on 2026-07-02 (docs/03_DECISIONS.md → D-2026-07-02-per-tier-configs;
+# incident: docs/05_troubleshooting.md A11 — data was submitted with the MC
+# branch list and the MC-only gen module).
+#
+# STATUS — what is final vs. placeholder
+# --------------------------------------
+# FINAL : the `datasets:` entries (sample name + DAS path), transcribed from
+#         the user-provided 2018UL lists (NanoAODv9); all paths verified on DAS
+#         2026-07-01 (check_das_datasets.sh, 102/102 OK for 2017UL).
+# FINAL : analysis_module / branch_file — per-tier wiring:
+#         Data -> modules/noop.py            + branches/branch_CPV_Run2_Data.txt
+#         MC   -> modules/topCPVCategorizer.py + branches/branch_CPV_Run2_MC.txt
+#         (the gen categorizer is MC-only; never add it here if this is the
+#          Data file — see docs/TopCPV/01_module.md "MC-only behaviour")
+# PLACEHOLDER (analyst to set): jobID / output_base tags, splitting / units_per_job.
+# NanoAODv9 now; migrate to NanoAODv15 later (campaign strings will change).
+# ==========================================================================
+common:
+  jobID: "TEMP_CPV2018UL_Data_v0"
+  site: "T3_KR_KNU"
+  output_base: "TEMP_CPV2018UL_Data_v0"
+  analysis_module: ["modules/noop.py", "MODULES"]
+  branch_file: "branches/branch_CPV_Run2_Data.txt"
+  splitting: "FileBased"
+  units_per_job: 1
+
+datasets:
+  # --- Data (NANOAOD) ---
+  SingleMuon_Run2018A: "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  SingleMuon_Run2018B: "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  SingleMuon_Run2018C: "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  SingleMuon_Run2018D: "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2018A: "/DoubleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2018B: "/DoubleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2018C: "/DoubleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  DoubleMuon_Run2018D: "/DoubleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  EGamma_Run2018A: "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  EGamma_Run2018B: "/EGamma/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  EGamma_Run2018C: "/EGamma/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  EGamma_Run2018D: "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9-v3/NANOAOD"

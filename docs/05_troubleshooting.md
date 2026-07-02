@@ -251,8 +251,9 @@ shim (deep dive: [`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md)).
   `True`. Gen content is a property of the *input*, not a code bug, and a
   crash only makes CRAB burn its 3 automatic retries on the same file. The
   config-level split (data configs without the gen module, using
-  `branch_CPV_Run2_Data.txt`) remains the real fix and stays OPEN in
-  `01_STATUS.md`.
+  `branch_CPV_Run2_Data.txt`) is the real fix — **done 2026-07-02**:
+  per-tier `config_CPV<era>_{Data,MC}.yaml`, combined configs removed
+  (`03_DECISIONS.md` → D-2026-07-02-per-tier-configs).
 - **Validated by.** In-container stub run: a branch list without `GenPart_*`
   → `_has_genpart=False`, zero branches defined, zero filled, events pass.
   **Unverified on real data — rerun one data task on lxplus/CRAB to confirm.**

@@ -112,7 +112,7 @@ because modules read the full input tree and only the derived
 
 ## How to run
 
-In a `config_CPV<year>UL.yaml`, point the analysis module at this file:
+In a `config_CPV<era>_MC.yaml` (MC configs only — data configs use `modules/noop.py`; see D-2026-07-02-per-tier-configs), the analysis module points at this file:
 
 ```yaml
 analysis_module: ["modules/topCPVCategorizer.py", "MODULES"]
