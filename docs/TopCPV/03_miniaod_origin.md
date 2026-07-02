@@ -1,6 +1,6 @@
 # MiniAOD `SSBAnalyzer` — generator block (progenitor of the categorizer)
 
-> **What this file is.** The NtupleForge `ssbGenCategorizer` module reproduces, in
+> **What this file is.** The NtupleForge `topCPVCategorizer` module reproduces, in
 > **NanoAOD**, the generator-level sections of the original **MiniAOD**
 > `SSBAnalyzer` EDAnalyzer (the CP-violation ntuplizer authored by S. Ha,
 > S. Lee, S. Choi). This document preserves the **original MiniAOD logic and the
@@ -500,4 +500,4 @@ assembly and the **identical** channel computation run. Because NanoAOD's
 `GenPart_statusFlags` (`isHardProcess`, `isLastCopy`) carry a **hadronizer-
 independent** meaning, the NanoAOD port collapses both branches into one — so the
 HERWIG path has no separate reproduction. See `docs/GenPart_channel_definition.md`
-in the SSBGenCategorizer package for the statusFlags rationale.
+in the TopCPVCategorizer package for the statusFlags rationale.

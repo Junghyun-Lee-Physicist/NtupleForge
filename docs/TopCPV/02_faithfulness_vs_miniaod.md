@@ -1,7 +1,7 @@
-# Faithfulness audit — SSBGenCategorizer (NanoAOD) vs MiniAOD `SSBAnalyzer`
+# Faithfulness audit — TopCPVCategorizer (NanoAOD) vs MiniAOD `SSBAnalyzer`
 
-Does the NanoAOD `SSBGenCategorizer` (and, by extension, the NtupleForge
-`ssbGenCategorizer` module that ports it) faithfully reproduce the MiniAOD
+Does the NanoAOD `TopCPVCategorizer` (and, by extension, the NtupleForge
+`topCPVCategorizer` module that ports it) faithfully reproduce the MiniAOD
 generator logic recorded in [`03_miniaod_origin.md`](03_miniaod_origin.md)?
 
 **Verdict in one line.** The **channel classification numerics are reproduced
@@ -18,7 +18,7 @@ Legend: ✅ faithful · ⚠️ divergent (document it) · ⬆️ improved on a k
 
 ## 1. ⚠️ Channel failure handling — **the `-999` question**
 
-| | MiniAOD origin | NanoAOD SSBGen |
+| | MiniAOD origin | NanoAOD TopCPV |
 |---|---|---|
 | `Channel_Idx` base | `0`, then `+=|pdg|` per lepton in `SelectedPar` | `0`, then `+=|pdg|` per lepton in slots 8–11 |
 | all-hadronic | `0` | `0` |
@@ -31,7 +31,7 @@ build it prints `SelectedPar Error` (`03_miniaod_origin.md` §1.4) and then writ
 intended behavior** — `Channel_Idx == 0` legitimately means "all-hadronic **or**
 unclassifiable", and the *only* signal separating the two is the printed error.
 
-SSBGen reproduces the `0` numerics exactly but **dropped the `SelectedPar Error`
+TopCPV reproduces the `0` numerics exactly but **dropped the `SelectedPar Error`
 print** — it is fully silent on malformed selections. That is the one real
 regression here.
 
@@ -62,7 +62,7 @@ is paired with an end-of-job counter naming the unclassifiable rate.
 - **MiniAOD:** the §2.1 lepton loop runs over the background `SelectedPar` as
   well, so a background event with a leptonic boson decay gets a **non-zero**
   `Channel_Idx` (`03_miniaod_origin.md` Note D).
-- **SSBGen:** `ComputeChannelDirect()` does `if (!isSignal) { channel_idx = 0; return; }`
+- **TopCPV:** `ComputeChannelDirect()` does `if (!isSignal) { channel_idx = 0; return; }`
   — background is **forced to 0**.
 
 **Impact.** Irrelevant for ttbar signal samples (where `isSignal` is true for
@@ -84,13 +84,13 @@ this way from the start, so background channels are recovered faithfully.
 
 ## 3. ⚠️ Which top copy anchors the family tree
 
-| Quantity | MiniAOD | SSBGen | Match? |
+| Quantity | MiniAOD | TopCPV | Match? |
 |---|---|---|---|
 | `GenTop`/`GenAnTop` kinematics | `status == 62` (post-FSR, decaying top) | `isLastCopy` top | ✅ effectively the same particle |
 | `GenPar` slot 2/3 (`t`/`t̄`) anchor | `status 21–23` **hard-process** top | `isLastCopy` top | ⚠️ different copy |
 
 **Finding.** In MiniAOD the dedicated `GenTop` branch and the family-tree `t`
-slot are *different copies* of the top (status-62 vs status-22); SSBGen makes both
+slot are *different copies* of the top (status-62 vs status-22); TopCPV makes both
 the **last copy**, which is internally consistent and physically the decay-time
 top. Consequence:
 
@@ -101,7 +101,7 @@ top. Consequence:
 For the CPV triple products, take the top/antitop 4-vectors from the dedicated
 `GenTop`/`GenAnTop` branches (faithful), **not** from the `GenPar` slots (which
 diverge by construction). The simplification is the intended NanoAOD design
-(`docs/TECHNICAL.md` §2.1 in the SSBGen package: `isLastCopy` replaces the
+(`docs/TECHNICAL.md` §2.1 in the TopCPV package: `isLastCopy` replaces the
 hard-process tag).
 
 ---
@@ -111,10 +111,10 @@ hard-process tag).
 - **MiniAOD:** W⁺ daughters via an explicit `IndexLinker` descendant test (take
   two); W⁻ daughters are **leftover** `TreePar` entries — the guard is commented
   out (`03_miniaod_origin.md` Note B).
-- **SSBGen:** `WDaughters(Wm_idx)` resolves W⁻ daughters explicitly from the
+- **TopCPV:** `WDaughters(Wm_idx)` resolves W⁻ daughters explicitly from the
   daughter map (excluding W radiation copies), symmetric with W⁺.
 
-**Finding.** Same result for clean events; SSBGen **removes a fragile "leftovers"
+**Finding.** Same result for clean events; TopCPV **removes a fragile "leftovers"
 assumption**. Improvement, not a regression — but it means the two can disagree on
 pathological events where stray `TreePar` entries survived in MiniAOD.
 
@@ -125,7 +125,7 @@ pathological events where stray `TreePar` entries survived in MiniAOD.
 - **MiniAOD:** walks each selected `τ` to its leptonic daughter through the
   gen-daughter map (`IndexLinker` over `SelParDau`/`FinalPar`) and rewrites
   `Channel_Idx_Final` (`03_miniaod_origin.md` §2.2).
-- **SSBGen:** counts `e/μ` in `GenDressedLepton` and uses
+- **TopCPV:** counts `e/μ` in `GenDressedLepton` and uses
   `GenDressedLepton_hasTauAnc` to populate `Channel_Tau_Lepton`.
 
 **Finding.** Same physics question ("what leptons does the detector see after τ
@@ -150,7 +150,7 @@ it already builds — no `pt` floor, every τ→ℓ resolved — instead of rely
   (`genBHadIndex`, `genBHadJetIndex`, `genBHadFromTopWeakDecay`, `genBHadFlavour`)
   — the official ghost-reclustering result. `FromTopWeakDecay`/`Flavour` are read
   straight from those collections.
-- **SSBGen:** takes `GenJet_hadronFlavour == 5` jets, matches the **nearest
+- **TopCPV:** takes `GenJet_hadronFlavour == 5` jets, matches the **nearest
   last-copy b-quark** within `ΔR ≤ 0.4`, and derives `FromTopWeakDecay` by walking
   the b-quark's mother chain for a top ancestor.
 
@@ -163,17 +163,17 @@ it already builds — no `pt` floor, every τ→ℓ resolved — instead of rely
   kinematics. No fidelity loss. (My earlier audit over-flagged this.)
 - **`GenBHad` (the hadron side) — ⚠️ best-effort.** MiniAOD stores the **B-hadron**
   4-momentum; NanoAOD pruning usually drops the B-hadron and keeps the **b-quark**,
-  so SSBGen stores the nearest b-quark instead. Same top, but hadron ≠ quark
+  so TopCPV stores the nearest b-quark instead. Same top, but hadron ≠ quark
   kinematics (`pt` etc. differ). Not recoverable from standard NanoAOD.
 - **`GenBHad_FromTopWeakDecay` — ⚠️ recomputed.** MiniAOD reads the official flag;
-  SSBGen rederives it by mother-chain ancestry. Agrees in the bulk, can differ
+  TopCPV rederives it by mother-chain ancestry. Agrees in the bulk, can differ
   from the official logic at edge cases. Not recoverable (the official collection
   is absent from NanoAOD).
 
 So the **truth-labelling that matters** (which gen-jet is the b from t→bW) is
 faithful via `GenBJet`; only the B-hadron's own kinematics and the official
 `FromTopWeakDecay` flag are approximations, and they cannot be restored without a
-MiniAOD friend tree (`docs/TECHNICAL.md` §8 in the SSBGen package).
+MiniAOD friend tree (`docs/TECHNICAL.md` §8 in the TopCPV package).
 
 ---
 
@@ -202,10 +202,10 @@ MiniAOD friend tree (`docs/TECHNICAL.md` §8 in the SSBGen package).
 
 ## 9. Net assessment & final port directive
 
-SSBGen *was* a faithful reproduction of the MiniAOD channel classification with
+TopCPV *was* a faithful reproduction of the MiniAOD channel classification with
 documented NanoAOD simplifications. **As of 2026-06-28 the reference is fixed as
 the MiniAOD `SSBAnalyzer`, and the restorations below are applied to BOTH the
-standalone SSBGen and the NtupleForge module** (see `../04_DECISIONS.md` →
+standalone TopCPV and the NtupleForge module** (see `../03_DECISIONS.md` →
 D-2026-06-28-miniaod-reference), so the two now track MiniAOD and each other.
 
 **Restored in both codebases (now matching MiniAOD):**
@@ -221,9 +221,9 @@ D-2026-06-28-miniaod-reference), so the two now track MiniAOD and each other.
    GenPart daughter map** (as MiniAOD did), not via `GenDressedLepton`, removing
    the implicit `pt`/dressing threshold.
 
-**Keep as-is (SSBGen's choice is equal or better):**
+**Keep as-is (TopCPV's choice is equal or better):**
 
-4. **W⁻ daughters (§4)** — keep SSBGen's explicit `WDaughters` (more robust than
+4. **W⁻ daughters (§4)** — keep TopCPV's explicit `WDaughters` (more robust than
    MiniAOD's "leftovers").
 5. **Top copy for `GenPar` slot 2/3 (§3)** — keep **last copy** (physically the
    decaying top). *Not* reverting to the hard-process copy. CPV top/antitop momenta

@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-r"""Validate ssbGenCategorizer output against the standalone SSBGenCategorizer.
+r"""Validate topCPVCategorizer output against the standalone TopCPVCategorizer.
 
 Run on lxplus (needs ROOT + a NanoAOD test file processed both ways). It matches
 events by (run, luminosityBlock, event) and compares branch-by-branch:
 integer/categorization branches must be **exactly** equal; float branches must
-agree within a tolerance (SSBGen computes in float32, this port in float64 then
+agree within a tolerance (TopCPV computes in float32, this port in float64 then
 ROOT stores float32, so the last ULP can differ — that is expected and benign).
 
 Usage
 -----
-    python validate_ssbgencat.py \
-        --nano   slimmedNtuple.root \           # NtupleForge output (Events tree, SSBGenCat_*)
-        --gencat gencat.root \                   # SSBGenCategorizer output (GenCatTree)
-        [--prefix SSBGenCat_] [--ftol 1e-4] [--max-print 40]
+    python validate_topcpvcat.py \
+        --nano   slimmedNtuple.root \           # NtupleForge output (Events tree, TopCPVCat_*)
+        --gencat gencat.root \                   # TopCPVCategorizer output (GenCatTree)
+        [--prefix TopCPVCat_] [--ftol 1e-4] [--max-print 40]
 
 Branch map
 ----------
-SSBGen GenCatTree branch  ->  NtupleForge Events branch
+TopCPV GenCatTree branch  ->  NtupleForge Events branch
   Derived (the module emits these under the prefix):
       isSignal, SelectedIdx, GenPar_*, GenTop_*, GenAnTop_*, Channel_*,
       GenBJet_*, GenBHad_*                         ->  <prefix><same name>
@@ -30,7 +30,7 @@ import sys
 
 import ROOT
 
-# SSBGen branch -> ("derived"|"passthrough"). Derived get the prefix; passthrough
+# TopCPV branch -> ("derived"|"passthrough"). Derived get the prefix; passthrough
 # are compared against the unprefixed NanoAOD names already in the Events tree.
 DERIVED = [
     "isSignal", "SelectedIdx",
@@ -89,8 +89,8 @@ def index_by_eventid(tree):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--nano", required=True, help="NtupleForge output (Events tree)")
-    ap.add_argument("--gencat", required=True, help="SSBGenCategorizer output (GenCatTree)")
-    ap.add_argument("--prefix", default="SSBGenCat_")
+    ap.add_argument("--gencat", required=True, help="TopCPVCategorizer output (GenCatTree)")
+    ap.add_argument("--prefix", default="TopCPVCat_")
     ap.add_argument("--ftol", type=float, default=1e-4)
     ap.add_argument("--max-print", type=int, default=40)
     args = ap.parse_args()

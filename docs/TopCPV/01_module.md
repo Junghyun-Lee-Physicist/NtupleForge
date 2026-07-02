@@ -1,22 +1,23 @@
-# `ssbGenCategorizer` module reference
+# `topCPVCategorizer` module reference
 
 > **Purpose:** how to run the NtupleForge NanoAOD module that reproduces the
-> SSBGenCategorizer gen-level categorization, and exactly which branches it emits.
-> **Audience:** analysts wiring the CPV ntuple production. **Status:** active
-> (NanoAODv9). **Updated:** 2026-06-27.
+> MiniAOD `SSBAnalyzer` gen-level categorization, and exactly which branches it
+> emits. **Audience:** analysts wiring the CPV ntuple production. **Status:**
+> active (NanoAODv9). **Updated:** 2026-07-01.
 > Deep algorithm/physics live in `03_miniaod_origin.md`, `02_faithfulness_vs_miniaod.md`,
-> and the SSBGen package `docs/TECHNICAL.md`; this file does not repeat them.
+> and the standalone TopCPV package `docs/TECHNICAL.md`; this file does not repeat them.
 
 ## BLUF
 
-`modules/ssbGenCategorizer.py` reproduces the MiniAOD `SSBAnalyzer` gen-level
+`modules/topCPVCategorizer.py` reproduces the MiniAOD `SSBAnalyzer` gen-level
 categorization (the reference of truth; see `03_miniaod_origin.md`) from the NanoAOD
 `GenPart` collection. It writes derived branches only — the raw gen collections
-come from the full-NanoAOD passthrough — under the `SSBGenCat_` prefix, plus the
-additive diagnostic `Channel_Idx_Expanded`. The standalone SSBGen C++ has been
-updated to the same behaviour, so the two should agree. MC only.
+come from the full-NanoAOD passthrough — under the `TopCPVCat_` prefix, plus the
+additive diagnostic `Channel_Idx_Expanded`. The standalone TopCPV C++ has been
+updated to the same behaviour, so the two should agree. **MC only** (GenPart-less
+inputs are a logged no-op, not a crash — see "MC-only behaviour" below).
 
-## What it emits (prefix `SSBGenCat_`)
+## What it emits (prefix `TopCPVCat_`)
 
 Derived branches (added by this module):
 
@@ -57,9 +58,9 @@ The end-of-job line prints the unclassifiable rate.
 
 ## Fidelity statement (READ THIS)
 
-The **reference is the MiniAOD `SSBAnalyzer`**, not the standalone SSBGen. This
+The **reference is the MiniAOD `SSBAnalyzer`**, not the standalone TopCPV. This
 module follows MiniAOD, with the audit's restorations applied
-(`02_faithfulness_vs_miniaod.md` §9, `../04_DECISIONS.md` → D-2026-06-28-miniaod-reference):
+(`02_faithfulness_vs_miniaod.md` §9, `../03_DECISIONS.md` → D-2026-06-28-miniaod-reference):
 
 - **Background channel** (§2): `Channel_Idx` summed over the **full** selected list
   (MiniAOD §2.1) — background boson-decay channels recovered, not forced to 0.
@@ -74,14 +75,37 @@ module follows MiniAOD, with the audit's restorations applied
   official `GenBHad_FromTopWeakDecay` (mother-chain recompute), `GenJet_HCal/ECalEnergy`,
   B-frag weights.
 
-The standalone SSBGen C++ has been updated to the **same** behaviour, so the two
-should agree (validate with `script/validate_ssbgencat.py`). Integer/categorization
+The standalone TopCPV C++ has been updated to the **same** behaviour, so the two
+should agree (validate with `script/validate_topcpvcat.py`). Integer/categorization
 branches match exactly; float branches to `float32` precision.
+
+## Branch access rules this module obeys (MANDATORY for edits)
+
+See `../06_nanoaod_branch_access.md` and `../00_PROMPT.md` §6:
+
+- Collection lengths come from the **count branch** — `count(event, "GenPart")`,
+  `count(event, "GenJet")`, `opt_count(event, "GenVisTau")` — **never** from
+  probing the array (out-of-bounds `TTreeReaderArray.At()` segfaults; that was
+  CRAB incident A12 on 2026-07-01). Elements are indexed only in-bounds.
+- `UChar_t` elements (`GenJet_hadronFlavour`, …) are compared through `to_int()`.
+- Branch presence is detected in `beginFile` from
+  `inputTree.GetListOfBranches()` — not `hasattr` (A5), not
+  `inputTree.GetBranch(...) is None` (A11).
+
+## MC-only behaviour (data / non-gen inputs)
+
+If `GenPart_pdgId` is absent from the input branch list, `beginFile` logs one
+line and the module becomes a **no-op for that file**: no output branches are
+defined, `analyze` passes every event through (`return True`). This replaces the
+pre-2026-07-01 behaviour (a `RuntimeError` guard that in practice failed to fire
+and let the job crash inside `analyze` — `../05_troubleshooting.md` A11).
+A no-op is still the wrong way to run data: **keep the module out of data
+configs** and use `branch_CPV_Run2_Data.txt` there.
 
 ## Input dependency
 
-Reads `GenPart`, `GenJet`(+`hadronFlavour`), `GenDressedLepton`, `GenVisTau` from
-the input. The MC branch list drops `GenVisTau*` from the **output** — fine,
+Reads `GenPart`, `GenJet`(+`hadronFlavour`), `GenVisTau` (optional) from the
+input. The MC branch list drops `GenVisTau*` from the **output** — fine,
 because modules read the full input tree and only the derived
 `Channel_Visible_Tau` is written. Keep `branch_file` as an output selection
 (NanoAODTools default) so the input `GenVisTau` stays readable here.
@@ -91,19 +115,29 @@ because modules read the full input tree and only the derived
 In a `config_CPV<year>UL.yaml`, point the analysis module at this file:
 
 ```yaml
-analysis_module: ["modules/ssbGenCategorizer.py", "MODULES"]
+analysis_module: ["modules/topCPVCategorizer.py", "MODULES"]
 ```
 
-The file exposes `MODULES = [SSBGenCategorizer()]`. The default branch list is
-MC; the categorizer raises on data (no `GenPart`), so keep it out of data configs.
+The file exposes `MODULES = [TopCPVCategorizer()]`. The default branch list is
+MC. For a quick local sanity run on lxplus:
+
+```bash
+python3 script/run_postproc.py <MC_nanoaod.root> \
+  -I modules.topCPVCategorizer:MODULES \
+  -b branches/branch_CPV_Run2_MC.txt \
+  -N 10
+```
+
+Optional guarded debug printout for the first N events: `TOPCPVCAT_DEBUG=N`
+(environment variable; 0/off by default).
 
 ## Validation
 
-`script/validate_ssbgencat.py` matches events by `(run, luminosityBlock, event)`
-and compares the module output against a standalone SSBGen `GenCatTree` run on the
+`script/validate_topcpvcat.py` matches events by `(run, luminosityBlock, event)`
+and compares the module output against a standalone TopCPV `GenCatTree` run on the
 same file — integers exactly, floats within `--ftol`. Run it on lxplus once per
 campaign change:
 
 ```bash
-python script/validate_ssbgencat.py --nano slimmedNtuple.root --gencat gencat.root
+python script/validate_topcpvcat.py --nano slimmedNtuple.root --gencat gencat.root
 ```

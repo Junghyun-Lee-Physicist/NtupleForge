@@ -11,77 +11,81 @@ types are widened to ``int``/``vector<int>`` transparently by ROOT's typed
 representation.
 
 The Python side, however, accesses the same branches through the
-nanoAOD-tools ``Event`` wrapper, which in newer CMSSW releases (observed
-in CMSSW_14_2_1, ROOT >= 6.30) exposes vector branches as **raw**
-``ROOT.TTreeReaderArray<T>`` proxies rather than wrapped Python lists.
-These raw proxies have two surprising behaviours that have caused real
-silent-failure bugs in NtupleForge modules:
+nanoAOD-tools ``Event`` wrapper, which in newer CMSSW releases (observed in
+CMSSW_14_2_1, ROOT >= 6.30) exposes vector branches as **raw**
+``ROOT.TTreeReaderArray<T>`` proxies rather than wrapped Python lists.  These
+raw proxies have surprising behaviours that have caused real silent-failure
+and hard-crash bugs in this project:
 
 1. ``UChar_t`` element representation
    ROOT exposes ``unsigned char`` elements not as Python ``int`` but as
-   1-byte ``bytes`` objects (e.g. ``b'\\x05'``). Direct comparison with
-   integer literals **always returns False**::
+   1-byte ``bytes`` objects (e.g. ``b'\\x05'``). Direct comparison with an
+   integer literal **always returns False**::
 
-       event.GenJet_hadronFlavour[j] == 5    # b'\\x05' == 5  →  False
+       event.GenJet_hadronFlavour[j] == 5    # b'\\x05' == 5  ->  False
 
-   The cut silently kills every event. NanoAOD branches affected
-   include (non-exhaustive)::
+   The cut silently kills every event. Use ``to_int`` at every ``UChar_t``
+   comparison site. Affected branches include (non-exhaustive)::
 
        GenJet_hadronFlavour, GenJet_partonFlavour
        Jet_hadronFlavour, Jet_partonFlavour, Jet_jetId, Jet_puId
-       FatJet_hadronFlavour, FatJet_jetId
-       SubJet_hadronFlavour
-       GenJetAK8_hadronFlavour
-       Muon_*Id, Electron_*Id (some)
+       FatJet_hadronFlavour, FatJet_jetId, SubJet_hadronFlavour
+       GenJetAK8_hadronFlavour, some Muon_*Id / Electron_*Id
 
-   Verify a suspect branch with::
+2. Getting a collection length — USE THE COUNT BRANCH
+   Python ``len()`` raises ``TypeError`` on a raw ``TTreeReaderArray<T>``.
+   Do **not** try to recover the length by probing the array with
+   out-of-bounds indexing: ``TTreeReaderArray::At(i)`` for ``i >= size`` is
+   undefined behaviour in ROOT and **segfaults** — it does not raise a
+   catchable Python exception. (That footgun caused the CMSSW_14_2_1 CRAB
+   segfault documented in ``docs/05_troubleshooting.md`` A12.)
 
-       leaf = tree.GetBranch(name).GetLeaf(name)
-       print(leaf.GetTypeName())   # 'UChar_t' is the danger flag
+   The correct, crash-free length of any NanoAOD collection ``X`` is its
+   **count branch** ``event.nX`` — a scalar the framework reads cleanly, and
+   the value NanoAOD guarantees equals ``len(X_*)``. Use ``count(event, "X")``
+   (or the standard ``len(Collection(event, "X"))``, which reads the same
+   ``nX`` internally). Read individual elements only **in-bounds**
+   (``arr[i]`` for ``i in range(count)``), which is safe once the entry is
+   loaded.
 
-2. No ``len()`` on raw ``TTreeReaderArray<T>``
-   Python ``len()`` raises ``TypeError`` on the raw proxy. The proxy
-   does support ROOT's ``GetSize()`` method and integer indexing, so
-   the size must be queried through one of those fallback paths.
+   HISTORICAL NOTE (corrected). Earlier docs claimed the ``nX`` count branch
+   was "unreliable as a length" and told callers to derive the length from
+   the array instead. That was a mis-attribution: the observed zero-length
+   counters were a symptom of the *input keep/drop filtering* bug (the driver
+   used to pass ``branchsel=<file>``, zombie-ing input branches — see
+   ``05_troubleshooting.md`` A4). That root cause was fixed
+   (``branchsel=None``; the input tree is read in full), so ``nX`` is the
+   canonical, reliable length again. Deriving length from the array is now
+   both unnecessary and dangerous (see #2 above).
 
-The C++ analyzer side is **not affected** by either issue: ``treestream``
-binds NanoAOD ``UChar_t`` branches to ``vector<int>`` and ROOT performs
-the type widening at read time.
-
-This module is a tiny, self-contained shim that provides safe accessors
-for both quirks. All NtupleForge Python modules that touch NanoAOD vector
-branches should import from here, never re-implement the conversion
-inline. If you find yourself writing ``int(event.SomeBranch[i])`` or
-``len(event.SomeVector)`` raw, stop and use these helpers instead.
+The C++ analyzer side is **not affected** by either issue.
 
 History
 =======
-Discovered during ttbarCategorizer debugging (project transcript
-2026-04-07). Five distinct infrastructure bugs were found in sequence;
-the two captured here are the ones that recur outside categorization.
+UChar_t/bytes and the counter confusion were discovered during ttbar
+categorizer debugging (2026-04). The out-of-bounds-probe segfault surfaced in
+the CPV (TopCPVCategorizer) CRAB run on 2026-07-01.
 """
 from __future__ import annotations
 
 from typing import Any
-import sys
 
 
 # ---------------------------------------------------------------------------
-# UChar_t → int coercion
+# UChar_t -> int coercion
 # ---------------------------------------------------------------------------
 
 def to_int(x: Any) -> int:
     """Coerce a NanoAOD scalar element to a Python ``int``.
 
-    Handles the four shapes that ``TTreeReaderArray`` element access can
-    return depending on the ROOT type of the underlying branch:
+    Handles the shapes that ``TTreeReaderArray`` element access can return
+    depending on the ROOT type of the underlying branch:
 
-    * already ``int``  → returned as-is (fast path)
-    * 1-byte ``bytes``/``bytearray`` (the UChar_t case) → first byte
-    * multi-byte ``bytes``  → little-endian decode (defensive; not
-      expected for any current NanoAOD branch but cheap to support)
-    * 1-character ``str`` (some PyROOT versions)  → ``ord``
-    * anything else  → ``int(x)``
+    * already ``int``  -> returned as-is (fast path)
+    * 1-byte ``bytes``/``bytearray`` (the UChar_t case) -> first byte
+    * multi-byte ``bytes``  -> little-endian decode (defensive)
+    * 1-character ``str`` (some PyROOT versions)  -> ``ord``
+    * anything else  -> ``int(x)``
 
     Idempotent: ``to_int(to_int(x)) == to_int(x)`` for all valid inputs.
 
@@ -106,61 +110,67 @@ def to_int(x: Any) -> int:
 
 
 # ---------------------------------------------------------------------------
-# Vector length probing
+# Collection length — from the count branch (the ONLY safe way)
 # ---------------------------------------------------------------------------
 
-# One-shot warning state: report the first time len() fails on each
-# distinct branch type, then stay quiet to avoid log spam.
-_LEN_FALLBACK_REPORTED: set[str] = set()
+def count(event: Any, collection: str) -> int:
+    """Return the multiplicity of a NanoAOD collection from its count branch.
 
+    ``count(event, "GenPart")`` reads the scalar ``event.nGenPart`` and coerces
+    it to ``int``. This is the canonical NanoAOD length (NanoAOD guarantees
+    ``len(GenPart_*) == nGenPart``) and is crash-free: it never touches a raw
+    ``TTreeReaderArray`` proxy, so it cannot trigger the out-of-bounds
+    ``At()`` segfault (see module docstring #2).
+
+    Equivalent to ``len(Collection(event, "<collection>"))`` from
+    ``PhysicsTools.NanoAODTools...datamodel`` (which reads ``n<collection>``
+    the same way); we use the count branch directly to keep the hot event
+    loop free of per-collection ``Object`` construction.
+
+    Accepts either the bare collection name (``"GenPart"``) or the counter
+    branch name (``"nGenPart"``).
+    """
+    name = collection if collection.startswith("n") and collection[1:2].isupper() \
+        else "n" + collection
+    return to_int(getattr(event, name))
+
+
+def opt_count(event: Any, collection: str) -> int:
+    """Like :func:`count`, but returns 0 if the count branch is absent."""
+    try:
+        return count(event, collection)
+    except Exception:
+        return 0
+
+
+# ---------------------------------------------------------------------------
+# safe_len — DEPRECATED for NanoAOD collections; kept for genuine sequences
+# ---------------------------------------------------------------------------
 
 def safe_len(branch: Any, *, branch_name: str | None = None) -> int:
-    """Return the length of a NanoAOD vector branch, tolerating raw proxies.
+    """Length of a genuine Python sequence, or a raw proxy via ``GetSize()``.
 
-    Three-tier fallback:
+    DEPRECATED for NanoAOD collection lengths: use :func:`count` (the count
+    branch) instead. This function no longer performs the out-of-bounds
+    indexing probe that previously segfaulted on real ``TTreeReaderArray``
+    proxies (``05_troubleshooting.md`` A12). It now does only:
 
-    1. Python ``len()`` — works on nanoAOD-tools wrapped arrays and on
-       any sequence-like object. The fast path.
-    2. ``branch.GetSize()`` — ROOT's standard API for ``TTreeReaderArray``.
-       The middle path; activates on raw proxies in newer CMSSW.
-    3. Integer-indexing probe — increments an index until ``IndexError``
-       or ``RuntimeError``. The last-resort path, capped at 100k to
-       prevent runaway loops on broken inputs.
+    1. Python ``len()`` — works on wrapped arrays and any sequence.
+    2. ``branch.GetSize()`` — for a raw proxy that has already been read.
 
-    The first time path 1 fails for a given branch type (or branch name,
-    if supplied), a single warning is emitted to stderr identifying which
-    fallback was used. Subsequent calls are silent.
-
-    Always prefer this over raw ``len()`` for any NanoAOD vector branch
-    accessed from Python.
+    If neither works it raises ``TypeError`` (fail fast) rather than probing
+    memory. Prefer :func:`count`.
     """
-    # Path 1: Python len()
     try:
         return len(branch)
     except TypeError:
-        key = branch_name or type(branch).__name__
-        if key not in _LEN_FALLBACK_REPORTED:
-            _LEN_FALLBACK_REPORTED.add(key)
-            sys.stderr.write(
-                f"[nanoaod_branch_access.safe_len] len() unsupported for "
-                f"{key!r}, falling back to GetSize()/probe.\n"
-            )
-
-    # Path 2: TTreeReaderArray.GetSize()
-    getsize = getattr(branch, "GetSize", None)
-    if getsize is not None:
-        try:
+        getsize = getattr(branch, "GetSize", None)
+        if getsize is not None:
             return int(getsize())
-        except Exception:
-            pass
-
-    # Path 3: indexing probe
-    for i in range(100_000):
-        try:
-            _ = branch[i]
-        except (IndexError, RuntimeError):
-            return i
-    return 100_000
+        raise TypeError(
+            f"safe_len: cannot determine length of {branch_name or type(branch).__name__!r}; "
+            "use count(event, collection) with the NanoAOD count branch instead."
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -168,7 +178,6 @@ def safe_len(branch: Any, *, branch_name: str | None = None) -> int:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # to_int
     assert to_int(5) == 5
     assert to_int(b"\x05") == 5
     assert to_int(bytearray(b"\x05")) == 5
@@ -176,20 +185,23 @@ if __name__ == "__main__":
     assert to_int(b"\x00\x01") == 256  # little-endian
     print("to_int: OK")
 
-    # safe_len fallback paths
-    class _FakeProxy:
-        """Mimics raw TTreeReaderArray: no len(), has GetSize(), indexable."""
-        def __init__(self, n: int):
-            self._n = n
-        def GetSize(self) -> int:
-            return self._n
-        def __getitem__(self, i: int) -> int:
-            if 0 <= i < self._n:
-                return i
-            raise IndexError(i)
+    class _FakeEvent:
+        nGenPart = 7
+        nGenVisTau = 3
+    assert count(_FakeEvent(), "GenPart") == 7
+    assert count(_FakeEvent(), "nGenPart") == 7
+    assert count(_FakeEvent(), "GenVisTau") == 3
+    assert opt_count(_FakeEvent(), "GenJet") == 0   # absent -> 0
+    print("count/opt_count: OK")
 
-    assert safe_len([1, 2, 3]) == 3                         # path 1
-    assert safe_len(_FakeProxy(7), branch_name="fake") == 7 # path 2
+    assert safe_len([1, 2, 3]) == 3
+    class _Proxy:
+        def GetSize(self): return 5
+    assert safe_len(_Proxy(), branch_name="p") == 5
+    try:
+        safe_len(object(), branch_name="broken")
+        raise SystemExit("safe_len should have raised")
+    except TypeError:
+        pass
     print("safe_len: OK")
-
     print("All self-tests passed.")

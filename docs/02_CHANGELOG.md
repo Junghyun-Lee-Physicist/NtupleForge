@@ -9,18 +9,79 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-01: TopCPV rename, CRAB crash fixes, docs restructure
+
+### Changed (rename — no logic change by itself)
+- **Module renamed** `modules/ssbGenCategorizer.py` → **`modules/topCPVCategorizer.py`**;
+  class `SSBGenCategorizer` → **`TopCPVCategorizer`**; **branch prefix**
+  `SSBGenCat_` → **`TopCPVCat_`**; debug env `SSBGENCAT_DEBUG` → **`TOPCPVCAT_DEBUG`**;
+  validator `script/validate_ssbgencat.py` → **`script/validate_topcpvcat.py`**;
+  the standalone C++ shorthand "SSBGen" → "TopCPV" in prose. The **external
+  MiniAOD class name `SSBAnalyzer` is intentionally preserved** everywhere (it
+  is the reference of truth, not our code). `config_CPV*` `analysis_module`
+  entries updated. Rename safety per `00_PROMPT.md` §7: `crab/submit_crab.py`
+  ships every sibling `.py` name-agnostically and derives `-I` from the config
+  basename, and a repo-wide grep confirms zero stale `SSBGen*`/`ssb_gencat`
+  tokens — **a real CRAB job must still confirm** (no CRAB in the dev container).
+  See `03_DECISIONS.md` → D-2026-07-01-rename-topcpv.
+  ⚠️ **Old and new ntuples differ in branch names** (`SSBGenCat_*` vs
+  `TopCPVCat_*`) — downstream readers must switch prefixes.
+- **Docs restructured into per-workstream subdirectories**: `docs/ssb_gencat/` →
+  **`docs/TopCPV/`**; `02_physics.md` → **`ttHH/01_physics.md`**;
+  `09_legacy_ttbar_pipeline.md` → **`ttHH/02_legacy_ttbar_pipeline.md`**;
+  `docs/legacy/` → **`docs/ttHH/legacy/`**; new local index `ttHH/README.md`.
+  Root docs renumbered contiguously (§3.1): `03_CHANGELOG`→`02_CHANGELOG`,
+  `04_DECISIONS`→`03_DECISIONS`, `05_architecture`→`04_architecture`,
+  `06_troubleshooting`→`05_troubleshooting`,
+  `07_nanoaod_branch_access`→`06_nanoaod_branch_access`,
+  `08_DeveloperGuideline`→`07_DeveloperGuideline`. All cross-links rewritten;
+  link check passed. `00_PROMPT.md` stays the **single** prompt doc covering
+  both workstreams. Top-level `README.md` and `docs/README.md` rewritten in
+  Korean. See D-2026-07-01-docs-topcpv-tthh-split.
+
+### Fixed (first CPV CRAB production crashes, 2026-07-01)
+- **MC segfault** (`TTZToQQ`, every job): `safe_len`'s out-of-bounds indexing
+  probe on a raw `TTreeReaderArray` (`GenPart_pdgId`) hit ROOT undefined
+  behaviour (`TObjectArrayReader::At` → `TBranchProxy::Setup` → SIGSEGV).
+  **Lengths now come from the count branch** via new helpers
+  `count(event, "X")` / `opt_count(event, "X")` in
+  `modules/nanoaod_branch_access.py`; `safe_len` was de-fanged (no probe;
+  fails fast) and deprecated for collections. The old "nGenPart is unreliable"
+  doctrine was a mis-attribution of the A4 zombie-branch bug and is corrected
+  in `06_nanoaod_branch_access.md`. Incident: `05_troubleshooting.md` **A12**;
+  decision: D-2026-07-01-count-branch-length.
+- **Data crash** (`SingleElectron_Run2017B`, every job): the MC-only guard
+  `inputTree.GetBranch("GenPart_pt") is None` did not fire through the
+  nanoAOD-tools wrapper, so data reached `analyze` and died on
+  `Unknown branch GenPart_pdgId`. `beginFile` now detects presence via
+  `GetListOfBranches()` (the A5 pattern) and a GenPart-less file makes the
+  module a logged **no-op** instead of crashing. Data/MC config split remains
+  OPEN (`01_STATUS.md`). Incident: `05_troubleshooting.md` **A11**.
+- Both fixes are **logic-tested in-container only** (stub harness: data no-op;
+  synthetic ttbar event writes 46 branches, `GenPar_Count=12`,
+  `GenBJet_Count=1`). **Unverified on real NanoAOD** — validate on lxplus
+  (`-N 10` local run, then `validate_topcpvcat.py`) before resubmitting.
+
+### Added
+- `count()` / `opt_count()` in `modules/nanoaod_branch_access.py` (count-branch
+  collection lengths); Pitfall 3 (branch-presence detection) documented in
+  `06_nanoaod_branch_access.md`.
+- `docs/ttHH/README.md` — local index for the ttHH workstream docs.
+
+---
+
 ## [Unreleased] — CPV gen-level categorizer (MiniAOD-faithful)
 
 Added the NanoAOD module + CRAB configs to produce the top-CP-violation (CPV)
 gen-categorization ntuples. **Reference of truth = the MiniAOD `SSBAnalyzer`**
-(not the intermediate standalone SSBGen); the audit's restorations are applied to
-**both** the module and the standalone SSBGen C++ (see `04_DECISIONS.md` →
+(not the intermediate standalone TopCPV); the audit's restorations are applied to
+**both** the module and the standalone TopCPV C++ (see `03_DECISIONS.md` →
 D-2026-06-28-miniaod-reference).
 
 ### Added
-- **`modules/ssbGenCategorizer.py`** — reproduces the MiniAOD `SSBAnalyzer`
+- **`modules/topCPVCategorizer.py`** — reproduces the MiniAOD `SSBAnalyzer`
   gen-level categorization from the NanoAOD `GenPart` collection. Emits **derived
-  branches only**, prefix `SSBGenCat_` (12-slot family tree, `Channel_*` codes,
+  branches only**, prefix `TopCPVCat_` (12-slot family tree, `Channel_*` codes,
   top/antitop kinematics, ghost-B GenBJet/GenBHad); raw gen collections come from
   the full-NanoAOD passthrough. **MiniAOD-faithful channel:** `Channel_Idx` summed
   over the full selected list (§2.1, recovers background channels); `Channel_Idx_Final`
@@ -30,8 +91,8 @@ D-2026-06-28-miniaod-reference).
   bonuses kept (`Channel_Visible_Tau`, `Channel_Tau_Lepton`); last-copy top, explicit
   W⁻ daughters, `GenBJet` via `GenJet_hadronFlavour` kept (audit §3/§4/§6). MC only.
   Uses `to_int`/`safe_len` from the re-instated `modules/nanoaod_branch_access.py`
-  (mandatory; see `07_nanoaod_branch_access.md`). Logic-tested in-container (all-hadronic /
-  semileptonic-τ / background); byte-identity vs. SSBGen to confirm on lxplus.
+  (mandatory; see `06_nanoaod_branch_access.md`). Logic-tested in-container (all-hadronic /
+  semileptonic-τ / background); byte-identity vs. TopCPV to confirm on lxplus.
 - **`crabConfig/config_CPV{2016preVFPUL,2016postVFPUL,2017UL,2018UL}.yaml`** —
   per-era CRAB configs (named to stay distinct from the ttHH `config_ttHH*`
   lists), datasets transcribed from the user-provided UL lists (NanoAODv9:
@@ -45,10 +106,10 @@ D-2026-06-28-miniaod-reference).
   re-keep specific HLT; MC also drops GenIsolatedPhoton/GenVisTau/HTXS/
   SubGenJetAK8). Note: the MC list drops `GenVisTau*` from the *output*, which the
   module reads from the *input* — keep `branch_file` as an output selection.
-- **`script/validate_ssbgencat.py`** — lxplus equivalence checker (matches events
+- **`script/validate_topcpvcat.py`** — lxplus equivalence checker (matches events
   by run/lumi/event; ints exact, floats within `--ftol`).
-- **`docs/04_DECISIONS.md`** (decision log) and **`docs/01_STATUS.md`** (status) — both
-  were missing vs. the documentation guideline; created here. **`docs/ssb_gencat/`**
+- **`docs/03_DECISIONS.md`** (decision log) and **`docs/01_STATUS.md`** (status) — both
+  were missing vs. the documentation guideline; created here. **`docs/TopCPV/`**
   gained a `README.md` index and a `01_module.md` module reference.
 - **`docs/00_PROMPT.md`** — AI/contributor working agreement (instance of the
   documentation contract §8): persona, reference of truth (MiniAOD), environment
@@ -56,19 +117,19 @@ D-2026-06-28-miniaod-reference).
 
 ### Changed (documentation guideline v2 adoption)
 - **Docs numbered in reading order** (`NN_name.md`), per the contract §3.1:
-  `01_STATUS` → `02_physics` → `03_CHANGELOG` → `04_DECISIONS` → `05_architecture`
-  → `06_troubleshooting` → `07_nanoaod_branch_access` → `08_DeveloperGuideline` →
-  `09_legacy_ttbar_pipeline`; `ssb_gencat/` given local numbering
+  `01_STATUS` → `ttHH/01_physics` → `02_CHANGELOG` → `03_DECISIONS` → `04_architecture`
+  → `05_troubleshooting` → `06_nanoaod_branch_access` → `07_DeveloperGuideline` →
+  `ttHH/02_legacy_ttbar_pipeline`; `TopCPV/` given local numbering
   (`01_module` / `02_faithfulness_vs_miniaod` / `03_miniaod_origin`). `README.md`
   stays unnumbered and lists the order. All cross-links rewritten.
 - **Branch lists renamed** `branchlist_Run2_{Data,MC}.txt` →
   **`branch_CPV_Run2_{Data,MC}.txt`** (CPV-scoped names); `config_CPV*` `branch_file`
   references updated.
 - **PyROOT helper renamed** `modules/_nanoaod_compat.py` →
-  **`modules/nanoaod_branch_access.py`** (clearer role); the `ssbGenCategorizer`
-  import and the doc (now `07_nanoaod_branch_access.md`) updated. The archived copy
-  under `docs/legacy/code/` keeps its original name for historical accuracy.
-- **`ssbGenCategorizer` guarded validation logging**: env `SSBGENCAT_DEBUG=N` prints
+  **`modules/nanoaod_branch_access.py`** (clearer role); the `topCPVCategorizer`
+  import and the doc (now `06_nanoaod_branch_access.md`) updated. The archived copy
+  under `docs/ttHH/legacy/code/` keeps its original name for historical accuracy.
+- **`topCPVCategorizer` guarded validation logging**: env `TOPCPVCAT_DEBUG=N` prints
   per-event derived quantities for the first N events, then stays silent (never logs
   unboundedly in the event loop). Off by default.
 
@@ -80,9 +141,9 @@ D-2026-06-28-miniaod-reference).
   `nanoaod_branch_access.py` from the sandbox; (2) the module's relative-import
   fallback cannot work in CRAB's flat (top-level) import context. Fix: `submit_crab.py`
   now ships **every** sibling `.py` (except the analysis module and dunders), and
-  `ssbGenCategorizer.py` puts its own dir on `sys.path` via `__file__` before importing.
-  See `06_troubleshooting.md` A0. Follow-up: generalized this class of bug into
-  **Rule 7 (rename/move safety)** in `08_DeveloperGuideline.md`, `00_PROMPT.md` §7, and
+  `topCPVCategorizer.py` puts its own dir on `sys.path` via `__file__` before importing.
+  See `05_troubleshooting.md` A0. Follow-up: generalized this class of bug into
+  **Rule 7 (rename/move safety)** in `07_DeveloperGuideline.md`, `00_PROMPT.md` §7, and
   the documentation contract §8.3 (flag hidden glob/hardcoded-path file couplings).
 
 ---
@@ -135,36 +196,36 @@ knowledge lives in `docs/`.
   reminder that memory/walltime failures need a manual
   `crab resubmit --maxmemory/--maxjobruntime` (see troubleshooting A10).
 - `docs/` reorganized into the documentation categories:
-  - `08_DeveloperGuideline.md` — contributor rules (read all docs first; log every change
+  - `07_DeveloperGuideline.md` — contributor rules (read all docs first; log every change
     and every problem; which doc each record goes in).
-  - `05_architecture.md` — framework internals **plus a copy-followable how-to
+  - `04_architecture.md` — framework internals **plus a copy-followable how-to
     for writing a module that adds branches / applies cuts** (§6).
-  - `02_physics.md` — physics basis (analysis target, stitching, five categories,
+  - `ttHH/01_physics.md` — physics basis (analysis target, stitching, five categories,
     `genTtbarId` encoding, why five not seven), split out of the legacy doc.
-  - `06_troubleshooting.md` — consolidated incident log (every bug: symptom,
+  - `05_troubleshooting.md` — consolidated incident log (every bug: symptom,
     error signature, root cause, fix, validation) + how validation works.
-  - `09_legacy_ttbar_pipeline.md` — implementation record of the retired
-    categorizer (physics delegated to `02_physics.md`).
-  - `07_nanoaod_branch_access.md` — why the PyROOT compat shim existed.
-  - `03_CHANGELOG.md` — this file.
-- `docs/legacy/code/` — verbatim archive of the categorization pipeline
+  - `ttHH/02_legacy_ttbar_pipeline.md` — implementation record of the retired
+    categorizer (physics delegated to `ttHH/01_physics.md`).
+  - `06_nanoaod_branch_access.md` — why the PyROOT compat shim existed.
+  - `02_CHANGELOG.md` — this file.
+- `docs/ttHH/legacy/code/` — verbatim archive of the categorization pipeline
   (categorizer module, compat shim, slimming branch list, branch inventories,
   original CRAB config).
 
 ### Removed (from the live tree)
 - `modules/ttbarCategorizer.py` (the module that used to write the twelve
   `ttCat_*` / `ttCatXval_*` categorization branches) and its
-  `modules/_nanoaod_compat.py` helper → moved to `docs/legacy/code/`. The
+  `modules/_nanoaod_compat.py` helper → moved to `docs/ttHH/legacy/code/`. The
   categorization itself now happens in the main analyzer; the full
-  implementation record is kept in `09_legacy_ttbar_pipeline.md`.
+  implementation record is kept in `ttHH/02_legacy_ttbar_pipeline.md`.
 - `branches/branch_ttHHto4b_hadronic_2017UL.txt`, `branches/branch_2017UL/`
-  → archived under `docs/legacy/code/`.
+  → archived under `docs/ttHH/legacy/code/`.
 - `scripts/inspect_weights.py`, `scripts/compare_branches.py`,
   `scripts/dump_branches.py`, `scripts/test_ttbar_categorizer.py` (stale,
   8-category) → **deleted**.
-- `scripts/validate_events.py` → archived to `docs/legacy/code/tools/`
+- `scripts/validate_events.py` → archived to `docs/ttHH/legacy/code/tools/`
   (skim-efficiency QA; the current passthrough has no skim to measure). Its
-  documentation moved to `09_legacy_ttbar_pipeline.md` §8.
+  documentation moved to `ttHH/02_legacy_ttbar_pipeline.md` §8.
 - `checkCrabstatusCommand.txt` → deleted (functionality absorbed into
   `script/parse_crab_status.py --show-lines`).
 - All stale `*.bk*` editor backups deleted; `.gitignore` updated to ignore

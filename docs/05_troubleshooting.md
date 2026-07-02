@@ -4,12 +4,12 @@ This is the consolidated record of **every problem hit during development**,
 with its symptom, the actual error/log signature, the root cause, the fix,
 and how the fix was validated — followed by how the pipeline's **validation**
 mechanisms work. When you hit a new problem, add an entry here (see
-[`08_DeveloperGuideline.md`](08_DeveloperGuideline.md)).
+[`07_DeveloperGuideline.md`](07_DeveloperGuideline.md)).
 
 Many of these surfaced together during the 2026-04-06/07 ttbarCategorizer
 debugging session ("five infrastructure bugs in sequence"); two of them are
-also captured in code as the [`_nanoaod_compat.py`](legacy/code/modules/_nanoaod_compat.py)
-shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
+also captured in code as the [`_nanoaod_compat.py`](ttHH/legacy/code/modules/_nanoaod_compat.py)
+shim (deep dive: [`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md)).
 
 ---
 
@@ -19,7 +19,7 @@ shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
 
 - **Symptom.** First `config_CPV2017UL` CRAB submission: every job fails fast
   (~16 s, exit 195). `run_postproc` log shows
-  `Failed to import module 'ssbGenCategorizer': attempted relative import with no
+  `Failed to import module 'topCPVCategorizer': attempted relative import with no
   known parent package`. The branch-selection file loads fine just before.
 - **Signature.** The module's flat import `from nanoaod_branch_access import …`
   raised `ImportError` (helper absent on the worker), so the relative fallback
@@ -34,7 +34,7 @@ shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
   import as fallback, which can never work in CRAB's flat import context.
 - **Fix.** (1) `submit_crab.py` now ships **every** sibling `.py` in the module's
   directory (except the analysis module and dunders), decoupling a helper's name
-  from whether it ships. (2) `ssbGenCategorizer.py` puts its own directory on
+  from whether it ships. (2) `topCPVCategorizer.py` puts its own directory on
   `sys.path` via `__file__` before importing, so the flat import resolves the
   sibling regardless of package context:
   ```python
@@ -43,7 +43,7 @@ shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
   from nanoaod_branch_access import to_int, safe_len
   ```
 - **Validated by.** In-container simulation of CRAB's `importlib.import_module(
-  "ssbGenCategorizer")` (flat, helper dir not pre-on-path) now imports cleanly; the
+  "topCPVCategorizer")` (flat, helper dir not pre-on-path) now imports cleanly; the
   sandbox helper-glob now lists `nanoaod_branch_access.py`. Confirm on lxplus with a
   real resubmission.
 
@@ -70,10 +70,15 @@ shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
 - **Symptom.** `TypeError` raised on `len(event.GenPart_pdgId)`.
 - **Root cause.** The raw `ROOT.TTreeReaderArray<T>` proxy does not implement
   `__len__`; it only supports `GetSize()` and integer indexing.
-- **Fix.** Use `safe_len(branch, branch_name=...)` — a 3-tier fallback
-  (`len()` → `GetSize()` → indexing probe) instead of raw `len()`.
-- **Validated by.** Loops iterate over the true element count; self-test in
-  `nanoaod_branch_access.py` (`python -m nanoaod_branch_access`).
+- **Fix (as of 2026-04).** Use `safe_len(branch, branch_name=...)` — a 3-tier
+  fallback (`len()` → `GetSize()` → indexing probe) instead of raw `len()`.
+- **⚠️ SUPERSEDED 2026-07-01.** The indexing-probe tier of that fallback is
+  ROOT undefined behaviour and segfaulted in production (**A12**). The current
+  rule is: collection lengths come from the **count branch** via
+  `count(event, "X")`; `safe_len` is de-fanged (no probe) and deprecated for
+  collections. See A12 and `06_nanoaod_branch_access.md` Pitfall 2.
+- **Validated by (historical).** Loops iterated over the true element count;
+  self-test in the shim.
 
 ### A3. Scalar counters (`nGenPart`, `nGenJet`) are not a reliable length
 
@@ -85,11 +90,20 @@ shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
   NO GenJets were found -> everything classified as tt+LF`.
 - **Root cause.** On the raw-proxy access path the scalar `n<Coll>` counter
   branch cannot be trusted as the array length.
-- **Fix** (commit `1fb657b`). Use the **array length** via `safe_len()` on
-  the vector branch (`safe_len(event.GenJet_pt)`), never the `n<Coll>`
-  counter, for loop bounds.
-- **Validated by.** A diagnostic that compared `counter` vs `array size`
-  per event went to 0 mismatches after the fix.
+- **Fix (as of 2026-04**, commit `1fb657b`**).** Use the **array length** via
+  `safe_len()` on the vector branch (`safe_len(event.GenJet_pt)`), never the
+  `n<Coll>` counter, for loop bounds.
+- **⚠️ SUPERSEDED 2026-07-01 — the diagnosis was a mis-attribution.** The
+  broken counters were a *symptom of A4* (input keep/drop → zombie branches),
+  observed in the same session. Once A4 was fixed (`branchsel=None`, input
+  read in full), the `n<Coll>` counters became reliable again; and the
+  array-length workaround this entry mandated is what segfaulted in **A12**.
+  Current rule: lengths from the **count branch** (`count(event, "X")`);
+  never probe the array. See A12, `06_nanoaod_branch_access.md` Pitfall 2, and
+  `03_DECISIONS.md` → D-2026-07-01-count-branch-length.
+- **Validated by (historical).** A diagnostic that compared `counter` vs
+  `array size` per event went to 0 mismatches after the fix — consistent with
+  A4 being the true cause: after `branchsel=None` both sides read correctly.
 
 ### A4. Keep/drop file applied to the input tree → zombie branches
 
@@ -103,7 +117,7 @@ shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
   on input — present but empty.
 - **Fix.** Never filter the input tree: `branchsel=None` (read everything),
   `outputbranchsel=<keep/drop file>` (filter only the output). See
-  [`05_architecture.md`](05_architecture.md) §7.
+  [`04_architecture.md`](04_architecture.md) §7.
 - **Validated by.** endJob source distribution showed `GENTTBARID` ≈ 100% on
   MC ttbar, and the per-category counts matched expectations.
 
@@ -201,6 +215,97 @@ shim (deep dive: [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md)).
   submit/resubmit run so it is hard to miss. `--report` makes the failing
   tasks easy to spot (non-zero `fail` column).
 
+
+### A11. MC-only guard passed a data file → `Unknown branch GenPart_pdgId` crash
+
+- **When.** 2026-07-01, first `config_CPV2017UL` CRAB production
+  (SingleElectron_Run2017B, T2_US_Wisconsin).
+- **Symptom.** Every data job fails with exit 195 (long code 50115). The
+  event loop *starts* (`Pre-select 2026227 entries`) and dies on the first
+  event.
+- **Signature.**
+  ```
+  File "/srv/topCPVCategorizer.py", line 180, in analyze
+    n = safe_len(event.GenPart_pdgId, branch_name="GenPart_pdgId")
+  File ".../framework/treeReaderArrayTools.py", line 80, in readBranch
+    raise RuntimeError("Unknown branch %s" % branchName)
+  RuntimeError: Unknown branch GenPart_pdgId
+  ```
+- **Root cause (two coupled mistakes).** (1) **Config:** the data samples were
+  submitted with the MC branch list *and* the MC-only gen module
+  (`-b branch_CPV_Run2_MC.txt -I topCPVCategorizer:MODULES`) — the per-tier
+  `branch_file`/module split tracked as OPEN in `01_STATUS.md` was not yet
+  wired. (2) **Guard:** the module's `beginFile` protection —
+  `if inputTree.GetBranch("GenPart_pt") is None: raise` — **did not fire** on
+  the data file: through the nanoAOD-tools `InputTree` wrapper, `GetBranch`
+  did not report the branch as absent, so the job proceeded into `analyze`
+  and crashed on the first gen read. Same family as A5 (`hasattr` also cannot
+  be trusted for presence).
+- **Fix.** (1) Presence detection moved to the branch list, the A5 pattern:
+  ```python
+  existing = {b.GetName() for b in inputTree.GetListOfBranches()}
+  self._has_genpart = "GenPart_pdgId" in existing
+  ```
+  (2) Behaviour on absence changed from *raise* to a logged **no-op for that
+  file**: `beginFile` defines no output branches and `analyze` early-returns
+  `True`. Gen content is a property of the *input*, not a code bug, and a
+  crash only makes CRAB burn its 3 automatic retries on the same file. The
+  config-level split (data configs without the gen module, using
+  `branch_CPV_Run2_Data.txt`) remains the real fix and stays OPEN in
+  `01_STATUS.md`.
+- **Validated by.** In-container stub run: a branch list without `GenPart_*`
+  → `_has_genpart=False`, zero branches defined, zero filled, events pass.
+  **Unverified on real data — rerun one data task on lxplus/CRAB to confirm.**
+
+### A12. `safe_len` out-of-bounds indexing probe → segfault on MC (raw `TTreeReaderArray`)
+
+- **When.** 2026-07-01, same campaign (TTZToQQ_TuneCP5_13TeV_amcatnlo,
+  T1_US_FNAL). Every MC job dies in ~20 s, exit 195 (50115).
+- **Symptom / signature.** The tell-tale pair of lines:
+  ```
+  [nanoaod_branch_access.safe_len] len() unsupported for 'GenPart_pdgId', falling back to GetSize()/probe.
+  *** Break *** segmentation violation
+  ```
+  with the crash stack in ROOT:
+  ```
+  #6 ROOT::Detail::TBranchProxy::Setup()
+  #7 (anonymous namespace)::TObjectArrayReader::At(TBranchProxy*, unsigned long)
+  ```
+- **Root cause.** In `CMSSW_14_2_1` (ROOT 6.30) the wrapper hands back
+  `GenPart_pdgId` as a **raw `TTreeReaderArray` proxy**: `len()` raises
+  `TypeError`, so `safe_len` fell through to its fallbacks — `GetSize()` and,
+  ultimately, an **indexing probe** that increments `branch[i]` until an
+  exception. But `TTreeReaderArray::At(i)` for `i >= size` is **undefined
+  behaviour**: it dereferences an unconfigured `TBranchProxy` and segfaults.
+  There is no Python exception to catch; the probe was a loaded gun by design.
+  The probe existed because of A3's advice ("`nGenPart` is unreliable, use
+  the array length") — which itself was a **mis-attribution**: the broken
+  counters A3 observed were a symptom of A4 (input keep/drop zombie
+  branches). A4's fix (`branchsel=None`) restored the counters; the stale
+  advice and its dangerous workaround survived until they crashed here.
+- **Fix.** Lengths now come from the **count branch** — the scalar the
+  NanoAOD format guarantees equals the array length and that reads cleanly as
+  an `int`:
+  ```python
+  n   = count(event, "GenPart")        # event.nGenPart
+  ngj = count(event, "GenJet")         # event.nGenJet
+  nvt = opt_count(event, "GenVisTau")  # 0 if absent
+  ```
+  `count`/`opt_count` were added to `modules/nanoaod_branch_access.py`;
+  `safe_len` was **de-fanged** (no more probing; it fails fast with
+  `TypeError`) and deprecated for collection lengths. Element access stays
+  in-bounds (`arr[i]` for `i in range(n)`), which is safe. Equivalent to the
+  standard `len(Collection(event, "GenPart"))` (same `nGenPart` read) without
+  per-event `Object` construction in the hot loop. A3's guidance is
+  superseded — see the corrected history in
+  [`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md) Pitfall 2 and
+  `03_DECISIONS.md` → D-2026-07-01-count-branch-length.
+- **Validated by.** In-container stub run over a synthetic ttbar event: 46
+  branches written, `isSignal=True`, `GenPar_Count=12`, `GenBJet_Count=1`,
+  UChar_t coercion intact. **Unverified against real NanoAOD — no ROOT in the
+  dev container.** On lxplus: run `-N 10` locally on a TTZToQQ file, then
+  `script/validate_topcpvcat.py` for byte-identity, then resubmit.
+
 ---
 
 ## Part B — Validation
@@ -261,7 +366,7 @@ the `Runs` tree through, so each file carries the partial `genEventCount` for
 its lumi-blocks). The tool that did this, its method, and its important limits
 (unweighted count only; full-run only; cannot detect entirely-missing jobs)
 are documented with the now-archived
-[`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md) §8 →
-[`legacy/code/tools/validate_events.py`](legacy/code/tools/validate_events.py).
+[`ttHH/02_legacy_ttbar_pipeline.md`](ttHH/02_legacy_ttbar_pipeline.md) §8 →
+[`ttHH/legacy/code/tools/validate_events.py`](ttHH/legacy/code/tools/validate_events.py).
 The current full-passthrough pipeline has no skim to measure; copy the tool
 back into `script/` if you reintroduce one.

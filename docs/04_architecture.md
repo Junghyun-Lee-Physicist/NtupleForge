@@ -21,8 +21,8 @@ passthrough*: the post-processor copies the input through unchanged and the
 tt+jets categorization is done downstream in the main analyzer. The
 historical configuration — a categorizer module that wrote `ttCat_*`
 branches, plus an aggressive slimming list, plus an optional skim cut — is
-preserved verbatim under [`legacy/code/`](legacy/code/) and documented in
-[`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md).
+preserved verbatim under [`ttHH/legacy/code/`](ttHH/legacy/code/) and documented in
+[`ttHH/02_legacy_ttbar_pipeline.md`](ttHH/02_legacy_ttbar_pipeline.md).
 
 ---
 
@@ -172,15 +172,15 @@ top-level file `<name>`. Two conventions handle this split:
   listed in the YAML. (Previously only `modules/_*.py` shipped, which coupled a
   helper's *name* to whether it shipped — renaming a helper without the leading
   underscore silently dropped it and broke the job at import time; see
-  [`06_troubleshooting.md`](06_troubleshooting.md).) Why a helper shim is needed at
-  all is its own story — see [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).
+  [`05_troubleshooting.md`](05_troubleshooting.md).) Why a helper shim is needed at
+  all is its own story — see [`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md).
 
 Driver/CLI-flag plumbing without coupling the driver to a specific class is
 done with the **env-var contract + factory** pattern: the driver sets
 environment variables from its argparse flags, and the module's
 `make_default_module()` factory reads them at import time when building
 `MODULES`. The legacy categorizer uses this for its debug flags; see
-[`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md) §"CLI flags".
+[`ttHH/02_legacy_ttbar_pipeline.md`](ttHH/02_legacy_ttbar_pipeline.md) §"CLI flags".
 
 ---
 
@@ -215,7 +215,7 @@ class MyVars(Module):
     def analyze(self, event):
         # nJet / Jet_pt are scalar/Float NanoAOD branches → safe to read
         # directly. (For UChar_t or vector branches read through the compat
-        # shim — see 07_nanoaod_branch_access.md.)
+        # shim — see 06_nanoaod_branch_access.md.)
         njet = event.nJet
         ht = 0.0
         for i in range(njet):
@@ -308,14 +308,14 @@ fake-rate studies.
 ### 6.4 The four rules that prevent silent failures
 
 Every one of these is a real bug we hit (full incident log:
-[`06_troubleshooting.md`](06_troubleshooting.md)):
+[`05_troubleshooting.md`](05_troubleshooting.md)):
 
 1. **Capture `self.out` yourself** in `beginFile`; declare all branches there.
 2. **Reset/fill every declared branch on every event** — an unset branch
    keeps a stale value.
 3. **Read `UChar_t` and vector branches through the compat shim** (`to_int`,
    `safe_len`), never `int(event.X[i])` / `len(event.Vec)` raw — see
-   [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).
+   [`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md).
 4. **Detect optional input branches via `inputTree.GetListOfBranches()`**,
    not `hasattr(event, name)` (the Event wrapper raises `RuntimeError` on a
    missing branch, which `hasattr` does not catch, crashing the job).
@@ -350,7 +350,7 @@ rule above: read the input in full, filter only the output.
 For full passthrough the output filter is `branches/branch_keep_all.txt`
 (`keep *`). For slimming, list the branches to keep after a leading
 `drop *`; the historical example is
-[`legacy/code/branches/branch_ttHHto4b_hadronic_2017UL.txt`](legacy/code/branches/branch_ttHHto4b_hadronic_2017UL.txt).
+[`ttHH/legacy/code/branches/branch_ttHHto4b_hadronic_2017UL.txt`](ttHH/legacy/code/branches/branch_ttHHto4b_hadronic_2017UL.txt).
 
 **Defense in depth (for modules that read specific input branches).** A
 module can re-assert the branches it needs in `beginFile` via
@@ -391,7 +391,7 @@ passthrough locally and on CRAB.
 - CMSSW NanoAODTools framework:
   <https://github.com/cms-sw/cmssw/tree/CMSSW_14_2_X/PhysicsTools/NanoAODTools>
 - For the categorization physics and the full historical pipeline (module +
-  branch list + skim cut), see [`09_legacy_ttbar_pipeline.md`](09_legacy_ttbar_pipeline.md).
+  branch list + skim cut), see [`ttHH/02_legacy_ttbar_pipeline.md`](ttHH/02_legacy_ttbar_pipeline.md).
 - For why the PyROOT compatibility shim existed, see
-  [`07_nanoaod_branch_access.md`](07_nanoaod_branch_access.md).
-- For the change history, see [`03_CHANGELOG.md`](03_CHANGELOG.md).
+  [`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md).
+- For the change history, see [`02_CHANGELOG.md`](02_CHANGELOG.md).

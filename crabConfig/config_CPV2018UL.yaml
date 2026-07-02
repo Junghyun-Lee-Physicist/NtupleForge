@@ -10,7 +10,7 @@
 #         NOTE comment had a transcription artifact normalized — verify on DAS.
 # PLACEHOLDER (analyst to set): everything in `common:` below.
 #   - jobID / output_base       : temporary tags
-#   - analysis_module           : -> modules/ssbGenCategorizer.py (SSBGen port)
+#   - analysis_module           : -> modules/topCPVCategorizer.py (TopCPV port)
 #   - branch_file               : Data and MC use DIFFERENT branch lists:
 #         Data -> branches/branch_CPV_Run2_Data.txt
 #         MC   -> branches/branch_CPV_Run2_MC.txt
@@ -24,7 +24,7 @@ common:
   jobID: "TEMP_CPV2018UL_v0"
   site: "T3_KR_KNU"
   output_base: "TEMP_CPV2018UL_v0"
-  analysis_module: ["modules/ssbGenCategorizer.py", "MODULES"]
+  analysis_module: ["modules/topCPVCategorizer.py", "MODULES"]
   branch_file: "branches/branch_CPV_Run2_MC.txt"   # TEMP (MC list); Data uses branch_CPV_Run2_Data.txt
   splitting: "FileBased"
   units_per_job: 1

@@ -1,4 +1,4 @@
-"""ssbGenCategorizer — NtupleForge NanoAOD-PostProcessor module.
+"""topCPVCategorizer — NtupleForge NanoAOD-PostProcessor module.
 
 Reproduces the gen-level top-decay categorization of the legacy MiniAOD
 ``SSBAnalyzer`` (``GenPar()``/``GenJet()``/``GenMET()``/ghost-B) for the
@@ -6,18 +6,18 @@ top-CP-violation (CPV) analysis, rebuilding a parton-level family tree from the
 NanoAOD ``GenPart`` collection and writing the derived branches.
 
 **Reference of truth = the MiniAOD ``SSBAnalyzer`` code** (see
-``docs/ssb_gencat/miniaod_origin.md``), NOT the intermediate standalone
-``SSBGenCategorizer``. Where the standalone simplified the MiniAOD logic, this
-module follows MiniAOD; the audit in ``faithfulness_vs_miniaod.md`` enumerates
+``docs/TopCPV/03_miniaod_origin.md``), NOT the intermediate standalone
+``TopCPVCategorizer``. Where the standalone simplified the MiniAOD logic, this
+module follows MiniAOD; the audit in ``docs/TopCPV/02_faithfulness_vs_miniaod.md`` enumerates
 every point. The C++ standalone is being brought to the same behaviour, so the
-two should agree (validate with ``script/validate_ssbgencat.py``).
+two should agree (validate with ``script/validate_topcpvcat.py``).
 
-Design (see docs/ssb_gencat/)
+Design (see docs/TopCPV/)
 -----------------------------
 * **Derived branches only.** NtupleForge's default pipeline passes the full
   NanoAOD through, so ``GenPart``, ``GenJet`` (+``hadronFlavour``), ``GenMET``,
   ``GenVisTau`` and ``PSWeight`` already exist in the output ``Events`` tree. This
-  module adds **only** the derived quantities, under the ``SSBGenCat_`` prefix,
+  module adds **only** the derived quantities, under the ``TopCPVCat_`` prefix,
   and does not re-emit the raw collections (which would collide with the
   passthrough ``GenJet_*`` / ``GenMET_*`` / ``PSWeight_*``). No ``GenCatTree``.
 * **MiniAOD-faithful channel.** ``Channel_Idx`` is summed over the **full**
@@ -50,7 +50,10 @@ because modules read the full input tree and only the derived
 ``Channel_Visible_Tau`` is written. Keep ``branch_file`` as an output selection
 (NanoAODTools default) so the input ``GenVisTau`` stays readable here.
 
-MC only: the module raises if ``GenPart`` is absent. Do not add it to data configs.
+MC only: if ``GenPart`` is absent (data / non-gen input) the module logs once in
+``beginFile`` and becomes a **no-op** (no output branches, ``analyze`` passes
+events through). Still: do not add it to data configs — data must run with
+``branch_CPV_Run2_Data.txt`` and no gen module.
 """
 from __future__ import annotations
 
@@ -60,30 +63,34 @@ import sys
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
-# PyROOT-level NanoAOD access helpers (REQUIRED — see docs/07_nanoaod_branch_access.md):
+# PyROOT-level NanoAOD access helpers (REQUIRED — see docs/06_nanoaod_branch_access.md):
 #  * to_int : UChar_t / Bool_t elements come back as bytes under PyROOT raw
 #             proxies, so `x == 5` / `if x:` silently misbehave.
-#  * safe_len : scalar counters (nGenPart, ...) are unreliable as lengths in the
-#               raw-proxy mode; take the length from the array instead.
+#  * count / opt_count : collection length from the COUNT BRANCH
+#             (event.nGenPart, ...). NEVER derive a length by probing the
+#             array — TTreeReaderArray.At(i) for i>=size is undefined
+#             behaviour in ROOT and segfaults (it does NOT raise a catchable
+#             exception). See 06_nanoaod_branch_access.md #2 and
+#             05_troubleshooting.md A12. Read elements only in-bounds.
 #
 # CRAB flattens the sandbox and imports this module FLAT (top-level, no parent
 # package), so a relative import cannot work on the worker. Put this file's own
 # directory on sys.path so the sibling helper is found regardless of how the
-# module was loaded (flat on CRAB, or as `modules.ssbGenCategorizer` locally).
+# module was loaded (flat on CRAB, or as `modules.topCPVCategorizer` locally).
 _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 try:
-    from nanoaod_branch_access import to_int, safe_len       # flat (same dir on sys.path)
-except ImportError:                                          # local package context
-    from .nanoaod_branch_access import to_int, safe_len
+    from nanoaod_branch_access import to_int, count, opt_count   # flat (same dir on sys.path)
+except ImportError:                                              # local package context
+    from .nanoaod_branch_access import to_int, count, opt_count
 
 # GenPart_statusFlags bit (NanoAODv9). Only the two we use are named here.
 _IS_LAST_COPY = 1 << 13
 _FROM_HARD_PROCESS = 1 << 8
 
 # GenPar 12-slot static wiring (mother/daughter slot indices), identical to
-# SSBGenCategorizer::FillSignalSelection.
+# TopCPVCategorizer::FillSignalSelection.
 _PARENT_SLOT = (-1, -1, -1, -1, 2, 2, 3, 3, 4, 4, 6, 6)
 _DAU1_SLOT = (-1, -1, 4, 6, 8, -1, 10, -1, -1, -1, -1, -1)
 _DAU2_SLOT = (-1, -1, 5, 7, 9, -1, 11, -1, -1, -1, -1, -1)
@@ -102,19 +109,24 @@ def _energy(pt: float, eta: float, mass: float) -> float:
     return math.sqrt(pt * pt * ch * ch + mass * mass)
 
 
-class SSBGenCategorizer(Module):
-    """Faithful NanoAOD port of the SSBGenCategorizer gen-level categorization."""
+class TopCPVCategorizer(Module):
+    """NanoAOD reproduction of the MiniAOD SSBAnalyzer gen-level categorization."""
 
-    def __init__(self, prefix: str = "SSBGenCat_"):
+    def __init__(self, prefix: str = "TopCPVCat_"):
         self.p = prefix
         self._n_total = 0
         self._n_signal = 0
         self._n_unclassifiable = 0  # isSignal & incomplete 12-slot build
-        # Guarded validation logging: set env SSBGENCAT_DEBUG=N to print the
+        # Set in beginFile from the input branch list (A5/A11 pattern): True only
+        # if GenPart is present. Guards analyze() so a stray data/non-gen file is
+        # a no-op instead of a crash. Defaults False so analyze is safe even if
+        # beginFile were skipped.
+        self._has_genpart = False
+        # Guarded validation logging: set env TOPCPVCAT_DEBUG=N to print the
         # derived quantities for the first N events, then stay silent (never
         # logs unboundedly inside the event loop). 0 = off.
         try:
-            self._debug_n = int(os.environ.get("SSBGENCAT_DEBUG", "0") or "0")
+            self._debug_n = int(os.environ.get("TOPCPVCAT_DEBUG", "0") or "0")
         except ValueError:
             self._debug_n = 0
 
@@ -125,7 +137,7 @@ class SSBGenCategorizer(Module):
     def endJob(self):
         frac = (self._n_unclassifiable / self._n_signal) if self._n_signal else 0.0
         print(
-            "[ssbGenCategorizer] processed={tot} signal(ttbar)={sig} "
+            "[topCPVCategorizer] processed={tot} signal(ttbar)={sig} "
             "unclassifiable(Channel_Idx_Expanded==-999)={bad} ({pct:.3f}% of signal)".format(
                 tot=self._n_total, sig=self._n_signal,
                 bad=self._n_unclassifiable, pct=100.0 * frac,
@@ -133,11 +145,22 @@ class SSBGenCategorizer(Module):
         )
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
-        if inputTree.GetBranch("GenPart_pt") is None:
-            raise RuntimeError(
-                "ssbGenCategorizer requires the GenPart collection (MC only). "
-                "Remove this module from data configs."
+        # Presence detection via the input branch LIST, not inputTree.GetBranch()
+        # nor hasattr(): the nanoAOD-tools InputTree wrapper does not reliably
+        # report absence through GetBranch (a data file passed the old
+        # `GetBranch("GenPart_pt") is None` guard and crashed in analyze —
+        # 05_troubleshooting.md A11), and hasattr() raises RuntimeError on a
+        # missing branch rather than returning False (A5). Reading
+        # GetListOfBranches() is the robust pattern.
+        existing = {b.GetName() for b in inputTree.GetListOfBranches()}
+        self._has_genpart = "GenPart_pdgId" in existing
+        if not self._has_genpart:
+            # MC-only module. Data / non-gen inputs: emit nothing, don't crash.
+            print(
+                "[topCPVCategorizer] GenPart absent in input (data or non-gen sample) "
+                "-> module is a no-op for this file. Keep it out of data configs."
             )
+            return
         self.out = wrappedOutputTree
         p = self.p
         b = self.out.branch
@@ -157,7 +180,7 @@ class SSBGenCategorizer(Module):
         for c in ("Idx", "Idx_Final", "Lepton_Count", "Lepton_Count_Final",
                   "Jets", "Jets_Abs", "Tau_Lepton", "Visible_Tau"):
             b(p + "Channel_" + c, "I")
-        b(p + "Channel_Idx_Expanded", "I")  # additive diagnostic (not in SSBGen)
+        b(p + "Channel_Idx_Expanded", "I")  # additive diagnostic (not in TopCPV)
 
         bjet_n = p + "GenBJet_Count"
         bhad_n = p + "GenBHad_Count"
@@ -172,12 +195,21 @@ class SSBGenCategorizer(Module):
 
     # -- per-event ----------------------------------------------------------
     def analyze(self, event):
+        # No-op for files without GenPart (data / non-gen). beginFile already
+        # skipped output-branch setup, so writing here would fail anyway.
+        if not self._has_genpart:
+            return True
+
         p = self.p
         self._n_total += 1
 
-        # Length from the GenPart array, NOT the nGenPart counter (unreliable
-        # under PyROOT raw proxies — see docs/07_nanoaod_branch_access.md).
-        n = safe_len(event.GenPart_pdgId, branch_name="GenPart_pdgId")
+        # Length from the GenPart COUNT BRANCH (event.nGenPart). NanoAOD
+        # guarantees len(GenPart_*) == nGenPart, and reading the scalar counter
+        # never touches a raw TTreeReaderArray proxy — so it cannot trigger the
+        # out-of-bounds At() segfault that the old array-probe caused
+        # (docs/06_nanoaod_branch_access.md #2, 05_troubleshooting.md A12).
+        # Elements below are indexed only in-bounds (i in range(n)), which is safe.
+        n = count(event, "GenPart")
         pdg = event.GenPart_pdgId
         flg = event.GenPart_statusFlags
         mom = event.GenPart_genPartIdxMother
@@ -222,7 +254,7 @@ class SSBGenCategorizer(Module):
                 gp["phi"].append(phi[idx])
                 gp["mass"].append(mass[idx])
                 gp["energy"].append(_energy(pt[idx], eta[idx], mass[idx]))
-            # mother/daughter counters, identical to SSBGen::PushGenPar
+            # mother/daughter counters, identical to TopCPV::PushGenPar
             n_mo, n_da = 2, 2
             if mom1 < 0:
                 n_mo -= 1
@@ -371,7 +403,7 @@ class SSBGenCategorizer(Module):
         # Iterate the FULL selected-particle list (the pushed GenPar indices),
         # exactly as MiniAOD loops `SelectedPar`. For signal this is identical to
         # slots 8-11 (slots 2-7 carry no leptons); for background it recovers the
-        # boson-decay channel SSBGen used to force to 0.
+        # boson-decay channel TopCPV used to force to 0.
         selected_idx = [i for i in gp["Idx"] if i >= 0]
         selected_set = set(selected_idx)
         channel_idx = channel_lepton = 0
@@ -419,8 +451,9 @@ class SSBGenCategorizer(Module):
                     else:
                         channel_idx_final -= dau_pdg
 
-        # Channel_Visible_Tau — NanoAOD bonus (not in MiniAOD)
-        channel_visible_tau = self._opt_len(event, "GenVisTau_pt")
+        # Channel_Visible_Tau — NanoAOD bonus (not in MiniAOD). Count branch;
+        # 0 if GenVisTau is absent from the input.
+        channel_visible_tau = opt_count(event, "GenVisTau")
 
         # -- ComputeChannelJets ---------------------------------------------
         channel_jets = channel_jets_abs = 0
@@ -438,7 +471,7 @@ class SSBGenCategorizer(Module):
         # -- ProcessGenBHadrons ---------------------------------------------
         bjet = {k: [] for k in ("pt", "eta", "phi", "energy")}
         bhad = {k: [] for k in ("pt", "eta", "phi", "energy", "ftwd", "flav")}
-        n_gj = safe_len(event.GenJet_pt, branch_name="GenJet_pt")
+        n_gj = count(event, "GenJet")   # count branch; in-bounds indexing below
         gj_pt = event.GenJet_pt
         gj_eta = event.GenJet_eta
         gj_phi = event.GenJet_phi
@@ -503,7 +536,7 @@ class SSBGenCategorizer(Module):
 
         if self._n_total <= self._debug_n:
             print(
-                "[ssbGenCategorizer:debug] evt#{i} isSignal={sig} "
+                "[topCPVCategorizer:debug] evt#{i} isSignal={sig} "
                 "Channel_Idx={ci} Idx_Final={cf} Idx_Expanded={ce} Jets={cj} "
                 "Lep={cl}/Final={clf} TauLep={tl} VisTau={vt} "
                 "GenPar_Count={gpc} GenBJet_Count={bj}".format(
@@ -517,7 +550,7 @@ class SSBGenCategorizer(Module):
 
         return True
 
-    # -- channel-jets digit codes (identical to SSBGen) ---------------------
+    # -- channel-jets digit codes (identical to TopCPV) ---------------------
     @staticmethod
     def _channel_jets(sel, pdg):
         ch_jets = 0
@@ -547,7 +580,7 @@ class SSBGenCategorizer(Module):
                 a = 100 * (a % 100) + a // 100
         return a
 
-    # -- ghost-B helpers (identical to SSBGen) ------------------------------
+    # -- ghost-B helpers (identical to TopCPV) ------------------------------
     @staticmethod
     def _nearest_bquark(jeta, jphi, n, pdg, flg, eta, phi, max_dr=0.4):
         best = -1
@@ -593,15 +626,6 @@ class SSBGenCategorizer(Module):
             stack.extend(daughters[x])
         return seen
 
-    # -- optional-branch guards ---------------------------------------------
-    @staticmethod
-    def _opt_len(event, branch):
-        """Length of an optional collection via safe_len, 0 if the branch is absent."""
-        try:
-            return safe_len(getattr(event, branch), branch_name=branch)
-        except Exception:
-            return 0
-
 
 # NtupleForge entry point (cf. modules/noop.py, modules/jetsMETcut.py)
-MODULES = [SSBGenCategorizer()]
+MODULES = [TopCPVCategorizer()]
