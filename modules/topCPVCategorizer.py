@@ -112,6 +112,26 @@ def _energy(pt: float, eta: float, mass: float) -> float:
 class TopCPVCategorizer(Module):
     """NanoAOD reproduction of the MiniAOD SSBAnalyzer gen-level categorization."""
 
+    # Every input branch analyze() reads. Pre-registered in beginFile while the
+    # TTreeReader is still clean (eventLoop calls beginFile BEFORE the first
+    # gotoEntry), so that NO reader is ever created mid-loop: nanoAOD-tools'
+    # treeReaderArrayTools rebuilds ALL readers on a brand-new TTreeReader
+    # whenever a reader is added after reading started (_remakeAllReaders),
+    # which silently invalidates every reader object bound earlier — the next
+    # element access dies with ReferenceError("attempt to access a
+    # null-pointer") or a segfault in TObjectArrayReader::At
+    # (docs/05_troubleshooting.md A13).
+    GEN_ARRAY_BRANCHES = (
+        "GenPart_pdgId", "GenPart_statusFlags", "GenPart_genPartIdxMother",
+        "GenPart_status", "GenPart_pt", "GenPart_eta", "GenPart_phi",
+        "GenPart_mass",
+        "GenJet_pt", "GenJet_eta", "GenJet_phi", "GenJet_mass",
+        "GenJet_hadronFlavour",
+    )
+    GEN_COUNTER_BRANCHES = ("nGenPart", "nGenJet", "nGenVisTau")
+
+    _warned_unregistered = False  # one-shot warning flag (see _read_arrays)
+
     def __init__(self, prefix: str = "TopCPVCat_"):
         self.p = prefix
         self._n_total = 0
@@ -161,6 +181,43 @@ class TopCPVCategorizer(Module):
                 "-> module is a no-op for this file. Keep it out of data configs."
             )
             return
+
+        # Fail fast on a partial gen input rather than crash mid-loop later.
+        missing = [b for b in self.GEN_ARRAY_BRANCHES if b not in existing]
+        if missing:
+            raise RuntimeError(
+                "[topCPVCategorizer] input has GenPart but lacks required gen "
+                "branches %s — refusing to run on a partial input." % missing
+            )
+
+        # Pre-register EVERY reader this module will use, while the TTreeReader
+        # is still clean (beginFile runs before the first gotoEntry). After
+        # this, no branch access in analyze() ever creates a new reader, so
+        # nanoAOD-tools never rebuilds the readers mid-loop and locally bound
+        # reader objects stay valid for the whole event loop
+        # (docs/05_troubleshooting.md A13, 06_nanoaod_branch_access.md #4).
+        array_reader = getattr(inputTree, "arrayReader", None)
+        value_reader = getattr(inputTree, "valueReader", None)
+        if array_reader is None or value_reader is None:
+            print(
+                "[topCPVCategorizer] WARNING: InputTree lacks arrayReader/valueReader; "
+                "cannot pre-register readers — lazy mid-loop creation may invalidate "
+                "bound readers (A13)."
+            )
+        else:
+            n_reg = 0
+            for b in self.GEN_ARRAY_BRANCHES:
+                array_reader(b)
+                n_reg += 1
+            for c in self.GEN_COUNTER_BRANCHES:
+                if c in existing:
+                    value_reader(c)
+                    n_reg += 1
+            print(
+                "[topCPVCategorizer] pre-registered %d gen branch readers "
+                "(declare-then-read; keeps the event loop remake-free, A13)" % n_reg
+            )
+
         self.out = wrappedOutputTree
         p = self.p
         b = self.out.branch
@@ -203,21 +260,18 @@ class TopCPVCategorizer(Module):
         p = self.p
         self._n_total += 1
 
-        # Length from the GenPart COUNT BRANCH (event.nGenPart). NanoAOD
-        # guarantees len(GenPart_*) == nGenPart, and reading the scalar counter
-        # never touches a raw TTreeReaderArray proxy — so it cannot trigger the
-        # out-of-bounds At() segfault that the old array-probe caused
-        # (docs/06_nanoaod_branch_access.md #2, 05_troubleshooting.md A12).
-        # Elements below are indexed only in-bounds (i in range(n)), which is safe.
+        # Length from the GenPart COUNT BRANCH (event.nGenPart) — the crash-free
+        # canonical NanoAOD length (docs/06_nanoaod_branch_access.md #2, A12).
+        # Array readers were pre-registered in beginFile, so these binds create
+        # nothing and stay valid; _read_arrays additionally self-heals + warns
+        # if a future edit reads an unregistered branch (A13).
         n = count(event, "GenPart")
-        pdg = event.GenPart_pdgId
-        flg = event.GenPart_statusFlags
-        mom = event.GenPart_genPartIdxMother
-        sta = event.GenPart_status
-        pt = event.GenPart_pt
-        eta = event.GenPart_eta
-        phi = event.GenPart_phi
-        mass = event.GenPart_mass
+        (pdg, flg, mom, sta, pt, eta, phi, mass) = self._read_arrays(
+            event,
+            "GenPart_pdgId", "GenPart_statusFlags", "GenPart_genPartIdxMother",
+            "GenPart_status", "GenPart_pt", "GenPart_eta", "GenPart_phi",
+            "GenPart_mass",
+        )
 
         # mother-index inversion (NanoAOD has no daughter links)
         daughters = [[] for _ in range(n)]
@@ -472,11 +526,11 @@ class TopCPVCategorizer(Module):
         bjet = {k: [] for k in ("pt", "eta", "phi", "energy")}
         bhad = {k: [] for k in ("pt", "eta", "phi", "energy", "ftwd", "flav")}
         n_gj = count(event, "GenJet")   # count branch; in-bounds indexing below
-        gj_pt = event.GenJet_pt
-        gj_eta = event.GenJet_eta
-        gj_phi = event.GenJet_phi
-        gj_mass = event.GenJet_mass
-        gj_hflav = event.GenJet_hadronFlavour
+        (gj_pt, gj_eta, gj_phi, gj_mass, gj_hflav) = self._read_arrays(
+            event,
+            "GenJet_pt", "GenJet_eta", "GenJet_phi", "GenJet_mass",
+            "GenJet_hadronFlavour",
+        )
         for i in range(n_gj):
             if to_int(gj_hflav[i]) != 5:   # UChar_t -> coerce (bytes under PyROOT)
                 continue
@@ -625,6 +679,34 @@ class TopCPVCategorizer(Module):
             seen.add(x)
             stack.extend(daughters[x])
         return seen
+
+    # -- remake-safe multi-branch binding -------------------------------------
+    def _read_arrays(self, event, *names):
+        """Bind several array readers at once, safely w.r.t. reader remakes.
+
+        With every branch pre-registered in beginFile this is a plain read.
+        Safety net: if a future edit reads a branch that was NOT
+        pre-registered, its first access makes nanoAOD-tools rebuild ALL
+        readers on a new TTreeReader (_remakeAllReaders), silently
+        invalidating any reader object obtained earlier in this pass (the next
+        element access raises ReferenceError or segfaults — A13). So if the
+        reader version changed during the pass, read everything once more (all
+        readers exist now, so the second pass is stable) and warn once so the
+        registration list gets fixed.
+        """
+        tree = getattr(event, "_tree", None)
+        v0 = getattr(tree, "_ttreereaderversion", None)
+        vals = [getattr(event, nm) for nm in names]
+        if v0 is not None and tree._ttreereaderversion != v0:
+            vals = [getattr(event, nm) for nm in names]  # re-bind on the fresh readers
+            if not TopCPVCategorizer._warned_unregistered:
+                TopCPVCategorizer._warned_unregistered = True
+                print(
+                    "[topCPVCategorizer] WARNING: reader rebuild during array "
+                    "binding — one of %s is missing from GEN_ARRAY_BRANCHES; add "
+                    "it so the hot loop stays remake-free (A13)." % (names,)
+                )
+        return vals
 
 
 # NtupleForge entry point (cf. modules/noop.py, modules/jetsMETcut.py)

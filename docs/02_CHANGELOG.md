@@ -9,6 +9,35 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-02 (2): fix A13 — pre-register branch readers (2nd CRAB crash)
+
+### Fixed
+- **Second MC CRAB production crash** (`config_CPV2017UL_MC`, 2026-07-02): every
+  MC job died on the first event with `ReferenceError: attempt to access a
+  null-pointer` on an in-bounds `mom[i]` (DYJets) or a segfault in
+  `TObjectArrayReader::At` (QCD). Root cause proved from
+  `treeReaderArrayTools.py` @ CMSSW_14_2_X: lazily creating a reader mid-loop
+  triggers `_remakeAllReaders` (new TTreeReader, all readers recreated),
+  silently invalidating every reader object bound earlier — our back-to-back
+  local binds in `analyze()` produced 7 remakes before the first element read.
+  **Fix:** `beginFile` now pre-registers every reader
+  (`GEN_ARRAY_BRANCHES`/`GEN_COUNTER_BRANCHES` via
+  `inputTree.arrayReader/valueReader`) while the TTreeReader is clean → the
+  loop is remake-free and bound locals stay valid; plus fail-fast on partial
+  gen inputs and a self-healing `_read_arrays` batch binder (re-binds once +
+  warns if a future unregistered read sneaks in). Incident:
+  `05_troubleshooting.md` **A13**; rule: `06_nanoaod_branch_access.md`
+  Pitfall 4; decision: D-2026-07-02-prewarm-readers.
+- **Validation:** reproduced and fixed against the *actual* CMSSW_14_2_X
+  framework sources (`treeReaderArrayTools`/`datamodel`/`eventloop`) over a
+  cppyy-lifetime mock ROOT in the dev container: old pattern reproduces the
+  exact CRAB error; fixed module runs the real `eventLoop` with zero reader
+  rebuilds (46 branches, correct signal quantities; data no-op intact).
+  **Still unverified against real ROOT — lxplus `-N 10` + `validate_topcpvcat.py`
+  before resubmission.**
+
+---
+
 ## [Unreleased] — 2026-07-02: CPV configs split per tier (_Data / _MC)
 
 ### Changed

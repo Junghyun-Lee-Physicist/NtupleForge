@@ -15,12 +15,14 @@
   `ssbGenCategorizer.py`; branch prefix now `TopCPVCat_` —
   `03_DECISIONS.md` → D-2026-07-01-rename-topcpv) — MiniAOD-faithful (full-list
   channel, τ→ℓ gen-tree walk + GenPar append, `Channel_Idx_Expanded`).
-  **2026-07-01: first CRAB production crashed on both tiers and was fixed**
-  (MC: `safe_len` out-of-bounds probe segfault → count-branch lengths, A12;
-  data: MC-only guard didn't fire → `GetListOfBranches` no-op guard, A11 —
-  `05_troubleshooting.md`). Logic-tested in the dev container only.
-  **BLOCKED on lxplus re-validation:** `-N 10` local run on a TTZToQQ file +
-  `validate_topcpvcat.py` byte-identity, then resubmit.
+  **2026-07-01/02: three CRAB crash root-causes fixed in sequence**
+  (A11 data guard → `GetListOfBranches` no-op; A12 `safe_len` probe →
+  count-branch lengths; **A13 stale readers from mid-loop lazy creation →
+  beginFile pre-registration of all readers** — `05_troubleshooting.md`).
+  A13 fix validated in-container against the real CMSSW_14_2_X framework
+  sources (exact error reproduced; fixed module remake-free through the real
+  eventLoop). **BLOCKED on lxplus re-validation:** `-N 10` local run on a
+  TTZToQQ/DYJets file + `validate_topcpvcat.py` byte-identity, then resubmit.
 - **TopCPV C++ (companion):** the standalone `TopCPVCategorizer` was updated in
   lockstep (same restorations). **Must be compiled on lxplus** — there is no ROOT
   in the dev container, so the C++ is syntax-reviewed but not compile-tested.

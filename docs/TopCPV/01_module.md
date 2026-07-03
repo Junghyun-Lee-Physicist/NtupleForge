@@ -88,6 +88,11 @@ See `../06_nanoaod_branch_access.md` and `../00_PROMPT.md` §6:
   probing the array (out-of-bounds `TTreeReaderArray.At()` segfaults; that was
   CRAB incident A12 on 2026-07-01). Elements are indexed only in-bounds.
 - `UChar_t` elements (`GenJet_hadronFlavour`, …) are compared through `to_int()`.
+- **All readers are pre-registered in `beginFile`** (`GEN_ARRAY_BRANCHES` /
+  `GEN_COUNTER_BRANCHES` via `inputTree.arrayReader/valueReader`) so the event
+  loop never triggers a reader rebuild — lazily creating a reader mid-loop
+  invalidates every previously bound reader object (CRAB incident A13,
+  2026-07-02). New branch reads MUST be added to those lists.
 - Branch presence is detected in `beginFile` from
   `inputTree.GetListOfBranches()` — not `hasattr` (A5), not
   `inputTree.GetBranch(...) is None` (A11).

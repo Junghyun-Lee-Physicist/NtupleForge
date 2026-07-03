@@ -76,6 +76,11 @@ explicitly — what changed, why, and the before/after effect — and log it in
     `len(Collection(event, "X"))`). **NEVER probe an array for its length** —
     out-of-bounds `TTreeReaderArray.At(i)` is undefined behaviour and
     segfaults (`05_troubleshooting.md` A12). Index elements only in-bounds.
+  - Reader lifecycle: **pre-register every branch reader in `beginFile`**
+    (`inputTree.arrayReader/valueReader`) — first-accessing a branch mid-loop
+    makes the framework rebuild ALL readers and silently invalidates every
+    reader object bound earlier (`05_troubleshooting.md` A13). Never hold a
+    reader local across a later first-access.
   - Branch presence: read `inputTree.GetListOfBranches()` in `beginFile`;
     **never** `hasattr(event, ...)` (raises `RuntimeError`, A5) and **never**
     trust `inputTree.GetBranch(...) is None` through the nanoAOD-tools wrapper

@@ -11,6 +11,34 @@
 
 ---
 
+## D-2026-07-02-prewarm-readers — pre-register all branch readers in beginFile; no mid-loop reader creation
+**DECIDED · 2026-07-02 · complements D-2026-07-01-count-branch-length (which was necessary but not sufficient)**
+
+- **Context.** The count-branch fix (A12) removed the out-of-bounds probe, but
+  the second CRAB production still crashed (A13): nanoAOD-tools'
+  `_remakeAllReaders` rebuilds every reader on a new TTreeReader whenever a
+  reader is lazily added mid-loop, invalidating previously bound reader
+  objects. Proved from the CMSSW_14_2_X source and reproduced in-container
+  against the real framework files.
+- **Decision.** The module declares its complete input-branch set
+  (`GEN_ARRAY_BRANCHES`, `GEN_COUNTER_BRANCHES`) and `beginFile` registers all
+  readers via `inputTree.arrayReader/valueReader` before the first `gotoEntry`
+  (clean reader → no remake). `analyze()` binds locals through
+  `_read_arrays()`, which re-binds once and warns if the reader version ever
+  changes mid-pass (future-edit safety net). Partial gen inputs fail fast in
+  `beginFile`.
+- **Alternatives.** (a) `Collection`/`Object` everywhere → also correct
+  (per-access re-resolution is remake-immune), but pays a `getattr` +
+  `Object.__getattr__` per element in the hot loop; pre-registration gives the
+  same safety with direct array reads. Documented as the always-safe
+  alternative in `06_nanoaod_branch_access.md` Pitfall 4. (b) Re-binding
+  locals per use without pre-registration → still incurs remakes on event 0
+  and leaves a trap for edits. (c) Patching the framework → rejected before
+  (fork maintenance).
+- **Status.** Framework-level test passes in-container (real
+  `treeReaderArrayTools`/`datamodel`/`eventloop`, mock ROOT with cppyy
+  lifetimes). **Real-ROOT confirmation on lxplus pending.**
+
 ## D-2026-07-02-per-tier-configs — CPV configs split into _Data / _MC files
 **DECIDED · 2026-07-02 · closes the OPEN item in D-2026-06-27-cpv-configs; root fix for A11**
 

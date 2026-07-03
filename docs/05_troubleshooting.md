@@ -307,6 +307,73 @@ shim (deep dive: [`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md)).
   dev container.** On lxplus: run `-N 10` locally on a TTZToQQ file, then
   `script/validate_topcpvcat.py` for byte-identity, then resubmit.
 
+
+### A13. Reader objects invalidated by mid-loop lazy creation → null-pointer / segfault on in-bounds access
+
+- **When.** 2026-07-02, first CRAB run of the A11/A12-fixed module
+  (`config_CPV2017UL_MC`). Every MC job dies on the first event.
+- **Symptom / signature.** Two faces of the same corpse:
+  - DYJetsToLL: a *catchable* error on a plainly **in-bounds** element read —
+    ```
+    File "/srv/topCPVCategorizer.py", line 225, in analyze
+      m = mom[i]
+    ReferenceError: ... TTreeReaderArray<int>::operator[] ...
+      attempt to access a null-pointer
+    ```
+  - QCD_HT2000toInf: hard segfault, stack ending in
+    `TObjectArrayReader::At(TBranchProxy*, unsigned long)` (no
+    `safe_len` fallback message — this is NOT A12 recurring).
+- **Root cause (proved from the framework source,
+  `PhysicsTools/NanoAODTools/python/postprocessing/framework/treeReaderArrayTools.py`
+  @ CMSSW_14_2_X).** `readBranch()` creates readers lazily on first access, and
+  `_makeArrayReader`/`_makeValueReader` call **`_remakeAllReaders(tree)`**
+  whenever the TTreeReader is already reading: a **brand-new TTreeReader** is
+  built, every known reader is **recreated as a new object**, and
+  `tree._ttras`/`_ttrvs`/`_ttreereader` are **replaced**. The old TTreeReader
+  loses its last reference and is destructed; every reader object handed out
+  *before* the remake now dangles. Our `analyze()` bound locals back-to-back —
+  ```python
+  pdg = event.GenPart_pdgId      # remake; pdg on reader v_k
+  flg = event.GenPart_statusFlags  # remake -> pdg dangles
+  mom = event.GenPart_genPartIdxMother  # remake -> flg dangles
+  ... 5 more ...                 # by the loop, pdg..phi ALL dangle
+  for i in range(n): m = mom[i]  # first element read -> boom
+  ```
+  Eight first-accesses = seven remakes on event 0; the first element access hits
+  a dangling proxy (ReferenceError or segfault depending on teardown timing).
+  Note the entry list is NOT involved (the "Pre-select ... (100.00%)" line
+  prints unconditionally, `elist=None` here), and this is
+  **environment-independent** — a local lxplus run of the same code crashes the
+  same way on the first MC event.
+- **Why A12's fix didn't cover it.** A12 removed the out-of-bounds *probe*
+  (length source). This is the orthogonal hazard: *holding* reader objects
+  across later first-accesses. `count()` itself is immune (it re-fetches the
+  value reader from the live dict on every call and never stores it).
+- **Fix (canonical declare-then-read).**
+  1. **Pre-register every reader in `beginFile`** via
+     `inputTree.arrayReader(b)` / `inputTree.valueReader(c)` for all branches in
+     `GEN_ARRAY_BRANCHES` / `GEN_COUNTER_BRANCHES` — `eventLoop` calls
+     `beginFile` *before* the first `gotoEntry`, so the TTreeReader is still
+     clean and readers are added **without any remake**; afterwards no branch
+     access ever creates a reader, so the loop is remake-free and bound locals
+     stay valid.
+  2. Also fail fast in `beginFile` if GenPart is present but any required gen
+     branch is missing (partial input), instead of dying mid-loop.
+  3. Safety net `_read_arrays(event, *names)`: binds a batch and, if the reader
+     version changed during the pass (i.e. a future edit reads an unregistered
+     branch), re-binds once on the fresh readers and warns to extend the
+     registration list.
+- **Validated by.** Framework-level test in the dev container (`/tmp/fw_test.py`)
+  running the **actual CMSSW_14_2_X** `treeReaderArrayTools.py` / `datamodel.py`
+  / `eventloop.py` over a mock ROOT with cppyy lifetime semantics (weakref
+  proxies): the old access pattern **reproduces the exact error**
+  (`ReferenceError: attempt to access a null-pointer
+  (GenPart_genPartIdxMother)` after 7 remakes), and the fixed module runs the
+  real `eventLoop` with reader version 1 → 1 (zero remakes), 46 branches,
+  correct signal quantities; data no-op intact.
+  **Unverified against real ROOT — rerun on lxplus (`-N 10` on a TTZToQQ/DY
+  file, then `validate_topcpvcat.py`) before resubmitting.**
+
 ---
 
 ## Part B — Validation

@@ -158,6 +158,45 @@ self._has_genpart = "GenPart_pdgId" in existing
 
 ---
 
+## Pitfall 4 — reader objects go stale: pre-register readers, never first-access mid-loop
+
+The framework creates branch readers **lazily on first access**, and — the
+load-bearing detail — when a reader is added while the TTreeReader is already
+reading, `treeReaderArrayTools._remakeAllReaders` builds a **new TTreeReader
+and recreates every reader as a new object**, replacing the internal dicts.
+Any reader object you bound to a local *before* that point now belongs to a
+destructed TTreeReader: the next element access raises
+`ReferenceError: attempt to access a null-pointer` or segfaults in
+`TObjectArrayReader::At` — even for perfectly **in-bounds** indices. This
+killed the second CPV CRAB production
+([`05_troubleshooting.md`](05_troubleshooting.md) A13); binding
+`pdg/flg/mom/...` back-to-back meant seven remakes before the first element
+read.
+
+**Rules:**
+
+1. **Pre-register every branch reader in `beginFile`** (which runs before the
+   first `gotoEntry`, i.e. while the TTreeReader is still clean — no remake):
+
+   ```python
+   for b in ALL_ARRAY_BRANCHES:   inputTree.arrayReader(b)
+   for c in ALL_COUNTER_BRANCHES: inputTree.valueReader(c)
+   ```
+
+   After this, no access in `analyze()` creates a reader, the loop is
+   remake-free, and locals bound from `event.X` stay valid.
+2. **Never add a new branch read to `analyze()` without adding it to the
+   registration list.** The module's `_read_arrays` helper self-heals (re-binds
+   once if the reader version changed mid-pass) and warns, but that is a
+   safety net, not a licence.
+3. `count()`/`opt_count()` and any *immediate* `event.X[i]` access are
+   remake-immune (they re-resolve through the live dicts on every call), as is
+   the `Collection`/`Object` idiom (`Object.__getattr__` re-fetches
+   `event.<prefix>_<name>` per access). What is **not** safe is *holding* a
+   reader object across a later first-access.
+
+---
+
 ## Why a shim, not a patch to NanoAOD-tools
 
 The "correct" fix would patch nanoAOD-tools' `Event` wrapper to auto-convert
@@ -180,7 +219,8 @@ to no-ops via their fast paths and no calling code needs to change.
 categorizer debugging (2026-04-06/07; five infrastructure bugs in sequence).
 The out-of-bounds-probe segfault (Pitfall 2) surfaced in the first TopCPV CRAB
 production on 2026-07-01 and prompted the count-branch rule and the corrected
-history above. The archived original shim is at
+history above. The stale-reader hazard (Pitfall 4) surfaced in the second CRAB
+production on 2026-07-02 (A13) and prompted the beginFile pre-registration rule. The archived original shim is at
 [`ttHH/legacy/code/modules/_nanoaod_compat.py`](ttHH/legacy/code/modules/_nanoaod_compat.py)
 (run the active module directly — `python3 modules/nanoaod_branch_access.py` —
 to execute the self-test; the archived copy retains the old name and the old,
