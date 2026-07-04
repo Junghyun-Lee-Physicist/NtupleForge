@@ -144,5 +144,5 @@ same file — integers exactly, floats within `--ftol`. Run it on lxplus once pe
 campaign change:
 
 ```bash
-python script/validate_topcpvcat.py --nano slimmedNtuple.root --gencat gencat.root
+python script/validate_topcpvcat.py --nano forgedNtuple.root --gencat gencat.root
 ```

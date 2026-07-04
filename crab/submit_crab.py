@@ -227,7 +227,7 @@ def main(args):
     # Output Filename Logic
     # ------------------------------------------------------
     # Default output filename (should match process.output.fileName in the PSet)
-    out_name = "slimmedNtuple.root"
+    out_name = "forgedNtuple.root"
 
 
     # -- Arguments File Generation --

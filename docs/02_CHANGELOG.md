@@ -9,6 +9,19 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-05: output file renamed slimmedNtuple.root → forgedNtuple.root
+
+### Changed
+- Output ntuple renamed to `forgedNtuple.root` in BOTH hardcode sites
+  (`crab/PSet.py` fileName, `crab/submit_crab.py` out_name — Rule 6 in
+  `07_DeveloperGuideline.md`); living docs updated, historical
+  CHANGELOG/A10 entries left as-is. Applies from the NEXT campaign tag —
+  tasks already submitted under TEMP_CPV2017UL_MC_v0 keep producing
+  `slimmedNtuple_*.root` (frozen sandbox), so do not mix names under one
+  output_base.
+
+---
+
 ## [Unreleased] — 2026-07-02 (2): fix A13 — pre-register branch readers (2nd CRAB crash)
 
 ### Fixed

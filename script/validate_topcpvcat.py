@@ -10,7 +10,7 @@ ROOT stores float32, so the last ULP can differ — that is expected and benign)
 Usage
 -----
     python validate_topcpvcat.py \
-        --nano   slimmedNtuple.root \           # NtupleForge output (Events tree, TopCPVCat_*)
+        --nano   forgedNtuple.root \           # NtupleForge output (Events tree, TopCPVCat_*)
         --gencat gencat.root \                   # TopCPVCategorizer output (GenCatTree)
         [--prefix TopCPVCat_] [--ftol 1e-4] [--max-print 40]
 
