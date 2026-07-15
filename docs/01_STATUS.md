@@ -23,9 +23,13 @@
   sources (exact error reproduced; fixed module remake-free through the real
   eventLoop). **BLOCKED on lxplus re-validation:** `-N 10` local run on a
   TTZToQQ/DYJets file + `validate_topcpvcat.py` byte-identity, then resubmit.
-- **TopCPV C++ (companion):** the standalone `TopCPVCategorizer` was updated in
-  lockstep (same restorations). **Must be compiled on lxplus** — there is no ROOT
-  in the dev container, so the C++ is syntax-reviewed but not compile-tested.
+- **TopCPV C++ (companion):** the standalone `TopCPVGenCategorizer` (package
+  renamed from `SSBGenCategorizer`, v1.9, 2026-07-11) was updated in
+  lockstep (same restorations). Since 2026-07-10 the C++ IS compile- and
+  run-tested in the dev container via the stub-ROOT cross-check harness
+  (`TopCPVGenCategorizer/validation/crosscheck/`, g++ `-Wall -Wextra` clean,
+  values identical to the Python module on 3 synthetic events). Real-ROOT
+  build + `validate_topcpvcat.py` on lxplus still required before use.
 - **Configs:** per-tier since 2026-07-02 —
   `crabConfig/config_CPV{2016preVFPUL,2016postVFPUL,2017UL,2018UL}_{Data,MC}.yaml`
   (Data = noop + Data branch list; MC = gen module + MC branch list; see
@@ -53,6 +57,10 @@
    rerun `validate_topcpvcat.py`, and do the one-time §2b `TTree::Draw` sanity
    on the DY production. NOTE: MC ntuples produced before 2026-07-10 carry the
    OLD background channel — regenerate background samples (signal unaffected).
+   2026-07-15: first background production attempt crashed with A14
+   (beam-parallel energy overflow) — fixed in both codebases; background tasks
+   must be submitted as NEW tasks with the A14 module (`crab resubmit` reuses
+   the broken sandbox).
 
 4. **Per-tier `branch_file` + module split — DONE 2026-07-02.** Configs split
    into `config_CPV<era>_Data.yaml` (noop + Data branch list) and

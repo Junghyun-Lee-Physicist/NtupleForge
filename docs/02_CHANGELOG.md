@@ -9,6 +9,37 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-15: A14 — beam-parallel energy overflow (background CRAB crash)
+
+### Fixed
+- **`_energy()` OverflowError on status-21 incoming partons** (first CRAB
+  production attempt of the §2b background rebuild; QCD_HT 2017UL): beam-
+  parallel legs carry pt≈0 and NanoAOD eta ~ O(1e4) → `math.cosh` overflow.
+  Now returns the −999 sentinel for |eta| > 50 (+ defensive OverflowError
+  catch). Standalone v1.9.1 applies the identical `SafeEnergy()` at all four
+  energy sites — the C++ would have silently written `inf` instead of
+  crashing, which the validator would have flagged as module/standalone
+  mismatches. Both test harnesses gained the regression (E3 incoming legs at
+  eta ±23000). See troubleshooting A14; MiniAOD comparison note added to the
+  audit §8 (MiniAOD stored real `genPar->energy()` for these rows —
+  unrecoverable from NanoAOD).
+
+---
+
+## [Unreleased] — 2026-07-11: standalone package renamed → TopCPVGenCategorizer
+
+- The standalone reference implementation `SSBGenCategorizer` is renamed
+  **`TopCPVGenCategorizer` (v1.9)**: class, files, directory, include guards,
+  `TopCPVGenStatusBit` namespace, condor scripts, and all package docs.
+  External MiniAOD names quoted as reference (`SSBAnalyzer`, `SSBTree`,
+  `SSBCorrections`, `SSBCPVCalc`) are real upstream identifiers and stay
+  verbatim (D-2026-07-01-rename-topcpv scope). Output format unchanged
+  (`GenCatTree`, branch names, event-id keys) → `validate_topcpvcat.py` and
+  existing GenCatTree outputs remain compatible. Living NtupleForge doc
+  references updated; historical CHANGELOG entries left as written.
+
+---
+
 ## [Unreleased] — 2026-07-10: background selection = MiniAOD §1.6; standalone v1.8 sync
 
 ### Changed (audit §2b resolution — module `topCPVCategorizer.py`)

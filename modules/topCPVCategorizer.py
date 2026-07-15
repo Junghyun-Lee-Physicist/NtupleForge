@@ -106,10 +106,27 @@ _GENPAR_FIELDS = (
 )
 
 
+# |eta| beyond this is a beam-parallel record leg (e.g. status-21 incoming
+# partons: pt~0, NanoAOD eta ~ O(1e3..1e4)), for which E is unrecoverable from
+# (pt, eta, mass) — math.cosh overflows near 710 and Float_t already at ~89.
+# Physical gen particles stay |eta| < ~20, so 50 is a safe, unambiguous cut.
+_ETA_ENERGY_MAX = 50.0
+
+
 def _energy(pt: float, eta: float, mass: float) -> float:
-    """E from (pt, eta, mass): p = pt*cosh(eta), E = sqrt(p^2 + m^2)."""
-    ch = math.cosh(eta)
-    return math.sqrt(pt * pt * ch * ch + mass * mass)
+    """E from (pt, eta, mass): p = pt*cosh(eta), E = sqrt(p^2 + m^2).
+
+    Returns the -999 sentinel for beam-parallel legs (|eta| > _ETA_ENERGY_MAX),
+    where NanoAOD cannot represent the energy (MiniAOD read genPar->energy()
+    directly, so its rows carried real E here — unrecoverable, cf. audit §8).
+    """
+    if abs(eta) > _ETA_ENERGY_MAX:
+        return -999.0
+    try:
+        ch = math.cosh(eta)
+        return math.sqrt(pt * pt * ch * ch + mass * mass)
+    except OverflowError:
+        return -999.0
 
 
 class TopCPVCategorizer(Module):

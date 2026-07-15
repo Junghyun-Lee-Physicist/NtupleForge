@@ -438,3 +438,37 @@ are documented with the now-archived
 [`ttHH/legacy/code/tools/validate_events.py`](ttHH/legacy/code/tools/validate_events.py).
 The current full-passthrough pipeline has no skim to measure; copy the tool
 back into `script/` if you reintroduce one.
+
+## A14 — `OverflowError: math range error` in `_energy` (background samples, 2026-07-15)
+
+**Symptom.** CRAB jobs on background samples (first seen: `QCD_HT*` 2017UL) die
+immediately with
+
+```
+File ".../topCPVCategorizer.py", line 313, in push_genpar
+    gp["energy"].append(_energy(pt[idx], eta[idx], mass[idx]))
+File ".../topCPVCategorizer.py", line 111, in _energy
+    ch = math.cosh(eta)
+OverflowError: math range error
+```
+
+**Cause.** The 2026-07-10 background rebuild (audit §2b, D-2026-07-10-
+background-hardprocess) correctly includes **status-21 incoming partons** in the
+selected list (MiniAOD's TreePar did too). But beam-parallel legs have pt ≈ 0
+and NanoAOD stores their eta as O(1e3..1e4); `math.cosh` overflows past ~710.
+MiniAOD never computed this — it read `genPar->energy()` directly. The signal
+path never hits it (the 12 slots are all physical particles), which is why
+ttbar production and every pre-A14 test passed.
+
+**Fix.** `_energy()` returns the −999 sentinel for `|eta| > 50` (physical gen
+particles stay < ~20) and catches `OverflowError` defensively. The standalone
+applies the identical rule via `SafeEnergy()` at all four energy sites — the
+C++ would not have crashed but would have silently written `inf` to
+`GenPar_energy`, which `validate_topcpvcat.py` would then flag as module (−999)
+vs standalone (inf) mismatches. Regression: E3 in both test harnesses now uses
+beam-parallel incoming legs (eta ±23000, pt 0) and asserts the sentinel.
+
+**Ops note.** Tasks submitted with the pre-A14 sandbox cannot be fixed by
+`crab resubmit` (the module is baked into the sandbox) — kill and submit a NEW
+task with the fixed module. No ntuples were produced by the failed jobs, so
+there is nothing stale to clean.

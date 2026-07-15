@@ -15,7 +15,11 @@ events — 2x ttbar signal (also asserts Channel_Jets 2112/1212 and
 Channel_Idx_Expanded), explicit-Z Z->tautau (must give Channel_Idx=-30, NOT the
 old double-counted -60), and boson-less ME mumu (must give 26, NOT the old 0).
 The same three physics events are asserted, with identical expected values, by
-the standalone C++ harness (SSBGenCategorizer/validation/crosscheck/).
+the standalone C++ harness (TopCPVGenCategorizer/validation/crosscheck/).
+
+Extended 2026-07-15 (A14): ev3's incoming partons now carry beam-parallel
+kinematics (pt 0, eta +-23000) — reproduces the QCD CRAB OverflowError without
+the _energy sentinel and asserts GenPar_energy == -999 for those rows.
 """
 import sys, os, types
 
@@ -74,7 +78,7 @@ pdg3 = [2, -2, 13, -13, 13, -13]
 mom3 = [-1, -1, 0, 0, 2, 3]
 flg3 = [IHP, IHP, IHP, IHP, LAST, LAST]
 sta3 = [21, 21, 23, 23, 1, 1]
-kin3 = [70., 68., 35., 33., 34.8, 32.9]
+kin3 = [0., 0., 35., 33., 34.8, 32.9]   # incoming legs: pt ~ 0
 NEV = 4
 arrays = {
     "GenPart_pdgId": [pdg, pdg, pdg2, pdg3],
@@ -82,7 +86,9 @@ arrays = {
     "GenPart_genPartIdxMother": [mom, mom, mom2, mom3],
     "GenPart_status": [sta, sta, sta2, sta3],
     "GenPart_pt":   [pt, pt, kin2, kin3],
-    "GenPart_eta":  [eta, eta, [0.1]*10, [0.2]*6],
+    # ev3 idx0/1 = status-21 incoming partons: NanoAOD stores beam-parallel
+    # eta as O(1e4) -> math.cosh overflow without the A14 sentinel guard.
+    "GenPart_eta":  [eta, eta, [0.1]*10, [23000.0, -23000.0, 0.2, 0.2, 0.2, 0.2]],
     "GenPart_phi":  [phi, phi, [0.5]*10, [1.0]*6],
     "GenPart_mass": [mass, mass, [0.]*10, [0.]*6],
     "GenJet_pt": [[61.], [61.], [], []], "GenJet_eta": [[0.52], [0.52], [], []],
@@ -170,6 +176,10 @@ assert r3["TopCPVCat_Channel_Idx_Final"] == 26
 assert r3["TopCPVCat_Channel_Lepton_Count_Final"] == 2
 assert r3["TopCPVCat_Channel_Tau_Lepton"] == 0
 assert r3["TopCPVCat_Channel_Idx_Expanded"] == 26
+# A14: beam-parallel incoming legs -> energy sentinel, no OverflowError
+assert r3["TopCPVCat_GenPar_energy"][0] == -999.0
+assert r3["TopCPVCat_GenPar_energy"][1] == -999.0
+assert r3["TopCPVCat_GenPar_energy"][2] > 0.0
 cat.endJob()
 
 # ============ TEST 3: data no-op through the same machinery ============

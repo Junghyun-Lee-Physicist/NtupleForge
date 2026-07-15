@@ -120,7 +120,8 @@ the recursion and the τ-rescue loop are gone. Beam protons remain unrecoverable
 (no rows; cf. §8). Both risks are now regression-tested on synthetic events —
 explicit-Z Z→ττ gives −30 (not −60) and boson-less ME μμ gives 26 (not 0) — in
 `script/test_reader_lifecycle.py` (Python) and the standalone's
-`validation/crosscheck/` harness (C++), which assert **identical values from
+`validation/crosscheck/` harness (C++; package renamed to
+`TopCPVGenCategorizer` on 2026-07-11), which assert **identical values from
 both implementations**. The two `Draw` checks above stay useful as a one-time
 sanity pass on the real DY production after the standalone is rebuilt on lxplus.
 
@@ -264,6 +265,12 @@ MiniAOD friend tree (`docs/TECHNICAL.md` §8 in the TopCPV package).
   module/standalone write `-1`/placeholder rows (pdgId 0, kin −999) and t/t̄
   get `Mom1=Mom2=−1, nMo=0`. Unrecoverable; channel-neutral (pdg 0/2212 are
   not leptons); module ≡ standalone.
+- ⚠️ Related (2026-07-15, A14): `GenPar_energy` of **beam-parallel legs**
+  (status-21 incoming partons, in the background list per §2b) is also
+  unrecoverable — MiniAOD stored real `genPar->energy()`, but NanoAOD gives
+  (pt≈0, eta~O(1e4)) from which E cannot be reconstructed. Both codebases write
+  the −999 sentinel (`|eta| > 50`); pdg/status/Mom/Dau fields of those rows
+  remain valid and MiniAOD-faithful.
 - MC-only, fail-fast on missing `GenPart` — matches the spirit of the original
   (which only ran the block under `!isData`).
 

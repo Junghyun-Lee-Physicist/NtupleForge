@@ -257,7 +257,8 @@ standalone identity is what `validate_topcpvcat.py` certifies; both moved
 together (standalone v1.8).
 
 **Evidence.** Synthetic-event regression in `script/test_reader_lifecycle.py`
-(Python) and `SSBGenCategorizer/validation/crosscheck/` (C++, stub ROOT):
+(Python) and `TopCPVGenCategorizer/validation/crosscheck/` (C++, stub ROOT;
+package renamed from `SSBGenCategorizer`, 2026-07-11):
 identical values from both implementations on ttbar signal / explicit-Z Z→ττ /
 boson-less μμ. Real-file check pending on lxplus (audit §2b Draw one-liners).
 
