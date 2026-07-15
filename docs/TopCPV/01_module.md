@@ -64,6 +64,11 @@ module follows MiniAOD, with the audit's restorations applied
 
 - **Background channel** (§2): `Channel_Idx` summed over the **full** selected list
   (MiniAOD §2.1) — background boson-decay channels recovered, not forced to 0.
+- **Background selection** (§2b, 2026-07-10): picked = every `isHardProcess`
+  particle + status-1/2 leptons with a **direct** t/Z/W/H mother (MiniAOD §1.6
+  equivalent; protons unrecoverable). Replaces the boson-recursion + τ-rescue
+  heuristic, which double-counted τ (explicit-Z → −60) and missed e/μ in
+  boson-less ME records (→ 0). Synchronized with the standalone v1.8.
 - **τ → ℓ final channel** (§5): `Channel_Idx_Final` resolved by **walking the
   GenPart daughter map** (MiniAOD §2.2); the resolved τ daughter is **appended to
   GenPar**, so `GenPar_Count` grows for leptonic-τ events. `GenDressedLepton` not used.
@@ -144,5 +149,5 @@ same file — integers exactly, floats within `--ftol`. Run it on lxplus once pe
 campaign change:
 
 ```bash
-python script/validate_topcpvcat.py --nano forgedNtuple.root --gencat gencat.root
+python script/validate_topcpvcat.py --nano slimmedNtuple.root --gencat gencat.root
 ```

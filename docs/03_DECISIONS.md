@@ -230,6 +230,37 @@
   and soft-τ final-channel edge cases follow `GenDressedLepton`. Flip only with an
   explicit decision here.
 
+## D-2026-07-10-background-hardprocess — MiniAOD-faithful background selection, synchronized
+
+**Decision.** The background (`!isSignal`) selected-particle list is built, in
+BOTH the NtupleForge module and the standalone (v1.8), as: every
+`statusFlags.isHardProcess` particle, then every status-1/2 lepton
+(11 ≤ |pdg| ≤ 16) whose **direct** mother is a top/Z/W/H — both scans in
+ascending GenPart index. No recursion, no τ-rescue loop, no proton rows.
+
+**Why.** MiniAOD §1.6 builds background `SelectedPar` = beam protons + ALL
+status-21–23 particles + `FinalPar` entries with a direct boson mother.
+`isHardProcess` is the copy-specific NanoAOD equivalent of "status 21–23" and is
+hadronizer-independent (collapses the HERWIG branch, cf. §7 of the origin doc).
+The previous heuristic (last-copy bosons + descendants + fromHardProcess-τ
+rescue) provably diverged: τ counted twice when both copies survive pruning
+(explicit-Z Z→ττ → −60 vs MiniAOD −30), and e/μ lost entirely in records with
+no boson row (ME-level ℓℓ → 0 vs ±22/26). Protons are pruned from NanoAOD →
+unrecoverable (documented in audit §8); no placeholder rows since the background
+branch has no fixed layout to preserve.
+
+**Alternatives rejected.** (a) Keep heuristic + document — rejected: the
+divergence hits real DY/TTZ samples used in the analysis. (b) Placeholder
+proton rows for count parity — rejected: fake rows are not MiniAOD's real
+protons and buy nothing downstream. (c) Fix module only — rejected: module ≡
+standalone identity is what `validate_topcpvcat.py` certifies; both moved
+together (standalone v1.8).
+
+**Evidence.** Synthetic-event regression in `script/test_reader_lifecycle.py`
+(Python) and `SSBGenCategorizer/validation/crosscheck/` (C++, stub ROOT):
+identical values from both implementations on ttbar signal / explicit-Z Z→ττ /
+boson-less μμ. Real-file check pending on lxplus (audit §2b Draw one-liners).
+
 ## D-2026-06-27-channel-idx-expanded — diagnostic name & semantics
 **DECIDED · 2026-06-27**
 

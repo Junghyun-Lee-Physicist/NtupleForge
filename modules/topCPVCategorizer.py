@@ -27,7 +27,10 @@ Design (see docs/TopCPV/)
   and the resolved τ daughter is **appended to the GenPar family tree** exactly as
   MiniAOD's ``FillGenPar`` did (so ``GenPar_Count`` grows for leptonic-τ events).
   ``Channel_Idx == 0`` keeps its MiniAOD meaning: all-hadronic **or**
-  unclassifiable.
+  unclassifiable. Background **selection** is MiniAOD §1.6-equivalent
+  (2026-07-10): every ``isHardProcess`` particle + status-1/2 leptons with a
+  direct t/Z/W/H mother (protons unrecoverable; synchronized with the
+  standalone v1.8).
 * **Kept simplifications (audit §3/§4/§6).** Family-tree top is the *last copy*
   (CPV top/antitop momenta come from the faithful ``GenTop``/``GenAnTop``
   branches); W⁻ daughters resolved explicitly; ``GenBJet`` via
@@ -86,8 +89,8 @@ except ImportError:                                              # local package
     from .nanoaod_branch_access import to_int, count, opt_count
 
 # GenPart_statusFlags bit (NanoAODv9). Only the two we use are named here.
+_IS_HARD_PROCESS = 1 << 7   # copy-specific: the status-21..23 hard-process copy itself
 _IS_LAST_COPY = 1 << 13
-_FROM_HARD_PROCESS = 1 << 8
 
 # GenPar 12-slot static wiring (mother/daughter slot indices), identical to
 # TopCPVCategorizer::FillSignalSelection.
@@ -416,33 +419,34 @@ class TopCPVCategorizer(Module):
                 dau2 = sel[_DAU2_SLOT[slot]] if _DAU2_SLOT[slot] >= 0 else -1
                 push_genpar(idx, mom_i, -1, dau1, dau2)
         else:
-            # FillBackgroundSelection: last-copy bosons, their off-flavour
-            # daughters, and hard-process last-copy taus.
-            picked = []
+            # FillBackgroundSelection — MiniAOD §1.6 equivalent (2026-07-10,
+            # synchronized with the standalone v1.8; audit §2b resolution):
+            # MiniAOD's background SelectedPar = beam protons + EVERY status-21..23
+            # particle (the whole hard process, non-boson partons included) +
+            # status-1/2 leptons whose DIRECT mother is a top/Z/W/H.
+            # NanoAOD translation: protons are pruned (unrecoverable — no rows;
+            # unlike the signal branch there is no fixed layout to preserve);
+            # "status 21-23" == statusFlags isHardProcess (copy-specific bit,
+            # hadronizer-independent so the HERWIG branch collapses too); the
+            # boson-daughter finals are appended AFTER the base set, both scanned
+            # in ascending index — matching MiniAOD's TreePar-then-moved-FinalPar
+            # order. Replaces the earlier heuristic (last-copy bosons + recursive
+            # descendants + a hard-process-τ rescue), which (a) double-counted τ
+            # when both the hard-process and last-copy τ survive pruning and
+            # (b) missed e/μ in records without an explicit boson row.
+            picked = [i for i in range(n) if flg[i] & _IS_HARD_PROCESS]
             for i in range(n):
-                if not (flg[i] & _IS_LAST_COPY):
+                s_ = sta[i]
+                if s_ != 1 and s_ != 2:
                     continue
                 a = abs(pdg[i])
-                if a in (6, 23, 24, 25):
+                if a < 11 or a > 16:          # FinalPar: leptons/neutrinos only
+                    continue
+                m = mom[i]
+                if m < 0 or m >= n:
+                    continue
+                if abs(pdg[m]) in (6, 23, 24, 25):   # direct boson mother
                     picked.append(i)
-            for k in range(len(picked)):
-                bidx = picked[k]
-                parent_abs = abs(pdg[bidx])
-                for d in daughters[bidx]:
-                    if abs(pdg[d]) == parent_abs:
-                        continue
-                    picked.append(d)
-            picked_set = set(picked)
-            for i in range(n):
-                if not (flg[i] & _FROM_HARD_PROCESS):
-                    continue
-                if not (flg[i] & _IS_LAST_COPY):
-                    continue
-                if abs(pdg[i]) != 15:
-                    continue
-                if i not in picked_set:
-                    picked.append(i)
-                    picked_set.add(i)
             for idx in picked:
                 mom_i = mom[idx]
                 dau1 = daughters[idx][0] if len(daughters[idx]) > 0 else -1

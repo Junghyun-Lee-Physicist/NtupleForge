@@ -45,12 +45,21 @@
    NanoAODv9 file (module output vs standalone TopCPV `GenCatTree`). Ints must
    match exactly; floats within tol.
 2. **Config `common:` fields.** Set jobID / output_base / splitting for real.
-3. **Per-tier `branch_file` + module split — DONE 2026-07-02.** Configs split
+3. **Background-channel fidelity — code DONE 2026-07-10, lxplus pending.**
+   The MiniAOD-faithful rebuild (isHardProcess base + direct-boson-mother
+   finals; D-2026-07-10-background-hardprocess) is applied to BOTH the module
+   and the standalone (v1.8), with synthetic-event cross-validation green in
+   both languages. Remaining on lxplus: rebuild the standalone with real ROOT,
+   rerun `validate_topcpvcat.py`, and do the one-time §2b `TTree::Draw` sanity
+   on the DY production. NOTE: MC ntuples produced before 2026-07-10 carry the
+   OLD background channel — regenerate background samples (signal unaffected).
+
+4. **Per-tier `branch_file` + module split — DONE 2026-07-02.** Configs split
    into `config_CPV<era>_Data.yaml` (noop + Data branch list) and
    `config_CPV<era>_MC.yaml` (gen module + MC branch list); combined files
    removed (`03_DECISIONS.md` → D-2026-07-02-per-tier-configs). Remaining:
    **verify with one real data CRAB task** (YAML-parse tested only).
-4. **Dataset-path anomalies to verify on DAS** (normalized/flagged by the loader,
+5. **Dataset-path anomalies to verify on DAS** (normalized/flagged by the loader,
    cannot be checked offline):
    - 2016postVFP MC `QCD_Pt_170to300_TuneCP5_13TeV_pythia8`: campaign has `104X`
      (others `106X`) — likely a typo.
@@ -60,8 +69,8 @@
      QCD_Pt-170to300_EM) — prepended.
    - 2017 MC `DYJetsToLL_M-50_TuneCP5_madgraphMLM`: had an extra stray field and a
      missing `/` — normalized.
-5. **NanoAODv15 migration.** Campaign strings change; re-derive dataset paths.
-6. **Restorations (#2/#5/#1).** Applied to both module and TopCPV as of
+6. **NanoAODv15 migration.** Campaign strings change; re-derive dataset paths.
+7. **Restorations (#2/#5/#1).** Applied to both module and TopCPV as of
    2026-06-28 (`03_DECISIONS.md` D-2026-06-28-miniaod-reference). Unrecoverable items
    (GenBHad hadron kinematics, official FromTopWeakDecay, GenJet HCal/ECal energy,
    B-frag weights) remain best-effort / friend-tree only.

@@ -80,6 +80,50 @@ those hold leptons; background: the `picked` list), exactly as MiniAOD loops the
 whole `SelectedPar`. The NtupleForge module implements `ComputeChannelDirect()`
 this way from the start, so background channels are recovered faithfully.
 
+
+### 2b. ✅ Background *selection construction* (2026-07-02 re-audit — **RESOLVED 2026-07-10**)
+
+§2 restored the channel **sum** to run over the full selected list, but the
+re-audit finds the selected list itself is built differently from MiniAOD on the
+background branch:
+
+| | MiniAOD (`03_miniaod_origin.md` §1.6) | module / standalone (`FillBackgroundSelection`) |
+|---|---|---|
+| base set | beam protons (idx 0,1) + **every status 21–23 particle** (the whole hard process, incl. non-boson partons) | **last-copy bosons only** (`|pdg| ∈ {6,23,24,25}`) |
+| decay products | status-1/2 leptons whose **direct mother is a boson** (moved from `FinalPar`) | recursive off-flavour descendants of each picked particle |
+| τ rescue | none needed (status-23 τ is in the base set) | extra loop appends `fromHardProcess && isLastCopy` τ not already picked |
+
+Consequences to check on real files (channel arithmetic itself is ✅ §2):
+
+1. **Explicit-Z `Z→ττ` may double-count.** The recursion picks the τ **first
+   copy** (daughter of Z), the rescue loop then also appends the τ **last copy**
+   (it carries `fromHardProcess`+`isLastCopy` and is not in `picked`) →
+   `Channel_Idx = −60` where MiniAOD gives `−30`. Discriminator on any DY
+   output: `Events->Draw("TopCPVCat_Channel_Idx","TopCPVCat_isSignal==0&&TopCPVCat_Channel_Idx<-20")`
+   — a peak at −60 confirms the double count; −30 refutes it (i.e. NanoAOD
+   pruning dropped one of the two copies).
+2. **Boson-less ME records lose e/μ channels.** If a sample's `GenPart` has no
+   explicit boson row (ME-level ℓℓ with parton mothers), the rescue loop is
+   **τ-only**, so `e/μ` are never picked → `Channel_Idx = 0` where MiniAOD
+   (which takes all status-21–23 particles) gives ±22/±26. Discriminator:
+   fraction of DY events at `Channel_Idx ∈ {22,26}` vs `0`.
+3. **Background `GenPar_*` rows differ regardless** — MiniAOD records the whole
+   hard process (+ protons); the module records bosons + their decays only.
+   Channel-neutral, but any consumer of background `GenPar` rows must know.
+
+**Status — RESOLVED 2026-07-10.** The faithful rebuild is applied to **both**
+codebases (module + standalone v1.8; see `../03_DECISIONS.md` →
+D-2026-07-10-background-hardprocess): base set = every `isHardProcess` particle
+(NanoAOD equivalent of MiniAOD's status-21–23 `TreePar`, hadronizer-independent)
++ status-1/2 leptons with a **direct** boson mother, both in ascending index;
+the recursion and the τ-rescue loop are gone. Beam protons remain unrecoverable
+(no rows; cf. §8). Both risks are now regression-tested on synthetic events —
+explicit-Z Z→ττ gives −30 (not −60) and boson-less ME μμ gives 26 (not 0) — in
+`script/test_reader_lifecycle.py` (Python) and the standalone's
+`validation/crosscheck/` harness (C++), which assert **identical values from
+both implementations**. The two `Draw` checks above stay useful as a one-time
+sanity pass on the real DY production after the standalone is rebuilt on lxplus.
+
 ---
 
 ## 3. ⚠️ Which top copy anchors the family tree
@@ -97,6 +141,10 @@ top. Consequence:
 - `GenTop_*`/`GenAnTop_*` agree with MiniAOD (both ≈ the decaying top). ✅
 - `GenPar` slot 2/3 `pt/eta/phi/mass/energy/Status` **differ** from MiniAOD by the
   hard-process→last-copy FSR difference. ⚠️
+
+Minor (2026-07-02): for **background** events MiniAOD leaves the `GenTop`
+vector branches empty (no status-62 top), while the module writes scalar
+sentinels (−999). Shape/type cosmetic only; module ≡ standalone.
 
 For the CPV triple products, take the top/antitop 4-vectors from the dedicated
 `GenTop`/`GenAnTop` branches (faithful), **not** from the `GenPar` slots (which
@@ -133,6 +181,20 @@ decay?"), **different inputs**. `GenDressedLepton` is FSR-dressed and carries an
 implicit acceptance/`pt` floor, so rare edge cases (very soft τ-daughter leptons,
 dressing differences) can shift `Channel_Idx_Final` relative to the MiniAOD
 gen-tree walk. Equivalent in the bulk; not guaranteed bit-identical.
+
+**Verified line-level (2026-07-02 re-audit).** The module's daughter-map walk was
+checked statement-by-statement against §2.2 of the origin: map iteration in
+ascending τ index (`sorted` ≡ `std::map` key order), per-τ descendant order =
+`FinalPar` order = ascending GenPart index, push-before-pdg-check (intermediate
+same-pdg τ copies enter the selected set but neither fill GenPar nor touch the
+channel), τ removal triggered by the **first** non-same-pdg descendant
+*including neutrinos* (`Lepton_Mom_flag`), and the `<14`/`>14` sign rules for
+mother and daughter — all identical, so `Channel_Idx_Final`,
+`Channel_Lepton_Count_Final`, and the τ-daughter GenPar appends are
+order-exact. Also re-verified: the §2.1 τ-descendant collection is equivalent —
+MiniAOD's `FinalPar` had the τ itself (and its W-sibling ν) already erased,
+which the module reproduces by excluding the walk's start and by ν-siblings
+being unreachable from the τ.
 
 **Restoration.** This is recoverable and matters most for CPV (the τ-veto depends
 on it). NanoAOD keeps τ decay products in `GenPart` (tagged by
@@ -194,7 +256,14 @@ MiniAOD friend tree (`docs/TECHNICAL.md` §8 in the TopCPV package).
   verbatim.
 - τ sign convention (`Channel_Idx -= |pdg|` for τ) — reproduced.
 - `GenMET_pt`/`GenMET_phi` — same quantity.
-- 12-slot layout and the `Mom*/Dau*` wiring table — reproduced.
+- 12-slot layout and the `Mom*/Dau*` wiring table — reproduced **for slots
+  4–11**. ⚠️ Slots 0/1 and the t/t̄ mother fields necessarily differ
+  (2026-07-02 re-audit): MiniAOD writes the **real beam protons** (GenPart
+  indices 0,1 — pdg 2212, true kinematics, `Dau=(t,t̄)`, `nDa=2`) and gives
+  t/t̄ `Mom1=0, Mom2=1, nMo=2`; NanoAOD **prunes beam protons**, so the
+  module/standalone write `-1`/placeholder rows (pdgId 0, kin −999) and t/t̄
+  get `Mom1=Mom2=−1, nMo=0`. Unrecoverable; channel-neutral (pdg 0/2212 are
+  not leptons); module ≡ standalone.
 - MC-only, fail-fast on missing `GenPart` — matches the spirit of the original
   (which only ran the block under `!isData`).
 
@@ -219,7 +288,11 @@ D-2026-06-28-miniaod-reference), so the two now track MiniAOD and each other.
    the full list, *not* merely deleting the forced-zero line — see §2.)
 3. **τ → ℓ final channel (§5).** Resolve τ leptonic decays by **walking the
    GenPart daughter map** (as MiniAOD did), not via `GenDressedLepton`, removing
-   the implicit `pt`/dressing threshold.
+   the implicit `pt`/dressing threshold. *(Standalone: done in v1.8, 2026-07-10 —
+   `GenDressedLepton` branches no longer read.)*
+3b. **Background selection construction (§2b, 2026-07-10).** Base set =
+   `isHardProcess` particles + direct-boson-mother status-1/2 leptons in both
+   codebases, replacing the boson-recursion + τ-rescue heuristic.
 
 **Keep as-is (TopCPV's choice is equal or better):**
 

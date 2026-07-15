@@ -146,7 +146,7 @@ python3 script/parse_crab_status.py crab_status.log --show-lines
 
 > **⚠️ 출력 파일명:** **두 곳**에 하드코딩되어 있고 반드시 일치해야 합니다 —
 > `crab/PSet.py`(`PoolOutputModule` fileName)와 `crab/submit_crab.py`
-> (`out_name`), 둘 다 `forgedNtuple.root`. 한쪽만 바꾸면 CRAB stageout이
+> (`out_name`), 둘 다 `slimmedNtuple.root`. 한쪽만 바꾸면 CRAB stageout이
 > 깨집니다 (exit 60302). [`docs/07_DeveloperGuideline.md`](docs/07_DeveloperGuideline.md)
 > Rule 6 참조.
 

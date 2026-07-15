@@ -9,16 +9,76 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
-## [Unreleased] — 2026-07-05: output file renamed slimmedNtuple.root → forgedNtuple.root
+## [Unreleased] — 2026-07-10: background selection = MiniAOD §1.6; standalone v1.8 sync
 
-### Changed
-- Output ntuple renamed to `forgedNtuple.root` in BOTH hardcode sites
-  (`crab/PSet.py` fileName, `crab/submit_crab.py` out_name — Rule 6 in
-  `07_DeveloperGuideline.md`); living docs updated, historical
-  CHANGELOG/A10 entries left as-is. Applies from the NEXT campaign tag —
-  tasks already submitted under TEMP_CPV2017UL_MC_v0 keep producing
-  `slimmedNtuple_*.root` (frozen sandbox), so do not mix names under one
-  output_base.
+### Changed (audit §2b resolution — module `topCPVCategorizer.py`)
+- **`FillBackgroundSelection` rebuilt MiniAOD-faithful**: picked = every
+  `statusFlags.isHardProcess` particle (the NanoAOD equivalent of MiniAOD's
+  status-21–23 `TreePar`; hadronizer-independent, so the HERWIG branch collapses
+  too) **+** status-1/2 leptons (|pdg| 11–16) whose **direct** mother is a
+  top/Z/W/H — both scanned in ascending index, matching MiniAOD's ordering.
+  Removed: the last-copy-boson base set, the recursive off-flavour descent, and
+  the hard-process-τ rescue loop. Fixes both §2b risks: explicit-Z Z→ττ now
+  −30 (was −60, τ double count) and boson-less ME ℓℓ now ±22/26 (was 0).
+  `_FROM_HARD_PROCESS` constant removed (no longer used); `_IS_HARD_PROCESS`
+  (bit 7) added.
+
+### Standalone `SSBGenCategorizer` updated to v1.8 (synchronized)
+- v1.7 (pre-2026-06-28-restoration) was uploaded and three-way compared
+  (standalone ↔ module ↔ MiniAOD origin). Divergences found & fixed in the
+  standalone, adopting the module's MiniAOD-faithful behaviour: ① direct
+  channel over the **full** selected list (was: slots 8–11 only + background
+  forced to 0); ② `Channel_Idx_Final` via the GenPart daughter-map walk with
+  GenPar append and <14/>14 sign rules (was: `GenDressedLepton` count —
+  branches no longer read); ③ background selection rebuilt as above (was:
+  one-level boson daughters + τ rescue); ④ `Channel_Idx_Expanded` (+ Loop
+  summary counter) added.
+
+### Added (cross-validation without ROOT)
+- `script/test_reader_lifecycle.py` extended to 4 synthetic events (2× ttbar
+  signal incl. `Channel_Jets` 2112/1212 asserts, explicit-Z Z→ττ, boson-less
+  ME μμ). The standalone ships `validation/crosscheck/` (stub-ROOT headers +
+  harness): both implementations produce **identical** derived values on the
+  same events (compiled with g++ 13, `-Wall -Wextra` clean, all asserts pass).
+
+### Pending on lxplus
+- Rebuild the standalone v1.8 with real ROOT; rerun `validate_topcpvcat.py`
+  (event-matched, both codebases now MiniAOD-faithful **and** mutually
+  identical); one-time `TTree::Draw` sanity on the DY production (§2b).
+
+---
+
+## [Unreleased] — 2026-07-02 (3): re-audit vs MiniAOD + validator hardening
+
+### Fixed
+- **`script/validate_topcpvcat.py` latent crash + dead comparisons** (found in
+  the 2026-07-02 re-audit, before first lxplus use): the branch-presence guard
+  used `GetBranch(x) is None`, but PyROOT returns a **null TBranch object,
+  never Python `None`**, so the guard could not fire and the first missing
+  passthrough name would have crashed `getattr`; several passthrough names did
+  not exist on the NanoAOD side at all (`GenJet_energy`,
+  `GenJet_{Parton,Hadron}Flavour` capitalization, `PSWeight_n`), making those
+  comparisons silent no-ops. Now: passthrough is a `(GenCatTree name, Events
+  name)` pair list with real NanoAOD names, presence is checked on **both**
+  trees with truthiness and a one-time WARNING per skipped pair, `UChar_t`
+  elements are coerced (`bytes/str → int`) before comparison, and unmatched
+  event counts are reported in both directions.
+
+### Documented (audit addendum, `TopCPV/02_faithfulness_vs_miniaod.md`)
+- **§2b (new): background selection construction diverges from MiniAOD** —
+  module/standalone pick last-copy bosons + recursive descendants + a τ-only
+  rescue, vs MiniAOD's whole-hard-process base set; two concrete risks
+  (explicit-Z→ττ double count → −60 vs −30; boson-less ME ℓℓ → 0 instead of
+  ±22/26) with `TTree::Draw` discriminators to run on the fresh DY output.
+  Module ≡ standalone, so the validator cannot see this — it is vs MiniAOD only.
+- **§8 amended:** slots 0/1 and t/t̄ mother fields necessarily differ (NanoAOD
+  prunes beam protons; −1/placeholder vs MiniAOD's real proton rows and
+  `Mom=(0,1), nMo=2`). Channel-neutral, unrecoverable.
+- **§5 strengthened:** τ→ℓ walk verified statement-by-statement against origin
+  §2.2 (map order, descendant order, push-before-check, ν-triggered removal,
+  sign rules) — order-exact.
+- **§3 note:** background `GenTop` = −999 scalars vs MiniAOD's empty vectors
+  (cosmetic).
 
 ---
 
