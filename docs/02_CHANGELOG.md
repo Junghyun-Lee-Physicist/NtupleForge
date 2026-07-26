@@ -9,6 +9,39 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-26 (3): das_ul18_scan.sh v2 — broad data forensics
+
+### Added
+- **`script/das_ul18_scan.sh` §[2b]** (user request): for NOT_FOUND primaries
+  (BTagCSV), widen the search — BTagCSV under any tier and `status=*`
+  (catches INVALID/DEPRECATED), `BTag*`/`*BTag*` name wildcards, and a full
+  primary-dataset **inventory dump for Run2018A vs Run2017C** (UL NanoAODv9,
+  `PD2018|`/`PD2017|` lines) so merged/renamed PDs are identifiable from the
+  log. **unverified — rerun on lxplus.** GT36 data choice stays OPEN; decision
+  policy per user: follow the samples used by the ttHH AN.
+
+---
+
+## [Unreleased] — 2026-07-26 (2): 2018UL campaign config generated from the DAS scan
+
+### Added
+- **`crabConfig/config_ttHH2018UL.yaml`** — 85 datasets (77 MC + 8 Data), generated
+  by the new **`script/build_ul18_from_log.py`** from
+  **`script/logs/das_ul18_scan_2026-07-26.log`** (lxplus run, transcribed DS/RESULT
+  lines). Selection rules recorded in the script header: standard campaign only
+  (JMENano/PUFor*/FSUL18/BPH excluded); ext1/ext2 = separate keys (new vs UL17:
+  `TTWW_ext1`); Data = non-GT36 with GT36 twins as comments (**OPEN**: confirm
+  XPOG recommendation); **BTagCSV absent in 2018** (DAS NOT_FOUND — PD
+  discontinued in the 2018 PD restructuring; FH b-tag HLT paths live in JetHT).
+  `jobID: campaign_ttHH2018UL_fullNano_v1` (placeholder until first submission).
+- `tempTTHH/data/samples_2018UL.json` written by the same script (see tempTTHH
+  CHANGELOG). yaml↔json cross-checked programmatically (0 mismatches).
+- Campaign-string sanity: `106X_upgrade2018_realistic_v16_L1v1` verified against
+  the UL18 sample list in ttHH AN-2022/122 (identical GT string) — the `L1v1`
+  suffix is the 2018 L1-menu tag inside the standard UL18 MC global tag.
+
+---
+
 ## [Unreleased] — 2026-07-26: ttHH 2018UL expansion kickoff — DAS scan script
 
 ### Added

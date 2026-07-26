@@ -41,15 +41,18 @@
 
 ### ttHH → 4b — EXISTING (2017UL) + 2018UL expansion STARTED (2026-07-26)
 - `crabConfig/config_ttHH2017UL.yaml` (91 datasets, UL17 NanoAODv9). Stable.
-- **2018UL campaign kickoff:** `script/das_ul18_scan.sh` added — derives UL18
-  equivalents of every UL17 sample via DAS (exact-primary + relaxed fallback
-  queries, `summary` for nevents/nfiles) and dumps a machine-readable log
-  (`DS|`/`RESULT|` lines). **unverified — must be run on lxplus with a VOMS
-  proxy**; the log then drives `config_ttHH2018UL_{Data,MC}.yaml` and
-  `tempTTHH/data/samples_2018UL.json`. Known caveats encoded in the script
-  header: 2018 eras A–D, BTagCSV primary dataset may not exist in 2018,
-  DYJets `PSweights` naming drift. Multi-year goals (incl. Run3) live in the
-  workspace-level `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §2.3.
+- **2018UL campaign — DAS scan DONE, config generated (2026-07-26):**
+  `script/das_ul18_scan.sh` was run on lxplus (log:
+  `script/logs/das_ul18_scan_2026-07-26.log`) — all 61 MC primaries found
+  EXACT, no relaxed fallback needed. `script/build_ul18_from_log.py` generated
+  `crabConfig/config_ttHH2018UL.yaml` (85 datasets = 77 MC + 8 Data) and
+  `tempTTHH/data/samples_2018UL.json`. **OPEN:** (a) Data non-GT36 chosen —
+  confirm official XPOG recommendation for UL2018 NanoAODv9 data (GT36 twins
+  kept as comments); (b) BTagCSV does not exist in 2018 — FH trigger coverage
+  via JetHT to be confirmed; (c) 2018 lumi 59.83 /fb preliminary (user);
+  (d) jobID/splitting placeholders until first submission. Multi-year goals
+  (incl. Run3) live in the workspace-level
+  `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §2.3.
 - **PLANNED — `modules/expandedTtbarIdInjector.py`:** bake `Expanded_genTtbarId`
   into the ntuple as a branch (patch lookup + self-check + FATAL-on-mismatch).
   Design (5-stage plan, D-A…D-H) is DECIDED/PROPOSED in the workspace-level

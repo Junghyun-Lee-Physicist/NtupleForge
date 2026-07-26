@@ -33,6 +33,10 @@
 #   Data: /<PRIMARY>/Run2018*-UL2018_MiniAODv2_NanoAODv9*/NANOAOD
 #         (one query per primary dataset; lists all 2018 eras A-D incl. the
 #          Run2018D *_GT36 variants — pick per-era entries by hand from the log)
+#   [2b] Broad data forensics (added 2026-07-26, v2): for any primary that came
+#        back NOT_FOUND (e.g. BTagCSV), widen the net — any tier, any status,
+#        name wildcards — and dump the full 2018 vs 2017 primary-dataset
+#        inventory so renamed/merged PDs can be identified from the log.
 #
 # KNOWN 2018 CAVEATS (decide from the log, do NOT guess):
 #   - BTagCSV may not exist as a 2018 primary dataset. If Q returns nothing,
@@ -215,6 +219,37 @@ echo "########## [2] DATA: Run2018 discovery ##########"
 for p in "${DATA_PRIMARIES[@]}"; do
     scan_data "$p"
 done
+
+echo ""
+echo "########## [2b] DATA forensics: broad queries ##########"
+# (i) BTagCSV under ANY tier and ANY dataset status (catches INVALID/DEPRECATED
+#     leftovers and non-NanoAOD tiers — proves whether the PD existed at all in 2018)
+for q in "dataset=/BTagCSV/Run2018*/*" \
+         "dataset dataset=/BTagCSV/Run2018*/* status=*" \
+         "dataset=/BTag*/Run2018*/NANOAOD" \
+         "dataset=/*BTag*/Run2018*-UL2018_MiniAODv2_NanoAODv9*/NANOAOD"; do
+    echo ""
+    echo "### FORENSIC query: ${q}"
+    n=0
+    while IFS= read -r ds; do
+        [[ -z "$ds" ]] && continue
+        echo "HIT|${ds}"
+        n=$((n+1))
+    done < <(dasgoclient -query "${q}" 2>/dev/null)
+    echo "RESULT|FORENSIC|${q}|${n}"
+done
+# (ii) Full primary-dataset inventory, 2018 era A vs 2017 era C (UL NanoAODv9):
+#      diff the two lists to see which PDs were merged/renamed in the 2018
+#      PD restructuring (expected: BTagCSV absent, EGamma replaces
+#      SingleElectron/SinglePhoton/DoubleEG, etc.)
+echo ""
+echo "### PD inventory Run2018A (UL2018_MiniAODv2_NanoAODv9*)"
+dasgoclient -query "dataset=/*/Run2018A-UL2018_MiniAODv2_NanoAODv9*/NANOAOD" 2>/dev/null \
+    | awk -F/ '{print $2}' | sort -u | sed 's/^/PD2018|/'
+echo ""
+echo "### PD inventory Run2017C (UL2017_MiniAODv2_NanoAODv9*)"
+dasgoclient -query "dataset=/*/Run2017C-UL2017_MiniAODv2_NanoAODv9*/NANOAOD" 2>/dev/null \
+    | awk -F/ '{print $2}' | sort -u | sed 's/^/PD2017|/'
 
 if [[ ${DO_UL17_CHECK} -eq 1 ]]; then
     echo ""
