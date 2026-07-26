@@ -2,7 +2,7 @@
 
 > **Purpose:** the single place to answer "where are we right now?" for any
 > contributor (human or AI) joining cold. **Audience:** all. **Updated:**
-> 2026-07-02. Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
+> 2026-07-26. Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
 
 ## Active workstreams
 
@@ -39,8 +39,23 @@
 - **Branch lists:** `branches/branch_CPV_Run2_{Data,MC}.txt` added.
 - **Validation tool:** `script/validate_topcpvcat.py`.
 
-### ttHH → 4b — EXISTING
+### ttHH → 4b — EXISTING (2017UL) + 2018UL expansion STARTED (2026-07-26)
 - `crabConfig/config_ttHH2017UL.yaml` (91 datasets, UL17 NanoAODv9). Stable.
+- **2018UL campaign kickoff:** `script/das_ul18_scan.sh` added — derives UL18
+  equivalents of every UL17 sample via DAS (exact-primary + relaxed fallback
+  queries, `summary` for nevents/nfiles) and dumps a machine-readable log
+  (`DS|`/`RESULT|` lines). **unverified — must be run on lxplus with a VOMS
+  proxy**; the log then drives `config_ttHH2018UL_{Data,MC}.yaml` and
+  `tempTTHH/data/samples_2018UL.json`. Known caveats encoded in the script
+  header: 2018 eras A–D, BTagCSV primary dataset may not exist in 2018,
+  DYJets `PSweights` naming drift. Multi-year goals (incl. Run3) live in the
+  workspace-level `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §2.3.
+- **PLANNED — `modules/expandedTtbarIdInjector.py`:** bake `Expanded_genTtbarId`
+  into the ntuple as a branch (patch lookup + self-check + FATAL-on-mismatch).
+  Design (5-stage plan, D-A…D-H) is DECIDED/PROPOSED in the workspace-level
+  `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §4 — not yet coded.
+  Includes the output-file rename `slimmedNtuple.root` → `forgedNtuple.root`
+  (D-F there; Rule 7 grep before renaming).
 
 ## OPEN / next steps (CPV)
 

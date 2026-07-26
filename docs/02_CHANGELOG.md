@@ -9,6 +9,23 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-26: ttHH 2018UL expansion kickoff — DAS scan script
+
+### Added
+- **`script/das_ul18_scan.sh`** — for every sample in
+  `crabConfig/config_ttHH2017UL.yaml`, queries DAS for the UL18 NanoAODv9
+  equivalent (exact primary, then relaxed `_TuneCP5`-prefix fallback) and
+  dumps `nevents`/`nfiles`/size per hit; `--ul17-nevents` re-dumps UL17
+  summaries to cross-check `tempTTHH/data/samples_2017UL.json`. Output is
+  machine-readable (`DS|`/`RESULT|` lines) and is the input for the future
+  `config_ttHH2018UL_{Data,MC}.yaml`. The embedded 61-primary list was
+  verified 1:1 against the YAML at generation time. **unverified — requires
+  lxplus (dasgoclient + VOMS proxy); bash-syntax-checked only.**
+- `01_STATUS.md`: 2018UL workstream + planned `expandedTtbarIdInjector.py`
+  entry registered (plan canonical in the workspace-level 00_CONTEXT doc).
+
+---
+
 ## [Unreleased] — 2026-07-15: A14 — beam-parallel energy overflow (background CRAB crash)
 
 ### Fixed
