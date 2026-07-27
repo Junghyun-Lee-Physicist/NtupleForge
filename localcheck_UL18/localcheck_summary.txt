@@ -1,0 +1,6 @@
+[PASS] JetHT_Run2018A  500 evt / 1749 branches
+[PASS] TTWW_ext1       500 evt / 1628 branches
+[PASS] TTbar_SemiLep   500 evt / 1628 branches
+[PASS] TTbb_DiLep      500 evt / 1628 branches
+
+ALL PASS

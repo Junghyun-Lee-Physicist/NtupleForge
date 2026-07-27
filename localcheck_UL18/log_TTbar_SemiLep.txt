@@ -1,0 +1,29 @@
+[run_postproc] : ============================================================
+[run_postproc] : Execution Started at: 2026-07-27 11:14:34
+[run_postproc] : ============================================================
+[run_postproc] : Branch Selection File loaded: ../branches/branch_keep_all.txt
+[run_postproc] :   -> Applied to: OUTPUT tree only (input is read in full)
+[run_postproc] :   -> Preview: ['# =============================================================================', '# Full NanoAOD passthrough — keep every branch.', '# ============================================================================='] ...
+[run_postproc] : Module Loaded: modules.noop (List Variable: 'MODULES')
+[run_postproc] : Input Files Detected: 1
+[run_postproc] :   -> First file: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/120000/87DEE912-70CF-A549-B10B-1A229B256E88.root
+[run_postproc] : Output Strategy: MERGE (Hadd enabled)
+[run_postproc] :   -> Final Target: out_TTbar_SemiLep.root
+[run_postproc] : ------------------------------------------------------------
+[run_postproc] : Initializing PostProcessor engine...
+[run_postproc] : Running Event Loop...
+Will write selected trees to .
+27-Jul-2026 11:14:34 CEST  Initiating request to open file root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/120000/87DEE912-70CF-A549-B10B-1A229B256E88.root
+Adding file ./87DEE912-70CF-A549-B10B-1A229B256E88_Skim.root
+Merging Events
+Merging LuminosityBlocks
+Merging Runs
+Merging MetaData
+Merging ParameterSets
+Merging tag
+[run_postproc] : ✅ Job Finished Successfully at 2026-07-27 11:18:33
+[run_postproc] :    Total Runtime: 0:03:59.155122
+Pre-select 500 entries out of 500 (100.00%)
+Selected 500 / 500 entries from root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/120000/87DEE912-70CF-A549-B10B-1A229B256E88.root (100.00%)
+Done ./87DEE912-70CF-A549-B10B-1A229B256E88_Skim.root
+Total time 233.5 sec. to process 500 events. Rate = 2.1 Hz.

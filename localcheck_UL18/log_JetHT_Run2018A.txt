@@ -1,0 +1,29 @@
+[run_postproc] : ============================================================
+[run_postproc] : Execution Started at: 2026-07-27 11:23:14
+[run_postproc] : ============================================================
+[run_postproc] : Branch Selection File loaded: ../branches/branch_keep_all.txt
+[run_postproc] :   -> Applied to: OUTPUT tree only (input is read in full)
+[run_postproc] :   -> Preview: ['# =============================================================================', '# Full NanoAOD passthrough — keep every branch.', '# ============================================================================='] ...
+[run_postproc] : Module Loaded: modules.noop (List Variable: 'MODULES')
+[run_postproc] : Input Files Detected: 1
+[run_postproc] :   -> First file: root://cms-xrd-global.cern.ch//store/data/Run2018A/JetHT/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v2/250000/E73D3B12-3D3F-1443-8E7B-7874C167B97B.root
+[run_postproc] : Output Strategy: MERGE (Hadd enabled)
+[run_postproc] :   -> Final Target: out_JetHT_Run2018A.root
+[run_postproc] : ------------------------------------------------------------
+[run_postproc] : Initializing PostProcessor engine...
+[run_postproc] : Running Event Loop...
+Will write selected trees to .
+27-Jul-2026 11:23:15 CEST  Initiating request to open file root://cms-xrd-global.cern.ch//store/data/Run2018A/JetHT/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v2/250000/E73D3B12-3D3F-1443-8E7B-7874C167B97B.root
+Adding file ./E73D3B12-3D3F-1443-8E7B-7874C167B97B_Skim.root
+Merging Events
+Merging LuminosityBlocks
+Merging Runs
+Merging MetaData
+Merging ParameterSets
+Merging tag
+[run_postproc] : ✅ Job Finished Successfully at 2026-07-27 11:27:58
+[run_postproc] :    Total Runtime: 0:04:43.453771
+Pre-select 500 entries out of 500 (100.00%)
+Selected 500 / 500 entries from root://cms-xrd-global.cern.ch//store/data/Run2018A/JetHT/NANOAOD/UL2018_MiniAODv2_NanoAODv9-v2/250000/E73D3B12-3D3F-1443-8E7B-7874C167B97B.root (100.00%)
+Done ./E73D3B12-3D3F-1443-8E7B-7874C167B97B_Skim.root
+Total time 278.1 sec. to process 500 events. Rate = 1.8 Hz.
