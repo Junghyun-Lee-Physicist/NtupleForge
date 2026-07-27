@@ -92,7 +92,8 @@ the PSet output name — see [`05_troubleshooting.md`](05_troubleshooting.md) §
   fileName = cms.untracked.string("<name>"))`
 - `crab/submit_crab.py` — `out_name = "<name>"`
 
-Both currently use `slimmedNtuple.root`. **If you change one, change the
+Both currently use `forgedNtuple.root` (renamed from `slimmedNtuple.root`
+on 2026-07-26, D-F). **If you change one, change the
 other** in the same commit. (The proper long-term fix is to have
 `submit_crab.py` overwrite the PSet filename from the YAML at submission time
 so there is a single source of truth; until that lands, this rule stands.)

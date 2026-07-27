@@ -43,14 +43,34 @@
 - `crabConfig/config_ttHH2017UL.yaml` (91 datasets, UL17 NanoAODv9). Stable.
 - **2018UL campaign — DAS scan DONE, config generated (2026-07-26):**
   `script/das_ul18_scan.sh` was run on lxplus (log:
-  `script/logs/das_ul18_scan_2026-07-26.log`) — all 61 MC primaries found
+  `script/das_ul18_scan_20260726_1657.log`) — all 61 MC primaries found
   EXACT, no relaxed fallback needed. `script/build_ul18_from_log.py` generated
   `crabConfig/config_ttHH2018UL.yaml` (85 datasets = 77 MC + 8 Data) and
-  `tempTTHH/data/samples_2018UL.json`. **OPEN:** (a) Data non-GT36 chosen —
-  confirm official XPOG recommendation for UL2018 NanoAODv9 data (GT36 twins
-  kept as comments); (b) BTagCSV does not exist in 2018 — FH trigger coverage
-  via JetHT to be confirmed; (c) 2018 lumi 59.83 /fb preliminary (user);
-  (d) jobID/splitting placeholders until first submission. Multi-year goals
+  `tempTTHH/data/samples_2018UL.json`. Regenerating from the real lxplus log
+  reproduced both files byte-identical (idempotent; log is the sole input).
+  **SETTLED 2026-07-26:** BTagCSV genuinely does not exist in 2018 (0 hits any
+  tier / any status; 2018 PD consolidation) → **JetHT alone covers the 2018 FH
+  hadronic trigger menu**; the analyzer's 2017 BTagCSV↔JetHT veto must collapse
+  to a JetHT-only OR for 2018 (tempTTHH, FUTURE).
+  **OPEN:** (a) Data non-GT36 chosen — confirm against the samples used by the
+  ttHH AN (+ XPOG/PdmV twiki); GT36 twins kept as comments; (b) 2018 lumi
+  59.83 /fb preliminary (user to confirm); (c) jobID/splitting placeholders
+  until first submission.
+- **2018UL prescan smoke test — READY TO SUBMIT (unverified, 2026-07-26):**
+  `crabConfig/config_ttHH2018UL_prescan.yaml` (81 datasets: 77 MC + JetHT only)
+  + `branches/branch_prescan_slim.txt`. Purpose: cheapest end-to-end check that
+  the UL18 samples produce, and that tempTTHH `prescan` runs on the output; the
+  post-production check is prescan `genEventCount_runs` vs the DAS `nevents`
+  already stored in `samples_2018UL.json`. The **real** UL17+UL18 production
+  will use `config_ttHH2018UL.yaml` + `branch_keep_all.txt` after the ttHH
+  categorization work lands.
+- **Output filename = `forgedNtuple.root` (D-F executed 2026-07-26).**
+  Producers: `crab/PSet.py` + `crab/submit_crab.py` (Rule 6 pair). Downstream
+  file discovery (`tempTTHH/make_filelists.py`,
+  `TTHHGenCategoryTools/Validation/filelists/make_filelists.py`) matches
+  **both** `forgedNtuple*` and `slimmedNtuple*`, because pre-2026-07-26
+  productions (incl. `ttHH2017UL_fullNano_v20`) exist on Tier-3 under the old
+  name. Drop the legacy prefix only after all campaigns are reproduced. Multi-year goals
   (incl. Run3) live in the workspace-level
   `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §2.3.
 - **PLANNED — `modules/expandedTtbarIdInjector.py`:** bake `Expanded_genTtbarId`

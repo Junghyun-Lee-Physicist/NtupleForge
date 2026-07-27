@@ -24,8 +24,35 @@ import logging
 import subprocess
 import io
 import contextlib
-from CRABClient.UserUtilities import config, getUsername
-from CRABAPI.RawCommand import crabCommand
+import datetime
+import re
+
+# CRAB imports are GUARDED so that `--preflight` can run (and report the problem
+# as a check result) in a shell where crab-setup.sh has not been sourced.
+# Any other action still needs CRAB and will fail fast via _require_crab().
+CRAB_IMPORT_ERROR = None
+try:
+    from CRABClient.UserUtilities import config, getUsername
+    from CRABAPI.RawCommand import crabCommand
+except Exception as _crab_exc:          # ImportError, or CRABClient env errors
+    CRAB_IMPORT_ERROR = _crab_exc
+
+    def config(*_a, **_k):
+        raise RuntimeError("CRABClient unavailable: %s" % CRAB_IMPORT_ERROR)
+
+    def getUsername(*_a, **_k):
+        return os.environ.get("USER", "UNKNOWN_USER")
+
+    def crabCommand(*_a, **_k):
+        raise RuntimeError("CRABClient unavailable: %s" % CRAB_IMPORT_ERROR)
+
+
+def _require_crab():
+    if CRAB_IMPORT_ERROR is not None:
+        logger.error("CRABClient could not be imported: %s", CRAB_IMPORT_ERROR)
+        logger.error("Source it once per session:")
+        logger.error("  source /cvmfs/cms.cern.ch/common/crab-setup.sh")
+        sys.exit(1)
 
 try:
     from http.client import HTTPException
@@ -98,7 +125,287 @@ def check_voms():
         logger.error("Run: voms-proxy-init --voms cms --valid 168:00")
         sys.exit(1)
 
+# =============================================================================
+# PREFLIGHT (--preflight) — read-only pre-submission checker
+# =============================================================================
+# Everything CRAB needs is verified here BEFORE a single task is created, and the
+# whole transcript is written to a log file so it can be pasted into a review.
+# Exit status: 0 = all PASS/WARN, 1 = at least one FAIL. Nothing is submitted and
+# nothing is created except the log file.
+class _Preflight:
+    def __init__(self, log_path):
+        self.rows = []          # (level, check, detail)
+        self.log_path = log_path
+        self.lines = []
+
+    def _emit(self, level, check, detail):
+        self.rows.append((level, check, detail))
+        line = "[%-4s] %-34s %s" % (level, check, detail)
+        print(line)
+        self.lines.append(line)
+
+    def ok(self, check, detail=""):
+        self._emit("PASS", check, detail)
+
+    def warn(self, check, detail=""):
+        self._emit("WARN", check, detail)
+
+    def fail(self, check, detail=""):
+        self._emit("FAIL", check, detail)
+
+    def note(self, text):
+        print(text)
+        self.lines.append(text)
+
+    def finish(self):
+        n_fail = sum(1 for l, _, _ in self.rows if l == "FAIL")
+        n_warn = sum(1 for l, _, _ in self.rows if l == "WARN")
+        n_pass = sum(1 for l, _, _ in self.rows if l == "PASS")
+        self.note("-" * 78)
+        self.note("PREFLIGHT SUMMARY: %d PASS, %d WARN, %d FAIL" % (n_pass, n_warn, n_fail))
+        if n_fail:
+            self.note("RESULT: NOT READY TO SUBMIT -- fix the FAIL items above.")
+        else:
+            self.note("RESULT: READY TO SUBMIT" + (" (review the WARNs first)" if n_warn else ""))
+        try:
+            with open(self.log_path, "w") as f:
+                f.write("\n".join(self.lines) + "\n")
+            print("Log written: %s" % self.log_path)
+        except OSError as e:
+            print("WARNING: could not write log file %s: %s" % (self.log_path, e))
+        return 1 if n_fail else 0
+
+
+_DATASET_RE = re.compile(r"^/[^/]+/[^/]+/(NANOAOD|NANOAODSIM|MINIAOD|MINIAODSIM|USER)$")
+
+
+def run_preflight(args):
+    """Read-only verification of everything needed to submit `args.config`."""
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    cfg_tag = os.path.splitext(os.path.basename(args.config))[0]
+    pf = _Preflight("preflight_%s_%s.log" % (cfg_tag, ts))
+
+    pf.note("=" * 78)
+    pf.note("NtupleForge CRAB PREFLIGHT (read-only)")
+    pf.note("  config : %s" % args.config)
+    pf.note("  cwd    : %s" % os.getcwd())
+    pf.note("  time   : %s" % datetime.datetime.now().isoformat(timespec="seconds"))
+    pf.note("  DAS check: %s" % ("ON (--check-das)" if args.check_das else "OFF (add --check-das to query DAS)"))
+    pf.note("=" * 78)
+
+    # ---- 1. config file ------------------------------------------------------
+    if not os.path.exists(args.config):
+        pf.fail("config file", "not found: %s" % args.config)
+        return pf.finish()
+    pf.ok("config file", args.config)
+    try:
+        with open(args.config) as f:
+            cfg = yaml.safe_load(f)
+    except yaml.YAMLError as e:
+        pf.fail("config YAML parse", str(e).replace("\n", " ")[:160])
+        return pf.finish()
+    pf.ok("config YAML parse", "ok")
+
+    common = (cfg or {}).get("common", {}) or {}
+    datasets = (cfg or {}).get("datasets", {}) or {}
+
+    # ---- 2. common: required keys -------------------------------------------
+    for key in ("jobID", "site", "output_base", "analysis_module", "branch_file",
+                "splitting", "units_per_job"):
+        if key in common and common[key] not in (None, ""):
+            pf.ok("common.%s" % key, str(common[key]))
+        else:
+            pf.fail("common.%s" % key, "missing or empty -- submit_crab.py would fall back to a default")
+    split = str(common.get("splitting", ""))
+    if split not in ("FileBased", "Automatic", "LumiBased", "EventAwareLumiBased"):
+        pf.warn("common.splitting value", "unrecognised: %r" % split)
+
+    # ---- 3. analysis module + shipped siblings ------------------------------
+    module_cfg = common.get("analysis_module")
+    if isinstance(module_cfg, list) and len(module_cfg) == 2:
+        mod_path, list_var = module_cfg
+        if os.path.exists(mod_path):
+            pf.ok("module file", mod_path)
+            try:
+                src = open(mod_path).read()
+                if re.search(r"^\s*%s\s*=" % re.escape(str(list_var)), src, re.M):
+                    pf.ok("module list variable", "%s found in %s" % (list_var, os.path.basename(mod_path)))
+                else:
+                    pf.fail("module list variable",
+                            "%r not assigned in %s (PostProcessor would import nothing)"
+                            % (list_var, mod_path))
+            except OSError as e:
+                pf.fail("module file read", str(e))
+            sibs = sorted(os.path.basename(p) for p in
+                          glob.glob(os.path.join(os.path.dirname(mod_path) or ".", "*.py"))
+                          if os.path.basename(p) != os.path.basename(mod_path))
+            pf.ok("module siblings shipped", ", ".join(sibs) if sibs else "(none)")
+        else:
+            pf.fail("module file", "not found: %s" % mod_path)
+    else:
+        pf.fail("common.analysis_module", "must be [path, list_name]; got %r" % (module_cfg,))
+
+    # ---- 4. branch selection file ------------------------------------------
+    bsel = common.get("branch_file")
+    if bsel and os.path.exists(bsel):
+        rules = [l.strip() for l in open(bsel) if l.strip() and not l.strip().startswith("#")]
+        keeps = [r for r in rules if r.split()[0].lower() == "keep"]
+        drops = [r for r in rules if r.split()[0].lower() == "drop"]
+        pf.ok("branch file", "%s (%d rules: %d keep / %d drop)" % (bsel, len(rules), len(keeps), len(drops)))
+        bad = [r for r in rules if r.split()[0].lower() not in ("keep", "drop")]
+        if bad:
+            pf.fail("branch file syntax", "non keep/drop rule(s): %s" % bad[:3])
+        slim = any(r.lower().replace(" ", "") == "drop*" for r in rules)
+        if slim:
+            kept = {r.split()[1] for r in keeps if len(r.split()) > 1}
+            pf.ok("branch file mode", "SLIM ('drop *' present) -- output keeps %d explicit patterns" % len(kept))
+            for must in ("run", "luminosityBlock", "event"):
+                (pf.ok if must in kept else pf.fail)(
+                    "slim keeps %s" % must,
+                    "present" if must in kept else "MISSING -- event id needed by every downstream tool")
+            for must in ("genWeight", "genTtbarId"):
+                (pf.ok if must in kept else pf.warn)(
+                    "slim keeps %s" % must,
+                    "present" if must in kept else
+                    "absent -- MC prescan would silently mis-bin (defaults to 0); intended only for Data-only configs")
+        else:
+            pf.ok("branch file mode", "PASSTHROUGH (no 'drop *')")
+    else:
+        pf.fail("branch file", "not found: %r" % bsel)
+
+    # ---- 5. Rule 6: output filename hardcoded in two places ------------------
+    here = os.path.dirname(os.path.abspath(__file__))
+    pset = os.path.join(here, "PSet.py")
+    submit_src = open(os.path.abspath(__file__)).read()
+    m_sub = re.search(r'out_name\s*=\s*"([^"]+)"', submit_src)
+    m_pset = None
+    if os.path.exists(pset):
+        m_pset = re.search(r"fileName\s*=\s*cms\.untracked\.string\('([^']+)'\)", open(pset).read())
+    if m_sub and m_pset:
+        if m_sub.group(1) == m_pset.group(1):
+            pf.ok("Rule 6 output filename", "%s (submit_crab.py == PSet.py)" % m_sub.group(1))
+        else:
+            pf.fail("Rule 6 output filename",
+                    "MISMATCH: submit_crab.py=%s vs PSet.py=%s" % (m_sub.group(1), m_pset.group(1)))
+    else:
+        pf.fail("Rule 6 output filename", "could not parse (submit=%s, PSet=%s)" % (bool(m_sub), bool(m_pset)))
+
+    # ---- 6. worker-side files ----------------------------------------------
+    for rel in ("crab/PSet.py", "crab/crab_script.py", "script/run_postproc.py"):
+        p = os.path.join(os.path.dirname(here), rel) if not rel.startswith("crab/") else os.path.join(here, os.path.basename(rel))
+        (pf.ok if os.path.exists(p) else pf.fail)("worker file %s" % rel,
+                                                  p if os.path.exists(p) else "not found: %s" % p)
+
+    # ---- 7. environment ----------------------------------------------------
+    if CRAB_IMPORT_ERROR is None:
+        pf.ok("CRABClient import", "ok")
+    else:
+        pf.fail("CRABClient import",
+                "%s -- run: source /cvmfs/cms.cern.ch/common/crab-setup.sh" % CRAB_IMPORT_ERROR)
+    for var in ("CMSSW_BASE", "SCRAM_ARCH"):
+        (pf.ok if os.environ.get(var) else pf.fail)("env %s" % var,
+                                                    os.environ.get(var, "unset -- run cmsenv"))
+    try:
+        out = subprocess.run(["voms-proxy-info", "-timeleft"], stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, text=True)
+        left = int((out.stdout or "0").strip() or 0)
+        if left <= 0:
+            pf.fail("VOMS proxy", "expired/absent -- voms-proxy-init -voms cms -rfc --valid 168:00")
+        elif left < 24 * 3600:
+            pf.warn("VOMS proxy", "only %.1f h left" % (left / 3600.0))
+        else:
+            pf.ok("VOMS proxy", "%.1f h left" % (left / 3600.0))
+    except (OSError, ValueError) as e:
+        pf.fail("VOMS proxy", "voms-proxy-info unusable: %s" % e)
+    if os.access(os.getcwd(), os.W_OK):
+        pf.ok("cwd writable", "crab_args.txt / log can be written here")
+    else:
+        pf.fail("cwd writable", "%s is not writable" % os.getcwd())
+
+    # ---- 8. datasets -------------------------------------------------------
+    pf.note("-" * 78)
+    if not datasets:
+        pf.fail("datasets", "config has no datasets")
+        return pf.finish()
+    pf.ok("dataset count", str(len(datasets)))
+    seen, dups, malformed, tiers = {}, [], [], {}
+    for key, ds in datasets.items():
+        if not isinstance(ds, str) or not _DATASET_RE.match(ds):
+            malformed.append((key, ds))
+            continue
+        tiers[ds.rsplit("/", 1)[1]] = tiers.get(ds.rsplit("/", 1)[1], 0) + 1
+        if ds in seen:
+            dups.append((key, seen[ds]))
+        seen[ds] = key
+    if malformed:
+        pf.fail("dataset path syntax", "%d malformed, e.g. %s" % (len(malformed), malformed[:2]))
+    else:
+        pf.ok("dataset path syntax", "all %d match /primary/processed/TIER" % len(datasets))
+    if dups:
+        pf.fail("duplicate datasets", "%s" % dups[:3])
+    else:
+        pf.ok("duplicate datasets", "none")
+    pf.ok("tier mix", ", ".join("%s=%d" % kv for kv in sorted(tiers.items())))
+    mc = [k for k, v in datasets.items() if v.endswith("SIM")]
+    data = [k for k, v in datasets.items() if not v.endswith("SIM")]
+    pf.ok("MC / Data split", "%d MC, %d Data" % (len(mc), len(data)))
+    if data and bsel and os.path.exists(bsel):
+        rules = [l.strip() for l in open(bsel) if l.strip() and not l.strip().startswith("#")]
+        if any(r.split()[1:2] == ["genWeight"] for r in rules if r.split()[0].lower() == "keep"):
+            pf.ok("Data + MC-only keeps", "harmless: keep patterns matching nothing are ignored")
+
+    # ---- 9. per-task preview (names/paths CRAB will use) --------------------
+    # getUsername() talks to the proxy/CRAB config, so it can raise when the
+    # proxy is expired. Never let that abort the preflight: the whole point is
+    # to always reach finish() and leave a complete log.
+    try:
+        username = getUsername()
+    except Exception as e:
+        username = os.environ.get("USER", "UNKNOWN_USER")
+        pf.warn("CRAB getUsername()", "failed (%s); preview uses $USER=%s" % (e, username))
+    base_out = str(common.get("output_base", "")).lstrip("/")
+    work_area = common.get("jobID", "crab_projects")
+    pf.note("-" * 78)
+    pf.note("Per-task preview (workArea=%s, storage=%s):" % (work_area, common.get("site")))
+    pf.note("  outLFNDirBase = /store/user/%s/%s" % (username, base_out))
+    for i, (key, ds) in enumerate(sorted(datasets.items())):
+        if i >= args.preview and args.preview >= 0:
+            pf.note("  ... (%d more; use --preview -1 for all)" % (len(datasets) - args.preview))
+            break
+        pf.note("  %-30s requestName=%-30s %s" % (key, key, ds))
+    existing = [d for d in glob.glob(os.path.join(work_area, "crab_*")) if os.path.isdir(d)]
+    if existing:
+        pf.warn("existing CRAB projects", "%d dir(s) in %s -- submit would clash/skip: e.g. %s"
+                % (len(existing), work_area, os.path.basename(existing[0])))
+    else:
+        pf.ok("existing CRAB projects", "none in %s" % work_area)
+
+    # ---- 10. optional DAS existence check ----------------------------------
+    if args.check_das:
+        pf.note("-" * 78)
+        if subprocess.run(["which", "dasgoclient"], stdout=subprocess.PIPE).returncode != 0:
+            pf.fail("dasgoclient", "not found -- cannot check dataset existence")
+        else:
+            missing, total_ev = [], 0
+            for key, ds in sorted(datasets.items()):
+                q = subprocess.run(["dasgoclient", "-query", "summary dataset=%s" % ds],
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                txt = (q.stdout or "").strip()
+                m = re.search(r"nevents\s*[:=]\s*(\d+)", txt)
+                if not txt or not m:
+                    missing.append(key)
+                else:
+                    total_ev += int(m.group(1))
+            if missing:
+                pf.fail("DAS dataset existence", "%d not resolvable: %s" % (len(missing), missing[:5]))
+            else:
+                pf.ok("DAS dataset existence", "all %d found, total nevents=%s"
+                      % (len(datasets), format(total_ev, ",")))
+    return pf.finish()
+
+
 def main(args):
+    _require_crab()
     check_voms()
 
     # 1. Load Configuration
@@ -227,7 +534,13 @@ def main(args):
     # Output Filename Logic
     # ------------------------------------------------------
     # Default output filename (should match process.output.fileName in the PSet)
-    out_name = "slimmedNtuple.root"
+    # Rule 6: must match crab/PSet.py process.output.fileName exactly.
+    # 2026-07-26: renamed slimmedNtuple.root -> forgedNtuple.root (D-F).
+    # NOTE: ntuples produced BEFORE this date are on disk as slimmedNtuple_*.root
+    # (e.g. campaign ttHH2017UL_fullNano_v20); the downstream filelist makers
+    # therefore accept both names. Do not "clean up" that dual matching until
+    # every old campaign has been reproduced.
+    out_name = "forgedNtuple.root"
 
 
     # -- Arguments File Generation --
@@ -410,5 +723,19 @@ if __name__ == "__main__":
                         help="Explicitly resubmit failed jobs in existing tasks "
                              "(default resources; raise memory/walltime by hand)")
     parser.add_argument("--kill", action="store_true", help="Kill all jobs defined in the config")
+    parser.add_argument("--preflight", action="store_true",
+                        help="READ-ONLY pre-submission check: config schema, module + "
+                             "branch file, Rule-6 output filename, worker files, CRAB/CMSSW/"
+                             "proxy environment, dataset path syntax/duplicates, and a "
+                             "per-task name/path preview. Submits nothing; writes "
+                             "preflight_<config>_<timestamp>.log; exits non-zero on any FAIL.")
+    parser.add_argument("--check-das", action="store_true",
+                        help="With --preflight: additionally query DAS for every dataset "
+                             "(existence + nevents). Slower (one dasgoclient call per dataset).")
+    parser.add_argument("--preview", type=int, default=10,
+                        help="With --preflight: how many per-task preview lines to print "
+                             "(-1 = all). Default 10.")
     args = parser.parse_args()
+    if args.preflight:
+        sys.exit(run_preflight(args))
     main(args)

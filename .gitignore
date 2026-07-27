@@ -10,3 +10,6 @@ FrameworkJobReport.xml
 *.swp
 crab.log
 campaign_*
+
+# preflight logs (--preflight, read-only checker output)
+preflight_*.log

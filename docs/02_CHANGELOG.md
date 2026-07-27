@@ -9,6 +9,147 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-26 (7): `--preflight` pre-submission checker + audit fixes
+
+### Added
+- **`crab/submit_crab.py --preflight`** — read-only, submits nothing, creates
+  nothing but a log (`preflight_<config>_<timestamp>.log`), exits non-zero on
+  any FAIL. Checks: config schema (`common.*` keys, splitting value), analysis
+  module file + that the declared list variable is actually assigned, sibling
+  `.py` files that will be shipped, branch-selection file (rule count, syntax,
+  SLIM vs PASSTHROUGH, and — for SLIM — that `run`/`luminosityBlock`/`event`
+  are kept and `genWeight`/`genTtbarId` are not silently dropped), **Rule 6**
+  (parses the output filename out of both `PSet.py` and `submit_crab.py` and
+  compares), worker files, CRABClient/CMSSW/VOMS environment, cwd writability,
+  dataset path syntax + duplicates + tier mix, an outLFN/requestName preview,
+  and existing CRAB project dirs that would make a submit skip. `--check-das`
+  additionally resolves every dataset on DAS; `--preview N` controls listing.
+- **Guarded CRAB imports:** `CRABClient`/`CRABAPI` import failures no longer
+  crash the script at import time — they are reported as a preflight FAIL, and
+  any real action fails fast through `_require_crab()`. This is what lets
+  `--preflight` run in a shell where `crab-setup.sh` was not sourced.
+
+### Fixed (2026-07-26 audit)
+- `build_ul18_from_log.py` and the artefacts it stamps (`config_ttHH2018UL*.yaml`
+  header, `samples_2018UL.json._meta.source_log`) referenced a **nonexistent**
+  `script/logs/das_ul18_scan_2026-07-26.log`; corrected to the real
+  `script/das_ul18_scan_20260726_1657.log` and regenerated (contents otherwise
+  byte-identical).
+- `docs/07_DeveloperGuideline.md`, `docs/05_troubleshooting.md` and `README.md`
+  still stated that both Rule-6 sites use `slimmedNtuple.root`; updated to
+  `forgedNtuple.root` (the rename is what the preflight now enforces).
+- `.gitignore`: ignore `preflight_*.log`.
+
+---
+
+## [Unreleased] — 2026-07-26 (6): D-F executed — output ntuple renamed to forgedNtuple.root
+
+### Changed (BEHAVIOUR — new productions write a different filename)
+- **Producers (authoritative, Rule 6 pair kept identical):**
+  `crab/PSet.py` `process.output.fileName` and `crab/submit_crab.py` `out_name`
+  → **`forgedNtuple.root`** (was `slimmedNtuple.root`).
+- **Consumers / file discovery — accept BOTH names**, because every ntuple
+  produced before today is physically on Tier-3 as `slimmedNtuple_*.root`
+  (campaign `ttHH2017UL_fullNano_v20` included). A forged-only pattern would
+  make the existing 2017 filelists unregenerable:
+  - `tempTTHH/make_filelists.py`: new `NTUPLE_PREFIXES = ("forgedNtuple",
+    "slimmedNtuple")`, used by `find_root_files()`.
+  - `TTHHGenCategoryTools/Validation/filelists/make_filelists.py`: same constant
+    and same dual matching.
+  Remove the legacy prefix only after every campaign has been reproduced.
+- Docs/comment-only: `script/validate_topcpvcat.py` usage example,
+  `TTHHGenCategoryTools/Validation/scripts/submit_hist_condor.py`,
+  `Validation/tools/{makeTtbarHist,matchTtbarId}.cc` header comments.
+- Rule 7 grep performed workspace-wide (not only `crab/`+`script/`+
+  `crabConfig/`): the only functional hits were the two producers and the two
+  filelist makers. `TtbarIdHistCompare/` (legacy, D-G),
+  `tempTTHH/docs/backup_20260629/`, `docs/legacy/` and committed filelist data
+  files were intentionally left untouched. Analyzer-side `TFile::Open` calls
+  take their paths from the filelists, so no other code hardcodes the name.
+- Verified locally: producer strings identical (Rule 6), all touched Python
+  parses, `str.startswith(tuple)` matching confirmed on both prefixes.
+  **unverified:** no CRAB run yet with the new name.
+
+---
+
+## [Unreleased] — 2026-07-26 (5): UL18 prescan smoke-test campaign (slim branches)
+
+### Added
+- **`branches/branch_prescan_slim.txt`** — minimal Events-tree selection
+  (`drop *` + explicit keeps) for a cheap UL18 smoke-test production whose only
+  consumer is tempTTHH `prescan`. Header documents *why it is safe*: Σgenw is
+  read from `Runs.genEventSumw/genEventSumw2/genEventCount`, and output branch
+  selection filters only the Events tree while the post-processor copies `Runs`
+  and `LuminosityBlocks` through (04_architecture, 05_troubleshooting).
+  Verified prescan Events usage in `ttHHanalyzer_unified.cc`: `genWeight`
+  (L1902), `genTtbarId` (L1913/1927), `run`/`luminosityBlock`/`event`
+  (L1917-18, the Expanded_genTtbarId 3-key). **Hazard the keeps guard against:**
+  a missing `genTtbarId` is NOT detected — eventBuffer defaults it to 0, so
+  every MC event would be silently binned as tt+LF (`sumGenW_id_0`); same for
+  `genWeight` → `sumGenW_total = 0`. Also keeps the hadronic HLT bits so the
+  2018 path availability (DeepCSV variants) can be checked on the slim ntuple.
+- **`crabConfig/config_ttHH2018UL_prescan.yaml`** — 81 datasets: all 77 MC +
+  **JetHT only** for Data (user decision: 2018 has no BTagCSV, and SingleMuon
+  is only needed for the later trigger-SF study; it stays in the full config).
+  `jobID/output_base = campaign_ttHH2018UL_prescanSlim_v1`, `units_per_job: 5`
+  (slim output ⇒ fewer, larger jobs). Generated by
+  `script/build_ul18_from_log.py` alongside the full config, so both stay in
+  sync with the DAS log. YAML-schema checked against every key
+  `crab/submit_crab.py` consumes. **unverified — no CRAB submission yet.**
+
+### Verified
+- UL18 sample completeness: all 85 entries carry `nevents`+`nfiles`
+  (MC total 2,428,778,733; Data/JetHT+SingleMuon 1,662,166,075), and every MC
+  entry has non-null xsec/BR — so the post-production prescan can be compared
+  against DAS `nevents` sample by sample.
+- Sample-list cross-check vs the ttH AN (AN-2019/094, non-UL, reference only):
+  44/61 MC primaries appear there; 5 more (TTHHto4b, TT4b, TTZToBB, TTZHTo4b,
+  TTZZTo4b) appear in the ttHH AN (AN-2022/122). Remaining 12 = the hadronic
+  V→qq / high-HT V+jets bins (XSDB-sourced by design, documented in the xsec
+  DB refs) plus the 5 rare-top samples in the OPEN item below.
+
+### OPEN (found during the cross-check — values NOT changed)
+- `TTTT/TTWW/TTWH/TTWZ/TTTW` carry `xsec_ref: "ttHH AN Tab.9"` in
+  `samples_2017UL.json` (copied verbatim into `samples_2018UL.json`), but AN
+  Table 9 lists only ttHH/ttH/tt+jets/tt+bb/tt+4b/ttZ/ttZZ/ttZH, and the AN text
+  contains no ttWW/tttt/multi-top entry at all → **reference is wrong or the
+  values come from elsewhere (likely XSDB); needs a source fix.**
+- `TTZToBB` = 861 fb (ref: AN Tab.16) vs **AN Tab.9 ttZ = 841 fb** — confirm
+  which definition/table is intended before unblinding.
+
+---
+
+## [Unreleased] — 2026-07-26 (4): BTagCSV-2018 absence CONFIRMED (forensic scan run)
+
+### Verified (lxplus run, log `script/das_ul18_scan_20260726_1657.log`)
+- **BTagCSV does not exist in 2018 — settled, not a naming issue.** The v2
+  forensic queries returned **0 hits** for `/BTagCSV/Run2018*/*` under **any
+  tier** and **any dataset status** (`status=*`, i.e. INVALID/DEPRECATED
+  included). `/BTag*/Run2018*/NANOAOD` returns only **BTagMu** (54 datasets) —
+  the BTV muon-tagged calibration PD, not the FH b-tag jet stream.
+- **PD inventory diff** (Run2018A vs Run2017C, UL NanoAODv9) — the 2018 primary
+  dataset consolidation: **removed** BTagCSV, DoubleEG, FSQJet1, FSQJet2,
+  HTMHT, HighPtLowerPhotons, HighPtPhoton30AndZ, SingleElectron, SinglePhoton;
+  **added** EGamma. 2018 = BTagMu, Charmonium, DisplacedJet, DoubleMuon,
+  DoubleMuonLowMass, EGamma, JetHT, MET, MuonEG, MuOnia, SingleMuon, Tau.
+- **Consequence: JetHT alone covers the 2018 FH hadronic menu** (the 4J3T
+  b-tag quad-jet paths sit in JetHT for 2018). Recorded in the generated
+  config's comments. **Analyzer impact (tempTTHH, FUTURE):** the 2017
+  BTagCSV↔JetHT orthogonality split + veto (`ttHHanalyzer_unified.cc`
+  ~L295–360) must collapse to a JetHT-only OR for 2018, and 2018 path names
+  differ (`…TriplePFBTagDeepCSV_4p5`); the existing TODO at L297 covers this.
+- **Reproducibility:** rerunning `script/build_ul18_from_log.py` against the
+  real lxplus log reproduced `config_ttHH2018UL.yaml` and
+  `samples_2018UL.json` **byte-identical** to the earlier transcription-based
+  run (diff empty) — the log is the sole input and the step is idempotent.
+
+### Changed
+- `script/build_ul18_from_log.py`: log auto-discovery now globs
+  `script/**/das_ul18_scan_*.log` (the log lives directly in `script/`);
+  BTagCSV comment block upgraded from inference to confirmed verdict.
+
+---
+
 ## [Unreleased] — 2026-07-26 (3): das_ul18_scan.sh v2 — broad data forensics
 
 ### Added
@@ -27,7 +168,7 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 - **`crabConfig/config_ttHH2018UL.yaml`** — 85 datasets (77 MC + 8 Data), generated
   by the new **`script/build_ul18_from_log.py`** from
-  **`script/logs/das_ul18_scan_2026-07-26.log`** (lxplus run, transcribed DS/RESULT
+  **`script/das_ul18_scan_20260726_1657.log`** (lxplus run, transcribed DS/RESULT
   lines). Selection rules recorded in the script header: standard campaign only
   (JMENano/PUFor*/FSUL18/BPH excluded); ext1/ext2 = separate keys (new vs UL17:
   `TTWW_ext1`); Data = non-GT36 with GT36 twins as comments (**OPEN**: confirm

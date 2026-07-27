@@ -168,7 +168,8 @@ shim (deep dive: [`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md)).
   against the PSet output name and flagged the job failed.
 - **Fix.** Make the output filename agree on both sides. Currently
   `crab/PSet.py` (`fileName`) and `crab/submit_crab.py` (`out_name`) both use
-  `slimmedNtuple.root`.
+  `forgedNtuple.root` (renamed from `slimmedNtuple.root` on 2026-07-26, D-F;
+  file discovery downstream still accepts both prefixes).
 - **Status / permanent fix (open).** The value is still **hardcoded in two
   places**. The robust fix is to have `submit_crab.py` override the PSet
   output filename from the YAML at submission time (single source of truth).
