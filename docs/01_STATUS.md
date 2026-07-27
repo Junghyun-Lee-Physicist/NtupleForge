@@ -93,6 +93,20 @@
   - Branch lists are **per-era** (`_2017`/`_2018`) because unmatched `keep`
     patterns raise ROOT `SetBranchStatus` errors, one per job — see
     `02_CHANGELOG.md` 2026-07-27.
+- **CRAB job-count ceiling — 10,000 jobs PER TASK (know this before touching
+  `units_per_job`).** `FileBased` splitting gives `njobs = ceil(nfiles /
+  units_per_job)`; above 10,000 CRAB parks the task at `SUBMITREFUSED`
+  **server-side, after `crab submit` already reported success**, `--report` shows
+  a row of all zeros, and `--resubmit` cannot fix it. A dataset can silently
+  produce nothing for days (this is what happened in the sibling repo on
+  2026-07-27). **Safe today only because these are NanoAOD inputs**: the largest
+  2018UL dataset by file count is `WJetsToLNu_HT200To400_ext1` at 780 files ->
+  780 jobs, and the 7,466-job campaign is spread over 85 **tasks**.
+  Rule + enforcement: `03_DECISIONS.md` **D-2026-07-27-crab-job-limit**;
+  preventive entry `05_troubleshooting.md` **A16**; cross-repo canonical
+  `TTHHGenCategoryTools/docs/04_decisions.md` **D15**.
+  **OPEN gap:** `--preflight --check-das` here does not compute per-task job
+  counts yet (the extend submitter does).
 - **Output filename = `forgedNtuple.root` (D-F executed 2026-07-26).**
   Producers: `crab/PSet.py` + `crab/submit_crab.py` (Rule 6 pair). Downstream
   file discovery (`tempTTHH/make_filelists.py`,

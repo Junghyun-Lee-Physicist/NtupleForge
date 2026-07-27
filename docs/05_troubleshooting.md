@@ -440,6 +440,73 @@ are documented with the now-archived
 The current full-passthrough pipeline has no skim to measure; copy the tool
 back into `script/` if you reintroduce one.
 
+## A16 — (PREVENTIVE) A whole task silently produces nothing: >10,000 jobs → `SUBMITREFUSED` (2026-07-27, sibling repo)
+
+**Not yet observed in NtupleForge — recorded because the same code path exists
+here and there is no guard yet.**
+
+**Symptom (as seen in `TTHHGenCategoryTools`).** `crab submit` reports success,
+the submitter prints `submitted : 7`, and one dataset then produces **zero**
+output for a day. `--report` shows a row of **all zeros** for it, which looks
+identical to "submitted, not started yet". `--resubmit` says
+`Status information is unavailable`. Only the full `--status` dump reveals it:
+
+```
+Status on the CRAB server:	SUBMITREFUSED
+Warning: The splitting on your task generated 10010 jobs.
+         The maximum number of jobs in each task is 10000
+```
+
+**Cause.** With `splitting: FileBased`, `njobs = ceil(nfiles / units_per_job)`.
+CRAB refuses any task above **10,000 jobs**, and the refusal is **server-side,
+after** the client has already reported a successful submit. So:
+
+- nothing in the submit log indicates a problem;
+- `jobsPerStatus` stays empty → the compact `--report` row is all zeros;
+- **`crab resubmit` cannot rescue it** — resubmit only requeues *failed* jobs of
+  a task that reached the scheduler. The task must be **re-submitted**.
+
+The sibling case: 2018 `TTbar_SemiLep` MiniAOD has 10,010 files and
+`units_per_job` was 1 → 10,010 jobs → refused. The campaign total (20,953 jobs)
+looked fine because **the limit is per TASK, not per campaign**.
+
+**Why NtupleForge is currently safe — and exactly when it stops being safe.**
+These configs run over **NanoAOD**, whose file counts are ~20x smaller than the
+MiniAOD parents. Largest 2018UL dataset **by file count** =
+`WJetsToLNu_HT200To400_ext1` with **780 files → 780 jobs** at `units_per_job: 1`
+(then 669, 523). `TTbar_SemiLep` is largest by **events** (476 M) but only 4th by
+files (391) — **job count follows files, not events**. The 7,466-job campaign is
+spread over **85 tasks**.
+It breaks the moment you either
+(a) point a config at MiniAOD, or
+(b) add a NanoAOD dataset with >10,000 files,
+while leaving `units_per_job: 1`.
+
+**Prevention.**
+1. Warnings are in place at the code site every submission passes through —
+   `crab/submit_crab.py` (`conf.Data.unitsPerJob`) — plus
+   `crabConfig/config_ttHH2017UL.yaml` and `script/build_ul18_from_log.py`
+   (which stamps the comment into both generated 2018 configs).
+   The 8 `config_CPV*` files and `config_crabTest.yaml` are FileBased with
+   `units_per_job: 1` but are **not** annotated locally; they rely on the
+   submitter-side warning. Their inputs are NanoAOD (few hundred files max).
+2. **GAP — `--preflight --check-das` here does NOT compute per-task job counts.**
+   The extend submitter in `TTHHGenCategoryTools` does (it reads DAS `nfiles` and
+   FAILs above the limit); porting that check is the obvious follow-up. Until
+   then, check any suspect dataset by hand:
+   ```bash
+   dasgoclient -query "summary dataset=<DS>" -json | grep -o '"nfiles":[0-9]*'
+   ```
+3. Raising `units_per_job` is always safe *for this limit* (fewer jobs); the only
+   upward constraint is the CRAB walltime. For a `noop` passthrough job the
+   output is unaffected by packing.
+
+**Full write-up and the standing rule:**
+`TTHHGenCategoryTools/docs/08_troubleshooting.md` **T-19** (incident) and
+`TTHHGenCategoryTools/docs/04_decisions.md` **D15** (rule + enforcement).
+
+---
+
 ## A15 — CRAB job dies in 14 s: `[3011] No such file` on the LOCAL SE, no AAA fallback (2026-07-27)
 
 **Symptom.** A job of the ttHH2018UL full production (`TTbar_SemiLep`, CRAB id

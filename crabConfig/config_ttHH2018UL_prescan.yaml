@@ -18,6 +18,13 @@
 # scales with input files, not output size. 1 file/job is the value proven by
 # the 2017 campaign; the biggest 2018 samples (TTbar_SemiLep 476M evt over 391
 # files) would risk the CRAB walltime at 5 files/job.
+#   ^ that is the reason NOT to RAISE it here. The opposite direction has a hard
+#   wall: njobs_per_task = ceil(nfiles / units_per_job) and CRAB REFUSES any
+#   task above 10,000 jobs -- server-side, so `crab submit` reports success and
+#   the task then sits at SUBMITREFUSED with an all-zero --report row while
+#   --resubmit cannot rescue it (2026-07-27, sibling repo: docs T-19 / D15).
+#   1 is safe here only because these are NanoAOD datasets (largest = 391
+#   files). Never carry `units_per_job: 1` over to a MiniAOD-based config.
 # Data = JetHT only (2018 has no BTagCSV PD; SingleMuon deferred to trigger SF).
 common:
   jobID: "campaign_ttHH2018UL_prescanSlim_v1"

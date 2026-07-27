@@ -31,6 +31,18 @@ common:
 
   # If splitting is "Automatic", this is target runtime in minutes (e.g., 180 min --> minimum value).
   # If splitting is "FileBased", this is files per job (e.g., 1 or 2).
+  #
+  # !! HARD LIMIT: njobs_per_task = ceil(nfiles / units_per_job) and CRAB
+  # !! REFUSES ANY TASK ABOVE 10,000 JOBS. The refusal is server-side, so
+  # !! `crab submit` reports SUCCESS and the task then sits at SUBMITREFUSED
+  # !! with an all-zero `--report` row; `--resubmit` cannot rescue it, and the
+  # !! dataset silently produces nothing. (2026-07-27, sibling repo
+  # !! TTHHGenCategoryTools: 2018 TTbar_SemiLep, 10,010 MiniAOD files at
+  # !! units_per_job 1 -> lost a day. See that repo's docs/08 T-19, docs/04 D15.)
+  # !! 1 is safe HERE because these are NanoAOD datasets (a few hundred files
+  # !! each) and the limit is PER TASK, not per campaign. Do NOT carry this 1
+  # !! over to a MiniAOD-based config, and check any new large dataset with:
+  # !!   dasgoclient -query "summary dataset=<DS>" -json | grep -o '"nfiles":[0-9]*'
   ##units_per_job: 180
   units_per_job: 1
 

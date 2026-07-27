@@ -165,6 +165,20 @@ common:
   analysis_module: ["modules/noop.py", "MODULES"]
   branch_file: "branches/branch_keep_all.txt"
   splitting: "FileBased"
+  # units_per_job: njobs_per_task = ceil(nfiles / units_per_job).
+  # !! CRAB REFUSES ANY TASK WITH MORE THAN 10,000 JOBS -- and it refuses it
+  # !! server-side, so `crab submit` reports SUCCESS and the task then sits at
+  # !! SUBMITREFUSED forever with an all-zero --report row, while --resubmit
+  # !! cannot rescue it. An entire dataset silently produces nothing.
+  # !! (2026-07-27, sibling repo: TTHHGenCategoryTools 2018 TTbar_SemiLep,
+  # !!  10,010 MiniAOD files at units_per_job 1. docs T-19 / D15.)
+  # 1 is safe HERE only because these are NanoAOD datasets. Largest 2018UL
+  # dataset BY FILE COUNT = WJetsToLNu_HT200To400_ext1, 780 files -> 780 jobs
+  # (TTbar_SemiLep is largest by EVENTS but only 4th by files, 391 -- and it is
+  # FILES that set the job count). 7,466 jobs over 85 TASKS; limit is PER TASK.
+  # Before pointing a config at MiniAOD or adding a >10,000-file dataset, raise
+  # units_per_job and verify with:
+  #   dasgoclient -query "summary dataset=<DS>" -json | grep -o '"nfiles":[0-9]*'
   units_per_job: 1
 
 datasets:
@@ -244,6 +258,13 @@ datasets:
 # scales with input files, not output size. 1 file/job is the value proven by
 # the 2017 campaign; the biggest 2018 samples (TTbar_SemiLep 476M evt over 391
 # files) would risk the CRAB walltime at 5 files/job.
+#   ^ that is the reason NOT to RAISE it here. The opposite direction has a hard
+#   wall: njobs_per_task = ceil(nfiles / units_per_job) and CRAB REFUSES any
+#   task above 10,000 jobs -- server-side, so `crab submit` reports success and
+#   the task then sits at SUBMITREFUSED with an all-zero --report row while
+#   --resubmit cannot rescue it (2026-07-27, sibling repo: docs T-19 / D15).
+#   1 is safe here only because these are NanoAOD datasets (largest = 391
+#   files). Never carry `units_per_job: 1` over to a MiniAOD-based config.
 # Data = JetHT only (2018 has no BTagCSV PD; SingleMuon deferred to trigger SF).
 common:
   jobID: "campaign_ttHH2018UL_prescanSlim_v1"

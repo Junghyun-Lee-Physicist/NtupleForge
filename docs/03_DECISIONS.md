@@ -285,6 +285,61 @@ boson-less μμ. Real-file check pending on lxplus (audit §2b Draw one-liners).
 - **Why.** Re-emitting raw collections would collide with passthrough names and
   duplicate data; the prefix avoids collisions for the derived family branches.
 
+## D-2026-07-27-crab-job-limit — `units_per_job` must keep every task under 10,000 jobs
+**DECIDED · 2026-07-27**
+
+- **Decision.** With `splitting: FileBased`, treat **10,000 jobs per task** as a
+  hard wall: `njobs = ceil(nfiles / units_per_job)`. **Never lower
+  `units_per_job` without first checking the resulting per-task job count.**
+  Raising it is always safe for this limit.
+- **Why this is a decision and not a footnote.** CRAB does not reject an
+  oversized task at submit time. The client returns success, the submitter logs
+  `Submitting...`, and the **server** then parks the task at `SUBMITREFUSED`
+  with `The splitting on your task generated N jobs. The maximum number of jobs
+  in each task is 10000`. Because `jobsPerStatus` stays empty, `--report` shows
+  a row of all zeros — indistinguishable from "not started yet" — and
+  `--resubmit` cannot help (it only requeues *failed* jobs of a task that
+  reached the scheduler). Net result: **one dataset silently produces nothing,
+  possibly for days.** Observed 2026-07-27 in the sibling repo
+  `TTHHGenCategoryTools` (2018 `TTbar_SemiLep`, 10,010 MiniAOD files at
+  `units_per_job: 1`).
+- **Current NtupleForge exposure: none, by luck of input tier.** These configs
+  read **NanoAOD**, ~20x fewer files than the MiniAOD parents. The largest 2018UL
+  dataset **by file count** is `WJetsToLNu_HT200To400_ext1` at **780 files → 780
+  jobs**; next are `WJetsToLNu_HT70To100_ext1` (669) and `HT100To200_ext1` (523).
+  Note `TTbar_SemiLep` is the largest by **events** (476 M) but only 4th by files
+  (391) — **the job count is set by files, not events**, so rank by `nfiles`.
+  The 7,466-job 2018UL campaign is spread over **85 tasks**, and the limit is
+  **per task**. Do not read the campaign total as if it were near the limit.
+- **When it bites here.** Pointing a config at MiniAOD, or adding a NanoAOD
+  dataset with >10,000 files, while `units_per_job: 1`.
+- **Enforcement (what was actually done).** Warning blocks at the code site and
+  in the ttHH configs: `crab/submit_crab.py` at the `conf.Data.unitsPerJob`
+  assignment (this is the one every submission passes through),
+  `crabConfig/config_ttHH2017UL.yaml`, and `script/build_ul18_from_log.py` —
+  the last one stamps the warning into **both** generated 2018 configs, so it
+  survives regeneration.
+  **Not yet annotated (known, deliberate scope):** the 8 `config_CPV*_{Data,MC}.yaml`
+  files and `config_crabTest.yaml`, which also carry `splitting: FileBased` +
+  `units_per_job: 1`. They are covered by the submitter-side warning above (every
+  submission reads it) and their datasets are NanoAOD with at most a few hundred
+  files each, but they do not carry the note locally. Add it if CPV ever moves to
+  MiniAOD.
+- **Known gap (OPEN).** `--preflight --check-das` here does **not** compute
+  per-task job counts. The extend submitter in `TTHHGenCategoryTools` does
+  (reads DAS `nfiles`, FAILs above the limit, WARNs above 90%, and prints the
+  `units_per_job` needed). Porting that check is the obvious follow-up; until
+  then the guard is documentation plus a manual
+  `dasgoclient -query "summary dataset=<DS>" -json` check.
+- **Alternative considered.** `splitting: "Automatic"` removes the limit problem
+  (CRAB sizes jobs by runtime), but it obscures the job↔file mapping, which this
+  pipeline relies on for partial-failure tracking and completeness checks against
+  DAS `nevents`. Kept FileBased; Automatic remains PROPOSED.
+- **Cross-repo canonical rule.** `TTHHGenCategoryTools/docs/04_decisions.md`
+  **D15** (rule + 3-layer enforcement) and that repo's
+  `docs/08_troubleshooting.md` **T-19** (incident). Local preventive entry:
+  [`05_troubleshooting.md`](05_troubleshooting.md) **A16**.
+
 ## D-2026-06-27-cpv-configs — per-year config naming & temporary fields
 **DECIDED · 2026-06-27**
 

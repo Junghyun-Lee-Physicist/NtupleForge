@@ -612,9 +612,47 @@ def main(args):
     # units_per_job means different things:
     # Automatic -> Minutes (e.g., 180)
     # FileBased -> Number of Files (e.g., 1)
+    #
+    # =========================================================================
+    # !!  FileBased: DO NOT LOWER units_per_job WITHOUT CHECKING JOB COUNTS  !!
+    # =========================================================================
+    # njobs_per_task = ceil(nfiles_of_that_dataset / units_per_job), and CRAB
+    # REFUSES any task with more than CRAB_MAX_JOBS_PER_TASK (= 10,000) jobs.
+    # The refusal is SERVER-SIDE and looks like success from here:
+    #   * crabCommand('submit') returns fine and this script logs "Submitting..."
+    #   * the server then parks the task at SUBMITREFUSED with
+    #     "The splitting on your task generated N jobs. The maximum number of
+    #      jobs in each task is 10000"
+    #   * jobsPerStatus stays empty -> `--report` shows a row of all zeros,
+    #     which is indistinguishable from "submitted, not started yet"
+    #   * `--resubmit` CANNOT fix it (resubmit only requeues FAILED jobs of a
+    #     task that reached the scheduler); the task must be re-submitted
+    # So an entire dataset can silently produce nothing for days. This is not
+    # hypothetical: it happened on 2026-07-27 in the sibling repo
+    # TTHHGenCategoryTools (2018 TTbar_SemiLep, 10,010 MiniAOD files at
+    # units_per_job 1). Write-up: TTHHGenCategoryTools/docs/08_troubleshooting.md
+    # T-19; decision + rule: that repo's docs/04_decisions.md D15.
+    #
+    # Why the ttHH configs here are currently safe: they run over NanoAOD, whose
+    # file counts are ~20x smaller than MiniAOD. The largest 2018UL dataset BY
+    # FILE COUNT is WJetsToLNu_HT200To400_ext1 with 780 files -> 780 jobs at
+    # units_per_job 1 (NOT TTbar_SemiLep -- that one is largest by EVENTS,
+    # 476M, but only 4th by files at 391; ranking files != ranking events, and
+    # it is files that set the job count). The 2018UL campaign is 7,466 jobs
+    # across 85 TASKS, and the limit is PER TASK, not per campaign -- do not read
+    # the campaign total as if it were near the limit.
+    # DANGER CASE for this repo: pointing a config at MiniAOD, or adding a
+    # dataset with >10,000 files, while units_per_job is 1.
+    #
+    # NOTE (gap, 2026-07-27): unlike the extend submitter, `--preflight
+    # --check-das` here does NOT yet compute per-task job counts. Until it does,
+    # check by hand for any dataset you suspect is large:
+    #     dasgoclient -query "summary dataset=<DS>" -json | grep -o '"nfiles":[0-9]*'
+    # Raising units_per_job is always safe for this limit and, for a passthrough
+    # (noop) job, has no effect on output correctness.
     user_units = common.get('units_per_job', 1)
     ##user_units = common.get('units_per_job', 180) # Default 180 mins
-    
+
     conf.Data.unitsPerJob = user_units
     conf.Data.publication = False
 

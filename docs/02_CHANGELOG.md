@@ -9,6 +9,53 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-27 (7): CRAB 10,000-jobs-per-task limit documented at every decision point
+
+No behaviour change. A sibling repo lost a day to this and the same code path
+exists here with no guard, so the trap is now written down where someone about
+to change the value will actually see it.
+
+### The trap
+`splitting: FileBased` -> `njobs = ceil(nfiles / units_per_job)`. CRAB refuses
+any task above **10,000 jobs**, but **server-side, after the client reported a
+successful submit**. So `crab submit` looks fine, the task then sits at
+`SUBMITREFUSED`, `--report` shows a row of all zeros (indistinguishable from
+"not started yet"), and `--resubmit` cannot fix it -- resubmit only requeues
+*failed* jobs of a task that reached the scheduler. One dataset silently
+produces nothing.
+
+### Added (comments, at the points where the value is chosen)
+- `crab/submit_crab.py` at the `conf.Data.unitsPerJob` assignment.
+- `crabConfig/config_ttHH2017UL.yaml` next to `units_per_job: 1`.
+- `script/build_ul18_from_log.py` -- stamped into **both** generated 2018
+  configs, so it survives regeneration. Verified: regenerating leaves the 85/81
+  dataset configs and `samples_2018UL.json` otherwise unchanged.
+
+### Added (docs)
+- `03_DECISIONS.md` **D-2026-07-27-crab-job-limit**.
+- `05_troubleshooting.md` **A16** (marked PREVENTIVE -- not yet observed here).
+
+### Why NtupleForge is safe today, and exactly when it stops being
+These configs read NanoAOD (~20x fewer files than the MiniAOD parents): largest
+2018UL dataset **by file count** is `WJetsToLNu_HT200To400_ext1` at **780 files
+-> 780 jobs** (`TTbar_SemiLep` is largest by events but 4th by files, 391 --
+job count follows FILES). The 7,466-job
+campaign is spread over **85 tasks** and the limit is **per task** -- do not read
+the campaign total as if it were near the ceiling. It breaks if a config is
+pointed at MiniAOD, or a >10,000-file dataset is added, with `units_per_job: 1`.
+
+### OPEN gap
+`--preflight --check-das` here does **not** compute per-task job counts. The
+extend submitter in `TTHHGenCategoryTools` does (DAS `nfiles` -> FAIL above the
+limit, WARN above 90%, prints the required `units_per_job`). Porting it is the
+follow-up; until then the check is manual:
+`dasgoclient -query "summary dataset=<DS>" -json | grep -o '"nfiles":[0-9]*'`.
+
+Canonical rule: `TTHHGenCategoryTools/docs/04_decisions.md` **D15**;
+incident: that repo's `docs/08_troubleshooting.md` **T-19**.
+
+---
+
 ## [Unreleased] — 2026-07-27 (6): 2018 luminosity settled — 59.83 → **59.56 fb⁻¹**
 
 ### Changed
