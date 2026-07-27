@@ -9,6 +9,53 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-27 (3): A15 incident — documented; AAA fallback added but OPT-IN (**no default behaviour change**)
+
+### Incident (A15)
+- First failure of the UL18 full production: a `TTbar_SemiLep` job at
+  `T2_KR_KISTI` died in 14 s with `[3011] No such file` — the bare LFN resolved
+  to the local SE only, and `ROOT.TFile.Open` has no redirector fallback (cmsRun's
+  `PoolSource` would have retried; our `scriptExe` path gets nothing for free).
+  Rucio listed the site as holding the block, so "the site has the data" does not
+  guarantee the file opens.
+- **Resolution: do nothing.** The post-job log shows CRAB classifies it as
+  `RECOVERABLE` → `COOLOFF` → DAGMan retries (max 3), and each retry is
+  re-matched, so it can land at a site that can serve the file. That is a better
+  remedy than anything the job can do for itself.
+- **Not a regression:** the no-fallback structure predates all 2026-07 changes.
+  It fires only when the matched site cannot serve the file, so it depends on
+  replica health and scheduling luck — it was very likely absorbed silently by
+  the same retries during the 2017 campaign.
+- Full write-up incl. the `50115 BadFWJRXML` red herring and a diagnosis recipe:
+  `05_troubleshooting.md` **A15**.
+
+### Added (opt-in, default OFF — no change to existing behaviour)
+- `script/run_postproc.py` `resolve_input_files()` + **`--xrd-fallback`**:
+  probe-open inputs (local first) and re-route unreadable ones through
+  `cms-xrd-global` → `xrootd-cms.infn.it` → `cmsxrootd.fnal.gov`; a file that
+  opens nowhere exits **2** with an explicit list instead of a traceback from
+  inside `PostProcessor.run()`.
+- **Written and demoted to opt-in on the same day**, after re-assessing it at the
+  user's prompting ("is this worth doing now, could it hurt?"). It is not a free
+  win: (1) narrow scope — if no replica is readable anywhere, the redirector
+  cannot help either, and the useful case is the one CRAB's retry already covers
+  better by moving the job; (2) it can be **harmful** — a transient local failure
+  is indistinguishable from a missing replica, so the job silently degrades to
+  WAN streaming instead of failing fast and being re-matched, and one
+  `TTbar_SemiLep` file (~1.22 M events) read 5–10× slower can exceed the 600-min
+  walltime; (3) it is unproven on the grid, and shipping unproven code in a
+  7,466-job sandbox is itself a risk (cf. A14).
+  With the flag off, the default code path is unchanged (no probe, no extra open).
+- Verified locally against a stubbed ROOT for all three paths (local OK / AAA
+  rescue / unreadable → exit 2). **Never exercised on the grid.**
+
+### Ops note
+- A code fix does not reach already-submitted tasks: CRAB ships the sandbox at
+  submit time, so `crab resubmit` reuses the OLD script (same trap as A14).
+  Anything patched must go out as **NEW tasks**.
+
+---
+
 ## [Unreleased] — 2026-07-27 (2): plan re-scope — injector DEFERRED, UL18 full production is the path
 
 ### Decided (user, 2026-07-27)

@@ -440,6 +440,95 @@ are documented with the now-archived
 The current full-passthrough pipeline has no skim to measure; copy the tool
 back into `script/` if you reintroduce one.
 
+## A15 — CRAB job dies in 14 s: `[3011] No such file` on the LOCAL SE, no AAA fallback (2026-07-27)
+
+**Symptom.** A job of the ttHH2018UL full production (`TTbar_SemiLep`, CRAB id
+252) ran at `T2_KR_KISTI` and failed after 16 s:
+
+```
+== CMSSW: 27-Jul-2026 18:30:37 KST  Initiating request to open file
+     root://cms-t2-se01.sdfarm.kr:1094//store/mc/RunIISummer20UL18NanoAODv9/...
+== CMSSW: Error in <TNetXNGFile::Open>: [ERROR] Server responded with an error: [3011] No such file
+== CMSSW: OSError: Failed to open file root://cms-t2-se01.sdfarm.kr:1094//store/mc/...
+== CMSSW: [crab_script] : Execution failed with exit code 1
+Application exit code: 5   ->  long exit code 50115 (BadFWJRXML), short 195
+```
+
+**Cause.** Two things compounding:
+
+1. `script/run_postproc.py` handed the **bare LFN** (`/store/mc/...`) to
+   `PostProcessor`, which does `ROOT.TFile.Open(fname)`. CMSSW's site-local
+   trivial file catalogue translates that to the **local SE PFN only**
+   (`root://cms-t2-se01.sdfarm.kr:1094/...`). The replica was not readable
+   there, and a plain `TFile::Open` has **no redirector fallback** — unlike
+   cmsRun's `PoolSource`, which is what every other CMS workflow relies on.
+   We use `scriptExe`, so we get none of that for free.
+   The job AD listed `T2_KR_KISTI` in `DESIRED_CMSDataLocations`, i.e. Rucio
+   believed the block was there — so "the site has the data" is not a
+   guarantee that the individual file opens.
+2. The `50115 BadFWJRXML` in `crab status` is a **red herring**: our script
+   aborted before `PostProcessor` could write `FrameworkJobReport.xml`, so
+   WMCore then failed to parse an empty file and reported the XML error instead
+   of the real cause. Always read `cmsRun-stdout.log` / the `job_out.<id>.txt`
+   for the actual failure.
+
+**Resolution — DO NOTHING; let CRAB retry. [DECIDED 2026-07-27]**
+
+The post-job log settles it: CRAB classifies this itself and recovers.
+
+```
+RetryJob: Applying retry policy for exit code 50115
+ERROR:RetryJob Job did not produce a FJR; will retry.
+The retry handler indicated this was a recoverable error. DAGMan will retry.
+status: COOLOFF        (retry 1 of max 3)
+RECOVERABLE JOB FAIL. This jobs will be retried
+```
+
+Each retry is re-matched, so it can land at a site that *can* serve the file —
+which is a **better** remedy than anything the job itself can do. Only if all 3
+retries fail does this become a real problem.
+
+**Why this was not a regression.** The `TFile.Open(LFN)`-without-fallback
+structure predates every 2026-07 change; nothing regressed. The vulnerability
+has always been there and fires only when the matched site cannot serve the
+file — i.e. it depends on replica health and scheduling luck. It very likely
+occurred during the 2017 campaign too and was silently absorbed by the same
+automatic retries; it is visible now only because the first job log was read by
+hand. 2018 is somewhat more exposed: `TTbar_SemiLep` is 1 TB / 391 files, so
+there is more room for an incomplete block replica.
+
+**An AAA fallback exists but is OPT-IN and OFF by default** — `run_postproc.py`
+`resolve_input_files()`, enabled with `--xrd-fallback`. It was written on
+2026-07-27 and demoted to opt-in the same day after re-assessment:
+
+1. **Narrow scope.** If no site has a readable replica, the redirector cannot
+   find one either. It only helps when the matched site fails but another
+   succeeds — the case CRAB's retry already handles, better.
+2. **It can be actively harmful.** A transient local failure is
+   indistinguishable from a missing replica, so the job degrades to WAN
+   streaming instead of failing fast and being re-matched. One `TTbar_SemiLep`
+   file is ~1.22 M events; a 5–10× slower read can exceed the 600-min walltime.
+   The probe also masks the local failure reason (`gErrorIgnoreLevel = kFatal`).
+3. **Unproven on the grid** — and shipping unproven code in a 7,466-job sandbox
+   is itself a risk (cf. A14).
+
+So: **use it only for a targeted resubmission of files that are demonstrably
+unreadable everywhere CRAB sends them.** Verified locally against a stubbed
+ROOT for all three paths (local OK / AAA rescue / unreadable → exit 2);
+**never exercised on the grid.**
+
+**Ops note — a code fix does NOT reach already-submitted tasks.** CRAB ships the
+sandbox at submit time, so `crab resubmit` reuses the OLD `run_postproc.py`
+(same trap as A14). Anything patched must go out as **NEW tasks**.
+
+**Diagnosis recipe for next time.** `crab status` will say
+`50115 / BadFWJRXML`; ignore it. Read
+`https://cmsweb.cern.ch/scheddmon/<schedd>/<user>/<reqname>/job_out.<id>.<retry>.txt`
+(or `cmsRun-stdout.log` in the job sandbox) and look for the `TNetXNGFile::Open`
+line — that names the site SE and the real error code.
+
+---
+
 ## A14 — `OverflowError: math range error` in `_energy` (background samples, 2026-07-15)
 
 **Symptom.** CRAB jobs on background samples (first seen: `QCD_HT*` 2017UL) die
