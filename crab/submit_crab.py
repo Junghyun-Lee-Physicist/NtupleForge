@@ -66,6 +66,13 @@ logger = logging.getLogger("Submitter")
 
 # --- Job-state buckets for --report -----------------------------------------
 # CRAB job states shown as their own column in the compact report.
+#
+# MIRRORED in TTHHGenCategoryTools/TtbarIdExtender/crab/submit_ttbarIdExtend.py
+# (--report added there 2026-07-27). The duplication is deliberate: the two
+# repos are separate checkouts with different CMSSW releases, so they cannot
+# share a module -- but the columns, the "others" rule and the unknown-state
+# warning must stay identical or the two campaigns' reports stop being
+# comparable. Change both, or neither.
 REPORT_COLUMNS = ["finished", "running", "idle", "transferring", "failed"]
 # Known-but-minor states folded into "others" WITHOUT raising an unknown warning.
 KNOWN_OTHER_STATES = {
