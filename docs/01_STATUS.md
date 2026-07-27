@@ -2,7 +2,7 @@
 
 > **Purpose:** the single place to answer "where are we right now?" for any
 > contributor (human or AI) joining cold. **Audience:** all. **Updated:**
-> 2026-07-26. Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
+> 2026-07-27. Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
 
 ## Active workstreams
 
@@ -43,8 +43,10 @@
 - `crabConfig/config_ttHH2017UL.yaml` (91 datasets, UL17 NanoAODv9). Stable.
 - **2018UL campaign — DAS scan DONE, config generated (2026-07-26):**
   `script/das_ul18_scan.sh` was run on lxplus (log:
-  `script/das_ul18_scan_20260726_1657.log`) — all 61 MC primaries found
-  EXACT, no relaxed fallback needed. `script/build_ul18_from_log.py` generated
+  `script/das_ul18_scan_20260726_1657.log`) — all **61 MC primary datasets**
+  (= 61 queries; expanding `ext1`/`ext2`/`ext3` variants gives the **77 MC
+  entries** below) found EXACT, no relaxed fallback needed.
+  `script/build_ul18_from_log.py` generated
   `crabConfig/config_ttHH2018UL.yaml` (85 datasets = 77 MC + 8 Data) and
   `tempTTHH/data/samples_2018UL.json`. Regenerating from the real lxplus log
   reproduced both files byte-identical (idempotent; log is the sole input).
@@ -53,14 +55,37 @@
   hadronic trigger menu**; the analyzer's 2017 BTagCSV↔JetHT veto must collapse
   to a JetHT-only OR for 2018 (tempTTHH, FUTURE).
   **OPEN:** (a) Data non-GT36 chosen — confirm against the samples used by the
-  ttHH AN (+ XPOG/PdmV twiki); GT36 twins kept as comments; (b) 2018 lumi
-  59.83 /fb preliminary (user to confirm); (c) jobID/splitting placeholders
-  until first submission.
-- **2018UL prescan smoke test — LOCAL PATH VERIFIED ON LXPLUS 2026-07-27,
-  CRAB submission is the next action:**
+  ttHH AN (+ XPOG/PdmV twiki); GT36 twins kept as comments.
+  **(b) SETTLED 2026-07-27 — 2018 lumi = 59.56 /fb (0.84 %)**, LUM POG "Recorded
+  Golden Legacy" (`LumiRecommendationsRun2`; index `TWikiLUM`; cite
+  CMS-PAS-LUM-20-001). The preliminary **59.83 was wrong** — it appears nowhere
+  in the LUM POG page. Both `tempTTHH/data/samples_2018UL.json._meta` and the
+  generator `script/build_ul18_from_log.py` were updated and regeneration is
+  byte-identical. Still open per the TWiki: re-run `brilcalc` on this analysis'
+  own certified JSON (2017 gave 42.0688 → 42.07). Full change list:
+  `tempTTHH/docs/reference/LUMI_SOURCES.md`.
+- **2018UL FULL production — SUBMITTED 2026-07-27.**
+  `crabConfig/config_ttHH2018UL.yaml` + `branches/branch_keep_all.txt`:
+  **85 tasks / 7,466 jobs / 6.74 TB expected**, `--preflight` 35 PASS / 0 FAIL
+  before submit. Running; monitor with
+  `python3 crab/submit_crab.py -c crabConfig/config_ttHH2018UL.yaml --status`.
+  - **Watch items** (2026-07-27): `WJetsToLNu_HT200To400_ext1` (461/780 failed)
+    and `WJetsToLNu_HT70To100_ext1` (322/669). KISTI `[3011] No such file`
+    (`05_troubleshooting.md` A15) — CRAB retries recover these; not a
+    regression. Re-check before declaring the campaign done.
+  - This production did **not** wait for the ttHH categorization work: the
+    analyzer resolves `Expanded_genTtbarId` at runtime from patch files, so the
+    two campaigns are independent (workspace `RUNBOOK_UL18_to_controlplots.md`
+    §0).
+  - Post-production check (**not yet run**): prescan `genEventCount_runs` vs the
+    DAS `nevents` already stored in `samples_2018UL.json`.
+- **2018UL prescan slim config — LOCAL PATH VERIFIED, CRAB RUN CANCELLED.**
   `crabConfig/config_ttHH2018UL_prescan.yaml` (81 datasets: 77 MC + JetHT only,
   `units_per_job: 1`) + `branches/branch_prescan_slim_2018.txt`.
-  - `--preflight`: **35 PASS / 0 FAIL → READY TO SUBMIT** (real lxplus env).
+  A smoke task was submitted then **killed by the user and its project dir
+  removed** (`02_CHANGELOG.md` 2026-07-27) — the plan changed to going straight
+  to full production. The config is kept because the **analyzer** prescan mode
+  still needs the same slim branch contract.
   - Local `-N 2000` run on a real UL18 file: `Runs` tree with
     `genEventSumw/Sumw2/Count` survives, `LuminosityBlocks` too, Events keeps
     exactly 15 branches incl. `genWeight`/`genTtbarId` → **the slim strategy is
@@ -68,10 +93,6 @@
   - Branch lists are **per-era** (`_2017`/`_2018`) because unmatched `keep`
     patterns raise ROOT `SetBranchStatus` errors, one per job — see
     `02_CHANGELOG.md` 2026-07-27.
-  Post-production check: prescan `genEventCount_runs` vs the DAS `nevents`
-  already stored in `samples_2018UL.json`. The **real** UL17+UL18 production
-  will use `config_ttHH2018UL.yaml` + `branch_keep_all.txt` after the ttHH
-  categorization work lands.
 - **Output filename = `forgedNtuple.root` (D-F executed 2026-07-26).**
   Producers: `crab/PSet.py` + `crab/submit_crab.py` (Rule 6 pair). Downstream
   file discovery (`tempTTHH/make_filelists.py`,

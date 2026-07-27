@@ -27,13 +27,15 @@ Usage Examples:
         -I modules.jetsMETcut:MODULES \
         --output-file merged_skim.root
 
-    # 3. Local validation run with ttbarCategorizer debug CSV
-    python3 script/run_postproc.py input.root \
-        -b branches/branch_ttHHto4b_hadronic_2017UL.txt \
-        -I modules.ttbarCategorizer:MODULES \
-        -N 1000 \
-        --ttcat-debug-csv \
-        --ttcat-debug-csv-path /tmp/ttcat_check.csv
+    # 3. DEAD EXAMPLE -- kept only to explain the --ttcat-* flags below.
+    #    modules/ttbarCategorizer.py DOES NOT EXIST in this repository
+    #    (modules/ holds noop, topCPVCategorizer, jetsMETcut,
+    #    nanoaod_branch_access), so this command fails at import and the
+    #    three --ttcat-* flags are parsed but have no effect.
+    #    python3 script/run_postproc.py input.root \
+    #        -b branches/branch_ttHHto4b_hadronic_2017UL.txt \
+    #        -I modules.ttbarCategorizer:MODULES \
+    #        -N 1000 --ttcat-debug-csv --ttcat-debug-csv-path /tmp/ttcat.csv
 
 [Note on YAML Configuration]
 When submitting jobs via CRAB using 'submit_crab.py', the arguments for this script 
@@ -117,13 +119,20 @@ def main():
     parser.add_argument("--first-entry", type=int, default=0,
                         help="Index of the first event to process. Default is 0.")
 
-    # [3] ttbarCategorizer Options
+    # [3] ttbarCategorizer Options -- DEPRECATED / DEAD
     # ────────────────────────────────────────────────────────────────────
     # These flags control the optional debug behaviour of the
     # TtbarCategorizer module (modules/ttbarCategorizer.py). They are
     # passed to the module via environment variables, which the
     # `make_default_module()` factory reads when constructing the
     # MODULES list at import time.
+    #
+    # !! THAT MODULE IS NOT IN THIS REPOSITORY (verified 2026-07-27).      !!
+    # !! modules/ contains only: noop, topCPVCategorizer, jetsMETcut,     !!
+    # !! nanoaod_branch_access. These three flags are therefore accepted   !!
+    # !! and silently do nothing. Kept (not removed) so that any external  !!
+    # !! caller / old CRAB sandbox passing them does not crash. If the     !!
+    # !! module is never restored, delete them together with this block.   !!
     #
     # The categorizer ALWAYS writes both branch sets (`ttCat_*` and
     # `ttCatXval_*`) regardless of these flags. The flags only control

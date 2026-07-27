@@ -13,3 +13,13 @@ campaign_*
 
 # preflight logs (--preflight, read-only checker output)
 preflight_*.log
+
+# CRAB submit/status transcripts and local test scratch (regenerable).
+# NB: script/das_ul18_scan_*.log is deliberately NOT ignored -- it is the INPUT
+# that script/build_ul18_from_log.py parses, i.e. provenance for the generated
+# UL18 configs. Only outputs are ignored here.
+submit_*_20*.log
+crab_status_*_20*.log
+localcheck_*/
+local_test_*.log
+crab_args.txt

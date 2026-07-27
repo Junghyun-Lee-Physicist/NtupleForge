@@ -497,9 +497,11 @@ automatic retries; it is visible now only because the first job log was read by
 hand. 2018 is somewhat more exposed: `TTbar_SemiLep` is 1 TB / 391 files, so
 there is more room for an incomplete block replica.
 
-**An AAA fallback exists but is OPT-IN and OFF by default** — `run_postproc.py`
-`resolve_input_files()`, enabled with `--xrd-fallback`. It was written on
-2026-07-27 and demoted to opt-in the same day after re-assessment:
+**There is NO AAA fallback in the code.** One was written on 2026-07-27
+(`resolve_input_files()` + `--xrd-fallback`), demoted to opt-in the same day, and
+then **fully reverted at the user's request** — `run_postproc.py` contains zero
+traces of it and `--xrd-fallback` is not a valid flag. Do not go looking for it;
+if you decide to re-add it, these are the reasons it was dropped:
 
 1. **Narrow scope.** If no site has a readable replica, the redirector cannot
    find one either. It only helps when the matched site fails but another
@@ -512,10 +514,15 @@ there is more room for an incomplete block replica.
 3. **Unproven on the grid** — and shipping unproven code in a 7,466-job sandbox
    is itself a risk (cf. A14).
 
-So: **use it only for a targeted resubmission of files that are demonstrably
-unreadable everywhere CRAB sends them.** Verified locally against a stubbed
-ROOT for all three paths (local OK / AAA rescue / unreadable → exit 2);
+If it is ever re-added, the only defensible use is **a targeted resubmission of
+files that are demonstrably unreadable everywhere CRAB sends them** — never as a
+default. The reverted version had been verified locally against a stubbed ROOT
+for all three paths (local OK / AAA rescue / unreadable → exit 2) and was
 **never exercised on the grid.**
+
+**What to do instead, today:** let CRAB's automatic retries move the job
+(they recover this in practice — see the 2026-07-27 UL18 job reports), and only
+escalate if a specific file fails at every site across all retries.
 
 **Ops note — a code fix does NOT reach already-submitted tasks.** CRAB ships the
 sandbox at submit time, so `crab resubmit` reuses the OLD `run_postproc.py`

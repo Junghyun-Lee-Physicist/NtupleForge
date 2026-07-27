@@ -15,7 +15,12 @@ Selection rules (D: 2026-07-26, user-confirmed):
    GT36 twins are emitted as comments. OPEN: confirm official XPOG recommendation.
  - BTagCSV: no 2018 primary dataset exists (DAS NOT_FOUND) -> omitted; OPEN in docs.
  - frac_neg_weight: unknown for UL18 -> null (recompute at prescan).
- - _meta lumi 59.83 /fb: preliminary, OPEN (user will confirm from LUM twiki).
+ - _meta lumi 59.56 /fb (0.84%): LUM POG "Recorded Golden Legacy" full-dataset value,
+   CONFIRMED 2026-07-27 from https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2
+   (index: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM).
+   NOTE: this replaced a preliminary 59.83 that appears NOWHERE in the LUM POG page.
+   Still to do per that page: re-run brilcalc on THIS analysis' certified JSON
+   (run/lumi + trigger selection), which is why _meta.lumi_brilcalc_result_fb_inv is null.
 """
 import json
 import re
@@ -74,13 +79,41 @@ def main():
         "era": "2018UL",
         "campaign": "RunIISummer20UL18 NanoAODv9",
         "config": "campaign_ttHH2018UL_fullNano_v1",
-        "lumi_fb_inv": 59.83,
-        "lumi_ref": "OPEN (preliminary): LUM POG 2018UL standard value 59.83 /fb; "
-                    "to be confirmed by user from CMS LumiRecommendationsRun2 / brilcalc.",
+        "lumi_fb_inv": 59.56,
+        "lumi_ref": "LUM POG recommendation page: CMS LumiRecommendationsRun2, UL2018 "
+                    "Recorded Golden Legacy full dataset = 59.56 fb^-1 (0.84%); "
+                    "https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2",
         "source_log": "NtupleForge/script/das_ul18_scan_20260726_1657.log",
         "note": "xsec/BR/kfactor/refs copied from samples_2017UL.json (same 13 TeV values); "
                 "nevents/nfiles from DAS (UL18). frac_neg_weight=null until prescan. "
                 "Data = non-GT36 (OPEN: confirm XPOG recommendation). BTagCSV PD does not exist in 2018.",
+        "unit": "fb",
+        "lumi_reference_name": "LUM POG recommendation page",
+        "lumi_ref_url": "https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2",
+        "lumi_ref_url_index": "https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM",
+        "lumi_brilcalc_command": "brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/"
+                                 "cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb "
+                                 "-i [YOUR_ANALYSIS_JSON]",
+        "lumi_data_certification": "Recorded Golden Legacy / UL2018 Golden JSON "
+                                   "(Collisions18/13TeV/Legacy_2018/"
+                                   "Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt)",
+        "lumi_full_golden_legacy_fb_inv": 59.56,
+        "lumi_golden_prelegacy_fb_inv": 59.47,
+        "lumi_brilcalc_result_fb_inv": None,
+        "lumi_uncertainty_percent": 0.84,
+        "lumi_citation": "CMS-PAS-LUM-20-001 (2017-2018 and combinations)",
+        "lumi_note": "59.56 fb^-1 is the LUM POG 'Recorded Golden Legacy' full-dataset value "
+                     "for 2018 (TWiki table, superseding the 59.83 fb^-1 that was carried here "
+                     "as a preliminary placeholder until 2026-07-27; 59.83 does not appear in "
+                     "the recommendation page at all). lumi_brilcalc_result_fb_inv is null "
+                     "because brilcalc has NOT been run on this analysis' own certified JSON "
+                     "yet - the TWiki explicitly requires re-running it for the actual analysis "
+                     "run/lumi and trigger selection. Do not use ttHH AN as the luminosity "
+                     "reference.",
+        "lumi_single_year_combine_nuisances":
+            "For 2018-only statistical models, LUM POG recommends "
+            "lumi_13TeV_15161718_l=1.0084 (new Cholesky-decomposition scheme; a 2018-only fit "
+            "uses every nuisance whose name contains the year, which for 2018 is this one alone).",
     }
     miss_ref = []
     for key, (ds, nev, nf) in mc.items():

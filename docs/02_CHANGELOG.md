@@ -9,7 +9,94 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
-## [Unreleased] — 2026-07-27 (3): A15 incident — documented; AAA fallback added but OPT-IN (**no default behaviour change**)
+## [Unreleased] — 2026-07-27 (6): 2018 luminosity settled — 59.83 → **59.56 fb⁻¹**
+
+### Changed
+- `script/build_ul18_from_log.py` `_meta` block: `lumi_fb_inv` **59.83 → 59.56**, plus a
+  full lumi provenance block mirroring the 2017 schema (uncertainty 0.84 %,
+  PreLegacy 59.47, Golden JSON filename, brilcalc command, citation, 2018-only
+  combine nuisance `lumi_13TeV_15161718_l = 1.0084`, and
+  `lumi_brilcalc_result_fb_inv: null`).
+  **Regenerated and verified byte-identical** against the hand-edited
+  `tempTTHH/data/samples_2018UL.json`, and both crab configs came out unchanged —
+  so the value cannot silently revert on the next regeneration.
+- `docs/01_STATUS.md` OPEN (b) → **SETTLED**.
+
+### Why
+The user supplied the LUM POG page itself. Its **"Recorded Golden Legacy"** row is
+the one that matches our UltraLegacy samples: **2017 = 42.07 (0.82 %)**,
+**2018 = 59.56 (0.84 %)**. **59.83 appears nowhere on that page** — it had been a
+placeholder. PreLegacy (42.12 / 59.47) must not be used.
+Sources now linked from the docs:
+<https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM> (index) and
+<https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2> (the table);
+cite **CMS-PAS-LUM-20-001**.
+
+### Still open (per the TWiki itself)
+The page requires re-running `brilcalc` on the analysis' own certified JSON
+(run/lumi + trigger selection); the quoted numbers are full-dataset values.
+2017 was done (42.0688 → 42.07); **2018 has not been**. Full change list and the
+9 places lumi lives: `tempTTHH/docs/reference/LUMI_SOURCES.md`.
+
+---
+
+## [Unreleased] — 2026-07-27 (5): reproducibility audit — broken commands fixed, phantom feature retracted, status corrected
+
+No production code changed. This entry records the result of auditing every
+documented command against the actual CLI of the scripts it invokes.
+
+### Fixed — commands that would have failed as written
+- `README.md` "Run locally" passthrough example used `-I modules.noop`.
+  `-I` takes **one** `module.path:LIST_NAME` token; with `:LIST_NAME` omitted the
+  driver looks for a list literally named `modules` (lowercase), while every
+  module in this repo exports `MODULES` → `list 'modules' NOT found`, exit 1.
+  Now `-I modules.noop:MODULES`, and the argument table states the rule.
+  (The other example, and the UL18 section, were already correct — hence the
+  README contradicted itself.)
+
+### Changed — `--ttcat-*` flags labelled DEPRECATED (dead)
+- `run_postproc.py` parses `--ttcat-debug-csv`, `--ttcat-debug-csv-path`,
+  `--ttcat-quiet` and passes them to `modules/ttbarCategorizer.py` **through
+  environment variables — but that module does not exist in this repo**
+  (`modules/` holds `noop`, `topCPVCategorizer`, `jetsMETcut`,
+  `nanoaod_branch_access`). The flags are accepted and do nothing. Documented as
+  such in the README argument table rather than left as an invisible trap.
+
+### Retracted — the AAA fallback never existed in the committed code
+- Entry **2026-07-27 (3)** announced `resolve_input_files()` + `--xrd-fallback`.
+  That change was **fully reverted the same day** at the user's request and the
+  revert was never written down, so two documents advertised a flag that raises
+  `unrecognized arguments`. Both are now corrected in place:
+  the changelog entry carries a **[REVERTED]** banner, and
+  `05_troubleshooting.md` **A15** now opens with "There is NO AAA fallback in the
+  code" plus what to do instead (let CRAB's retries move the job).
+  The *reasoning* for dropping it is preserved — it is the useful part.
+
+### Corrected — `01_STATUS.md` was describing a superseded plan
+- Said the prescan CRAB submission "is the next action" and that real production
+  would come "after the ttHH categorization work lands". Neither happened:
+  the prescan smoke task was **killed and its project dir removed**, and the
+  **full UL18 production was submitted 2026-07-27** (85 tasks / 7,466 jobs /
+  6.74 TB, preflight 35 PASS / 0 FAIL) without waiting for the categorizer —
+  the two campaigns are independent because the analyzer resolves
+  `Expanded_genTtbarId` at runtime from patch files.
+- Watch items recorded: `WJetsToLNu_HT200To400_ext1` (461/780 failed) and
+  `HT70To100_ext1` (322/669) — A15-type KISTI `[3011]`, recovered by retries.
+- Removed the stale OPEN "(c) jobID/splitting placeholders until first
+  submission" (the submission happened). Clarified **61 MC primary datasets
+  (queries) → 77 MC entries (with ext variants) → 85 total with Data**, which
+  read as three inconsistent counts.
+
+### Housekeeping
+- `.gitignore`: no rule change needed, but the files deleted in the previous pass
+  are still in the index — `git rm` them (see the report accompanying this
+  change). Deleted a stale `script/__pycache__/run_postproc.cpython-310.pyc`
+  that still contained the reverted `--no-xrd-fallback` and was the only on-disk
+  evidence for the phantom feature.
+
+---
+
+## [Unreleased] — 2026-07-27 (3): A15 incident — documented; AAA fallback added but OPT-IN → **REVERTED, see 2026-07-27 (5)**
 
 ### Incident (A15)
 - First failure of the UL18 full production: a `TTbar_SemiLep` job at
@@ -29,7 +116,14 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 - Full write-up incl. the `50115 BadFWJRXML` red herring and a diagnosis recipe:
   `05_troubleshooting.md` **A15**.
 
-### Added (opt-in, default OFF — no change to existing behaviour)
+### Added (opt-in, default OFF) → **REVERTED the same day — DO NOT LOOK FOR THIS CODE**
+> **[REVERTED 2026-07-27]** At the user's request the whole AAA-fallback change was
+> **fully removed** from `script/run_postproc.py` (0 traces; `grep xrd` returns
+> nothing). `--xrd-fallback` and `resolve_input_files()` **do not exist** — passing
+> the flag gives `error: unrecognized arguments: --xrd-fallback`. Only the
+> *diagnosis* half was kept (`05_troubleshooting.md` A15). The reasoning below is
+> preserved as the record of why it was tried and why it was dropped.
+
 - `script/run_postproc.py` `resolve_input_files()` + **`--xrd-fallback`**:
   probe-open inputs (local first) and re-route unreadable ones through
   `cms-xrd-global` → `xrootd-cms.infn.it` → `cmsxrootd.fnal.gov`; a file that
