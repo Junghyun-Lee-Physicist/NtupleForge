@@ -1,0 +1,75 @@
+# =============================================================================
+# PRESCAN-ONLY slim output branch selection — 2018UL  (2026-07-27)
+# =============================================================================
+# PURPOSE
+#   Minimal Events-tree payload for a *smoke-test* ntuple production whose only
+#   downstream consumer is the tempTTHH `prescan` mode (Sigma-genW collection).
+#   Used by crabConfig/config_ttHH2018UL_prescan.yaml. NOT for physics: the real
+#   UL17+UL18 production uses branch_keep_all.txt.
+#
+# YEAR-SPECIFIC BY DESIGN (2026-07-27)
+#   HLT path names differ between eras, and a `keep` pattern that matches no
+#   branch is NOT silently ignored — ROOT prints
+#     Error in <TTree::SetBranchStatus>: unknown branch -> <name>
+#   for every one (non-fatal, but 6 lines per job across thousands of jobs, and
+#   indistinguishable from a genuine typo). So each era gets its own file and
+#   lists only paths that exist in that era. See branch_prescan_slim_2017.txt.
+#
+# VERIFIED ON REAL DATA (2026-07-27, local -N 2000 run on
+# /TTbb_4f_TTTo2L2Nu.../RunIISummer20UL18NanoAODv9-...-v1/NANOAODSIM):
+#   * output kept exactly 15 Events branches; `Runs` (genEventSumw /
+#     genEventSumw2 / genEventCount) and `LuminosityBlocks` passed through intact
+#   * the three b-tag hadronic paths below EXIST in 2018 (DeepCSV variants)
+#   * the six 2017 CSV-era paths do NOT exist in 2018 (they produced the
+#     SetBranchStatus errors that motivated this split)
+#
+# WHY THIS IS SAFE FOR PRESCAN
+#   Sigma-genW does NOT come from the Events tree: prescan reads
+#   `Runs.genEventSumw / genEventSumw2 / genEventCount`, and the post-processor
+#   copies non-Events trees through untouched (docs/04_architecture.md,
+#   docs/05_troubleshooting.md). Output branch selection filters only Events.
+#   Verified prescan Events-tree usage (tempTTHH ttHHanalyzer_unified.cc):
+#     genWeight (L1902), genTtbarId (L1913/L1927), run/luminosityBlock/event
+#     (L1917-1918, the Expanded_genTtbarId 3-key lookup). Nothing else is
+#     dereferenced — prescan never calls process()/createObjects()/analyze().
+#
+# HAZARD THIS LIST GUARDS AGAINST (do not remove the keeps below)
+#   A missing `genTtbarId` branch is NOT detected: eventBuffer defaults it to 0,
+#   so every MC event would be silently summed into the tt+LF bin
+#   (`sumGenW_id_0`) with no warning. Likewise a missing `genWeight` silently
+#   yields sumGenW_total = 0. Both MUST be kept for MC.
+#
+# SEMANTICS
+#   In NanoAOD-tools branch selection a branch matching no rule is KEPT, hence
+#   the leading `drop *`; later rules override earlier ones.
+# =============================================================================
+
+drop *
+
+# --- event id: also the Expanded_genTtbarId 3-key lookup key (run, lumi, event)
+keep run
+keep luminosityBlock
+keep event
+
+# --- MC weights / categorization (absent on Data by construction; a Data-only
+#     task therefore emits SetBranchStatus errors for these three. Acceptable:
+#     the ttHH prescan config is MC-dominated and Data prescan only counts
+#     entries. Split further if a Data-only campaign is ever run with this file.)
+keep genWeight
+keep genTtbarId
+keep Pileup_nTrueInt
+
+# --- hadronic trigger bits, 2018 (DeepCSV variants — existence confirmed above)
+keep HLT_PFHT1050
+keep HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5
+keep HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94
+keep HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59
+
+# --- muon reference triggers (both confirmed present in 2018)
+keep HLT_IsoMu24
+keep HLT_IsoMu27
+
+# --- MET/noise filter flags + PV: cheap, lets the Data path be sanity-checked
+keep Flag_METFilters
+keep Flag_goodVertices
+keep PV_npvsGood

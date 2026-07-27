@@ -1,0 +1,60 @@
+# =============================================================================
+# PRESCAN-ONLY slim output branch selection — 2017UL  (2026-07-27)
+# =============================================================================
+# Sibling of branch_prescan_slim_2018.txt. Same purpose and same safety
+# argument (see that file's header — it is the canonical explanation of why a
+# slim Events tree is safe for prescan: Sigma-genW comes from the `Runs` tree,
+# which the post-processor copies through untouched).
+#
+# WHY A SEPARATE FILE PER ERA
+#   A `keep` pattern matching no branch makes ROOT print
+#     Error in <TTree::SetBranchStatus>: unknown branch -> <name>
+#   once per job — non-fatal but noisy, and indistinguishable from a real typo.
+#   HLT path names differ between 2017 and 2018, so the two eras get two files.
+#
+# STATUS OF THE HLT LIST BELOW: **unverified on a real 2017 file.**
+#   The paths are taken from the analyzer's 2017 trigger logic
+#   (tempTTHH/ttHHanalyzer_unified.cc L302-317), which is in production use on
+#   2017 data, so they are expected to exist — but unlike the 2018 file, no
+#   local -N run has confirmed it yet. If a `-N 2000` test on a UL17 NanoAODv9
+#   file prints SetBranchStatus errors, drop the offending names here.
+#   Note the era split inside 2017 itself: Run2017B uses the calo-jet spellings,
+#   Run2017C-F the PF spellings; both are listed so one file covers all eras.
+#
+# HAZARD (do not remove): a missing `genTtbarId` is NOT detected — eventBuffer
+# defaults it to 0, so all MC would be silently binned as tt+LF. Same for
+# `genWeight` (-> sumGenW_total = 0).
+# =============================================================================
+
+drop *
+
+# --- event id: also the Expanded_genTtbarId 3-key lookup key (run, lumi, event)
+keep run
+keep luminosityBlock
+keep event
+
+# --- MC weights / categorization
+keep genWeight
+keep genTtbarId
+keep Pileup_nTrueInt
+
+# --- hadronic trigger bits, 2017
+#     4J3T: Run2017B / Run2017C-F
+keep HLT_HT300PT30_QuadJet_75_60_45_40_TripeCSV_p07
+keep HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0
+#     6J1T: Run2017B / Run2017C-F
+keep HLT_PFHT430_SixJet40_BTagCSV_p080
+keep HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5
+#     6J2T: Run2017B / Run2017C-F
+keep HLT_PFHT380_SixJet32_DoubleBTagCSV_p075
+keep HLT_PFHT380_SixPFJet32_DoublePFBTagCSV_2p2
+#     pure HT (era-common)
+keep HLT_PFHT1050
+
+# --- muon reference trigger (the analyzer's 2017 trigger-SF reference)
+keep HLT_IsoMu27
+
+# --- MET/noise filter flags + PV
+keep Flag_METFilters
+keep Flag_goodVertices
+keep PV_npvsGood

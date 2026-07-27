@@ -9,6 +9,93 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-07-27 (2): plan re-scope — injector DEFERRED, UL18 full production is the path
+
+### Decided (user, 2026-07-27)
+- **`modules/expandedTtbarIdInjector.py` is DEFERRED to a later update.** The
+  project's end goal is unchanged — NtupleForge, not the analyzer, should own
+  `Expanded_genTtbarId` as a baked-in branch — but writing it now would add
+  new-module validation *plus a full ntuple re-production* to the critical path,
+  and the immediate objective is the fastest route to UL18 control plots.
+  The interim contract (analyzer-side runtime patch lookup, the 2017-proven
+  path, zero new code), the cost of deferring, and the resume conditions are
+  recorded in `01_STATUS.md` and in the workspace `00_CONTEXT…md` §1.
+- **The slim prescan CRAB production is cancelled**, not just postponed: its
+  purpose (do the UL18 samples produce? does the slim path work?) was met by
+  the 2026-07-27 local run. `config_ttHH2018UL_prescan.yaml` and the two
+  `branch_prescan_slim_*.txt` files are kept — they remain the cheapest way to
+  re-test a new era or a new NanoAOD version.
+- New runbook: workspace `RUNBOOK_UL18_to_controlplots.md`
+  (`RUNBOOK_UL18_step1.md` marked SUPERSEDED).
+
+### Added (runbook §2, Phase 1-0)
+- **Pre-submission local multi-sample check** for the full production, added on
+  the user's prompting after recalling the A14 incident: in the CPV campaign
+  *signal passed and only the `QCD_HT*` background died* in CRAB
+  (`05_troubleshooting.md` A14 — `math.cosh` overflow on status-21 beam-parallel
+  partons), which a single-sample test could never have caught. The new check
+  runs 4 datasets of different character (smallest MC / largest MC / `_ext1` /
+  Data) at `-N 500` and asserts per sample: file opens, Events non-empty,
+  ≥500 branches (i.e. `keep *` really applied), and for MC that
+  `Runs.genEventSumw`, `genWeight`, `genTtbarId` are present; ROOT `Error in <`
+  lines must be 0.
+  **Risk assessment recorded honestly:** this campaign uses `noop.py` +
+  `keep *`, so it does no per-event math and is schema-agnostic — the A14 class
+  of failure *cannot* recur here, and neither can `SetBranchStatus` errors. The
+  residual risks the check does cover are dataset-path typos, unreadable files
+  and empty datasets; `--check-das` covers existence for all 85.
+
+---
+
+## [Unreleased] — 2026-07-27: first REAL lxplus run of the UL18 prescan path — 3 fixes
+
+### Verified on lxplus (logs supplied by the user)
+- **`--preflight` on `config_ttHH2018UL_prescan.yaml`: 35 PASS / 0 WARN / 0 FAIL
+  → READY TO SUBMIT.** Environment (CRABClient, CMSSW_14_2_1 el8_amd64_gcc12,
+  proxy 168 h), Rule 6 (`forgedNtuple.root` on both sides), all 81 datasets,
+  and the outLFN/requestName preview all check out.
+- **Local `-N 2000` run on a real UL18 file** (`TTbb_4f_TTTo2L2Nu…-v1`,
+  xrootd): job finished successfully and the output satisfies every check the
+  slim strategy depends on —
+  `Runs` tree present with `genEventSumw`/`genEventSumw2`/`genEventCount`,
+  `LuminosityBlocks` also passed through, Events kept exactly **15** branches
+  including `run`/`luminosityBlock`/`event`/`genWeight`/`genTtbarId`.
+  **The slim-branch strategy is now empirically validated, not just argued.**
+- **Physics finding (feeds tempTTHH trigger work):** the 2018 NanoAOD contains
+  `HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5`,
+  `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94`,
+  `HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` (+ `HLT_PFHT1050`,
+  `HLT_IsoMu24`, `HLT_IsoMu27`), and **none of the six 2017 CSV-era paths**.
+
+### Fixed
+- **`--check-das` reported all 81 datasets as unresolvable (false FAIL).** The
+  plain-text output of `dasgoclient -query "summary dataset=…"` is a column
+  layout, not `nevents=N`, so the regex never matched. Now queries with
+  `-json` and reads `summary[0].nevents` — the same code path
+  `script/das_ul18_scan.sh` already proved on lxplus — with a plain-text
+  regex fallback. Verified against a stub dasgoclient (81/81 resolved).
+- **Branch selection is now ERA-SPECIFIC:** `branch_prescan_slim.txt` →
+  **`branch_prescan_slim_2018.txt`** (+ new `branch_prescan_slim_2017.txt`).
+  Reason: a `keep` pattern that matches nothing is **not** silently ignored —
+  ROOT prints `Error in <TTree::SetBranchStatus>: unknown branch -> …` once per
+  job for each. The six 2017 CSV HLT names produced exactly that on the UL18
+  file. Beyond log noise (6 lines × thousands of jobs), a real typo would be
+  indistinguishable from these expected misses; with per-era lists any such
+  error now means a genuine problem. The earlier claim in the old file's header
+  that unmatched keeps are "harmless" was wrong and is corrected.
+  The 2017 file's HLT list is taken from the analyzer's production 2017 logic
+  and is marked **unverified** until a `-N` run on a UL17 file confirms it.
+- **`config_ttHH2018UL_prescan.yaml`: `units_per_job` 5 → 1.** The "slim output
+  ⇒ bigger jobs" reasoning was wrong: the INPUT is read in full regardless
+  (A4, `branchsel=None`; the driver even logs "input is read in full"), so job
+  runtime scales with input files. 1 file/job is the value the 2017 campaign
+  proved; at 5 the largest 2018 samples (TTbar_SemiLep 476 M events over 391
+  files ⇒ ~6.1 M events/job) would risk the CRAB walltime.
+- `script/build_ul18_from_log.py` updated for both of the above so the configs
+  stay reproducible; regenerated.
+
+---
+
 ## [Unreleased] — 2026-07-26 (7): `--preflight` pre-submission checker + audit fixes
 
 ### Added

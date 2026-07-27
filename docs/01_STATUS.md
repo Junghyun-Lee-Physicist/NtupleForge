@@ -56,11 +56,19 @@
   ttHH AN (+ XPOG/PdmV twiki); GT36 twins kept as comments; (b) 2018 lumi
   59.83 /fb preliminary (user to confirm); (c) jobID/splitting placeholders
   until first submission.
-- **2018UL prescan smoke test — READY TO SUBMIT (unverified, 2026-07-26):**
-  `crabConfig/config_ttHH2018UL_prescan.yaml` (81 datasets: 77 MC + JetHT only)
-  + `branches/branch_prescan_slim.txt`. Purpose: cheapest end-to-end check that
-  the UL18 samples produce, and that tempTTHH `prescan` runs on the output; the
-  post-production check is prescan `genEventCount_runs` vs the DAS `nevents`
+- **2018UL prescan smoke test — LOCAL PATH VERIFIED ON LXPLUS 2026-07-27,
+  CRAB submission is the next action:**
+  `crabConfig/config_ttHH2018UL_prescan.yaml` (81 datasets: 77 MC + JetHT only,
+  `units_per_job: 1`) + `branches/branch_prescan_slim_2018.txt`.
+  - `--preflight`: **35 PASS / 0 FAIL → READY TO SUBMIT** (real lxplus env).
+  - Local `-N 2000` run on a real UL18 file: `Runs` tree with
+    `genEventSumw/Sumw2/Count` survives, `LuminosityBlocks` too, Events keeps
+    exactly 15 branches incl. `genWeight`/`genTtbarId` → **the slim strategy is
+    empirically validated**.
+  - Branch lists are **per-era** (`_2017`/`_2018`) because unmatched `keep`
+    patterns raise ROOT `SetBranchStatus` errors, one per job — see
+    `02_CHANGELOG.md` 2026-07-27.
+  Post-production check: prescan `genEventCount_runs` vs the DAS `nevents`
   already stored in `samples_2018UL.json`. The **real** UL17+UL18 production
   will use `config_ttHH2018UL.yaml` + `branch_keep_all.txt` after the ttHH
   categorization work lands.
@@ -73,12 +81,32 @@
   name. Drop the legacy prefix only after all campaigns are reproduced. Multi-year goals
   (incl. Run3) live in the workspace-level
   `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §2.3.
-- **PLANNED — `modules/expandedTtbarIdInjector.py`:** bake `Expanded_genTtbarId`
-  into the ntuple as a branch (patch lookup + self-check + FATAL-on-mismatch).
-  Design (5-stage plan, D-A…D-H) is DECIDED/PROPOSED in the workspace-level
-  `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §4 — not yet coded.
-  Includes the output-file rename `slimmedNtuple.root` → `forgedNtuple.root`
-  (D-F there; Rule 7 grep before renaming).
+- **DEFERRED (2026-07-27, user decision) — `modules/expandedTtbarIdInjector.py`:**
+  the long-term goal is that **NtupleForge**, not the analyzer, owns
+  `Expanded_genTtbarId` — baked into `forgedNtuple.root` as a branch (patch
+  lookup + genTtbarId self-check + FATAL-on-mismatch). Design is complete
+  (5-stage plan, D-A…D-H in the workspace-level
+  `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §4) but **no code has
+  been written and none will be in this round.**
+  - **Why deferred:** the immediate objective is the fastest path to UL18
+    control plots. Writing the module means new-module validation *plus a full
+    ntuple re-production*, which lengthens the critical path.
+  - **Interim contract until then:** `Expanded_genTtbarId` is NOT an ntuple
+    branch. The analyzer looks it up at run time from per-sample patch files
+    (`TTHHGenCategoryTools` → `ttnb_<projectKey>.root`/tree `TtNb` →
+    tempTTHH `path_expanded_ttbarid_dir` → `ExpandedTtbarId::resolve()`).
+    NtupleForge contributes only the full passthrough (`branch_keep_all.txt`).
+    This is the 2017-proven path, so it needs zero new code.
+  - **Cost of deferring** (i.e. the reason to do it eventually): every analyzer
+    job loads the patch map in memory (tt4b = 1.88 M rows); patch paths must be
+    wired per sample and per year in the yml; the 3-key lookup lives inside the
+    analyzer so downstream tools cannot reuse it; and the legacy
+    `ttnb_*`/`TtNb` naming stays in force (OPEN O2 remains open).
+  - **Resume after** the UL18 control plots exist. Note that resuming requires
+    re-producing the ntuples (bake-in trade-off, §4.4 there).
+  - The output-file rename `slimmedNtuple.root` → `forgedNtuple.root` was part
+    of this plan (D-F) and **has already been executed** (see above) — it is not
+    blocked by the deferral.
 
 ## OPEN / next steps (CPV)
 

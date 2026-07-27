@@ -200,18 +200,26 @@ datasets:
 # branch_keep_all.txt, after the ttHH categorization work is folded in
 # (then rerun for BOTH 2017 and 2018).
 #
-# Slim output branches: branches/branch_prescan_slim.txt (see its header for
-# why this is safe: Sigma-genW comes from the `Runs` tree, which the
-# post-processor copies through untouched; only the Events tree is filtered).
+# Slim output branches: branches/branch_prescan_slim_2018.txt (see its header:
+# Sigma-genW comes from the `Runs` tree, which the post-processor copies through
+# untouched; only the Events tree is filtered). The list is ERA-SPECIFIC because
+# a `keep` pattern matching no branch makes ROOT print a SetBranchStatus error
+# per job (2017 CSV-era HLT names do not exist in 2018 - confirmed 2026-07-27).
+#
+# units_per_job = 1 (NOT larger): the INPUT is read in full regardless of the
+# slim OUTPUT selection (A4: PostProcessor branchsel=None), so job runtime
+# scales with input files, not output size. 1 file/job is the value proven by
+# the 2017 campaign; the biggest 2018 samples (TTbar_SemiLep 476M evt over 391
+# files) would risk the CRAB walltime at 5 files/job.
 # Data = JetHT only (2018 has no BTagCSV PD; SingleMuon deferred to trigger SF).
 common:
   jobID: "campaign_ttHH2018UL_prescanSlim_v1"
   site: "T3_KR_KNU"
   output_base: "ttHH2018UL_prescanSlim_v1"
   analysis_module: ["modules/noop.py", "MODULES"]
-  branch_file: "branches/branch_prescan_slim.txt"
+  branch_file: "branches/branch_prescan_slim_2018.txt"
   splitting: "FileBased"
-  units_per_job: 5
+  units_per_job: 1
 
 datasets:
 """]

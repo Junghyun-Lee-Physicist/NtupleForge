@@ -25,6 +25,7 @@ import subprocess
 import io
 import contextlib
 import datetime
+import json
 import re
 
 # CRAB imports are GUARDED so that `--preflight` can run (and report the problem
@@ -386,16 +387,35 @@ def run_preflight(args):
         if subprocess.run(["which", "dasgoclient"], stdout=subprocess.PIPE).returncode != 0:
             pf.fail("dasgoclient", "not found -- cannot check dataset existence")
         else:
+            # NOTE (2026-07-27 fix): the PLAIN-TEXT output of
+            # `dasgoclient -query "summary dataset=..."` is a column layout, not
+            # `nevents=N`, so the old regex matched nothing and reported ALL
+            # datasets as unresolvable (false FAIL on all 81, lxplus log
+            # 20260727_094941). Use -json and read summary[0].nevents, exactly
+            # as script/das_ul18_scan.sh does (that path is proven on lxplus).
             missing, total_ev = [], 0
             for key, ds in sorted(datasets.items()):
-                q = subprocess.run(["dasgoclient", "-query", "summary dataset=%s" % ds],
+                q = subprocess.run(["dasgoclient", "-query", "summary dataset=%s" % ds,
+                                    "-json"],
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                txt = (q.stdout or "").strip()
-                m = re.search(r"nevents\s*[:=]\s*(\d+)", txt)
-                if not txt or not m:
+                nev = None
+                try:
+                    for rec in json.loads(q.stdout or "[]"):
+                        for smry in (rec.get("summary") or []):
+                            if smry.get("nevents") is not None:
+                                nev = int(smry["nevents"])
+                                break
+                        if nev is not None:
+                            break
+                except (ValueError, TypeError, KeyError):
+                    nev = None
+                if nev is None:      # fall back to a plain-text scrape
+                    m = re.search(r"nevents\s*[:=]\s*(\d+)", q.stdout or "")
+                    nev = int(m.group(1)) if m else None
+                if nev is None:
                     missing.append(key)
                 else:
-                    total_ev += int(m.group(1))
+                    total_ev += nev
             if missing:
                 pf.fail("DAS dataset existence", "%d not resolvable: %s" % (len(missing), missing[:5]))
             else:
