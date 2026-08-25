@@ -11,8 +11,12 @@
 #
 # USAGE (lxplus)
 #   voms-proxy-init -voms cms -rfc --valid 72:00
-#   ./das_ul18_scan.sh                 2>&1 | tee das_ul18_scan_$(date +%Y%m%d_%H%M).log
-#   ./das_ul18_scan.sh --ul17-nevents  2>&1 | tee das_ul17_check_$(date +%Y%m%d_%H%M).log
+#   Run from the REPO ROOT so the log lands in script/ -- that is the only
+#   place script/build_ul18_from_log.py globs for it. (2026-08-17 fix: the
+#   old form teed into the CWD, so following this header verbatim left the
+#   generator with 'FATAL: no das_ul18_scan_*.log found under script/'.)
+#   bash script/das_ul18_scan.sh                2>&1 | tee script/das_ul18_scan_$(date +%Y%m%d_%H%M).log
+#   bash script/das_ul18_scan.sh --ul17-nevents 2>&1 | tee script/das_ul17_check_$(date +%Y%m%d_%H%M).log
 #
 #   --ul17-nevents : additionally re-dump the UL17 dataset summaries, to
 #                    cross-check the nevents already stored in

@@ -285,6 +285,96 @@ boson-less μμ. Real-file check pending on lxplus (audit §2b Draw one-liners).
 - **Why.** Re-emitting raw collections would collide with passthrough names and
   duplicate data; the prefix avoids collisions for the derived family branches.
 
+## D-2026-08-17-no-logs-in-git — verbose run logs never go in the repo; CRAB submit transcripts never, period
+**DECIDED · 2026-08-17**
+
+- **Decision.** Do not commit run logs. Two tiers:
+  1. **Never, under any circumstance: CRAB submission/status transcripts.**
+     `crab submit` echoes the **pre-signed S3 POST policy and signature** it uses
+     to upload the task sandbox to `crabcache_prod`. Committing the transcript
+     publishes a credential. This repo is public.
+  2. **Not by default: any other bulk run log** (local `-N` test output, condor
+     job logs, hadd transcripts). They are large, regenerable, and reviewing a
+     diff against them is meaningless.
+- **The one deliberate exception.** `script/das_ul18_scan_*.log` **is** tracked.
+  It is not a run log but the *input* that `script/build_ul18_from_log.py`
+  parses — the provenance for the generated UL18 configs — and it contains only
+  `dasgoclient` query output, no credentials. `.gitignore` says so inline so
+  nobody "cleans it up".
+- **Context.** On 2026-07-27, commit `33e3030` ("log") added
+  `submit_UL18_full_20260727_1120.log` — **1.52 MB, 16,715 lines** — plus
+  `localcheck_UL18/`. It was removed from HEAD afterwards, but a public repo's
+  history keeps it reachable by blob URL. The embedded policy carried
+  `"expiration": "2026-07-27T10:23:37Z"` and had already expired when this was
+  noticed, so **no rotation is required** and no CERN/CMS credential of the user
+  is exposed by it. The lesson is the pattern, not this instance.
+- **Remediation status.** `.gitignore` now blocks `submit_*.log`,
+  `crab_status_*.log`, `localcheck_*/`, `local_test_*.log`, `preflight_*.log`.
+  Purging the blob from history is **NOT done** — it needs
+  `git filter-repo --path submit_UL18_full_20260727_1120.log --invert-paths`
+  (or BFG) followed by a force-push, which rewrites every SHA after `33e3030`
+  and breaks anyone who has cloned. Judged not worth it for an expired,
+  self-scoped credential; revisit if the repo is ever forked or archived.
+  See `05_troubleshooting.md` **A17** for the full recipe.
+- **Alternatives considered.** (a) Keep transcripts under `docs/` for
+  provenance — rejected, the useful part is a ~20-line summary that belongs in
+  `02_CHANGELOG.md` (this is already what the UL18 entries do). (b) git-lfs —
+  rejected, does not solve the secret-exposure half and adds a dependency.
+
+---
+
+## D-2026-08-17-validation-config-split — the 13-sample CPV validation subset gets its own file
+**DECIDED · 2026-08-17 · corrects an undocumented 2026-07-26 in-place edit**
+
+- **Decision.** `crabConfig/config_CPV2017UL_MC.yaml` stays the **full 73-dataset
+  2017UL MC production config**. The 13-sample cross-validation subset lives in
+  `crabConfig/config_CPV2017UL_MC_validation.yaml`. Neither file is derived from
+  the other at runtime — they are both hand-maintained, and the validation file
+  carries an explicit label contract in its header.
+- **Context.** On 2026-07-26 the production config was **overwritten in place**
+  (73 → 13 datasets, `jobID`/`output_base` → `CPV2017UL_MC_Validation`) with no
+  CHANGELOG, DECISIONS or STATUS entry. The full list survived only as
+  `config_CPV2017UL_MC.yaml.bk` — a filename no loader reads, in a class this
+  repo had previously purged and ignored, and `*.bk*` had just been dropped from
+  `.gitignore` in the same pass. Meanwhile the file's own header still said
+  `FINAL : the datasets: entries …` and `01_STATUS.md` still said
+  `Datasets + per-tier wiring final; jobID/output_base/splitting are
+  placeholders` — the exact inverse of the state on disk.
+- **Why the split, not a revert.** The 13-sample cut was *correct work*: its
+  labels and DAS paths match `TopCPVGenCategorizer/condor/datasets.txt` 1:1
+  (re-verified 2026-08-17, 13/13 labels and 13/13 paths, zero mismatches), which
+  is exactly what `script/validate_topcpvcat.py` needs so filelists, condor
+  output dirs and validation bookkeeping line up by name on both sides. It was
+  applied to the wrong file. `01_STATUS.md` OPEN #0 had already named the
+  intended target: `config_CPV2017UL_MC_validation.yaml`.
+- **Label contract.** Renaming a key in either file without the other silently
+  breaks the join. Both headers say so.
+- **Follow-up.** `config_CPV2017UL_MC.yaml.bk` is now redundant (byte-identical
+  to the restored config) and is ignored again by `*.bk*`, but it is still
+  **tracked** — untrack it with
+  `git rm --cached crabConfig/config_CPV2017UL_MC.yaml.bk`.
+
+---
+
+## D-2026-08-17-branch-policy — `devExtendedTtbarId` is the trunk; `main` is knowingly stale
+**DECIDED · 2026-08-17**
+
+- **Decision.** Keep developing on `devExtendedTtbarId`. Do **not** merge to
+  `main` implicitly. Record the fact loudly instead — `01_STATUS.md` opens with
+  it — so nobody clones the default branch and builds a 2026-07-05 tree.
+- **Context.** `origin/main` is at `c76d014` (2026-07-05), 13 commits behind, and
+  does not contain the 2026-07-15 TopCPV v8.1 state, let alone the UL18 work.
+  `git merge-base --is-ancestor origin/main HEAD` succeeds, so a **fast-forward
+  merge is available at any time** — 0 conflicts, nothing to reconcile.
+- **Why not just merge now.** The 2018UL full campaign (85 tasks / 7,466 jobs)
+  was still in flight and its `--report` bookkeeping references this branch;
+  moving the default branch mid-campaign buys nothing. Revisit once the campaign
+  is declared done (`01_STATUS.md` watch items).
+- **Alternative.** Rename `devExtendedTtbarId` → `main` outright. Rejected for
+  now: the branch name is also referenced from `TTHHGenCategoryTools` notes.
+
+---
+
 ## D-2026-07-27-crab-job-limit — `units_per_job` must keep every task under 10,000 jobs
 **DECIDED · 2026-07-27**
 

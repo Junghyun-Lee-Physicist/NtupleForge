@@ -1,0 +1,51 @@
+# ==========================================================================
+# CPV (top CP-violation) analysis — 2017UL, NanoAODv9 — MC, VALIDATION SUBSET
+# ==========================================================================
+# 13-sample subset of config_CPV2017UL_MC.yaml, used ONLY for the NtupleForge
+# <-> TopCPVGenCategorizer cross-validation campaign
+# (script/validate_topcpvcat.py: forgedNtuple `Events` vs standalone `GenCatTree`,
+#  event-matched; ints exact, floats within ftol 1e-4).
+#
+# CREATED 2026-08-17 by splitting it OUT of config_CPV2017UL_MC.yaml, which had
+# been overwritten in place on 2026-07-26 (73 -> 13 datasets) with no changelog
+# entry. The full 73-dataset production config is restored in that file; this is
+# the subset that edit actually intended to create -- the name was already
+# specified in docs/01_STATUS.md OPEN #0 as
+# `config_CPV2017UL_MC_validation.yaml`.
+#
+# LABEL CONTRACT (do not rename keys casually)
+# --------------------------------------------
+# The 13 keys below are aligned 1:1 (label AND DAS path) with
+#   ../../TopCPVGenCategorizer/condor/datasets.txt
+# so that filelists/, condor output dirs and validation bookkeeping match by
+# name on both sides. Verified 2026-08-17: 13/13 labels and 13/13 DAS paths
+# identical, zero mismatches. Changing a key here means changing it there too.
+#
+# WIRING (same as the parent config, MC tier)
+#   analysis_module : modules/topCPVCategorizer.py  (MC-only gen categorizer)
+#   branch_file     : branches/branch_CPV_Run2_MC.txt
+# ==========================================================================
+common:
+  jobID: "CPV2017UL_MC_Validation"
+  site: "T3_KR_KNU"
+  output_base: "CPV2017UL_MC_Validation"
+  analysis_module: ["modules/topCPVCategorizer.py", "MODULES"]
+  branch_file: "branches/branch_CPV_Run2_MC.txt"
+  splitting: "FileBased"
+  units_per_job: 1
+
+datasets:
+  # --- MC (NANOAODSIM) ---
+  WJetsToLNu_TuneCP5_amcatnloFXFX: "/WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM"
+  DYJetsToLL_M-50_TuneCP5_madgraphMLM: "/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  DYJetsToLL_M-10to50_TuneCP5_amcatnloFXFX: "/DYJetsToLL_M-10to50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTTo2L2Nu_TuneCP5_powheg: "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTToHadronic_TuneCP5_powheg: "/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTToSemiLeptonic_TuneCP5_powheg: "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_powheg: "/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  ST_t-channel_top_4f_InclusiveDecays_TuneCP5_powheg-madspin: "/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  TTZToQQ_TuneCP5_13TeV_amcatnlo: "/TTZToQQ_TuneCP5_13TeV_amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v3/NANOAODSIM"
+  TTWJetsToQQ_TuneCP5_amcatnloFXFX-madspin: "/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  QCD_HT300to500_TuneCP5_PSWeights_madgraph: "/QCD_HT300to500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  QCD_HT200to300_TuneCP5_PSWeights_madgraph: "/QCD_HT200to300_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+  QCD_HT100to200_TuneCP5_PSWeights_madgraph: "/QCD_HT100to200_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"

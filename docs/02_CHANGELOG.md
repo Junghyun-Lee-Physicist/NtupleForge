@@ -9,6 +9,116 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-08-17: reconciled with the v8.1 handoff tar — three lost records restored, one mis-targeted edit corrected, log hygiene
+
+The `NtupleForge_TopCPV_v8_1_handoff` tar (a 2026-07-15 snapshot) was diffed
+against this tree file by file. **Code-wise the tar is a strict subset** — every
+`.py`/`.sh`/`.yaml` in it is either identical here or superseded — so nothing was
+back-ported. But three *records* had been dropped from the docs between
+2026-07-15 and 2026-07-27 while the work they tracked was still undone, and one
+config edit had landed on the wrong file. No physics logic changed.
+
+### Restored (tar → here)
+
+1. **`01_STATUS.md` OPEN #0 — condor path + validation config.** Deleted on
+   2026-07-26 *without the work being done*: re-verified 2026-08-17, NtupleForge
+   still has **no `condor/` directory**. Restored with its recovery pointer
+   (past-chats search string), the list of lost files, and all six design
+   decisions (condor=local vs CRAB=grid; worker runs `run_postproc.py` with the
+   same module+branch wiring; `<dataset>_chunkNNN.root` naming shared with the
+   standalone; `MY.JobBatchName`; `config.sh` in `transfer_input_files`;
+   preflight `condor_submit` guard + `-s TAG`). Sub-item 1 of 2 is now **DONE**
+   (see below); the `condor/` glue is still open.
+2. **Ops guidance from the deleted `2026-07-15 (2)` rename entry.** The
+   `forgedNtuple.root` rename is re-recorded here as `2026-07-26 (6)` (D-F), but
+   two operational notes were lost with the older entry and are reinstated:
+   - Anything that matches outputs **by filename** — hadd globs, pullers,
+     `checkOutputs`-style scripts — must accept **both** `forgedNtuple_*` and
+     `slimmedNtuple_*` during the transition. Cleaner alternative: **pair a
+     rename with the next campaign tag** so each campaign directory is
+     single-named. Only `make_filelists.py` was ever fixed for this.
+   - The name is baked into each task's sandbox/PSet at submit time, so it takes
+     effect **from the next submission**. Already-produced files keep the old
+     name — and so do the remaining jobs of **in-flight tasks**.
+   - Dating note: `crab/PSet.py` and `crab/submit_crab.py` in the 2026-07-15 tar
+     already contain `forgedNtuple.root`, so the rename predates the `2026-07-26`
+     stamped in their comments. Left as-is (harmless), recorded here.
+3. **`.gitignore` rules `*.bk*` and `._*`.** Dropped in the 2026-07-26 rewrite;
+   `._*` for no stated reason, `*.bk*` immediately before a `.bk` file became the
+   only copy of a production config (next item).
+
+### Corrected
+
+4. **`config_CPV2017UL_MC.yaml` restored to its full 73 datasets;
+   `config_CPV2017UL_MC_validation.yaml` created.** On 2026-07-26 the production
+   config was overwritten in place (73 → 13 datasets, jobID/output_base →
+   `CPV2017UL_MC_Validation`) with **no CHANGELOG / DECISIONS / STATUS entry**,
+   leaving the 73 only in `config_CPV2017UL_MC.yaml.bk`. The 13-sample cut was
+   correct work aimed at the wrong file: OPEN #0 had already named the intended
+   target `config_CPV2017UL_MC_validation.yaml`. Restored from the `.bk` (md5
+   `2c6db20cf550db67e4447b08ac1c1dd9`, identical to the tar); the subset moved to
+   its own file with an explicit label contract in the header. **Re-verified:**
+   the 13 keys and their DAS paths match `TopCPVGenCategorizer/condor/datasets.txt`
+   1:1 — 13/13 labels, 13/13 paths, zero mismatches. Both files YAML-parse and
+   pass `--preflight` (Rule 6 PASS). Decision:
+   **D-2026-08-17-validation-config-split**.
+   *Follow-up for the analyst:* the now-redundant `.bk` is ignored again but is
+   still tracked — `git rm --cached crabConfig/config_CPV2017UL_MC.yaml.bk`.
+
+### Log hygiene (new)
+
+5. **Never commit CRAB transcripts — `.gitignore` hardened, A17 + decision
+   added.** `crab submit` echoes the pre-signed S3 POST policy and signature used
+   to upload the task sandbox to `crabcache_prod`. A history audit found two such
+   blobs in this **public** repo: `submit_UL18_full_20260727_1120.log` (1.52 MB,
+   commit `33e3030`) and `ttbar_SemiLeptonic_v1/.../crab.log` (6.71 MB, commit
+   `c72a711`). Both are out of HEAD but reachable in history; **every signature
+   in both had already expired** (2026-07-27T10:20Z and 2025-12-11T09:24Z
+   respectively) and each was scoped to a single bucket+key, so **nothing needs
+   rotating** and no grid credential is exposed. `.gitignore` now blocks
+   `submit_*.log`, `crab_status_*.log`, `localcheck_*/`, `local_test_*.log` with
+   the reason inline, and keeps the deliberate carve-out for
+   `script/das_ul18_scan_*.log` (DAS output, no secrets, and the documented input
+   of `build_ul18_from_log.py`). History rewrite is **deliberately not done** —
+   recipe and rationale in `05_troubleshooting.md` **A17** and
+   `03_DECISIONS.md` **D-2026-08-17-no-logs-in-git**.
+
+### Small code fixes (behaviour-preserving)
+
+6. **`crab/submit_crab.py` — Rule 6 check now accepts both quote styles.** The
+   preflight regex only matched `cms.untracked.string('...')`, while
+   `07_DeveloperGuideline.md` Rule 6 documents the double-quoted form — a
+   guideline-conformant `PSet.py` produced a spurious
+   `could not parse` FAIL. Now `(['"])(.+?)\1` with optional inner whitespace;
+   verified against single-quoted, double-quoted and padded forms. Re-ran
+   `--preflight` on both CPV MC configs: **Rule 6 PASS**, totals unchanged.
+7. **`script/das_ul18_scan.sh` — USAGE header teed the log into the CWD**, but
+   `build_ul18_from_log.py` only globs `script/`, so following the header
+   verbatim ended in `FATAL: no das_ul18_scan_*.log found under script/`. Header
+   now shows the form `README.md` already used
+   (`bash script/das_ul18_scan.sh … | tee script/das_ul18_scan_….log`).
+   *(An earlier note that this file was not executable was wrong — it is `0700`
+   on disk; only the container copy lost the bit.)*
+
+### Branch policy recorded
+
+8. `origin/main` is at `c76d014` (2026-07-05), **13 commits behind** and without
+   even the 2026-07-15 TopCPV state, while being the repo's default branch.
+   `main` is fully contained in `devExtendedTtbarId`, so a fast-forward is
+   available at any time; deliberately **not** taken mid-campaign. Recorded at
+   the top of `01_STATUS.md` and as **D-2026-08-17-branch-policy**.
+
+### Also confirmed (no action)
+
+- `script/das_ul18_scan_20260726_1657.log` **is** tracked (432 lines, 33 KB), so
+  the UL18 configs' provenance is reproducible from this checkout. An earlier
+  reading that it was missing came from a copy step that skipped it.
+- The `2026-07-27 (4)` slot is genuinely absent from this log; (3) is followed by
+  (5). Nothing in the repo references it — treat the gap as a numbering slip, not
+  a lost entry.
+
+---
+
 ## [Unreleased] — 2026-07-27 (7): CRAB 10,000-jobs-per-task limit documented at every decision point
 
 No behaviour change. A sibling repo lost a day to this and the same code path

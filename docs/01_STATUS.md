@@ -2,7 +2,27 @@
 
 > **Purpose:** the single place to answer "where are we right now?" for any
 > contributor (human or AI) joining cold. **Audience:** all. **Updated:**
-> 2026-07-27. Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
+> 2026-08-17. Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
+
+## Read this first (repo-level facts)
+
+- **The working branch is `devExtendedTtbarId`, NOT `main`.** `origin/main` is
+  frozen at `c76d014` (2026-07-05) and is 13 commits behind; it does not even
+  contain the 2026-07-15 TopCPV state. `main` IS fully contained in
+  `devExtendedTtbarId`, so a fast-forward merge is available whenever wanted —
+  deliberately not done yet (D-2026-08-17-branch-policy). Cloning the default
+  branch gives you a stale tree.
+- **This is a PUBLIC GitHub repo** (`Junghyun-Lee-Physicist/NtupleForge`).
+  Never commit CRAB submission transcripts or other verbose run logs — they
+  embed pre-signed crabcache S3 credentials. One slipped in on 2026-07-27
+  (commit `33e3030`, 1.52 MB / 16,715 lines) and is still reachable in history;
+  the credential in it expired 2026-07-27T10:23:37Z, so nothing needs rotating.
+  Rules and remediation: `05_troubleshooting.md` **A17**, `03_DECISIONS.md`
+  **D-2026-08-17-no-logs-in-git**, and `.gitignore`.
+- **2026-08-17 merge:** this tree was reconciled against the
+  `NtupleForge_TopCPV_v8_1_handoff` tar (a 2026-07-15 snapshot). The tar was a
+  strict subset of the code here, but it still held three records that had been
+  dropped from these docs — restored, see `02_CHANGELOG.md` 2026-08-17.
 
 ## Active workstreams
 
@@ -36,6 +56,13 @@
   D-2026-07-02-per-tier-configs). Datasets transcribed from the user lists
   (NanoAODv9) and DAS-verified 2026-07-01. **Datasets + per-tier wiring final;
   jobID/output_base/splitting are placeholders.**
+  **2026-08-17:** `config_CPV2017UL_MC.yaml` is back to its full **73 datasets**
+  — on 2026-07-26 it had been overwritten in place with a 13-sample subset, with
+  no doc entry, leaving the 73 only in a `.bk`. The subset now lives in its own
+  file `crabConfig/config_CPV2017UL_MC_validation.yaml`, the name OPEN #0 always
+  specified; its 13 keys and DAS paths are verified 1:1 against
+  `TopCPVGenCategorizer/condor/datasets.txt` (13/13, zero mismatches).
+  See D-2026-08-17-validation-config-split.
 - **Branch lists:** `branches/branch_CPV_Run2_{Data,MC}.txt` added.
 - **Validation tool:** `script/validate_topcpvcat.py`.
 
@@ -144,6 +171,40 @@
     blocked by the deferral.
 
 ## OPEN / next steps (CPV)
+
+0. **⚠️ 미완 작업 (2026-07-15 유실) — condor path + validation config.**
+   Restored 2026-08-17 from the v8.1 handoff tar, where it was OPEN #0; it had
+   been deleted from this file on 2026-07-26 **without the work being done**.
+   Re-verified 2026-08-17: NtupleForge still has **no `condor/` directory**.
+   - **Status of the deliverables:**
+     - `crabConfig/config_CPV2017UL_MC_validation.yaml` — **DONE 2026-08-17**
+       (see the Configs bullet above).
+     - `condor/{config.sh, runJob.sh, submit_all.sh, README.md}` +
+       `makeFilelists.py` / `makeCondorIndex.py` / `checkOutputs.sh` /
+       `resubmit_failed.sh` / `datasets.txt`, copied from the standalone and
+       name-swapped — **STILL MISSING.**
+   - **Recovery pointer:** contents are reconstructable from the 2026-07-15
+     conversation — past-chats search: `"NtupleForge condor runJob validation yaml"`.
+     The standalone originals are readable right now at
+     `../TopCPVGenCategorizer/condor/` — and as of 2026-08-17 that copy again
+     carries the v1.10.1 preflight guard + `-s <TAG>` mode and the v1.10.2
+     `MY.JobBatchName` line, so the template below is no longer hypothetical.
+   - **Design decisions already made (keep):**
+     1. condor = local (re)processing role; CRAB = grid production.
+     2. The worker `cmsenv`s a nanoAOD-tools release and runs
+        `script/run_postproc.py` with the SAME module + branch wiring as CRAB,
+        so the two paths' outputs are directly comparable.
+     3. Output chunk naming `<dataset>_chunkNNN.root`, shared with the
+        standalone so its `checkOutputs.sh` works verbatim.
+     4. `MY.JobBatchName = "$(short)"` in the rendered JDL.
+     5. `config.sh` added to `transfer_input_files`.
+     6. Preflight `condor_submit` guard + `-s TAG` submit-only mode, inherited
+        from the standalone glue.
+   - **Remaining:** recreate files → CHANGELOG/STATUS entries →
+     `bash -n` / `py_compile` / link-check gates → package as **v9**.
+   - **Companion task** (standalone side, CRAB-ification):
+     `TopCPVGenCategorizer/docs/01_STATUS.md` OPEN #0 — also still open; its
+     `crab/` directory does not exist either.
 
 1. **lxplus build + validation.** Compile the updated TopCPV C++ on lxplus
    (no ROOT in the dev container), then run `validate_topcpvcat.py` on a real

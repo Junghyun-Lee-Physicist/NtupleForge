@@ -3,6 +3,13 @@
 
 # macOS system files
 .DS_Store
+._*
+
+# Editor / transient backups
+# (restored 2026-08-17: dropping this rule let
+#  crabConfig/config_CPV2017UL_MC.yaml.bk get committed as the ONLY copy
+#  of the 73-dataset production config -- under a name no loader reads.)
+*.bk*
 
 # Others
 **/__pycache__/
@@ -15,11 +22,25 @@ campaign_*
 preflight_*.log
 
 # CRAB submit/status transcripts and local test scratch (regenerable).
+#
+# !! NEVER COMMIT A CRAB SUBMISSION TRANSCRIPT. !!
+# `crab submit` prints the pre-signed S3 POST policy + signature it uses to
+# upload the task sandbox to crabcache_prod. A transcript therefore embeds a
+# live credential, and it is huge (submit_UL18_full_20260727_1120.log was
+# 1.52 MB / 16,715 lines). One was committed to this PUBLIC repo on 2026-07-27
+# (commit 33e3030) before these rules existed; it is gone from HEAD but still
+# reachable in history. That particular policy expired 2026-07-27T10:23:37Z,
+# so there is nothing to rotate -- but see docs/05_troubleshooting.md A17 and
+# docs/03_DECISIONS.md D-2026-08-17-no-logs-in-git before adding any .log.
+#
 # NB: script/das_ul18_scan_*.log is deliberately NOT ignored -- it is the INPUT
 # that script/build_ul18_from_log.py parses, i.e. provenance for the generated
-# UL18 configs. Only outputs are ignored here.
+# UL18 configs, and it contains only DAS query output (no credentials).
+# Only outputs are ignored here.
 submit_*_20*.log
 crab_status_*_20*.log
 localcheck_*/
 local_test_*.log
 crab_args.txt
+submit_*.log
+crab_status_*.log

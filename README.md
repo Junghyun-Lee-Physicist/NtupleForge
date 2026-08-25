@@ -11,6 +11,21 @@ workstream이 이 파이프라인을 공유합니다:
 - **ttHH → 4b**: full-NanoAOD passthrough 기반 ntuple 생산 (categorization은
   main analyzer로 이관됨). 문서: [`docs/ttHH/`](docs/ttHH/README.md)
 
+> ### ⚠️ 먼저 확인 (2026-08-17)
+> - **작업 브랜치는 `devExtendedTtbarId` 입니다. `main` 이 아닙니다.**
+>   `origin/main` 은 `c76d014` (2026-07-05) 에 멈춰 있고 13 커밋 뒤처져 있습니다.
+>   기본 브랜치로 clone 하면 낡은 트리를 받습니다.
+>   (`docs/03_DECISIONS.md` → D-2026-08-17-branch-policy)
+> - **이 저장소는 public 입니다. CRAB 제출 로그를 절대 커밋하지 마십시오** —
+>   `crab submit` 출력에는 crabcache 업로드용 pre-signed S3 서명이 그대로
+>   찍힙니다. `.gitignore` 가 막고 있으며, 배경은
+>   `docs/05_troubleshooting.md` **A17** 참조.
+> - **2017UL MC config 두 개를 구분하십시오:**
+>   `crabConfig/config_CPV2017UL_MC.yaml` = 프로덕션 **73 샘플**,
+>   `crabConfig/config_CPV2017UL_MC_validation.yaml` = 교차검증용 **13 샘플**
+>   (`TopCPVGenCategorizer/condor/datasets.txt` 와 라벨 1:1).
+> - **현재 상태 한 곳:** [`docs/01_STATUS.md`](docs/01_STATUS.md) 를 먼저 읽으십시오.
+
 📖 **심화 문서는 [`docs/`](docs/README.md)에 있습니다** — framework 내부 구조,
 PyROOT branch-access 규칙, 변경/결정/트러블슈팅 로그. 이 README는 코드를
 *실행*하는 데 필요한 내용만 담습니다.

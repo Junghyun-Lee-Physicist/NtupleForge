@@ -288,13 +288,19 @@ def run_preflight(args):
     m_sub = re.search(r'out_name\s*=\s*"([^"]+)"', submit_src)
     m_pset = None
     if os.path.exists(pset):
-        m_pset = re.search(r"fileName\s*=\s*cms\.untracked\.string\('([^']+)'\)", open(pset).read())
+        # Accept BOTH quote styles: docs/07_DeveloperGuideline.md Rule 6 writes the
+        # pattern with double quotes while crab/PSet.py currently uses single ones.
+        # The old single-quote-only regex made a guideline-conformant PSet fail the
+        # check with "could not parse" (fail-closed, but a false alarm). 2026-08-17.
+        m_pset = re.search(r"""fileName\s*=\s*cms\.untracked\.string\(\s*(['"])(.+?)\1\s*\)""",
+                           open(pset).read())
+    pset_name = m_pset.group(2) if m_pset else None
     if m_sub and m_pset:
-        if m_sub.group(1) == m_pset.group(1):
+        if m_sub.group(1) == pset_name:
             pf.ok("Rule 6 output filename", "%s (submit_crab.py == PSet.py)" % m_sub.group(1))
         else:
             pf.fail("Rule 6 output filename",
-                    "MISMATCH: submit_crab.py=%s vs PSet.py=%s" % (m_sub.group(1), m_pset.group(1)))
+                    "MISMATCH: submit_crab.py=%s vs PSet.py=%s" % (m_sub.group(1), pset_name))
     else:
         pf.fail("Rule 6 output filename", "could not parse (submit=%s, PSet=%s)" % (bool(m_sub), bool(m_pset)))
 

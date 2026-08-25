@@ -440,6 +440,94 @@ are documented with the now-archived
 The current full-passthrough pipeline has no skim to measure; copy the tool
 back into `script/` if you reintroduce one.
 
+## A17 — A CRAB submit transcript was committed to a PUBLIC repo; it embeds a pre-signed S3 credential (2026-07-27, found 2026-08-17)
+
+**Symptom.** Nothing breaks. That is the problem — this failure is silent and is
+only ever found by someone reading the repo.
+
+**What happened.** A history audit (2026-08-17) found **two** such blobs, not one:
+
+| blob | added by | size | signed URLs | all expired at |
+|---|---|---|---|---|
+| `submit_UL18_full_20260727_1120.log` | `33e3030` (2026-07-27, "log") | 1.52 MB / 16,715 lines | 172 `AWSAccessKeyId`, 5+ `Signature=` | **2026-07-27T10:20:5xZ** |
+| `ttbar_SemiLeptonic_v1/crab_.../crab.log` | `c72a711` (2025-12-12) | **6.71 MB** | 4 `AWSAccessKeyId`, 2 `Signature=` | **2025-12-11T09:24:0xZ** |
+
+(The same audit also surfaced two ~3 MB `*Skim.root` blobs from `8542dea`
+"Setup codes" — no credentials, but they are why `*.root` is the first rule in
+`.gitignore`.) Both logs are out of HEAD now; **on a public repo, history is
+still served**, so any blob URL of the form
+`.../blob/33e3030/submit_UL18_full_20260727_1120.log#L13517` resolves.
+
+The transcript is the full stdout of the 85-task UL18 submission. Around line
+13517 it contains the **pre-signed S3 POST policy CRAB uses to upload the task
+sandbox** to `crabcache_prod`:
+
+```json
+{ "expiration": "2026-07-27T10:23:37Z",
+  "conditions": [ {"bucket": "crabcache_prod"},
+                  {"key": "junghyun/sandboxes/<sha256>.tar.gz"} ] }
+```
+
+together with its signature, and the S3 GET URLs carry `Expires=<unix ts>`.
+
+**Impact assessment — no rotation required.** Every signature in both blobs was
+already dead long before discovery (table above; verified by decoding the
+`Expires=` epochs). Each is scoped to one `bucket` plus a single sandbox `key`,
+so even while live it granted nothing but the upload/fetch of one sandbox
+object. **No CERN/CMS/grid credential of the user is exposed** — the VOMS proxy
+itself is never printed; the ~1,000 `proxy` hits in the transcript are path and
+lifetime chatter, not key material. Nothing to rotate.
+
+**Why it still matters.** The *pattern* is the hazard: `crab submit` prints a
+credential every single time, so any future transcript commit is another
+exposure, and next time it may be noticed while still live. Bulk logs also
+bloat the repo and make diffs useless.
+
+**Fix (done 2026-08-17).** `.gitignore` now blocks `submit_*.log`,
+`submit_*_20*.log`, `crab_status_*.log`, `crab_status_*_20*.log`,
+`localcheck_*/`, `local_test_*.log`, `preflight_*.log`, with an inline comment
+stating why, and an explicit carve-out for `script/das_ul18_scan_*.log` (DAS
+query output, no credentials, and the documented input of
+`script/build_ul18_from_log.py`). Policy: `03_DECISIONS.md`
+**D-2026-08-17-no-logs-in-git**.
+
+**Fix NOT done — purging history.** Deliberately deferred (see the decision
+entry). If it is ever wanted, the recipe is:
+
+```bash
+# 0. make a mirror backup first -- this rewrites every SHA after 33e3030
+git clone --mirror git@github.com:Junghyun-Lee-Physicist/NtupleForge.git backup.git
+
+pip install git-filter-repo
+git filter-repo --invert-paths \
+    --path submit_UL18_full_20260727_1120.log \
+    --path ttbar_SemiLeptonic_v1 \
+    --path localcheck_UL18 \
+    --path script/logs
+
+git push --force --all && git push --force --tags
+# then: everyone re-clones. Old clones and any fork still hold the blob.
+# GitHub caches unreachable blobs -- open a support request to purge them.
+```
+
+Note this breaks `devExtendedTtbarId` and `main` for every existing clone, which
+is why it is not worth doing for an already-expired, single-object credential.
+
+**Checking for others before any future push:**
+
+```bash
+# any tracked log?
+git ls-files | grep -i '\.log$'
+# anything that looks like a signature/policy in the working tree?
+git grep -nI -E '"expiration"|X-Amz-Signature|Signature=' -- . ':!docs/'
+# biggest blobs ever committed
+git rev-list --objects --all \
+  | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' \
+  | awk '$1=="blob" && $3>200000 {print $3, $4}' | sort -rn | head
+```
+
+---
+
 ## A16 — (PREVENTIVE) A whole task silently produces nothing: >10,000 jobs → `SUBMITREFUSED` (2026-07-27, sibling repo)
 
 **Not yet observed in NtupleForge — recorded because the same code path exists
