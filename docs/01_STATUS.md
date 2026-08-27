@@ -245,6 +245,27 @@
    (GenBHad hadron kinematics, official FromTopWeakDecay, GenJet HCal/ECal energy,
    B-frag weights) remain best-effort / friend-tree only.
 
+## OPEN / next steps (branch schema — v15 migration)
+
+측정 근거와 전체 절차: [`08_branch_schema_migration.md`](08_branch_schema_migration.md).
+
+1. **ttHH branch 목록을 실제 v15 스키마로 재검증** — 아직 안 함.
+   `branches/branch_hadronic_{2017,2018}_v15_{MC,Data}.txt` 4개는 인벤토리가
+   나오기 전에 작성된 **UNVERIFIED 초안**입니다. 08 2절 절차를
+   `--profile main` 으로 다시 돌려야 합니다. 특히 08 3.2절에 따르면 v15에서
+   **`Jet_puId` 와 `Jet_jetId` 가 대체 없이 사라졌으므로** 목록 수정만으로는
+   끝나지 않고 analyzer의 jet 선택 자체를 재설계해야 할 수 있습니다.
+   먼저 확인할 것:
+   `awk -F'\t' '$2 ~ /[Jj]etId|puId|passJetId/ {print}' script/inventory/inv_2017UL_v15_MC.tsv`
+2. **Data 쪽 v15 인벤토리 없음** — `branch_CPV_Run2_Data_v15.txt` 는 아직
+   만들지 않았습니다. 2017UL Data v15 캠페인 존재 여부부터 DAS로 확인 후 08 2절.
+3. **`HLT_IsoTkMu*` / `HLT_L2DoubleMu*` per-era 분리** — 2017UL에서 v9·v15
+   모두 dead지만 파일이 Run2 4개 era 공유라 삭제 불가. UL16 인벤토리를 떠서
+   존재 확인 후 era별 파일로 쪼갤 것. `branch_CPV_Run2_Data.txt` L22/L24 동일.
+4. **standalone C++ `TopCPVGenCategorizer` 의 v15 대응** — `GenPart_statusFlags`
+   가 `UShort_t` 로 바뀌어 `Int_t` `SetBranchAddress` 는 조용한 쓰레기 값을
+   냅니다. 그전까지 v15 검증은 `module(v9)` vs `module(v15)` 비교로 합니다.
+
 ## Documentation
 - **2026-07-01:** docs restructured into per-workstream subdirs
   (`TopCPV/` — renamed from `ssb_gencat/` — and new `ttHH/` holding

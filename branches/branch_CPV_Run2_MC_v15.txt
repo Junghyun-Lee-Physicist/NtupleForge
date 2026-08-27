@@ -1,0 +1,92 @@
+# ==========================================================================
+# CPV (top CP-violation / SSB gen categorization) — Run2 UL — MC — NanoAODv15
+# ==========================================================================
+# Ported from branch_CPV_Run2_MC.txt (v9) on 2026-08-27 against the REAL v15
+# schema, never from memory:
+#   inventory : script/inventory/inv_2017UL_v15_MC.tsv  (1903 Events branches)
+#   source    : /TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/
+#               RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v2/NANOAODSIM
+#   diff      : script/inventory/diff_v9_v15_2017UL_MC.tsv
+#               (127 removed, 370 added, 86 retyped)
+#
+# SEMANTICS — there is no leading `drop *`. An unmatched branch is KEPT. This
+# is a "drop these collections" list and it is deliberately permissive: the
+# validation campaign compares the OUTPUT Events tree, so over-keeping costs
+# disk while under-keeping silently costs coverage.
+#
+# ONE DIMENSION OF CHANGE. Relative to the v9 file this changes ONLY what the
+# v15 schema forces. In particular two known defects are carried over
+# DELIBERATELY UNCHANGED:
+#   * `keep HLT_IsoTkMu*` / `keep HLT_L2DoubleMu*` match nothing in 2017 —
+#     verified in BOTH v9 and v15 (check_branchlist.py, 2 dead patterns each)
+#     => one ROOT SetBranchStatus error per job. They are 2016 path names and
+#     this file is shared by every Run2 era, so deleting them would SILENTLY
+#     drop those branches from 2016 output. The fix is a per-era split of the
+#     branch lists, tracked as its own change. Do NOT sed them out here.
+#   * the SoftActivityJetHT*/Njets* rules are redundant with
+#     `drop SoftActivityJet*`. Harmless (they do match); left in place so this
+#     file diffs cleanly against the v9 one.
+# ==========================================================================
+
+# --- collections the CPV gen categorizer never reads (identical to v9) ---
+drop GenIsolatedPhoton*
+drop GenVisTau*
+drop HTXS*
+drop IsoTrack*
+drop LowPtElectron*
+drop SoftActivityJet*
+drop SoftActivityJetHT*
+drop SoftActivityJetHT10*
+drop SoftActivityJetHT2*
+drop SoftActivityJetHT5*
+drop SoftActivityJetNjets10*
+drop SoftActivityJetNjets2*
+drop SoftActivityJetNjets5*
+drop SubGenJetAK8*
+drop SubJet*
+drop Tau*
+drop boostedTau*
+
+# --- NEW IN v15 ---------------------------------------------------------
+# Simulating the v9 rule chain against the 364 Events branches v15 ADDS shows
+# 281 of them would be kept. The rules below drop the 49 that are either
+# per-candidate (size) or belong to a subsystem this workstream never uses.
+# Everything else new in v15 is intentionally KEPT: the renamed MET/Rho
+# (PFMET_*, RawPFMET_*, TrkMET_*, FiducialMET_*, Rho_*), the new Jet/FatJet
+# taggers (PNet / UParT / globalParT3), and the new gen columns
+# (GenJet_nBHadrons/nCHadrons, GenPart_iso).
+#
+# NOTE `drop Tau*` above already absorbs the new TauProd_* and TauSpinner_*
+# arrays, but NOT the lowercase count branch — hence `drop nTauProd`.
+drop PFCand_*
+drop nPFCand
+drop FatJetPFCand_*
+drop nFatJetPFCand
+drop TrackGenJetAK4_*
+drop nTrackGenJetAK4
+drop GenProton_*
+drop nGenProton
+drop PVBS_*
+drop nPVBS
+drop DST_*
+drop Scouting*
+drop nTauProd
+
+# --- trigger: drop all, then re-keep the muon/electron families (as v9) ---
+drop HLT*
+keep HLT_BTagMu*
+keep HLT_DoubleEle*
+keep HLT_DoubleIsoMu*
+keep HLT_DoubleMu*
+keep HLT_Ele*
+keep HLT_IsoMu*
+keep HLT_IsoTkMu*
+keep HLT_L1SingleMu*
+keep HLT_L2DoubleMu*
+keep HLT_L2Mu*
+keep HLT_MET*
+keep HLT_Mu*
+keep HLT_PFMET*
+keep HLT_TkMu*
+keep HLT_TripleMu*
+keep HLT_TrkMu*

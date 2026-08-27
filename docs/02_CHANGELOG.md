@@ -9,6 +9,58 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-08-27: 실제 파일 기반 v9/v15 스키마 측정, v15 CPV branch 목록, check_branchlist (C) 오탐 수정
+
+### Added
+
+- **`docs/08_branch_schema_migration.md`** (신규) — branch 목록을 실제 NanoAOD
+  파일에서 유도·검증하는 6단계 절차(복사용 명령어 포함)와, 2017UL MC로 실측한
+  v9 → v15 스키마 차이 **127 removed / 370 added / 86 retyped**, 그리고
+  workstream별 영향. `docs/07_DeveloperGuideline.md` 에 이를 의무화하는
+  **Rule 8** 과 Rule 4 라우팅 표 항목, 커밋 체크리스트 항목 추가.
+- **`branches/branch_CPV_Run2_MC_v15.txt`** — v9 목록을 실제 v15 인벤토리
+  (`script/inventory/inv_2017UL_v15_MC.tsv`, Events 1903 branches)에 대고 포팅.
+  v9 rule chain을 v15가 추가한 364개 Events branch에 시뮬레이션해 281개가
+  살아남는 것을 확인하고, 그중 per-candidate·미사용 서브시스템 **49개**만 drop
+  추가 (`PFCand_*`, `FatJetPFCand_*`, `TrackGenJetAK4_*`, `GenProton_*`,
+  `PVBS_*`, `DST_*`, `Scouting*`, `nTauProd`). 새 MET/Rho(`PFMET_*`,
+  `RawPFMET_*`, `TrkMET_*`, `FiducialMET_*`, `Rho_*`), 새 태거(PNet/UParT/
+  globalParT3), 새 gen 컬럼(`GenJet_n{B,C}Hadrons`, `GenPart_iso`)은 의도적으로
+  유지. dead HLT 2개는 v9와 동일하게 남김 — 이 파일은 "v15 스키마" 한 축만 변경.
+- `script/inventory/` — `inv_2017UL_v9_MC.tsv` (1666 branches),
+  `inv_2017UL_v15_MC.tsv` (1903), `diff_v9_v15_2017UL_MC.txt`.
+
+### Fixed
+
+- **`script/check_branchlist.py` — (C) 절의 오탐 6건.** (C)는 *입력* 스키마에
+  대한 검사인데, `cpv` profile의 required 목록에 있던 모듈 **산출** branch
+  (`TopCPVCat_isSignal`, `..._Channel_Idx`, `..._Channel_Idx_Expanded`,
+  `..._GenPar_Count`, `..._GenBJet_Count`, `..._GenBHad_Count`)를 입력
+  인벤토리에서 찾고 있었습니다. 중앙 NanoAOD에 있을 리 없으므로 v9·v15 양쪽에서
+  항상 실패했습니다. required 항목에 `produced` 플래그를 도입해 (C)에서 제외하고,
+  제외 개수를 출력에 찍어 조용히 넘어가지 않게 했습니다. 이 6개에 대해서는
+  (B)("rule chain이 출력까지 살려 보내는가")만이 유의미한 검사입니다.
+  => 이제 `rc=4` 는 순수하게 dead 패턴 문제만을 의미합니다.
+
+### Measured (근거, 전문은 08 2절·3절)
+
+- **XRootD 직독이 병목이지 모듈이 아님.** 2000 events 기준 lxplus WAN 2.2 Hz
+  vs /tmp 로컬 199.5 Hz. WAN `noop` 실행의 CPU 사용률은 3.8 %. 모듈 자체 비용은
+  `user+sys` 차이로 **1.33 s / 2000 events = 0.66 ms/event** (순수 복사 대비
+  CPU +11 %). 1.126 M event 파일 ~1.57 h => CRAB wall-time 안. 앞서 제기된
+  "2.2 Hz면 생산 불가" 우려는 **철회**.
+- **CPV 모듈의 read set은 v15에서 이름 변경 0건, 삭제 0건.** 타입만 변경:
+  `GenPart_statusFlags` Int_t->UShort_t (bit 7/13 사용 => 잘림 없음),
+  `GenPart_genPartIdxMother` Int_t->Short_t, count branch들 UInt_t->Int_t.
+  `GenJet_hadronFlavour` 는 UChar_t 그대로 => `to_int` 계속 필요.
+- **ttHH 위험 신호**: v15에서 `Jet_puId`·`Jet_jetId`·`Jet_btagDeepB`·`Jet_qgl`·
+  `ChsMET_*` 등이 대체 없이 삭제. `Jet_btagDeepFlavB` 는 생존.
+- **`HLT_IsoTkMu*` / `HLT_L2DoubleMu*` 는 2017UL v9·v15 모두 dead** (각각 job당
+  ROOT 에러 1줄). 2016 경로명이고 파일이 Run2 4개 era 공유이므로 삭제 금지 —
+  per-era 분리가 정답. `01_STATUS.md` OPEN 참조.
+
+---
+
 ## [Unreleased] — 2026-08-17: reconciled with the v8.1 handoff tar — three lost records restored, one mis-targeted edit corrected, log hygiene
 
 The `NtupleForge_TopCPV_v8_1_handoff` tar (a 2026-07-15 snapshot) was diffed

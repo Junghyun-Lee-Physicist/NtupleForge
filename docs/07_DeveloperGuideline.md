@@ -64,6 +64,7 @@ Leaving a record is the default, not an afterthought. Route it by topic:
 | A new validation method or a limit of an existing one | [`05_troubleshooting.md`](05_troubleshooting.md) Part B |
 | Changed how the framework/driver/modules work, or a new module pattern | [`04_architecture.md`](04_architecture.md) |
 | A PyROOT / NanoAOD-tools access quirk and its workaround | [`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md) |
+| A branch-list / NanoAOD-schema finding, or a version migration | [`08_branch_schema_migration.md`](08_branch_schema_migration.md) |
 | A physics definition, category, or sample-stitching decision | [`ttHH/01_physics.md`](ttHH/01_physics.md) |
 | Anything about the retired categorization pipeline | [`ttHH/02_legacy_ttbar_pipeline.md`](ttHH/02_legacy_ttbar_pipeline.md) |
 | New run command / changed CLI surface | [`../README.md`](../README.md) **and** CHANGELOG |
@@ -136,11 +137,36 @@ not files matching a name pattern) so the next rename cannot break shipping.
 
 ---
 
+## Rule 8 — Branch 목록은 손으로 쓰지 않는다: 실제 파일에서 유도한다
+
+`branches/*.txt` 를 만들거나 고칠 때는 **반드시** 실제 NanoAOD 파일의 스키마를
+덤프해서 그것에 대고 검사하십시오. 기억, 옛 인벤토리, 다른 연도의 목록에서
+베끼는 것 모두 금지입니다. branch 목록의 실패는 **양방향으로 조용**하기
+때문입니다 — 매치 안 되는 `keep`은 job당 ROOT 에러 한 줄로 묻히고, 빠진 branch는
+`eventBuffer`가 0으로 기본값 처리해 물리를 조용히 망칩니다.
+
+최소 절차 (전체와 복사용 명령어: [`08_branch_schema_migration.md`](08_branch_schema_migration.md) 2절):
+
+1. `voms-proxy-init -voms cms -rfc -valid 192:00`
+2. `dasgoclient -query="dataset=..."` — **plain 캠페인**을 고를 것
+   (`JMENano`/`BTVNano`/`PFNano` flavour는 스키마가 다름)
+3. `xrdcp` 로 **/tmp 에 복사** — lxplus에서 XRootD 직독은 90배 느립니다
+   (2.2 Hz vs 199.5 Hz, 측정: 08 2절 Step 2)
+4. `script/dump_branch_inventory.py` 로 인벤토리 TSV
+5. `script/check_branchlist.py --inventory ... --profile ...` — exit 0이 아니면 커밋 금지
+6. `script/run_postproc.py -N 2000` 으로 실제 실행 —
+   스키마가 맞아도 **reader 타입 지원**은 별개 문제입니다
+
+성능을 논할 때는 `time` 의 `user+sys` 만 쓰십시오. `real` 은 page cache에
+좌우되고, 모듈을 탓하기 전에 `modules/noop.py` 로 baseline을 재야 합니다.
+
 ## Before you commit (quick self-check)
 
 - [ ] CHANGELOG entry added (Rule 2).
 - [ ] Any new bug/fix recorded in troubleshooting (Rule 3).
 - [ ] Relevant doc(s) updated (Rule 4).
+- [ ] Touched a `branches/*.txt`? Derived it from a real file and
+      `check_branchlist.py` exits 0 (Rule 8).
 - [ ] Renamed/moved a file? Grepped `crab/`, `script/`, `crabConfig/` for the
       old name/stem and any matching glob (Rule 7).
 - [ ] Live Python still imports/compiles

@@ -35,6 +35,10 @@ setup과 실행 커맨드만 다루고, 그보다 깊은 내용은 전부 여기
   NanoAOD vector branch를 읽는 모든 모듈이 따라야 하는 규칙.
 - **[07_DeveloperGuideline.md](07_DeveloperGuideline.md)** — 기여 규칙: 문서
   먼저 읽기, 모든 변경/문제 기록, 어떤 기록이 어느 문서로 가는지.
+- **[08_branch_schema_migration.md](08_branch_schema_migration.md)** — branch
+  목록을 실제 파일에서 유도·검증하는 절차(복사용 명령어 포함)와 NanoAOD
+  **v9 → v15 실측 스키마 차이**(127 removed / 370 added / 86 retyped) 및
+  workstream별 영향. 버전이 바뀔 때마다 재사용하는 문서.
 
 **모듈별 (subdirectory, 각자 지역 번호와 지역 README 보유):**
 

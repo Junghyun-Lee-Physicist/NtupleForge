@@ -183,14 +183,17 @@ CPV_REQUIRED = [
     (("GenMET_pt",), "mc"), (("GenMET_phi",), "mc"),
     # indexed comparisons (PSWeight_ISR_Up etc. are read as PSWeight[0..3])
     (("nPSWeight",), "mc"), (("PSWeight",), "mc"),
-    # the module's own output -- a leading 'drop *' without a matching keep
-    # would erase the entire point of the campaign
-    (("TopCPVCat_isSignal",), "mc"),
-    (("TopCPVCat_Channel_Idx",), "mc"),
-    (("TopCPVCat_Channel_Idx_Expanded",), "mc"),
-    (("TopCPVCat_GenPar_Count",), "mc"),
-    (("TopCPVCat_GenBJet_Count",), "mc"),
-    (("TopCPVCat_GenBHad_Count",), "mc"),
+    # The module's own output. Flag 'produced' = CREATED by the module, so it
+    # is by construction ABSENT from the input NanoAOD schema; check (C) must
+    # skip it (it checks the input inventory). Only check (B) -- "does the rule
+    # chain let it survive into the output" -- is meaningful for these. A
+    # leading 'drop *' without a matching keep would erase the whole campaign.
+    (("TopCPVCat_isSignal",), "mc,produced"),
+    (("TopCPVCat_Channel_Idx",), "mc,produced"),
+    (("TopCPVCat_Channel_Idx_Expanded",), "mc,produced"),
+    (("TopCPVCat_GenPar_Count",), "mc,produced"),
+    (("TopCPVCat_GenBJet_Count",), "mc,produced"),
+    (("TopCPVCat_GenBHad_Count",), "mc,produced"),
 ]
 
 # HLT paths, per era. The analyzer FATALs if the 2018 four are absent
@@ -371,8 +374,14 @@ def main():
 
         # cross-check: required branches that are simply not in this file
         absent = []
+        n_produced = 0
         for names, flags in required:
             if "mc" in flags and not args.mc:
+                continue
+            if "produced" in flags:
+                # created by the analysis module -- never in the input schema.
+                # (B) above already checked that the rule chain keeps it.
+                n_produced += 1
                 continue
             if not any(n in branches for n in names):
                 absent.append("|".join(names))
@@ -380,6 +389,9 @@ def main():
             absent += [h for h in HLT_REQUIRED[args.era] if h not in branches]
         print()
         print("=== (C) analyzer requirements ABSENT FROM THE INPUT FILE ITSELF ===")
+        if n_produced:
+            print("  (%d module-produced branch(es) excluded -- see check (B))"
+                  % n_produced)
         if absent:
             rc = max(rc, 3)
             print("  !! the keep-list cannot help here -- the branch does not exist in")
