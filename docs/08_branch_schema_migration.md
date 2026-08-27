@@ -30,7 +30,26 @@ branch 목록은 틀려도 크래시가 나지 않습니다. 두 방향 모두 �
 
 ## 2. 절차 (6단계)
 
-### Step 0 — proxy
+### Step 0 — 셸 준비: `set +H` (⚠ 먼저 이것부터)
+
+```bash
+set +H
+```
+
+대화형 bash는 **큰따옴표 안에서도 history expansion을 수행합니다.** 따라서
+`echo "!! something"` 의 `!!` 가 직전 명령 전체로 치환되어, 붙여넣은 명령이
+조용히 다른 명령으로 바뀝니다. 함수 정의 안에서 터지면 뒤따르는 `}` 까지
+연쇄로 깨져 `syntax error near unexpected token` 이 납니다.
+
+2026-08-27에 이 문제로 두 번 시간을 잃었습니다. 규칙:
+
+- 세션 시작 시 `set +H` (또는 `~/.bashrc` 에 넣기)
+- 이 문서와 프롬프트의 예제에서는 경고 표시로 `!!` 대신 `ERROR:` / `>>` /
+  `⚠` 를 씁니다
+- 여러 줄 함수 정의를 터미널에 붙여넣지 말고, 재사용할 것은 `script/` 에
+  파일로 두십시오
+
+### Step 0b — proxy
 
 ```bash
 voms-proxy-info -e || voms-proxy-init -voms cms -rfc -valid 192:00
@@ -232,12 +251,37 @@ Pitfall 1의 함정을 **새로운 branch들로 확대**합니다. v9에서 `to_
 v15에서 그대로 반복할 수 없습니다. v15 검증은 `module(v9)` vs `module(v15)`
 이벤트 매칭 비교로 해야 합니다.
 
-**ttHH → 4b — 미검증. 3.2의 삭제 목록이 직격입니다.**
+**ttHH → 4b — jet ID / PU ID를 재계산해야 하지만 재료는 전부 있습니다.**
 
-`Jet_puId`와 `Jet_jetId`가 둘 다 사라졌고 added/retyped 어디에도 없습니다.
-`dump_branch_inventory.py` docstring이 경고한 바로 그 시나리오
-("missing `Jet_puId` cuts every jet below 50 GeV")입니다. ttHH analyzer의 jet
-선택 자체를 v15용으로 재설계해야 할 수 있습니다.
+2026-08-27 v15 인벤토리 확인 결과 (`awk` 로 `Jet_*` 직접 조회):
+
+| 없어진 것 | 대체 경로 | 상태 |
+|---|---|---|
+| `Jet_puId` (WP 비트맵, Int_t) | **`Jet_puIdDisc` (Float_t) 는 v9·v15 양쪽에 존재** | WP 임계값을 직접 적용 |
+| `Jet_jetId` (Int_t) | v15에 `passJetIdTight` 류도 **없음**. PF energy fraction + multiplicity 로 재계산 | 재료 15/15 확인 |
+
+재계산 재료 (v15 실측, 전부 존재):
+
+```
+Jet_nConstituents   UChar_t   <- to_int 필요
+Jet_chMultiplicity  UChar_t   <- to_int 필요 (v15 신규)
+Jet_neMultiplicity  UChar_t   <- to_int 필요 (v15 신규)
+Jet_neHEF  Jet_neEmEF  Jet_chHEF  Jet_chEmEF  Jet_muEF   Float_t
+Jet_hfHEF  Jet_hfEmEF                                     Float_t
+Jet_puIdDisc  Jet_area  Jet_pt  Jet_eta  Jet_btagDeepFlavB  Float_t
+```
+
+즉 중앙 NanoAOD가 **미리 계산된 플래그를 빼고 재료를 준** 형태입니다 —
+`Jet_chMultiplicity` / `Jet_neMultiplicity` 가 v15에서 새로 추가된 것이 그
+방향을 뒷받침합니다 (v9에서는 jetId 계산에 필요한 multiplicity가 노출되지
+않았습니다).
+
+⚠ 새 multiplicity 3개가 모두 `UChar_t` 입니다.
+[`06_nanoaod_branch_access.md`](06_nanoaod_branch_access.md) Pitfall 1에 따라
+반드시 `to_int` 를 거쳐야 합니다 — 안 하면 jet ID 컷이 조용히 전부 실패합니다.
+`dump_branch_inventory.py` docstring 의 경고("missing `Jet_puId` cuts every jet
+below 50 GeV")는 목록에서 빠질 때의 이야기이고, 여기서는 **재계산을 하지 않을
+때** 같은 결과가 납니다.
 
 `branches/branch_hadronic_{2017,2018}_v15_{MC,Data}.txt` 4개는 이 인벤토리가
 나오기 **전에** 작성된 초안이라 UNVERIFIED 상태입니다. §2 절차를 ttHH 소비자
@@ -254,3 +298,28 @@ v15에서 그대로 반복할 수 없습니다. v15 검증은 `module(v9)` vs `m
   `branch_CPV_Run2_Data.txt` L22/L24에도 동일하게 있습니다.
 - `check_branchlist.py` (C) 절의 오탐 6건 (모듈 산출 branch를 입력 스키마에서
   찾고 있었음) — `produced` 플래그로 수정.
+- 대화형 bash의 history expansion: 큰따옴표 안의 `!!` 가 직전 명령으로 치환되어
+  붙여넣은 명령이 조용히 다른 명령이 됩니다. 2절 Step 0 (`set +H`) 참조.
+
+## 5. Gate 5b 결과 — v15에서 CPV 모듈 실행 성공 (2026-08-27)
+
+```
+[topCPVCategorizer] pre-registered 16 gen branch readers
+processed=2000 signal(ttbar)=2000 unclassifiable(Channel_Idx_Expanded==-999)=0
+Total time 11.5 sec. Rate = 174.4 Hz.  user 13.509s sys 2.224s
+```
+
+- CMSSW_14_2_1 의 NanoAODTools `arrayReader` 는 v15 의 `UShort_t` / `Short_t` 를
+  문제없이 처리합니다. **코드 수정 없이 통과.**
+- `GenPart_statusFlags` 의 bit 7/13 비트마스크도 정상 — statusFlags 가 깨졌다면
+  hard-process 선택이 무너져 대량 `-999` 가 나왔을 것이고, 실제로는 0건입니다.
+- 174.4 Hz (v9 199.5 Hz 대비 −13 %, Events branch 1666→1903 증가분). CRAB 여유.
+- 예상대로 dead HLT 패턴 2개가 각각 job당 ROOT 에러 1줄로 찍혔습니다.
+
+⚠ **v9 ↔ v15 물리 동일성은 아직 미확인입니다.** 각 파일의 앞 2000 entry로
+채널 분포를 비교했더니 τ 645:645, e 669:679, μ 686:676 이 나왔지만,
+`(run, luminosityBlock, event)` 겹침이 **0** 이었습니다 — 서로 다른 event 를
+비교한 것이므로 이 숫자들은 일치의 증거가 아닙니다 (τ 일치는 우연, e/μ ±10 은
+총합·τ 고정에서 따라오는 반대칭이며 0.3 σ). 진짜 event-matched 비교는
+(a) 두 데이터셋의 MiniAOD parent 동일성 확인 후 (b) 파일 전체의 event id census
+로 겹침을 찾아야 합니다.

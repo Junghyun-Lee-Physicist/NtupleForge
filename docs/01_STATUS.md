@@ -254,9 +254,13 @@
    나오기 전에 작성된 **UNVERIFIED 초안**입니다. 08 2절 절차를
    `--profile main` 으로 다시 돌려야 합니다. 특히 08 3.2절에 따르면 v15에서
    **`Jet_puId` 와 `Jet_jetId` 가 대체 없이 사라졌으므로** 목록 수정만으로는
-   끝나지 않고 analyzer의 jet 선택 자체를 재설계해야 할 수 있습니다.
-   먼저 확인할 것:
-   `awk -F'\t' '$2 ~ /[Jj]etId|puId|passJetId/ {print}' script/inventory/inv_2017UL_v15_MC.tsv`
+   끝나지 않고 analyzer의 jet 선택을 재계산 방식으로 바꿔야 합니다.
+   **2026-08-27 확인**: `Jet_puIdDisc` (Float_t) 는 살아 있으므로 PU ID 는 WP
+   임계값 직접 적용으로 해결됩니다. `Jet_jetId` 는 진짜 없고 `passJetIdTight`
+   류도 없지만, 재계산 재료 15개(`Jet_nConstituents`, `Jet_chMultiplicity`,
+   `Jet_neMultiplicity` — 셋 다 `UChar_t` 라 `to_int` 필수 —, `Jet_neHEF`,
+   `Jet_neEmEF`, `Jet_chHEF`, `Jet_chEmEF`, `Jet_muEF`, `Jet_hfHEF`,
+   `Jet_hfEmEF` 등)가 전부 존재합니다. 상세: 08 3.4절.
 2. **Data 쪽 v15 인벤토리 없음** — `branch_CPV_Run2_Data_v15.txt` 는 아직
    만들지 않았습니다. 2017UL Data v15 캠페인 존재 여부부터 DAS로 확인 후 08 2절.
 3. **`HLT_IsoTkMu*` / `HLT_L2DoubleMu*` per-era 분리** — 2017UL에서 v9·v15
