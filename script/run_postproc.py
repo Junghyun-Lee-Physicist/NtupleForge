@@ -118,6 +118,14 @@ def main():
                         help="Max number of events to process. Default is None (Run All).")
     parser.add_argument("--first-entry", type=int, default=0,
                         help="Index of the first event to process. Default is 0.")
+    parser.add_argument("--cut", type=str, default=None,
+                        help="VALIDATION ONLY -- TTree preselection expression passed to "
+                             "PostProcessor(cut=...). It CHANGES THE OUTPUT EVENT SET, so it "
+                             "must never appear in a production CRAB config; physics cuts "
+                             "belong in the module's analyze(). Intended use: restricting a "
+                             "cross-version comparison to a shared set of luminosity blocks, "
+                             "e.g. --cut 'luminosityBlock==12||luminosityBlock==57'. "
+                             "Default None = process every entry.")
 
     # [3] ttbarCategorizer Options -- DEPRECATED / DEAD
     # ────────────────────────────────────────────────────────────────────
@@ -192,7 +200,11 @@ def main():
     # Modify these values directly if needed.
     
     OUTPUT_DIR  = "."         # Output directory (Always current dir for CRAB compatibility)
-    CUT_STRING  = None        # Recommended: Apply cuts inside the module's analyze() function
+    # Preselection. Default None = no cut; physics cuts belong in the module's
+    # analyze(). --cut exists ONLY for cross-version validation (restricting two
+    # runs to a shared lumi set so they can be compared event by event) and is
+    # logged loudly below so it can never slip into production unnoticed.
+    CUT_STRING  = args.cut
     POSTFIX     = "_Skim"     # Suffix for split output mode
     COMPRESSION = "LZMA:9"    # Compression algorithm (Use "LZ4:4" for faster testing)
     FRIEND      = False       # Run in friend tree mode
@@ -271,6 +283,14 @@ def main():
     # Execution
     # -------------------------------------------------------------------------
     logger.info("-" * 60)
+    if CUT_STRING:
+        logger.warning("=" * 60)
+        logger.warning("PRESELECTION CUT ACTIVE -- VALIDATION MODE")
+        logger.warning("  cut = %s", CUT_STRING)
+        logger.warning("  The output event set is a SUBSET of the input. Do NOT use")
+        logger.warning("  this output for production or for any yield/normalization.")
+        logger.warning("=" * 60)
+
     logger.info("Initializing PostProcessor engine...")
     
     try:
