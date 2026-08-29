@@ -9,6 +9,52 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-08-28: v9 NanoAOD가 parent 대비 2.61 % 결손임을 확인, event-matched v9/v15 비교 도구
+
+### Measured — 이 데이터셋의 v9 NanoAOD는 불완전합니다
+
+`TTToSemiLeptonic_TuneCP5_powheg`, UL17. `dasgoclient summary` 실측:
+
+| | nevents | nlumis | parent 대비 |
+|---|---|---|---|
+| `RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v1` (parent) | 355,332,000 | 355,332 | — |
+| `RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v2` | 355,332,000 | 355,332 | **100.00 %** |
+| `RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1` | 346,052,000 | 346,052 | **97.39 %** |
+
+양쪽 모두 정확히 1000 event/lumi 이므로 차이는 **9,280 lumi = 9,280,000 event**
+입니다. v9 와 v15 는 **동일한 MiniAODv2 parent** 를 가지므로(`dasgoclient parent`
+로 확인), v9 쪽 NanoAOD 생산이 parent 를 다 덮지 못한 것입니다. 잃어버린 lumi 는
+실패한 생산 job 이라 물리적으로 무작위이므로 **편향이 아니라 통계 손실**이고,
+`genEventSumw` 를 실제로 처리한 파일에서 합산하는 한 정규화는 자기일관적입니다.
+v15 마이그레이션의 추가 근거이며 그룹 보고 사안입니다.
+
+### Measured — v9/v15 파일 경계는 전혀 대응하지 않습니다
+
+parent 가 같아 event 집합은 동일한데, 각 데이터셋의 "첫 번째 파일" 은 event 가
+**하나도 겹치지 않았습니다** (v9 1,126,000 / v15 927,000, overlap 0). lumi 범위는
+[14715,353516] 과 [2579,331876] 로 크게 겹치지만 lumi *집합* 이 거의 서로소입니다
+— NanoAOD job splitting 이 버전마다 다르기 때문입니다. 따라서 event-matched 비교는
+**lumi 목록으로 파일을 짝지어야** 합니다: v9 파일의 lumi 집합을
+`LuminosityBlocks` 트리에서 읽고, `dasgoclient -query="file,lumi dataset=..."`
+(v15 398 파일) 로 겹침을 랭킹하면 143 lumi (~143k event) 를 공유하는 파일이
+나옵니다. 이 페어링은 **특정 v9 파일에 묶여 있습니다** — `head -1` 로 다른 파일을
+집으면 겹침이 사라집니다.
+
+### Added
+
+- **`script/run_postproc.py --cut`** — `PostProcessor(cut=...)` 로 직행하는
+  preselection. default `None` 이라 기존 동작 불변. 두 NanoAOD 버전을 공유 lumi
+  집합으로 제한해 event 단위로 비교하기 위해 존재합니다 (전체 파일 두 개를 도는
+  ~3 h 대신 각 ~15 min). **출력 event 집합을 바꾸므로 검증 전용**이며, 켜지면
+  `PRESELECTION CUT ACTIVE -- VALIDATION MODE` 배너가 로그에 찍힙니다. 물리 컷은
+  여전히 모듈의 `analyze()` 에 둡니다.
+- **`script/setup_v9v15_validation.sh`** — `source` 용 세션 부트스트랩. 새 lxplus
+  세션이 잃는 것(셸 변수, `/tmp` 의 NanoAOD 2개, 공유 lumi cut 문자열)을 전부
+  복구합니다. LFN 은 위 페어링 때문에 **고정**되어 있습니다. `NF_CACHE` 를 EOS 로
+  두면 5 GB 재다운로드를 피할 수 있습니다.
+
+---
+
 ## [Unreleased] — 2026-08-27: 실제 파일 기반 v9/v15 스키마 측정, v15 CPV branch 목록, check_branchlist (C) 오탐 수정
 
 ### Added
