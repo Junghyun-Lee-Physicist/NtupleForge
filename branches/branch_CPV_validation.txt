@@ -25,15 +25,18 @@
 # versions). Using the SAME file on both sides removes the branch list as a
 # confound in the comparison.
 #
-# WHY TopCPVCat_* IS NOT LISTED
-# -----------------------------
-# `outputbranchsel` is applied by NanoAODTools to the CLONED INPUT tree;
-# the module creates its own branches afterwards, so they are written
-# regardless of the rules here. Listing `keep TopCPVCat_*` would therefore
-# be a pattern matching nothing -> one ROOT SetBranchStatus error per job.
-# ⚠ VERIFY this with a 2000-event smoke test before trusting it in a long
-# run -- if TopCPVCat_* is absent from the output, add `keep TopCPVCat_*`
-# and accept the error line. See docs/08.
+# `keep TopCPVCat_*` IS REQUIRED -- MEASURED, NOT ASSUMED
+# -------------------------------------------------------
+# It was first argued that module-created branches escape `outputbranchsel`
+# (the selection being applied to the cloned INPUT tree, with the module
+# adding its branches afterwards). A 2000-event smoke test on 2026-08-30
+# DISPROVED that: with a leading `drop *` and no explicit keep, the output
+# had 15 branches and **zero** TopCPVCat_*, while the module reported
+# `processed=2000 signal(ttbar)=2000` -- it ran fine and its entire output
+# was silently discarded. `outputbranchsel` governs module branches too.
+#
+# So: any list with a leading `drop *` MUST name the module's own prefix.
+# See docs/05_troubleshooting.md A18.
 #
 # Runs / LuminosityBlocks trees are copied wholesale by PostProcessor and
 # are not affected by this file (genEventSumw, PSSumw, GenFilter_* survive).
@@ -55,3 +58,6 @@ keep GenMET_*
 # validate_topcpvcat.py INDEXED (PSWeight_ISR_Up etc. are PSWeight[0..3])
 keep nPSWeight
 keep PSWeight
+
+# the module's own output -- WITHOUT THIS LINE THE FILE IS WORTHLESS (A18)
+keep TopCPVCat_*

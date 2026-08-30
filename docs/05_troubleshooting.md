@@ -440,6 +440,57 @@ are documented with the now-archived
 The current full-passthrough pipeline has no skim to measure; copy the tool
 back into `script/` if you reintroduce one.
 
+## A18 — A branch list with a leading `drop *` silently discards the module's OWN branches (2026-08-30)
+
+**Symptom.** A validation run finishes clean and the module reports success:
+
+```
+[topCPVCategorizer] processed=2000 signal(ttbar)=2000 unclassifiable(...)=0 (0.000%)
+Total time 6.4 sec. to process 2000 events. Rate = 312.7 Hz.
+```
+
+but the output file has **15 branches and zero `TopCPVCat_*`**. No error, no
+warning. Every event was categorized and every result was thrown away.
+
+**Cause.** `outputbranchsel` governs **module-created branches as well as
+copied input branches**. It had been argued — in this repo, in writing, in the
+first draft of `branches/branch_CPV_validation.txt` — that the selection is
+applied to the cloned *input* tree while the module adds its branches
+afterwards, so a `keep` for them would be a pattern matching nothing. That
+reasoning is **wrong**. A list that starts with `drop *` and does not name the
+module's prefix produces a file with the entire point of the job missing.
+
+The production lists (`branch_CPV_Run2_MC.txt`, `..._v15.txt`) never hit this
+because they have **no leading `drop *`** — they are "drop these collections"
+lists, so `TopCPVCat_*` is unmatched and therefore kept by default. The bug only
+appears the moment someone writes a minimal allow-list.
+
+**Fix.** `branches/branch_CPV_validation.txt` now ends with
+
+```
+keep TopCPVCat_*
+```
+
+**Rule.** Any branch list with a leading `drop *` MUST explicitly `keep` the
+prefix of every module in the chain. `script/check_branchlist.py` check (B)
+already simulates the rule chain for these (they are flagged `produced` in the
+profile's required set, which excludes them from check (C) — the *input* schema
+test — but NOT from (B)). Run it before every campaign:
+
+```bash
+python3 script/check_branchlist.py branches/branch_CPV_validation.txt \
+    --inventory script/inventory/inv_2017UL_v9_MC.tsv --mc --profile cpv
+```
+
+**How it was caught.** A 2000-event smoke test run *before* the two ~15-minute
+production runs, precisely because the claim above was an assumption and not a
+measurement. Cost of catching it early: 30 seconds. Cost of not: two long runs
+plus a comparison that would have failed with "no branches in common".
+See also `docs/08_branch_schema_migration.md` 2절 Step 6 — schema checks passing
+does not mean the run does what you think.
+
+---
+
 ## A17 — A CRAB submit transcript was committed to a PUBLIC repo; it embeds a pre-signed S3 credential (2026-07-27, found 2026-08-17)
 
 **Symptom.** Nothing breaks. That is the problem — this failure is silent and is
