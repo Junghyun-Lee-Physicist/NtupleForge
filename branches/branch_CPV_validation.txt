@@ -1,0 +1,57 @@
+# ==========================================================================
+# CPV — VALIDATION-ONLY output branch list (v9 AND v15, one file for both)
+# ==========================================================================
+# ⚠ NOT FOR PRODUCTION. This drops everything the physics analysis needs
+# (leptons, jets, reco MET, triggers). Production uses
+# branch_CPV_Run2_MC.txt (v9) / branch_CPV_Run2_MC_v15.txt (v15).
+#
+# PURPOSE
+# -------
+# The smallest OUTPUT that script/validate_topcpvcat.py and the v9<->v15
+# event-matched comparison can work from.
+#
+# WHY IT EXISTS (measured 2026-08-28)
+# -----------------------------------
+# With the production list a 143k-event validation run produced 288 MB =
+# 2.01 kB/event -- essentially identical to the input NanoAOD's 2.06
+# kB/event. Dropping 30 % of the branches bought nothing because the
+# dropped collections are small and compress well. Meanwhile AFS home
+# (10 GB quota) filled to 99 %.
+#
+# VERSION-AGNOSTIC ON PURPOSE
+# ---------------------------
+# Every name below is byte-identical in v9 and v15 (docs/08 3.4절: the CPV
+# read/compare set has zero renames and zero deletions across the two
+# versions). Using the SAME file on both sides removes the branch list as a
+# confound in the comparison.
+#
+# WHY TopCPVCat_* IS NOT LISTED
+# -----------------------------
+# `outputbranchsel` is applied by NanoAODTools to the CLONED INPUT tree;
+# the module creates its own branches afterwards, so they are written
+# regardless of the rules here. Listing `keep TopCPVCat_*` would therefore
+# be a pattern matching nothing -> one ROOT SetBranchStatus error per job.
+# ⚠ VERIFY this with a 2000-event smoke test before trusting it in a long
+# run -- if TopCPVCat_* is absent from the output, add `keep TopCPVCat_*`
+# and accept the error line. See docs/08.
+#
+# Runs / LuminosityBlocks trees are copied wholesale by PostProcessor and
+# are not affected by this file (genEventSumw, PSSumw, GenFilter_* survive).
+# ==========================================================================
+drop *
+
+# join key for the event-matched comparison
+keep run
+keep luminosityBlock
+keep event
+keep genWeight
+
+# validate_topcpvcat.py PASSTHROUGH + COMPUTED (GenJet_energy is rebuilt
+# from pt/eta/mass, so no extra branch is needed)
+keep nGenJet
+keep GenJet_*
+keep GenMET_*
+
+# validate_topcpvcat.py INDEXED (PSWeight_ISR_Up etc. are PSWeight[0..3])
+keep nPSWeight
+keep PSWeight
