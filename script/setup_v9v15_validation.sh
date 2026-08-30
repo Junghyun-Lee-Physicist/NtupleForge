@@ -97,9 +97,12 @@ echo "   CMSSW_BASE = ${CMSSW_BASE:-<unset>}"
 # --- 3. git pull -------------------------------------------------------------
 if [ "${NF_PULL:-1}" = "1" ]; then
     _nf_pwd="$PWD"; cd "$REPO"
-    if [ -n "$(git --no-optional-locks status --porcelain 2>/dev/null)" ]; then
-        echo ">> local changes present -- skipping git pull:"
-        git --no-optional-locks status --short | sed 's/^/      /'
+    # --untracked-files=no: untracked files never block a fast-forward, and
+    # script/inventory/ + validation outputs are always untracked here. Only
+    # real modifications should stop the pull.
+    if [ -n "$(git --no-optional-locks status --porcelain --untracked-files=no 2>/dev/null)" ]; then
+        echo ">> tracked files modified -- skipping git pull:"
+        git --no-optional-locks status --short --untracked-files=no | sed 's/^/      /'
     else
         echo ">> git pull"
         git pull --ff-only 2>&1 | sed 's/^/      /'
@@ -233,6 +236,35 @@ _nf_run() {                        # _nf_run <input> <branchlist> <outname>
 nf_v9()  { _nf_run "$LOCAL_V9"   "$BL_VAL" matched_v9.root;  }
 nf_v15() { _nf_run "$LOCAL_V15P" "$BL_VAL" matched_v15.root; }
 
+# cwd is $WORK after sourcing, so a bare `git pull` fails with "not a git
+# repository". Use this instead.
+nf_pull() { git -C "$REPO" pull --ff-only; }
+
+# cwd is $WORK after sourcing, so RELATIVE paths into the repo fail. These
+# wrappers anchor everything at $REPO so the paths are never typed by hand.
+#   nf_check <branchlist> [check_branchlist args...]
+#     the branch list may be a bare filename (resolved under $REPO/branches/)
+nf_check() {
+    local bl="$1"; shift
+    [ -f "$bl" ] || bl="$REPO/branches/$bl"
+    [ -f "$bl" ] || { echo "no such branch list: $1"; return 1; }
+    python3 "$REPO/script/check_branchlist.py" "$bl" "$@"
+}
+
+# First v15 ttHH ntuple: pure passthrough (the ttHH configs use modules/noop.py,
+# so NO module code changes are needed for v15 -- only the branch list).
+#   nf_ttHH_v15 [n_events]        default 20000
+nf_ttHH_v15() {
+    cd "$WORK" || return 1
+    local n="${1:-20000}"
+    rm -f ./*_Skim.root
+    time python3 "$REPO/script/run_postproc.py" "$LOCAL_V15P" \
+        -I modules.noop:MODULES \
+        -b "$REPO/branches/branch_hadronic_2017_v15_MC.txt" \
+        -N "$n" -o "$EOSOUT/ttHH_v15_test.root" 2>&1 | tail -25
+    ls -lh "$EOSOUT/ttHH_v15_test.root"
+}
+
 nf_compare() {
     python3 "$REPO/script/compare_v9_v15.py" \
         --v9 "$EOSOUT/matched_v9.root" --v15 "$EOSOUT/matched_v15.root" "$@"
@@ -244,6 +276,7 @@ cd "$WORK"
 echo "-------------------------------------------------------------"
 nf_status
 echo "-------------------------------------------------------------"
-echo "  commands:  nf_status | nf_smoke | nf_v9 | nf_v15 | nf_compare"
+echo "  CPV:   nf_status | nf_pull | nf_smoke | nf_v9 | nf_v15 | nf_compare"
+echo "  ttHH:  nf_check <branchlist> [args] | nf_ttHH_v15 [n_events]"
 echo "  start with:  nf_smoke"
 echo "-------------------------------------------------------------"

@@ -249,6 +249,15 @@
 
 측정 근거와 전체 절차: [`08_branch_schema_migration.md`](08_branch_schema_migration.md).
 
+> **CLOSED 2026-08-30 — CPV gen categorizer 의 v9→v15 동일성.**
+> 143,000 개의 *같은* event (lumi 로 짝지은 v9/v15 파일 쌍) 에 대해 61 개 branch 를
+> 비교해 **불일치 0**. `--prefix ""` 실행이 음성 대조군을 겸해
+> `only in v15: GenJet_nBHadrons, GenJet_nCHadrons` 를 정확히 잡아냈으므로 비교기가
+> 차이를 감지한다는 것도 확인됐습니다. Gate 4 (standalone C++ ≡ 모듈, v9) 와 합쳐
+> **v15 위의 모듈은 기준 구현체에 대해 전이적으로 검증**되었습니다. 08 6절.
+> 재현: `source script/setup_v9v15_validation.sh` → `nf_v9` / `nf_v15` / `nf_compare`.
+> 남은 범위 한계는 아래 5·6·7 번.
+
 1. **ttHH branch 목록을 실제 v15 스키마로 재검증** — 아직 안 함.
    `branches/branch_hadronic_{2017,2018}_v15_{MC,Data}.txt` 4개는 인벤토리가
    나오기 전에 작성된 **UNVERIFIED 초안**입니다. 08 2절 절차를
@@ -268,7 +277,14 @@
    존재 확인 후 era별 파일로 쪼갤 것. `branch_CPV_Run2_Data.txt` L22/L24 동일.
 4. **standalone C++ `TopCPVGenCategorizer` 의 v15 대응** — `GenPart_statusFlags`
    가 `UShort_t` 로 바뀌어 `Int_t` `SetBranchAddress` 는 조용한 쓰레기 값을
-   냅니다. 그전까지 v15 검증은 `module(v9)` vs `module(v15)` 비교로 합니다.
+   냅니다. 우회는 끝났지만(위 CLOSED 참조) 도구 자체는 여전히 v9 전용입니다.
+5. **다른 ttbar 샘플의 코드 경로 미검증** — 동일성 확인은 `TTToSemiLeptonic`
+   하나뿐입니다. `TTToHadronic` (all-hadronic 분기) 과 `TTTo2L2Nu` (lepton ≥ 2
+   분기) 는 안 밟혔습니다. 샘플마다 lumi 페어링을 다시 해야 하므로
+   `setup_v9v15_validation.sh` 를 샘플 인자로 일반화하는 것이 선행 작업입니다.
+6. **float 비트 동일성 미확인** — 비교는 `--ftol 1e-4` 로 했습니다. `nf_compare
+   --ftol 0` 한 번이면 확정됩니다.
+7. **Data tier 미검증** — 위는 전부 MC 입니다. 2 번 항목과 함께 처리.
 
 ## Documentation
 - **2026-07-01:** docs restructured into per-workstream subdirs

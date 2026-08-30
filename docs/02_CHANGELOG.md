@@ -9,6 +9,77 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-08-30: v9 ↔ v15 event-matched 동일성 확인 (불일치 0), A18, 검증 전용 branch 목록
+
+### Result — CPV gen categorizer 의 v9→v15 마이그레이션은 물리 결과를 바꾸지 않습니다
+
+`TTToSemiLeptonic` UL17. lumi 로 짝지은 v9/v15 파일 쌍에서 **143,000 개의 같은
+event** 를 뽑아 `script/compare_v9_v15.py` 로 `(run, luminosityBlock, event)` join 비교:
+
+| 범위 | 비교 횟수 | 불일치 |
+|---|---|---|
+| `--prefix TopCPVCat_` (46 branch) | 6,578,000 | **0** |
+| `--prefix ""` (61 branch) | 8,723,000 | **0** |
+| `--ftol 0` (허용오차 없음, 46 branch) | 6,578,000 | **0** |
+
+`common=143000`, `v9-only=0`, `v15-only=0`. Gate 4 (standalone C++ ≡ 모듈, v9,
+2026-08-25) 와 합쳐 **v15 위의 모듈이 기준 구현체에 대해 전이적으로 검증**됐습니다 —
+표준 C++ 도구가 `GenPart_statusFlags` 를 `Int_t` 로 읽어 v15 를 직접 비교할 수 없는
+제약을 우회한 것입니다. `Int_t→UShort_t` / `Int_t→Short_t` 타입 변경이 물리에 영향이
+없다는 것이 추론이 아니라 872 만 회 비교로 실증됐습니다. 전문: 08 6절.
+
+**음성 대조군.** `--prefix ""` 실행이 `only in v15: GenJet_nBHadrons,
+GenJet_nCHadrons` 를 보고했습니다 — 3.4절 인벤토리 diff 가 예측한 바로 그 두 개.
+비교기가 차이를 실제로 감지한다는 확인이자, 독립적인 두 측정의 교차 검증입니다.
+
+**파일 페어링이 이 비교의 어려운 부분이었습니다.** parent MiniAODv2 가 같아 event
+집합은 동일한데 NanoAOD job splitting 이 버전마다 달라 파일 경계가 전혀 대응하지
+않습니다 (각 데이터셋 첫 파일끼리 event 겹침 0). v9 파일의 lumi 집합 대 v15 의 398 개
+파일을 겹침 순으로 랭킹해 143 lumi 를 공유하는 파일을 찾았습니다. 페어링은 특정 v9
+파일에 묶여 있으므로 `setup_v9v15_validation.sh` 가 LFN 을 고정합니다.
+
+### Added
+
+- **`script/compare_v9_v15.py`** — 두 모듈 출력의 event-matched 비교기. 겹침이 비면
+  "불일치 0" 이 아니라 **exit 3 으로 실패**합니다 (이 비교에서 깨지기 쉬운 것은 물리가
+  아니라 페어링입니다). exit 1 불일치 / 2 공통 branch 없음 / 4 파일 읽기 실패.
+- **`script/setup_v9v15_validation.sh`** — `source` 전용 원스톱 세션 준비: cmsenv,
+  git pull, proxy, 모든 환경변수, 고정 LFN 입력 2 개, 공유 lumi cut 재생성, 스크래치
+  디렉토리 이동. `nf_status` / `nf_pull` / `nf_smoke` / `nf_v9` / `nf_v15` /
+  `nf_compare` 명령을 정의합니다.
+- **`branches/branch_CPV_validation.txt`** — 검증 전용 최소 출력 목록. 프로덕션 목록은
+  2.01 kB/event (입력 NanoAOD 2.06 kB/event 와 사실상 동일 — 버리는 collection 들이
+  작고 압축이 잘 되어 이득이 없음) 였고, 143k event 실행 하나가 AFS home 을 99 % 까지
+  채웠습니다. 이 목록은 **0.315 kB/event (6.4 배 감소)**. v9 와 v15 에서 이름이 바이트
+  단위로 같아 **양쪽에 같은 파일**을 쓰므로 목록이 비교의 교란 요인이 되지 않습니다.
+- **`script/run_postproc.py --cut`** — `PostProcessor(cut=...)` 직행. default `None`
+  이라 기존 동작 불변. 두 버전을 공유 lumi 집합으로 제한해 각 ~8 분에 끝내기 위한 것
+  (전체 파일 두 개는 ~3 h). 출력 event 집합을 바꾸므로 **검증 전용**이며 켜지면
+  `PRESELECTION CUT ACTIVE -- VALIDATION MODE` 배너가 찍힙니다.
+
+### Fixed
+
+- **`05_troubleshooting.md` A18 — 앞에 `drop *` 가 오는 branch 목록은 모듈 자신의
+  branch 까지 조용히 버립니다.** 스모크 테스트에서 출력이 15 branch / `TopCPVCat_*`
+  **0 개** 로 나왔는데 모듈은 `processed=2000 signal=2000` 을 보고했습니다 — 완벽히
+  돌고 결과를 전부 버린 것입니다. 에러도 경고도 없습니다. `branch_CPV_validation.txt`
+  초안에 "모듈 branch 는 outputbranchsel 을 피해간다" 고 써 두었던 주장이 반증됐고,
+  `keep TopCPVCat_*` 를 추가했습니다. 프로덕션 목록들은 leading `drop *` 가 없어
+  이 함정에 걸리지 않았습니다.
+- **`setup_v9v15_validation.sh`** — untracked 파일이 `git pull` 을 막던 문제
+  (`--untracked-files=no`), `$WORK` 에서 bare `git pull` 이 실패하는 문제 (`nf_pull`),
+  `INV` 상대경로.
+
+### Measured
+
+- 실효 처리율 **313 Hz (v9) / 288 Hz (v15)**, 각 ~8 분 / 143k event.
+  ⚠ 로그의 `Rate = 1868.7 Hz` 는 분모가 *입력* entry 수라 틀립니다.
+- `run_postproc.py` 는 `OUTPUT_DIR="."` (CRAB 요구) 이므로 중간 `_Skim.root` 가 항상
+  cwd 에 떨어집니다. repo 에서 돌리면 AFS home (10 GB) 이 찹니다 — 스크래치에서
+  실행하고 `-o` 에 절대경로(EOS)를 주면 병합 결과만 EOS 로 갑니다.
+
+---
+
 ## [Unreleased] — 2026-08-28: v9 NanoAOD가 parent 대비 2.61 % 결손임을 확인, event-matched v9/v15 비교 도구
 
 ### Measured — 이 데이터셋의 v9 NanoAOD는 불완전합니다

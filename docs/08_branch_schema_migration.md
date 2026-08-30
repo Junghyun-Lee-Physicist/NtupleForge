@@ -12,6 +12,9 @@
 헬퍼), [`07_DeveloperGuideline.md`](07_DeveloperGuideline.md) Rule 8 (의무 조항),
 `script/dump_branch_inventory.py`, `script/check_branchlist.py`.
 
+**언제 무엇을 실행했고 로그가 어땠는지**는 여기가 아니라
+[`09_v15_migration_log.md`](09_v15_migration_log.md) 에 있습니다.
+
 ---
 
 ## 1. 왜 이 절차가 필요한가 — 실패가 양방향으로 조용하다
@@ -316,10 +319,114 @@ Total time 11.5 sec. Rate = 174.4 Hz.  user 13.509s sys 2.224s
 - 174.4 Hz (v9 199.5 Hz 대비 −13 %, Events branch 1666→1903 증가분). CRAB 여유.
 - 예상대로 dead HLT 패턴 2개가 각각 job당 ROOT 에러 1줄로 찍혔습니다.
 
-⚠ **v9 ↔ v15 물리 동일성은 아직 미확인입니다.** 각 파일의 앞 2000 entry로
-채널 분포를 비교했더니 τ 645:645, e 669:679, μ 686:676 이 나왔지만,
-`(run, luminosityBlock, event)` 겹침이 **0** 이었습니다 — 서로 다른 event 를
-비교한 것이므로 이 숫자들은 일치의 증거가 아닙니다 (τ 일치는 우연, e/μ ±10 은
-총합·τ 고정에서 따라오는 반대칭이며 0.3 σ). 진짜 event-matched 비교는
-(a) 두 데이터셋의 MiniAOD parent 동일성 확인 후 (b) 파일 전체의 event id census
-로 겹침을 찾아야 합니다.
+물리 동일성 자체는 6절에서 event-matched 로 확인했습니다. 그 과정에서
+**앞 2000 entry 끼리의 채널 분포 비교는 증거가 되지 않는다**는 점이 드러났습니다:
+τ 645:645, e 669:679, μ 686:676 로 그럴듯해 보였지만
+`(run, luminosityBlock, event)` 겹침이 **0** 이었습니다 — 서로 다른 event 를 비교한
+것이므로 τ 일치는 우연이고, e/μ 의 ±10 은 총합과 τ 가 고정된 상태에서 따라오는
+반대칭(0.3 σ)일 뿐입니다.
+
+---
+
+## 6. 최종 결과 — v9 ↔ v15 event-matched 비교 (2026-08-30)
+
+**결론: 동일합니다.** 143,000 개의 *같은* event 에 대해 61 개 branch 를 비교해
+불일치 0 건.
+
+### 6.1 왜 파일을 짝지어야 했나
+
+v9 와 v15 는 **동일한 MiniAODv2 parent** 를 가집니다 (`dasgoclient parent` 로 확인,
+3절). 그러니 같은 event 가 양쪽에 존재합니다. 그런데 각 데이터셋의 첫 번째 파일은
+event 가 **하나도 겹치지 않았습니다** — NanoAOD job splitting 이 버전마다 달라
+파일 경계가 전혀 대응하지 않기 때문입니다. lumi *범위* 는 [14715,353516] 과
+[2579,331876] 로 크게 겹치는데 lumi *집합* 이 거의 서로소입니다.
+
+해법: v9 파일의 lumi 집합을 로컬 파일의 `LuminosityBlocks` 트리에서 읽고,
+`dasgoclient -query="file,lumi dataset=<v15>"` 로 v15 의 398 개 파일을 겹침 순으로
+랭킹합니다. 1 위가 **143 lumi (~143k event)** 를 공유했습니다.
+
+⚠ 이 페어링은 **특정 v9 파일에 묶여 있습니다.** `dasgoclient ... | head -1` 로 다른
+파일을 집으면 겹침이 사라집니다. `script/setup_v9v15_validation.sh` 가 LFN 을
+고정해 두는 이유입니다.
+
+양쪽 실행을 공유 lumi 집합으로 제한하는 데에 `run_postproc.py --cut` 을 썼습니다
+(전체 파일 두 개를 도는 ~3 h 대신 각 ~8 min).
+
+### 6.2 실행
+
+| | v9 | v15 (paired) |
+|---|---|---|
+| 입력 | `.../280000/549451D9-...root` | `.../2560000/12804c46-...root` |
+| 입력 event | 1,126,000 | 927,000 |
+| preselect | 143,000 (12.70 %) | 143,000 (15.43 %) |
+| accepted | 143,000 / 143,000 (100 %) | 143,000 / 143,000 (100 %) |
+| unclassifiable | 0 | 0 |
+| event loop | 457.0 s | 496.1 s |
+| 실효 처리율 | 313 Hz | 288 Hz |
+| 출력 | 45 MB | 45 MB |
+
+branch 목록은 양쪽 모두 **`branches/branch_CPV_validation.txt` 하나**를 썼습니다.
+거기 실린 이름이 v9 와 v15 에서 바이트 단위로 같기 때문에(3.4절), 목록이 비교의
+교란 요인이 될 수 없습니다.
+
+⚠ 로그의 `Total time ... Rate = 1868.7 Hz` 는 **믿지 마십시오.** NanoAODTools 가
+분모에 *입력* entry 수를 씁니다. 실효 처리율은 143,000 / 496.1 s = 288 Hz 이고,
+진행 로그의 `avg speed 0.314 kHz` 가 맞는 값입니다.
+
+### 6.3 비교 결과
+
+`script/compare_v9_v15.py`, `(run, luminosityBlock, event)` 로 join:
+
+```
+events : v9=143000  v15=143000  common=143000  (v9-only=0, v15-only=0)
+--prefix TopCPVCat_ : 46 branches x 143,000 = 6,578,000 회 비교 -> 불일치 0
+--prefix ""         : 61 branches x 143,000 = 8,723,000 회 비교 -> 불일치 0
+--ftol 0            : 46 branches, 허용오차 없이 정확 일치 요구      -> 불일치 0
+```
+
+`--ftol 0` 은 float 를 비트 단위로 비교합니다. 통과했으므로 "허용오차 덕에 통과한
+것 아니냐" 는 반론이 성립하지 않습니다.
+
+`common=143000` 에 양쪽 only 가 0 이므로 페어링이 정확히 맞았습니다. 비교기는
+겹침이 비면 "불일치 0" 이 아니라 exit 3 으로 실패하도록 만들어 두었습니다.
+
+### 6.4 음성 대조군 — 비교기가 차이를 실제로 잡는가
+
+"불일치 0" 은 비교기가 고장나도 나옵니다. `--prefix ""` 실행이 그 확인을 겸했습니다:
+
+```
+v9 : 61 branches      v15 : 63 branches
+!! only in v15 output: GenJet_nBHadrons, GenJet_nCHadrons
+```
+
+정확히 3.4절의 인벤토리 diff 가 예측한 두 branch 입니다. 비교기의 branch-set 감지가
+작동하며, 동시에 **독립적인 두 측정(인벤토리 diff, 출력 파일 비교)이 서로를
+확인**합니다.
+
+### 6.5 검증 사슬이 닫혔다
+
+표준 C++ `TopCPVGenCategorizer` 는 `GenPart_statusFlags` 를 `Int_t` 로 읽으므로
+v15 에서 조용한 쓰레기 값을 냅니다 (3.4절). 즉 v15 를 기준 구현체와 **직접** 비교할
+수 없습니다. 전이적으로 닫았습니다:
+
+| 단계 | 비교 | 규모 | 결과 |
+|---|---|---|---|
+| Gate 4 (2026-08-25) | standalone C++ ≡ 모듈, v9 | 2,000 ev × 61 br | 불일치 0 |
+| Gate 5 (2026-08-27) | 모듈이 읽는 branch 의 v15 존재 | 12 br | rename 0, 삭제 0 |
+| Gate 5b (2026-08-27) | v15 에서 모듈 실행 | 2,000 ev | 코드 수정 없이 통과 |
+| **최종 (2026-08-30)** | **모듈(v9) ≡ 모듈(v15)** | **143,000 ev × 61 br** | **불일치 0** |
+
+⇒ **v15 위의 모듈은 기준 구현체에 대해 전이적으로 검증되었습니다.**
+`GenPart_statusFlags` 의 `Int_t → UShort_t` 와 `GenPart_genPartIdxMother` 의
+`Int_t → Short_t` 가 물리 결과를 바꾸지 않는다는 것이 추론이 아니라 872 만 회
+비교로 실증되었습니다.
+
+### 6.6 남은 범위 한계 (정직하게)
+
+- **샘플이 하나입니다.** `TTToSemiLeptonic` 만 검증했습니다. `TTToHadronic`
+  (all-hadronic 분기) 과 `TTTo2L2Nu` (lepton ≥ 2 분기) 의 코드 경로는 안 밟혔습니다.
+  같은 페어링 + 비교를 샘플마다 한 번씩 더 돌려야 완전합니다.
+- ~~float 의 비트 동일성~~ **확인 완료 (2026-08-30).** `--ftol 0` 재실행에서도
+  불일치 0 — v9 와 v15 는 gen 정보를 **비트 단위로 동일하게** 저장합니다. 따라서 위
+  결과는 허용오차에 기댄 것이 아닙니다.
+- **Data tier 미검증.** 위는 전부 MC 입니다.
