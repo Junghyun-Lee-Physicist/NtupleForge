@@ -196,14 +196,37 @@ CPV_REQUIRED = [
     (("TopCPVCat_GenBHad_Count",), "mc,produced"),
 ]
 
-# HLT paths, per era. The analyzer FATALs if the 2018 four are absent
-# (requireTriggerBranches2018_(), ttHHanalyzer_unified.cc L337-342); the 2017
-# ones are read without a guard.
-HLT_REQUIRED = {
-    "2017": ["HLT_PFHT1050", "HLT_IsoMu27",
+# HLT paths, per era.
+#
+# ⚠ "the analyzer reads it" != "it must exist in THIS file". The HLT branch set
+# is the menu of the run range the dataset covers, so it differs between primary
+# datasets, between run eras, and between Data and MC. Measured on 2017UL v9:
+# MC has 569 HLT paths, Data 526, and 43 are MC-only. Judging a path "does not
+# exist" from ONE file is wrong -- that mistake was made on 2026-08-30.
+#
+# HLT_REQUIRED    : must be present; absence is a real finding.
+# HLT_ERA_CONDITIONAL : the analyzer reads them through eventBuffer's
+#     input->present() guard, but they only exist in some run eras / primary
+#     datasets. Absence is EXPECTED and is reported as information, not failure.
+#
+# The four 2017 entries below are the **2017 Run B** hadronic paths (calo-based
+# b-tagging at HLT; replaced by the PF versions from Run C onward -- see the
+# analysis trigger table, era B vs C-F). They are absent from RunIISummer20UL17
+# MC and from the 2017UL Data inventory on hand, but ARE declared in
+# tempTTHH/include/eventBuffer.h, which is a deliberate 2017+2018 superset
+# header generated from a wider-menu file.
+HLT_ERA_CONDITIONAL = {
+    "2017": ["HLT_HT300PT30_QuadJet_75_60_45_40",
              "HLT_HT300PT30_QuadJet_75_60_45_40_TripeCSV_p07",
              "HLT_PFHT430_SixJet40_BTagCSV_p080",
-             "HLT_PFHT380_SixJet32_DoubleBTagCSV_p075",
+             "HLT_PFHT380_SixJet32_DoubleBTagCSV_p075"],
+    "2018": [],
+}
+
+# The analyzer FATALs if the 2018 four are absent (requireTriggerBranches2018_(),
+# ttHHanalyzer_unified.cc L337-342); the 2017 ones are read without a guard.
+HLT_REQUIRED = {
+    "2017": ["HLT_PFHT1050", "HLT_IsoMu27",
              "HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0",
              "HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5",
              "HLT_PFHT380_SixPFJet32_DoublePFBTagCSV_2p2"],
@@ -385,8 +408,11 @@ def main():
                 continue
             if not any(n in branches for n in names):
                 absent.append("|".join(names))
+        cond_absent = []
         if args.era:
             absent += [h for h in HLT_REQUIRED[args.era] if h not in branches]
+            cond_absent = [h for h in HLT_ERA_CONDITIONAL.get(args.era, [])
+                           if h not in branches]
         print()
         print("=== (C) analyzer requirements ABSENT FROM THE INPUT FILE ITSELF ===")
         if n_produced:
@@ -401,6 +427,13 @@ def main():
                 print("       %s" % a)
         else:
             print("  OK -- every required branch exists in the input schema.")
+        if cond_absent:
+            print("  info: %d era-conditional HLT path(s) absent -- EXPECTED, not a"
+                  % len(cond_absent))
+            print("        failure. They exist only in some run eras / primary")
+            print("        datasets and eventBuffer guards them with present():")
+            for h in cond_absent:
+                print("          %s" % h)
 
         if args.print_kept:
             print()

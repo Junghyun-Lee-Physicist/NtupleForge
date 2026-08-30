@@ -440,6 +440,67 @@ are documented with the now-archived
 The current full-passthrough pipeline has no skim to measure; copy the tool
 back into `script/` if you reintroduce one.
 
+## A19 — 한 파일의 인벤토리로 branch 의 "부재" 를 단정했다 (2026-08-30)
+
+**증상.** `check_branchlist.py --era 2017 --profile main` 이 v15 인벤토리에 대해
+2017 hadronic 트리거 3 개를 (C) "파일에 없음" 으로 보고했습니다:
+
+```
+HLT_HT300PT30_QuadJet_75_60_45_40_TripeCSV_p07
+HLT_PFHT430_SixJet40_BTagCSV_p080
+HLT_PFHT380_SixJet32_DoubleBTagCSV_p075
+```
+
+여기서 "v15 가 hadronic 트리거를 3 개 잃었다 ⇒ 트리거 효율과 SF 를 다시 유도해야
+한다" 는 결론이 나왔습니다. **전부 틀렸습니다.**
+
+**원인.** HLT branch 집합은 **그 dataset 이 덮는 run 범위의 HLT 메뉴**입니다. 따라서
+primary dataset 마다, run era 마다, Data/MC 사이에서 다릅니다. 다른 branch 처럼
+"한 파일에 없으면 그 버전에 없다" 로 다룰 수 없습니다. 실측:
+
+| 인벤토리 | Events | HLT | 위 3 경로 |
+|---|---|---|---|
+| 2017UL v9 MC (`TTToSemiLeptonic`) | 1666 | 569 | 없음 |
+| 2017UL v15 MC (동일 primary) | 1903 | 569 | 없음 |
+| **Data `Run2017B`** | **1208** | **269** | **전부 존재** |
+| Data `Run2017C` | 1523 | 479 | 없음 |
+| Data `Run2017D` | 1570 | 526 | 없음 |
+| Data `Run2017E` | 1612 | 526 | 없음 |
+| Data `Run2017F` | 1666 | 580 | 없음 |
+
+**Run B 에만 있습니다.** Run B 는 Run F 의 절반도 안 되는 HLT 를 갖고 있고 (269 vs
+580), 같은 2017UL v9 안에서 MC 569 / Data 526 (MC-only 43) 입니다.
+
+**진상.** 세 경로는 **2017 Run B** 경로입니다 — Run B 는 HLT 에서 calo 기반
+b-tagging 을 썼고 Run C 부터 PF 기반(`SixPFJet40_PFBTagCSV_1p5` 등)으로 교체됐습니다.
+분석은 이 둘을 era 별로 OR 합니다. `tempTTHH/include/eventBuffer.h` 는 2017+2018 을
+함께 덮는 **의도된 superset 헤더**(mkanalyzer 생성, HLT 583 개)이고,
+`input->present()` 가드로 없는 branch 를 `missingBranches` 로 넘깁니다 — MC 와
+Run C–F 에서 해당 항이 0 이 되는 것은 **물리적으로 옳은 동작**입니다. 분석에 버그는
+없었습니다.
+
+**부수 확인.** v9 MC 와 v15 MC 의 HLT 집합은 569 개로 **완전히 동일**합니다
+(차집합 0). v15 마이그레이션의 트리거 영향은 0 입니다 — 원래 답은 맞았지만 이유가
+틀렸습니다.
+
+**수정.** `script/check_branchlist.py` 에 `HLT_ERA_CONDITIONAL` 을 도입했습니다.
+`HLT_REQUIRED["2017"]` 은 8 → 5 개로 줄었고, Run B 4 경로는 conditional 로 옮겨
+(C) 에서 실패가 아니라 정보 줄로 보고됩니다.
+
+**규칙.** "분석기가 읽는다" 와 "이 파일에 반드시 있어야 한다" 는 다릅니다. era 나
+primary dataset 에 따라 존재가 갈리는 branch 는 **여러 인벤토리로 교차 확인**하기
+전에는 부재를 주장하지 마십시오. 이를 위한 도구가 있습니다:
+
+```bash
+bash script/sweep_inventories.sh                       # tier x era x version 전수 덤프
+python3 script/branch_presence_matrix.py --inventory-dir script/inventory \
+    --profile main --mc --era 2017 --partial-only      # PARTIAL 이 위험 집합
+```
+
+절차: [08](08_branch_schema_migration.md) 2절 Step 3b.
+
+---
+
 ## A18 — A branch list with a leading `drop *` silently discards the module's OWN branches (2026-08-30)
 
 **Symptom.** A validation run finishes clean and the module reports success:

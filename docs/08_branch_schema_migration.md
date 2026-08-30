@@ -123,6 +123,56 @@ python3 script/dump_branch_inventory.py /tmp/nano_v15_local.root \
     --label 2017UL_v15_MC -o script/inventory/inv_2017UL_v15_MC.tsv
 ```
 
+### Step 3b — ⚠ 한 파일로 끝내지 마십시오: 전수 sweep
+
+branch 존재 여부는 NanoAOD **버전만의 속성이 아닙니다.** primary dataset, tier
+(Data/MC), 그리고 HLT 의 경우 **run era** 에 따라 갈립니다 — HLT branch 집합은 그
+dataset 이 덮는 run 범위의 트리거 메뉴이기 때문입니다. 2026-08-30 실측:
+
+| | Events | HLT |
+|---|---|---|
+| Run2017B | **1208** | **269** |
+| Run2017C | 1523 | 479 |
+| Run2017D | 1570 | 526 |
+| Run2017E | 1612 | 526 |
+| Run2017F | 1666 | 580 |
+| UL17 MC | 1666 | 569 |
+
+Run B 는 Run F 의 절반도 안 되는 HLT 를 갖고 있고, 분석이 그 기간에 OR 하는
+calo 기반 hadronic b-tag 경로(`HLT_HT300PT30_QuadJet_..._TripeCSV_p07` 등)를 가진
+**유일한** era 입니다. 이걸 모르고 MC 파일 하나로 "v15 가 트리거를 잃었다" 는
+잘못된 결론을 낸 적이 있습니다: [05](05_troubleshooting.md) A19.
+
+그래서 **여러 인벤토리를 떠서 교차 대조합니다.** 스키마만 읽으므로 XRootD 직독으로
+충분하고 (Step 2 의 "/tmp 로 복사" 규칙은 **event loop** 에만 적용됩니다) 데이터셋당
+수 초입니다.
+
+```bash
+bash script/sweep_inventories.sh          # script/inventory_manifest_2017UL.txt
+```
+
+manifest 는 (tier x run era x NanoAOD 버전) 조합을 한 줄씩 담습니다 — MC primary 를
+더 넣는 것보다 **run era 를 더 넣는 것**이 훨씬 값어치가 큽니다. 기존 인벤토리는
+건너뛰므로 재실행이 쌉니다.
+
+그다음 교차표:
+
+```bash
+python3 script/branch_presence_matrix.py --inventory-dir script/inventory \
+    --profile main --mc --era 2017 --partial-only
+```
+
+봐야 할 것은 **PARTIAL** 열입니다 — 어떤 인벤토리에는 있고 어떤 데는 없는 branch.
+한 파일에서 유도한 keep-list 나 요구사항이 나머지에서 틀리는, 조용한 실패의 근원이
+바로 이 집합입니다. exit 0 전부 존재 / 2 PARTIAL 있음 / 3 어디에도 없음.
+
+HLT 계열만 훑어보려면:
+
+```bash
+python3 script/branch_presence_matrix.py --inventory-dir script/inventory \
+    --pattern '^HLT_' --partial-only
+```
+
 ### Step 4 — 두 버전 diff
 
 ```bash
@@ -214,6 +264,30 @@ LuminosityBlocks 4).
 `Photon_pdgId` · `btagWeight_*` · FatJet `deepTag*` / `particleNetMD_*` 전부
 
 `Jet_btagDeepFlavB`는 **생존** (ttHH b-tagger 무사).
+
+### 3.2b HLT 는 버전이 아니라 **run 범위**가 결정합니다
+
+HLT branch 집합은 그 dataset 이 덮는 run 범위의 HLT 메뉴입니다. 버전 diff 로
+"사라졌다" 를 판단할 수 없는 유일한 branch 군입니다. 2026-08-30 실측:
+
+| 인벤토리 | Events | HLT | hadronic b-tag 경로 |
+|---|---|---|---|
+| 2017UL v9 MC | 1666 | 569 | PF CSV + PF DeepCSV |
+| 2017UL v15 MC | 1903 | **569** | 〃 (v9 과 차집합 0) |
+| Data `Run2017B` | **1208** | **269** | **calo 4 개, `TripeCSV` 오타 포함** |
+| Data `Run2017C` | 1523 | 479 | PF CSV 만 |
+| Data `Run2017D` | 1570 | 526 | PF CSV + PF DeepCSV |
+| Data `Run2017E` | 1612 | 526 | 〃 |
+| Data `Run2017F` | 1666 | 580 | 〃 |
+
+hadronic 트리거는 **B / C / D–F 세 그룹**입니다: Run B 는 calo 기반,
+Run C 는 PF CSV 만, Run D 부터 `HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2`
+가 추가됩니다. `Tripe` 오타는 **B 에만** 있고 C–F 는 전부 `TriplePFBTagCSV` 입니다.
+(legacy `branches_data.txt` 의 1570 은 Run2017D 였습니다.)
+
+**v9 MC 와 v15 MC 의 HLT 집합은 완전히 동일합니다 (차집합 0)** — v15 의 트리거
+영향은 0. 한편 같은 v9 안에서도 MC 569 / Data 526 (MC-only 43) 이고 Data 끼리도
+1570 vs 1208 입니다. 한 파일로 부재를 단정한 사고: [05](05_troubleshooting.md) A19.
 
 ### 3.3 타입 변경의 지배적 패턴
 

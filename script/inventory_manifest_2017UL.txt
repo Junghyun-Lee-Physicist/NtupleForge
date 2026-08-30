@@ -1,0 +1,48 @@
+# =============================================================================
+# inventory_manifest_2017UL.txt -- what script/sweep_inventories.sh dumps.
+#
+#   <label>   <DAS dataset pattern>
+#
+# The point is COVERAGE, not completeness: one file per (tier x run era x
+# NanoAOD version) combination, because that is the axis along which branch
+# presence actually varies. Adding more MC primaries buys almost nothing --
+# adding a run era buys a lot.
+#
+# Measured 2026-08-30, which is why the Data rows are per era:
+#
+#     Run2017B  1208 Events / 269 HLT   calo b-tag paths, 'TripeCSV' typo
+#     Run2017C  1523 / 479              PF CSV only
+#     Run2017D  1570 / 526              PF CSV + PF DeepCSV
+#     Run2017E  1612 / 526
+#     Run2017F  1666 / 580
+#     UL17 MC   1666 / 569
+#
+# Run B carries fewer than half the HLT paths of Run F and is the only era with
+# the calo-based hadronic b-tag triggers the analysis ORs for that period.
+# See docs/05_troubleshooting.md A19 and docs/08 3.2b.
+# =============================================================================
+
+# ---- MC, both NanoAOD versions (the migration comparison) -------------------
+2017UL_v9_MC     /TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+2017UL_v15_MC    /TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v2/NANOAODSIM
+
+# ---- Data, per run era (JetHT = the hadronic primary dataset) ---------------
+2017B_v9_Data    /JetHT/Run2017B-UL2017_MiniAODv2_NanoAODv9*/NANOAOD
+2017C_v9_Data    /JetHT/Run2017C-UL2017_MiniAODv2_NanoAODv9*/NANOAOD
+2017D_v9_Data    /JetHT/Run2017D-UL2017_MiniAODv2_NanoAODv9*/NANOAOD
+2017E_v9_Data    /JetHT/Run2017E-UL2017_MiniAODv2_NanoAODv9*/NANOAOD
+2017F_v9_Data    /JetHT/Run2017F-UL2017_MiniAODv2_NanoAODv9*/NANOAOD
+
+# ---- the other 2017 primary datasets the analysis uses ---------------------
+# BTagCSV supplies the QuadJet+TripleBTag leg; SingleMuon is the orthogonal
+# reference region the hadronic trigger SF is measured in.
+2017B_v9_BTagCSV     /BTagCSV/Run2017B-UL2017_MiniAODv2_NanoAODv9*/NANOAOD
+2017F_v9_BTagCSV     /BTagCSV/Run2017F-UL2017_MiniAODv2_NanoAODv9*/NANOAOD
+2017B_v9_SingleMuon  /SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9*/NANOAOD
+2017F_v9_SingleMuon  /SingleMuon/Run2017F-UL2017_MiniAODv2_NanoAODv9*/NANOAOD
+
+# ---- a second MC primary, to separate "sample-specific" from "campaign-wide"
+# TTbb is 4FS and QCD is the hadronic background; if a branch is in UL17 MC at
+# all it should be in these too, and a difference is worth knowing about.
+2017UL_v9_MC_TTbb    /TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv9*/NANOAODSIM
+2017UL_v9_MC_QCD     /QCD_HT700to1000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9*/NANOAODSIM
