@@ -111,6 +111,19 @@ def load_profile(repo_root, profile, mc, era):
     return uniq
 
 
+def classify(present, mc_set, data_set):
+    """A branch present in exactly the MC inventories (or exactly the Data ones)
+    is not a finding -- Data carries no gen information and MC carries no
+    data-only branches. Calling those PARTIAL buries the real signal: on
+    2026-08-30 the first run of this tool reported 31 PARTIAL branches of which
+    19 were simply MC-only. Only the leftovers deserve attention."""
+    if mc_set and present == mc_set:
+        return "MC-ONLY"
+    if data_set and present == data_set:
+        return "DATA-ONLY"
+    return "PARTIAL"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--inventory-dir", default="script/inventory",
@@ -127,7 +140,10 @@ def main():
     ap.add_argument("--mc", action="store_true")
     ap.add_argument("--era", help="also include that era's HLT tables")
     ap.add_argument("--partial-only", action="store_true",
-                    help="print only branches that are present in some and absent in others")
+                    help="print only genuinely partial branches (MC-only and Data-only "
+                         "splits are expected and are suppressed)")
+    ap.add_argument("--show-expected", action="store_true",
+                    help="also list the MC-only / Data-only branches")
     ap.add_argument("--repo-root", default=".", help="NtupleForge root (for --profile)")
     args = ap.parse_args()
 
@@ -162,20 +178,37 @@ def main():
         print("  %-24s %5d branches   %s" % (lab, len(names), p))
     print("=" * 78)
 
-    everywhere, nowhere, partial = [], [], []
+    # An inventory is MC iff it carries genWeight -- measured, not guessed from
+    # the label.
+    mc_set = {i for i, (_, names) in enumerate(invs) if "genWeight" in names}
+    data_set = set(range(len(invs))) - mc_set
+    print("tier split (by genWeight): MC = %s" % ", ".join(labels[i] for i in sorted(mc_set)))
+    print("                           Data = %s" % ", ".join(labels[i] for i in sorted(data_set)))
+    print("=" * 78)
+
+    everywhere, nowhere, partial, mconly, dataonly = [], [], [], [], []
     for b in wanted:
         hits = [b in names for _, names in invs]
+        present = {i for i, h in enumerate(hits) if h}
         if all(hits):
             everywhere.append(b)
         elif not any(hits):
             nowhere.append(b)
         else:
-            partial.append((b, hits))
+            kind = classify(present, mc_set, data_set)
+            if kind == "MC-ONLY":
+                mconly.append((b, hits))
+            elif kind == "DATA-ONLY":
+                dataonly.append((b, hits))
+            else:
+                partial.append((b, hits))
 
     w = max([len(b) for b in wanted] + [10])
     hdr = " " * (w + 2) + " ".join("%-14s" % lab[:14] for lab in labels)
-    rows = partial if args.partial_only else (
-        [(b, [b in n for _, n in invs]) for b in wanted])
+    if args.partial_only:
+        rows = partial + (mconly + dataonly if args.show_expected else [])
+    else:
+        rows = [(b, [b in n for _, n in invs]) for b in wanted]
     if rows:
         print(hdr)
         print("-" * len(hdr))
@@ -184,9 +217,11 @@ def main():
             mark = "  <-- PARTIAL" if (any(hits) and not all(hits)) else ""
             print("%-*s  %s%s" % (w, b, cells, mark))
     print()
-    print("present in ALL inventories : %d" % len(everywhere))
-    print("absent  in ALL inventories : %d" % len(nowhere))
-    print("PARTIAL (the dangerous set): %d" % len(partial))
+    print("present in ALL inventories   : %d" % len(everywhere))
+    print("absent  in ALL inventories   : %d" % len(nowhere))
+    print("MC-only   (expected, gen info): %d" % len(mconly))
+    print("Data-only (expected)          : %d" % len(dataonly))
+    print("PARTIAL   (the dangerous set) : %d" % len(partial))
     if nowhere:
         print("\nabsent everywhere -- either a wrong name, or nothing here covers it:")
         for b in nowhere:
