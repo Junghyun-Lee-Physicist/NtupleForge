@@ -79,6 +79,31 @@ flavour 변종은 branch 구성이 다릅니다. 위 쿼리는 3개를 돌려주
 /…/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/…      ← 아님
 ```
 
+### Step 1b — 확정된 Run 2 UL v15 캠페인 문자열 (2026-08-25 실측)
+
+`resolve_nano_children.sh {2017,2018} --want v15` 로 두 연도 모두 확인했습니다.
+양쪽 다 **6 SAME_PARENT / 0 DIFFERENT_PARENT / 1 VERSION_ABSENT** (부재는 TT4b).
+
+```
+2017UL  RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1        plain
+        RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v2        plain, 최고 -vN  ★대표
+        RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_..._v1-v1       JME flavour
+        RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_..._v1-v1 / -v3    BTV flavour
+
+2018UL  RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1        plain
+        RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v2        plain, 최고 -vN  ★대표
+        RunIISummer20UL18NanoAODv15-20UL18JMENano_150X_..._v1-v1       JME flavour
+        RunIISummer20UL18NanoAODv15-BTVNanoV15_150X_..._v1-v1 / -v3    BTV flavour
+```
+
+`das_scan.sh` era table 의 추정(`RunIISummer20UL{17,18}NanoAOD@V@`)이 두 연도 모두
+맞았습니다. ⚠ GT 와 `-vN` 은 "규칙"이 아니라 이 7 개 샘플에서의 관측일 뿐입니다 —
+새 샘플에는 그대로 적용하지 말고 조회하십시오.
+
+**Data 는 형태가 다릅니다** (2026-08-31): v9 `UL2017_MiniAODv2_NanoAODv9`,
+v15 `UL2017_NanoAODv15` — `MiniAODv2_` 가 빠집니다.
+[05](05_troubleshooting.md) A20.
+
 ### Step 2 — /tmp로 xrdcp (⚠ 이 단계를 건너뛰지 마십시오)
 
 ```bash
@@ -406,6 +431,37 @@ Total time 11.5 sec. Rate = 174.4 Hz.  user 13.509s sys 2.224s
 
 **결론: 동일합니다.** 143,000 개의 *같은* event 에 대해 61 개 branch 를 비교해
 불일치 0 건.
+
+### 6.0 ⚠ 무엇이 같아야 하고 무엇이 달라도 되는가 — 비교를 해석하기 전에
+
+v15 의 GT 는 `150X_mc<YEAR>_realistic_v1` 로 v9 (`106X_mc2017_realistic_v9`,
+`106X_upgrade2018_realistic_v16_L1v1`) 와 **다릅니다.** MiniAOD 부모가 같아도 NANO
+step 을 새 release·새 conditions 로 다시 돌린 **진짜 reprocessing** 입니다. 따라서
+층에 따라 기대가 갈립니다:
+
+| 층 | 기대 | 근거 | 다르면 |
+|---|---|---|---|
+| **gen-level** (`genTtbarId`, `GenPart_*`, `GenJet_*`, `GenMET_*`, `PSWeight`) | **동일해야 한다** | MiniAOD gen record 에서 그대로 옵니다 | **진짜 red flag.** 조사 대상 |
+| **reco-level** (`Jet_*`, MET, b-tag score, jet ID, `Electron_*`, `Muon_*`) | **달라도 정상** | NANO step 이 새 conditions 로 재계산 | 차이 자체가 **결과**입니다. 버그 아님 |
+
+이 구분을 못 박아 두지 않으면 나중에 나오는 reco 차이를 놓고 "마이그레이션이 깨졌다"
+와 "예상된 재처리 효과"를 구별할 수 없게 됩니다.
+
+**6 절의 결과는 전부 gen-level 입니다.** CPV categorizer 가 읽고 쓰는 것
+(`GenPart_*`, `GenJet_*`, `GenMET_*`, `PSWeight`, `TopCPVCat_*`) 이 모두 gen-level
+이므로 비트 단위 일치가 나온 것이고, 그것이 **reco branch 도 일치하리라는 증거는
+아닙니다.**
+
+⚠ 따라서 ttHH passthrough ntuple 을 `compare_v9_v15.py --prefix ""` 로 비교할 때는
+**reco branch 의 불일치를 실패로 읽으면 안 됩니다.** 판정 기준은:
+
+- gen-level branch 가 하나라도 어긋나면 → **조사**
+- reco-level branch 가 어긋나면 → **측정 결과로 기록**. 얼마나 어긋나는지가 곧
+  "v9→v15 재처리가 물리량을 얼마나 바꾸는가" 이고, 그게 마이그레이션이 답해야 할
+  질문입니다
+
+TTHHGenCategoryTools 의 match 는 **gen-level 검증**이고, analyzer 비교는
+**reco-level 차이 측정**입니다 — 목적이 다릅니다.
 
 ### 6.1 왜 파일을 짝지어야 했나
 

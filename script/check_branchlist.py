@@ -210,11 +210,17 @@ CPV_REQUIRED = [
 #     datasets. Absence is EXPECTED and is reported as information, not failure.
 #
 # The four 2017 entries below are the **2017 Run B** hadronic paths (calo-based
-# b-tagging at HLT; replaced by the PF versions from Run C onward -- see the
-# analysis trigger table, era B vs C-F). They are absent from RunIISummer20UL17
-# MC and from the 2017UL Data inventory on hand, but ARE declared in
-# tempTTHH/include/eventBuffer.h, which is a deliberate 2017+2018 superset
-# header generated from a wider-menu file.
+# b-tagging at HLT; replaced by the PF versions from Run C onward). Measured
+# per era on 2026-08-31, /JetHT/Run2017?-UL2017_MiniAODv2_NanoAODv9:
+#     Run B  1208 Events / 269 HLT   <- these four, and ONLY here
+#     Run C  1523 / 479              <- PF CSV only
+#     Run D  1570 / 526              <- PF CSV + PF DeepCSV
+#     Run E  1612 / 526
+#     Run F  1666 / 580
+#     UL17 MC 1666 / 569
+# So they exist and fire on the Run2017B primary datasets, and are correctly 0
+# elsewhere. tempTTHH/include/eventBuffer.h is a deliberate 2017+2018 superset
+# header (583 HLT) whose input->present() guard handles their absence.
 HLT_ERA_CONDITIONAL = {
     "2017": ["HLT_HT300PT30_QuadJet_75_60_45_40",
              "HLT_HT300PT30_QuadJet_75_60_45_40_TripeCSV_p07",

@@ -245,46 +245,77 @@
    (GenBHad hadron kinematics, official FromTopWeakDecay, GenJet HCal/ECal energy,
    B-frag weights) remain best-effort / friend-tree only.
 
-## OPEN / next steps (branch schema — v15 migration)
+## OPEN / next steps — v15 마이그레이션 (2026-08-31 정리)
 
-측정 근거와 전체 절차: [`08_branch_schema_migration.md`](08_branch_schema_migration.md).
+측정 근거: [`08_branch_schema_migration.md`](08_branch_schema_migration.md) (절차·스키마),
+[`09_v15_migration_log.md`](09_v15_migration_log.md) (진행 기록·원본 로그).
 
-> **CLOSED 2026-08-30 — CPV gen categorizer 의 v9→v15 동일성.**
-> 143,000 개의 *같은* event (lumi 로 짝지은 v9/v15 파일 쌍) 에 대해 61 개 branch 를
-> 비교해 **불일치 0**. `--prefix ""` 실행이 음성 대조군을 겸해
-> `only in v15: GenJet_nBHadrons, GenJet_nCHadrons` 를 정확히 잡아냈으므로 비교기가
-> 차이를 감지한다는 것도 확인됐습니다. Gate 4 (standalone C++ ≡ 모듈, v9) 와 합쳐
-> **v15 위의 모듈은 기준 구현체에 대해 전이적으로 검증**되었습니다. 08 6절.
+> **CLOSED — CPV gen categorizer 의 v9→v15 동일성.**
+> 143,000 개의 *같은* event 에 61 개 branch 를 비교해 **불일치 0**, `--ftol 0` 에서도
+> 0 (비트 단위 동일). `--prefix ""` 실행이 음성 대조군을 겸해
+> `only in v15: GenJet_nBHadrons, GenJet_nCHadrons` 를 정확히 검출했습니다.
+> Gate 4 (standalone C++ ≡ 모듈, v9) 와 합쳐 **v15 위의 모듈은 기준 구현체에
+> 대해 전이적으로 검증**되었습니다. 08 6 절.
 > 재현: `source script/setup_v9v15_validation.sh` → `nf_v9` / `nf_v15` / `nf_compare`.
-> 남은 범위 한계는 아래 5·6·7 번.
 
-1. **ttHH branch 목록을 실제 v15 스키마로 재검증** — 아직 안 함.
-   `branches/branch_hadronic_{2017,2018}_v15_{MC,Data}.txt` 4개는 인벤토리가
-   나오기 전에 작성된 **UNVERIFIED 초안**입니다. 08 2절 절차를
-   `--profile main` 으로 다시 돌려야 합니다. 특히 08 3.2절에 따르면 v15에서
-   **`Jet_puId` 와 `Jet_jetId` 가 대체 없이 사라졌으므로** 목록 수정만으로는
-   끝나지 않고 analyzer의 jet 선택을 재계산 방식으로 바꿔야 합니다.
-   **2026-08-27 확인**: `Jet_puIdDisc` (Float_t) 는 살아 있으므로 PU ID 는 WP
-   임계값 직접 적용으로 해결됩니다. `Jet_jetId` 는 진짜 없고 `passJetIdTight`
-   류도 없지만, 재계산 재료 15개(`Jet_nConstituents`, `Jet_chMultiplicity`,
-   `Jet_neMultiplicity` — 셋 다 `UChar_t` 라 `to_int` 필수 —, `Jet_neHEF`,
-   `Jet_neEmEF`, `Jet_chHEF`, `Jet_chEmEF`, `Jet_muEF`, `Jet_hfHEF`,
-   `Jet_hfEmEF` 등)가 전부 존재합니다. 상세: 08 3.4절.
-2. **Data 쪽 v15 인벤토리 없음** — `branch_CPV_Run2_Data_v15.txt` 는 아직
-   만들지 않았습니다. 2017UL Data v15 캠페인 존재 여부부터 DAS로 확인 후 08 2절.
-3. **`HLT_IsoTkMu*` / `HLT_L2DoubleMu*` per-era 분리** — 2017UL에서 v9·v15
-   모두 dead지만 파일이 Run2 4개 era 공유라 삭제 불가. UL16 인벤토리를 떠서
-   존재 확인 후 era별 파일로 쪼갤 것. `branch_CPV_Run2_Data.txt` L22/L24 동일.
-4. **standalone C++ `TopCPVGenCategorizer` 의 v15 대응** — `GenPart_statusFlags`
-   가 `UShort_t` 로 바뀌어 `Int_t` `SetBranchAddress` 는 조용한 쓰레기 값을
-   냅니다. 우회는 끝났지만(위 CLOSED 참조) 도구 자체는 여전히 v9 전용입니다.
-5. **다른 ttbar 샘플의 코드 경로 미검증** — 동일성 확인은 `TTToSemiLeptonic`
-   하나뿐입니다. `TTToHadronic` (all-hadronic 분기) 과 `TTTo2L2Nu` (lepton ≥ 2
-   분기) 는 안 밟혔습니다. 샘플마다 lumi 페어링을 다시 해야 하므로
-   `setup_v9v15_validation.sh` 를 샘플 인자로 일반화하는 것이 선행 작업입니다.
-6. **float 비트 동일성 미확인** — 비교는 `--ftol 1e-4` 로 했습니다. `nf_compare
-   --ftol 0` 한 번이면 확정됩니다.
-7. **Data tier 미검증** — 위는 전부 MC 입니다. 2 번 항목과 함께 처리.
+> **CLOSED — 데이터셋 가용성.** registry 64 개 중 중앙 v15 가 없는 것은 6 개뿐:
+> `TTHHto4b`(신호), `TT4b`, `TTZHTo4b`, `TTZZTo4b`, `tHW`, `TTZToBB`.
+> Data 는 전부 존재합니다 (`UL2017_NanoAODv15-v1`). 09 10 절.
+
+### A. 방향 전환 — enriched NanoAOD (최우선)
+
+`TTHHGenCategoryTools/docs/04_decisions.md` **D17** (PROPOSED, D-DEP1 부분 번복).
+
+1. **FlatTable producer 작성** — `ExtendedTtbarIdProducer` 는 그대로 두고 NanoAOD
+   table 컬럼만 붙이는 customise. 아카이브 cfg 는 실행 불가(`TtbbStudies.NanoExtension`
+   경로가 v10 에서 제거).
+2. **레시피 byte-identity 재검증** — 중앙본이 **있는** 샘플(`TTbb_4f_TTToHadronic` v9)
+   에서 먼저 증명. `script/pair_v9_v15.py` + `script/compare_v9_v15.py`.
+3. **확장값 검증** — v7.2 검증은 sub-code 56 버그 시절이라 61/62/71/72 를 만든 적이
+   없습니다. 새로 검증 대상.
+4. **`TT4b` → `TTHHto4b` 순으로 적용.** v15 는 CMSSW_15_0_X 필요.
+5. **CRAB `units_per_job`** — MiniAOD 는 파일 수가 많습니다. NanoAOD config 값을
+   그대로 가져오면 안 됩니다 (05 A16, TTHHGenCategoryTools D15).
+6. **NtupleForge 에 `job_type: cmsrun | postproc`** — registry·das_scan·preflight·
+   submit/status/report 는 job type 과 무관하므로 재사용. 별도 repo 는 만들지 않습니다.
+
+### B. ttHH v15 passthrough (진행 중)
+
+7. **`btagWeight_*` dead 패턴 제거** — v15 에서 삭제된 branch. 4 개 목록이
+   `gen_hadronic_branchlists.py` 로 생성되므로 생성기에서 고칩니다.
+8. **`Jet_jetId` / `Jet_puId`** — v15 가 만든 **유일한** 요구사항 공백(62 개 중 2 개).
+   `Jet_puIdDisc` 는 생존하므로 WP 직접 적용, `Jet_jetId` 는 PF fraction +
+   multiplicity 로 재계산. **analyzer(tempTTHH) 쪽 작업**이고 NtupleForge 는 재료를
+   실어 보내기만 하면 됩니다 (`keep Jet_*` 로 이미 포함). 08 3.4 절.
+9. **v9 대응 hadronic 목록 없음** — v9 config 는 `branch_keep_all.txt` 를 씁니다.
+   공정한 v9↔v15 비교를 하려면 `branch_hadronic_2017_v9_MC.txt` 가 필요합니다.
+10. **6 샘플 event-matched 비교** — `TTbar_{SemiLep,Hadronic,DiLep}`,
+    `TTbb_{SemiLep,Hadronic,DiLep}`. `pair_v9_v15.py` 로 페어링 후
+    `compare_v9_v15.py --prefix "" --v9v15-renames --ftol 0`.
+11. **출력 크기** — 1.948 kB/event (입력의 67 %). v15 신규 태거(`btagUParTAK4*`,
+    `btagPNet*`, `*RegPtRaw*`)가 Jet 34.9 % 의 대부분입니다. "v15 에만 있고 분석기가
+    못 쓰는 것"만 자르는 것이 원칙적 절단선.
+
+### C. CPV 잔여
+
+12. **다른 ttbar 샘플의 코드 경로 미검증** — `TTToHadronic`(all-hadronic 분기),
+    `TTTo2L2Nu`(lepton ≥ 2 분기). `pair_v9_v15.py` 로 이제 샘플별 페어링이 됩니다.
+13. **Data tier 미검증** — 위 검증은 전부 MC 입니다.
+14. **`branch_CPV_Run2_Data_v15.txt` 없음** — 데이터셋은 존재합니다(위 CLOSED).
+    08 2 절 Step 3b 의 sweep 으로 인벤토리를 뜬 뒤 작성.
+15. **`HLT_IsoTkMu*` / `HLT_L2DoubleMu*` per-era 분리** — 2017UL 에서 v9·v15 모두
+    dead 지만 파일이 Run2 4 개 era 공유라 삭제 불가. UL16 인벤토리 확인 후 분리.
+16. **8 개 CPV config 의 placeholder `jobID`** (`TEMP_..._v0`).
+
+### D. 그 밖
+
+17. **standalone C++ `TopCPVGenCategorizer` 는 v9 전용** — `GenPart_statusFlags` 가
+    v15 에서 `UShort_t` 라 `Int_t` `SetBranchAddress` 는 조용한 쓰레기 값을 냅니다.
+18. **`tempTTHH/include/eventBuffer.h`** — v15 ntuple 이 나온 뒤 `mkanalyzer` 로
+    재생성. 현재 헤더는 2017+2018 superset(HLT 583) 입니다.
+19. **TTHHGenCategoryTools 2018 `TTToSemiLeptonic` 검증 실패** 미해결
+    (467,498,000 vs 476,408,000). `ttnb_TTbar_SemiLep.root`(2018) 보류 중.
+20. **2018UL 확장, Run 3** — era table 의 Run 3 행은 UNVERIFIED 추정치입니다.
 
 ## Documentation
 - **2026-07-01:** docs restructured into per-workstream subdirs

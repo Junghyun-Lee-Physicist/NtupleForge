@@ -90,6 +90,13 @@ def main():
     ap.add_argument("--v9", required=True, help="module output from the v9 input")
     ap.add_argument("--v15", required=True, help="module output from the v15 input")
     ap.add_argument("--prefix", default="TopCPVCat_")
+    ap.add_argument("--alias", action="append", default=[], metavar="A=B",
+                    help="compare branch A in the v9 file against branch B in the "
+                         "v15 file (repeatable). For a passthrough ntuple the two "
+                         "versions do not share every name.")
+    ap.add_argument("--v9v15-renames", action="store_true",
+                    help="preload the measured v9->v15 renames as aliases "
+                         "(MET_*/Rho_*/Electron_mvaIso_*; docs/08 3.1)")
     ap.add_argument("--ftol", type=float, default=1e-4,
                     help="relative tolerance for float branches (default 1e-4)")
     ap.add_argument("--max-print", type=int, default=40)
@@ -109,16 +116,54 @@ def main():
 
     b9 = set(branch_names(t9, args.prefix))
     b15 = set(branch_names(t15, args.prefix))
-    common_br = sorted(b9 & b15)
-    only9 = sorted(b9 - b15)
-    only15 = sorted(b15 - b9)
+    # --- aliases: a renamed branch is the SAME quantity under two names -------
+    RENAMES = [
+        ("MET_pt", "PFMET_pt"), ("MET_phi", "PFMET_phi"),
+        ("MET_sumEt", "PFMET_sumEt"), ("MET_significance", "PFMET_significance"),
+        ("MET_covXX", "PFMET_covXX"), ("MET_covXY", "PFMET_covXY"),
+        ("MET_covYY", "PFMET_covYY"),
+        ("MET_fiducialGenPt", "FiducialMET_pt"),
+        ("MET_fiducialGenPhi", "FiducialMET_phi"),
+        ("RawMET_pt", "RawPFMET_pt"), ("RawMET_phi", "RawPFMET_phi"),
+        ("RawMET_sumEt", "RawPFMET_sumEt"),
+        ("TkMET_pt", "TrkMET_pt"), ("TkMET_phi", "TrkMET_phi"),
+        ("TkMET_sumEt", "TrkMET_sumEt"),
+        ("fixedGridRhoFastjetAll", "Rho_fixedGridRhoFastjetAll"),
+        ("fixedGridRhoFastjetCentral", "Rho_fixedGridRhoFastjetCentral"),
+        ("fixedGridRhoFastjetCentralCalo", "Rho_fixedGridRhoFastjetCentralCalo"),
+        ("fixedGridRhoFastjetCentralNeutral", "Rho_fixedGridRhoFastjetCentralNeutral"),
+        ("fixedGridRhoFastjetCentralChargedPileUp",
+         "Rho_fixedGridRhoFastjetCentralChargedPileUp"),
+        ("Electron_mvaFall17V2Iso", "Electron_mvaIso"),
+        ("Electron_mvaFall17V2Iso_WP80", "Electron_mvaIso_WP80"),
+        ("Electron_mvaFall17V2Iso_WP90", "Electron_mvaIso_WP90"),
+        ("Electron_mvaFall17V2Iso_WPL", "Electron_mvaIso_WPL"),
+        ("Electron_mvaFall17V2noIso", "Electron_mvaNoIso"),
+        ("Electron_mvaFall17V2noIso_WP80", "Electron_mvaNoIso_WP80"),
+        ("Electron_mvaFall17V2noIso_WP90", "Electron_mvaNoIso_WP90"),
+        ("Electron_mvaFall17V2noIso_WPL", "Electron_mvaNoIso_WPL"),
+    ]
+    pairs = [(b, b) for b in sorted(b9 & b15)]
+    aliased = []
+    alias_src = (RENAMES if args.v9v15_renames else []) + \
+                [tuple(a.split("=", 1)) for a in args.alias if "=" in a]
+    for a, b in alias_src:
+        if a in b9 and b in b15 and a != b:
+            pairs.append((a, b))
+            aliased.append("%s -> %s" % (a, b))
+    common_br = [p[0] for p in pairs]
+    alias_of = dict(pairs)
+    only9 = sorted(b9 - b15 - {a for a, _ in pairs})
+    only15 = sorted(b15 - b9 - {b for _, b in pairs})
 
     print("=" * 66)
     print("v9  file : %s   (%d entries, %d '%s' branches)"
           % (args.v9, t9.GetEntries(), len(b9), args.prefix))
     print("v15 file : %s   (%d entries, %d '%s' branches)"
           % (args.v15, t15.GetEntries(), len(b15), args.prefix))
-    print("compared : %d branches" % len(common_br))
+    print("compared : %d branches (%d via alias)" % (len(common_br), len(aliased)))
+    for a in aliased:
+        print("     alias %s" % a)
     if only9:
         print("  !! only in v9 output : %s" % ", ".join(only9))
     if only15:
@@ -159,14 +204,15 @@ def main():
         t15.GetEntry(idx15[k])
         bad_here = False
         for b in common_br:
-            if not equalish(getattr(t9, b), getattr(t15, b),
+            if not equalish(getattr(t9, b), getattr(t15, alias_of[b]),
                             args.ftol, b in float_br):
                 per_branch[b] = per_branch.get(b, 0) + 1
                 bad_here = True
                 if printed < args.max_print:
+                    tag = b if alias_of[b] == b else "%s/%s" % (b, alias_of[b])
                     print("  MISMATCH %s %s:\n      v9 =%s\n      v15=%s"
-                          % (k, b, as_list(getattr(t9, b)),
-                             as_list(getattr(t15, b))))
+                          % (k, tag, as_list(getattr(t9, b)),
+                             as_list(getattr(t15, alias_of[b]))))
                     printed += 1
         if bad_here:
             rows_bad += 1

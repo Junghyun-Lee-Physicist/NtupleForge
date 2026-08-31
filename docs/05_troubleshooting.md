@@ -440,6 +440,54 @@ are documented with the now-archived
 The current full-passthrough pipeline has no skim to measure; copy the tool
 back into `script/` if you reintroduce one.
 
+## A20 — Data 의 processing string 이 NanoAOD 버전마다 형태가 다르다 (2026-08-31)
+
+**증상.** `das_scan.sh --era 2017UL --nano v15` 가 Data 3 종을 전부 NOT_FOUND 로
+보고했습니다:
+
+```
+### DATA JetHT
+RESULT|JetHT|NOT_FOUND|0
+### DATA BTagCSV
+RESULT|BTagCSV|NOT_FOUND|0
+### DATA SingleMuon
+RESULT|SingleMuon|NOT_FOUND|0
+```
+
+여기서 "Run2 UL NanoAODv15 는 MC 전용 캠페인이므로 ttHH v15 분석은 불가능하다" 는
+결론이 나왔습니다. **틀렸습니다.**
+
+**원인.** era table 이 `DATA_PROC="UL2017_MiniAODv2_NanoAOD@V@"` 로 조립하는데,
+v15 는 그 자리에서 `MiniAODv2_` 를 **뺍니다**:
+
+```
+v9   /JetHT/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+v15  /JetHT/Run2017B-UL2017_NanoAODv15-v1/NANOAOD
+```
+
+즉 존재하지 않는 데이터셋을 조회한 것입니다. 실제로는 **Run2017B–F 전부**
+있습니다 (JetHT, BTagCSV; SingleMuon 은 B–H). MC 쪽 캠페인 접두(`@V@` 치환)는
+v9→v15 에서 형태가 같아 잘 동작했기 때문에 Data 쪽만 어긋난 것을 놓쳤습니다.
+
+**수정.** `scan_data()` 에 MC 경로가 이미 갖고 있던 것과 같은 relaxed 재조회를
+추가했습니다 — `_MiniAODv<N>_` 를 `*` 로 치환해 다시 조회하고, 그때는
+`RESULT|<key>|RELAXED|<n>` 으로 보고합니다. era table 주석에 위 두 줄을 실측으로
+박아 두었습니다.
+
+**규칙 — A19 와 같은 종류의 실수입니다.** 하나의 가정된 질의 패턴이 비었다는 것은
+**부재의 증거가 아닙니다.** `NOT_FOUND` 를 결론으로 쓰기 전에 최소한 한 번은 넓혀서
+확인하십시오:
+
+```bash
+dasgoclient -query="dataset=/<PD>/<RunEra>*<VER>*/NANOAOD"     # 형태 불문
+bash script/das_scan.sh --era <ERA> --probe                    # 캠페인 열거
+```
+
+2026-08-30~31 사이에 같은 실수를 세 번 했습니다: HLT 3 경로(A19), Data v15(여기),
+그리고 그 사이에 "TT4b 에 v15 가 없다" — 마지막 것만 재확인 후에도 참으로 남았습니다.
+
+---
+
 ## A19 — 한 파일의 인벤토리로 branch 의 "부재" 를 단정했다 (2026-08-30)
 
 **증상.** `check_branchlist.py --era 2017 --profile main` 이 v15 인벤토리에 대해

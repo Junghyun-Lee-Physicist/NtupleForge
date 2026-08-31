@@ -340,7 +340,100 @@ jetId 재계산 재료는 전부 존재합니다: `Jet_nConstituents`, `Jet_chMu
 
 ---
 
-## 9. 지금 상태
+## 8b. 2026-08-30 — ttHH 첫 v15 ntuple
+
+`config_ttHH*.yaml` 이 `modules/noop.py` (순수 passthrough) 를 쓰므로 v15 ntuple 에
+**모듈 코드 변경이 전혀 필요 없었습니다.** `branch_hadronic_2017_v15_MC.txt` 로
+20,000 event:
+
+```
+Error in <TTree::SetBranchStatus>: No branch name is matching wildcard -> btagWeight_*
+Total time 83.3 sec. to process 20000 events. Rate = 240.2 Hz.
+branches=664  events=20000  1.948 kB/event
+누락: 없음
+```
+
+입력 2.92 kB/event 대비 67 %. `check_branchlist --profile main` 으로 분석기가 읽는
+62 개를 대조한 결과 **60 개 생존, 3 개는 이미 인코딩된 rename, 대응이 없는 것은
+`Jet_jetId` / `Jet_puId` 둘뿐**입니다. `genTtbarId` 는 생존 — tt+HF 범주화 전체가
+걸린 branch 입니다.
+
+`btagWeight_*` 는 v15 에서 삭제됐으므로 dead 패턴입니다 (`gen_hadronic_branchlists.py`
+에서 고쳐야 함).
+
+크기 분해 (36.3 MB / 664 branch):
+
+```
+Jet 34.9 %   GenPart 20.4 %   Electron 9.1 %   Muon 7.8 %
+LHEPdfWeight 5.6 %   LHEPart 5.3 %   GenJet 4.9 %   HLT 1.7 %
+```
+
+Jet 의 상당 부분이 v15 신규 태거(`btagUParTAK4*`, `btagPNet*`, `*RegPtRaw*`)이고
+분석기는 DeepJet 만 씁니다 — 압축 여지는 "v15 에만 있고 분석기가 못 쓰는 것"입니다.
+
+---
+
+## 10. 2026-08-31 — v9 ↔ v15 데이터셋 가용성 전수 조사
+
+`das_scan.sh --workstream ttHH` 를 두 버전으로 돌려 registry 64 개를 대조했습니다.
+
+**중앙 v15 가 없는 것은 6 개뿐입니다:**
+
+| 키 | v9 | v15 |
+|---|---|---|
+| **`TTHHto4b`** (신호) | 9,934,000 ev / 0.033 TB | **없음** |
+| **`TT4b`** | 9,502,000 ev / 0.027 TB | **없음** |
+| `TTZHTo4b` | 2 datasets | 없음 |
+| `TTZZTo4b` | 2 datasets | 없음 |
+| `tHW` | 14,325,000 ev | 없음 |
+| `TTZToBB` | 7,074,000 ev | 없음 |
+
+`TTHHTo4b*` 는 전 캠페인 조회에서도 UL16/17/18 모두 **v9 가 최신**이고 HEFT 변종
+(c2-3, c2-6, c2-m1, kl-0p5, kl-2, kl-3, kt-2) 도 전부 같습니다 — 실제 부재입니다.
+
+**나머지는 전부 v15 가 있습니다**, stitching 용 `TTbb_4f` 3 종 포함. Data 도
+전부 있습니다 (A20 의 버그를 고친 뒤 확인): `JetHT`·`BTagCSV` Run2017B–F,
+`SingleMuon` Run2017B–H, plain 캠페인은 `UL2017_NanoAODv15-v1`.
+
+---
+
+## 11. 2026-08-30~31 — 이 캠페인이 남긴 도구
+
+| 도구 | 역할 |
+|---|---|
+| `script/setup_v9v15_validation.sh` | `source` 한 줄로 세션 복구 (cmsenv, pull, proxy, 변수, 입력, cut) + `nf_*` 명령 |
+| `script/compare_v9_v15.py` | event-matched 비교. 겹침 0 이면 "불일치 0" 이 아니라 exit 3. `--alias` / `--v9v15-renames` 로 rename 쌍까지 비교 |
+| `script/pair_v9_v15.py` | 샘플별 파일 페어링. DAS `file,lumi` 만 쓰므로 **파일을 열지 않음** |
+| `script/sweep_inventories.sh` + `inventory_manifest_2017UL.txt` | (tier × run era × 버전) 인벤토리 일괄 덤프 |
+| `script/branch_presence_matrix.py` | 인벤토리 교차표. MC-only / Data-only 는 자동 분류하고 **PARTIAL** 만 남김 |
+| `script/run_postproc.py --cut` | 검증 전용 preselection (공유 lumi 제한) |
+| `branches/branch_CPV_validation.txt` | 검증 전용 최소 목록, v9/v15 공용. 2.01 → 0.315 kB/event |
+| `branches/branch_CPV_Run2_MC_v15.txt` | 실측 인벤토리에서 유도한 v15 CPV 목록 |
+
+`branch_presence_matrix.py` 첫 실행이 PARTIAL 31 개를 보고했는데 19 개가 단순
+MC-only 였습니다 — `genWeight` 존재로 tier 를 실측 판정해 `MC-ONLY (expected)` 로
+분류하도록 고쳤습니다. 남는 12 개가 진짜 신호입니다 (v15 5 + HLT era 7).
+
+---
+
+## 12. 2026-08-31 — 방향 전환: enriched NanoAOD
+
+10 절의 결과가 방침을 바꿉니다. 결정 기록은
+`TTHHGenCategoryTools/docs/04_decisions.md` (D-DEP1 을 부분 번복) 에 있고, 요지만:
+
+- `TT4b` 는 tt+nb patch 행 약 200 만 중 **1,882,170 개**를 공급합니다 — sidecar
+  복잡도의 대부분이 여기서 나옵니다. 그리고 **v15 가 없어 어차피 사설 생산**해야
+  합니다.
+- Approach 2 (MiniAOD → 중앙과 동일한 NanoAOD + 추가 branch) 는 **이미 실증**됐습니다:
+  v7.2 (2026-05-28), 공통 1,665 branch 전부 sum-ratio 1.000.
+  (`TTHHGenCategoryTools/docs/10_enriched_nanoaod_archive.md`)
+- 당시 폐기 사유는 **storage 100 배**였는데, 그건 355 M event 짜리 ttbar 이야기이고
+  9.5 M event / 0.027 TB 짜리 TT4b 에는 적용되지 않습니다.
+
+⇒ **혼합**: ttbar 3 종은 sidecar 유지, `TT4b`·`TTHHto4b`·`TTZHTo4b`·`TTZZTo4b`·
+`tHW`·`TTZToBB` 는 enriched 사설 생산.
+
+## 13. 지금 상태
 
 **닫힘:** CPV gen categorizer의 v9→v15 동일성 (143,000 event × 61 branch, 비트 단위,
 불일치 0). 상세와 검증 사슬은 [08](08_branch_schema_migration.md) 6절.
