@@ -884,3 +884,40 @@ beam-parallel incoming legs (eta ±23000, pt 0) and asserts the sentinel.
 `crab resubmit` (the module is baked into the sandbox) — kill and submit a NEW
 task with the fixed module. No ntuples were produced by the failed jobs, so
 there is nothing stale to clean.
+
+
+## A21 — 비교기가 `nan` vs `nan` 을 불일치로 보고한다 (2026-08-31)
+
+**증상.** `script/compare_v9_v15.py` 가 enriched NanoAOD 와 중앙본을 비교하면서
+`events with >=1 disagreement: 2000 (100.0000 %)` 를 냈다. per-branch 는 딱 5 개:
+`HTXS_Higgs_y` 2000, `PuppiMET_{pt,phi}JER{Up,Down}` 각 5.
+
+**원인.** 양쪽 값이 모두 `nan` 이었다. IEEE 754 에서 `nan != nan` 이므로 `x == y` 와
+`abs(x-y) <= ftol*(...)` 가 **둘 다** False 를 낸다. 물리 불일치가 아니라 부동소수점
+규격의 인공물이다.
+
+- `HTXS_Higgs_y` — Higgs 가 없는 샘플에서 `HTXSRivetProducer` 가 rapidity 를 정의할 수
+  없다. `cmsRun` 로그에 `LogicError HTXSRivetProducer:rivetProducerHTXS@beginRun` 경고가
+  같이 나온다. **중앙본도 동일하게 `nan`**.
+- `PuppiMET_*JER*` — 일부 event 에서 JER 변주가 정의되지 않는다. 같은 event 의 명목값
+  `PuppiMET_pt`/`_phi` 와 `ptJESUp`·`ptUnclusteredUp`·`MET_pt`·`nJet`·`Jet_pt` 는 diff 0.
+
+**교훈이 두 개다.**
+
+1. `--ftol` 을 올려도 안 고쳐진다. NaN 은 tolerance 문제가 아니다. "float 이라 tolerance
+   문제겠지" 로 넘기면 **실제 불일치 0 인데 100 % 실패로 읽고 마이그레이션을 세운다.**
+   반대 방향의 위험도 같다 — 개수만 보고 "5 개 branch 만 다르네" 로 넘어갔다면 그 5 개가
+   진짜 차이인지 인공물인지 모른 채 남는다. **개수가 아니라 값을 찍어봐야 한다.**
+2. 도구의 float 판정이 이름 기반이다: `_pt`/`_eta`/`_phi`/`_mass`/`_energy` 로 끝나는
+   것만 float 로 보고 tolerance 를 적용한다. `PuppiMET_ptJERUp` 은 여기 안 걸려서
+   `--ftol` 과 무관하게 `==` 로 비교됐다. 즉 **대부분의 float 이 사실상 완전일치 비교**다.
+   byte-identity 검증에는 좋지만, 어디에 tolerance 가 적용되는지 착각하면 안 된다.
+
+**조치.** `equalish` 가 양쪽 NaN 을 agreement 로 처리하되 **branch 별 건수를 세어 끝에
+출력**한다. 조용히 통과시키지 않는다 (TTHHGenCategoryTools D16 의 "안전장치는 입력이
+없으면 통과가 아니라 실패해야 한다" 와 같은 원칙). NaN 대 숫자는 여전히 불일치다.
+
+같은 커밋에서 `index_by_eventid` 도 고쳤다 — key 3 개 branch 만 켜고 인덱싱한 뒤
+`finally` 로 복원. 640k entry × 1666 branch 를 전부 읽고 있어서 20m46s 중 거의 전부가
+거기였다. `finally` 가 중요하다: SetBranchStatus 가 꺼진 채로 값 loop 에 들어가면
+`GetEntry` 가 버퍼를 갱신하지 않아 **조용히 "일치" 로 보일 수 있다.**
