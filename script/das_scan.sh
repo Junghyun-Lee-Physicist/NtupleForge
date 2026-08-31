@@ -111,6 +111,17 @@ set -u
 # preVFP/postVFP split (NanoAODAPV / HIPM_) follows the standard UL naming.
 # For any version other than v9 these are BEST-GUESS TEMPLATES -- run --probe
 # and correct the table before trusting a scan.
+#
+# ⚠ THE DATA PROCESSING STRING IS NOT THE SAME SHAPE ACROSS VERSIONS.
+# v9  : /JetHT/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+# v15 : /JetHT/Run2017B-UL2017_NanoAODv15-v1/NANOAOD        <- no 'MiniAODv2_'
+# Substituting @V@ into the v9 template therefore asks for a dataset that does
+# not exist, and the scan reports NOT_FOUND for data that is in fact fully
+# available (all of Run2017B-F, JetHT and BTagCSV). That happened on
+# 2026-08-31 and produced the wrong conclusion "NanoAODv15 is an MC-only
+# campaign". scan_data() now falls back to a relaxed query the way the MC path
+# already did. See docs/05_troubleshooting.md A19 -- same class of error:
+# concluding absence from a single assumed query pattern.
 era_table () {
   case "$1" in
     2016preVFPUL)  MC_CAMPAIGN="RunIISummer20UL16NanoAODAPV@V@"
@@ -277,7 +288,23 @@ scan_data () {
     echo ""
     echo "### DATA ${pd}"
     local q="/${pd}/${DATA_RUNERA}*-${DATA_PROC}*/NANOAOD"
+    local how="EXACT"
     mapfile -t hits < <(dasgoclient -query "dataset=${q}" 2>/dev/null)
+
+    # Fallback, mirroring the MC path: the processing string is not the same
+    # shape across NanoAOD versions -- v9 carries '_MiniAODv2_', v15 does not.
+    # Drop that segment and retry before declaring the data missing.
+    if [[ ${#hits[@]} -eq 0 || -z "${hits[0]:-}" ]]; then
+        local relaxed_proc
+        relaxed_proc=$(printf '%s' "${DATA_PROC}" | sed -E 's/_MiniAODv[0-9]+_/*/')
+        if [[ "$relaxed_proc" != "${DATA_PROC}" ]]; then
+            q="/${pd}/${DATA_RUNERA}*-${relaxed_proc}*/NANOAOD"
+            echo "  (exact proc empty -> relaxed query: ${q})"
+            mapfile -t hits < <(dasgoclient -query "dataset=${q}" 2>/dev/null)
+            how="RELAXED"
+        fi
+    fi
+
     if [[ ${#hits[@]} -eq 0 || -z "${hits[0]:-}" ]]; then
         echo "RESULT|${key}|NOT_FOUND|0"
         return
@@ -288,7 +315,7 @@ scan_data () {
         das_summary "${key}" "$ds"
         n=$((n+1))
     done
-    echo "RESULT|${key}|EXACT|${n}"
+    echo "RESULT|${key}|${how}|${n}"
 }
 
 # -----------------------------------------------------------------------------
