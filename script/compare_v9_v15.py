@@ -59,13 +59,38 @@ def as_list(v):
         return [_elem(v)]
 
 
-def equalish(a, b, ftol, is_float):
+def _both_nan(x, y):
+    """IEEE 754: only NaN is unequal to itself."""
+    try:
+        return x != x and y != y
+    except TypeError:
+        return False
+
+
+def equalish(a, b, ftol, is_float, stats=None, name=None):
+    """NaN on BOTH sides counts as agreement; NaN vs a number does not.
+
+    Measured 2026-08-31 on TTbb_4f_TTToHadronic: HTXS_Higgs_y is NaN in every
+    event on both sides -- HTXSRivetProducer cannot define a Higgs rapidity for
+    a non-Higgs sample and says so at beginRun. Plain == made all 2000 events
+    "disagree" and the tool reported 100 %, an artefact of IEEE 754 and not a
+    v9/v15 difference. The skips are COUNTED in `stats` and printed at the end,
+    so this never silently weakens the check.
+    """
     a, b = as_list(a), as_list(b)
     if len(a) != len(b):
         return False
-    if is_float:
-        return all(abs(x - y) <= ftol * (1.0 + abs(y)) for x, y in zip(a, b))
-    return all(x == y for x, y in zip(a, b))
+    for x, y in zip(a, b):
+        if _both_nan(x, y):
+            if stats is not None and name is not None:
+                stats[name] = stats.get(name, 0) + 1
+            continue
+        if is_float:
+            if not abs(x - y) <= ftol * (1.0 + abs(y)):
+                return False
+        elif x != y:
+            return False
+    return True
 
 
 def branch_names(tree, prefix):
@@ -74,14 +99,28 @@ def branch_names(tree, prefix):
 
 
 def index_by_eventid(tree):
-    """(run, lumi, event) -> entry number. Duplicate keys are reported, not hidden."""
+    """(run, lumi, event) -> entry number. Duplicate keys are reported, not hidden.
+
+    Only the three key branches are read while indexing. On a 1666-branch
+    NanoAOD that is the difference between reading the whole file and reading
+    three baskets: indexing one 640k-event central file consumed almost all of a
+    20m46s run measured 2026-08-31. The status is ALWAYS restored in `finally`,
+    because a stale SetBranchStatus would leave the value loop reading buffers
+    that GetEntry never refreshes -- which would look like agreement.
+    """
     idx, dup = {}, 0
-    for i in range(tree.GetEntries()):
-        tree.GetEntry(i)
-        k = (int(tree.run), int(tree.luminosityBlock), int(tree.event))
-        if k in idx:
-            dup += 1
-        idx[k] = i
+    try:
+        tree.SetBranchStatus("*", 0)
+        for b in ("run", "luminosityBlock", "event"):
+            tree.SetBranchStatus(b, 1)
+        for i in range(tree.GetEntries()):
+            tree.GetEntry(i)
+            k = (int(tree.run), int(tree.luminosityBlock), int(tree.event))
+            if k in idx:
+                dup += 1
+            idx[k] = i
+    finally:
+        tree.SetBranchStatus("*", 1)
     return idx, dup
 
 
@@ -197,6 +236,7 @@ def main():
         sys.exit(3)
 
     per_branch = {}
+    nan_agree = {}
     rows_bad = 0
     printed = 0
     for k in common_ev:
@@ -205,7 +245,7 @@ def main():
         bad_here = False
         for b in common_br:
             if not equalish(getattr(t9, b), getattr(t15, alias_of[b]),
-                            args.ftol, b in float_br):
+                            args.ftol, b in float_br, nan_agree, b):
                 per_branch[b] = per_branch.get(b, 0) + 1
                 bad_here = True
                 if printed < args.max_print:
@@ -230,12 +270,19 @@ def main():
         "events_common": len(common_ev),
         "events_mismatched": rows_bad,
         "per_branch_mismatch": per_branch,
+        "nan_agree": nan_agree,
         "ftol": args.ftol,
     }
     if args.json:
         with open(args.json, "w") as fh:
             json.dump(summary, fh, indent=2)
         print("wrote %s" % args.json)
+
+    if nan_agree:
+        print("NaN on both sides -- counted as agreement (both undefined):")
+        for b, c in sorted(nan_agree.items(), key=lambda kv: -kv[1]):
+            print("  %-40s %d value comparisons" % (b, c))
+        print()
 
     if per_branch:
         print("per-branch disagreement counts:")
