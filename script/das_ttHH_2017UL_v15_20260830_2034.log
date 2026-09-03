@@ -1,0 +1,333 @@
+=========================================================================
+das_scan.sh   era=2017UL   nano=v15   2026-08-30T18:34:23Z
+  MC campaign prefix : RunIISummer20UL17NanoAODv15
+  Data era / proc    : Run2017* / UL2017_MiniAODv2_NanoAODv15*
+  registry           : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/samples_registry.txt
+  workstream filter  : ttHH
+=========================================================================
+META|era=2017UL|nano=v15|mc_campaign=RunIISummer20UL17NanoAODv15|data_runera=Run2017|data_proc=UL2017_MiniAODv2_NanoAODv15|registry=/afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/samples_registry.txt|workstream=ttHH|utc=2026-08-30T18:34:23Z
+### registry: 64 sample(s) selected for era=2017UL --workstream ttHH
+
+### MC TTHHto4b  (primary: TTHHTo4b_TuneCP5_13TeV-madgraph-pythia8)
+  (exact primary empty -> relaxed query: /TTHHTo4b*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+RESULT|TTHHto4b|NOT_FOUND|0
+
+### MC TTbar_SemiLep  (primary: TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8)
+DS|TTbar_SemiLep|/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v2/NANOAODSIM|nevents=355332000|nfiles=398|size_TB=1.116
+DS|TTbar_SemiLep|/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=355332000|nfiles=756|size_TB=2.032
+DS|TTbar_SemiLep|/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/NANOAODSIM|nevents=355332000|nfiles=1047|size_TB=3.570
+RESULT|TTbar_SemiLep|EXACT|3
+
+### MC TTbar_Hadronic  (primary: TTToHadronic_TuneCP5_13TeV-powheg-pythia8)
+DS|TTbar_Hadronic|/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v2/NANOAODSIM|nevents=235719999|nfiles=308|size_TB=0.745
+DS|TTbar_Hadronic|/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=235719999|nfiles=522|size_TB=1.394
+DS|TTbar_Hadronic|/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/NANOAODSIM|nevents=235719999|nfiles=931|size_TB=2.678
+RESULT|TTbar_Hadronic|EXACT|3
+
+### MC TTbar_DiLep  (primary: TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8)
+DS|TTbar_DiLep|/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v2/NANOAODSIM|nevents=106724000|nfiles=141|size_TB=0.326
+DS|TTbar_DiLep|/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=106724000|nfiles=249|size_TB=0.582
+DS|TTbar_DiLep|/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/NANOAODSIM|nevents=106294000|nfiles=316|size_TB=0.945
+RESULT|TTbar_DiLep|EXACT|3
+
+### MC TTbb_SemiLep  (primary: TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8)
+DS|TTbb_SemiLep|/TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=7318891|nfiles=11|size_TB=0.027
+RESULT|TTbb_SemiLep|EXACT|1
+
+### MC TTbb_Hadronic  (primary: TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8)
+DS|TTbb_Hadronic|/TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5694656|nfiles=11|size_TB=0.021
+RESULT|TTbb_Hadronic|EXACT|1
+
+### MC TTbb_DiLep  (primary: TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8)
+DS|TTbb_DiLep|/TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=3472503|nfiles=6|size_TB=0.012
+RESULT|TTbb_DiLep|EXACT|1
+
+### MC QCD_HT200to300  (primary: QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8)
+  (exact primary empty -> relaxed query: /QCD_HT200to300*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+DS|QCD_HT200to300|/QCD_HT200to300_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=42714435|nfiles=39|size_TB=0.078
+DS|QCD_HT200to300|/QCD_HT200to300_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=42714435|nfiles=73|size_TB=0.171
+RESULT|QCD_HT200to300|RELAXED|2
+
+### MC QCD_HT300to500  (primary: QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8)
+  (exact primary empty -> relaxed query: /QCD_HT300to500*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+DS|QCD_HT300to500|/QCD_HT300to500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=42560630|nfiles=49|size_TB=0.105
+DS|QCD_HT300to500|/QCD_HT300to500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=43589739|nfiles=103|size_TB=0.206
+RESULT|QCD_HT300to500|RELAXED|2
+
+### MC QCD_HT500to700  (primary: QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8)
+  (exact primary empty -> relaxed query: /QCD_HT500to700*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+DS|QCD_HT500to700|/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=36194860|nfiles=51|size_TB=0.118
+DS|QCD_HT500to700|/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=36194860|nfiles=90|size_TB=0.205
+RESULT|QCD_HT500to700|RELAXED|2
+
+### MC QCD_HT700to1000  (primary: QCD_HT700to1000_TuneCP5_13TeV-madgraphMLM-pythia8)
+  (exact primary empty -> relaxed query: /QCD_HT700to1000*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+DS|QCD_HT700to1000|/QCD_HT700to1000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=34051754|nfiles=51|size_TB=0.125
+DS|QCD_HT700to1000|/QCD_HT700to1000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=34051754|nfiles=87|size_TB=0.209
+RESULT|QCD_HT700to1000|RELAXED|2
+
+### MC QCD_HT1000to1500  (primary: QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8)
+  (exact primary empty -> relaxed query: /QCD_HT1000to1500*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+DS|QCD_HT1000to1500|/QCD_HT1000to1500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=10256089|nfiles=22|size_TB=0.041
+DS|QCD_HT1000to1500|/QCD_HT1000to1500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=10256089|nfiles=26|size_TB=0.067
+RESULT|QCD_HT1000to1500|RELAXED|2
+
+### MC QCD_HT1500to2000  (primary: QCD_HT1500to2000_TuneCP5_13TeV-madgraphMLM-pythia8)
+  (exact primary empty -> relaxed query: /QCD_HT1500to2000*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+DS|QCD_HT1500to2000|/QCD_HT1500to2000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=7701876|nfiles=17|size_TB=0.033
+DS|QCD_HT1500to2000|/QCD_HT1500to2000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=7701876|nfiles=30|size_TB=0.053
+RESULT|QCD_HT1500to2000|RELAXED|2
+
+### MC QCD_HT2000toInf  (primary: QCD_HT2000toInf_TuneCP5_13TeV-madgraphMLM-pythia8)
+  (exact primary empty -> relaxed query: /QCD_HT2000toInf*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+DS|QCD_HT2000toInf|/QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=4112573|nfiles=9|size_TB=0.019
+DS|QCD_HT2000toInf|/QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=4112573|nfiles=16|size_TB=0.029
+RESULT|QCD_HT2000toInf|RELAXED|2
+
+### MC ttHTobb  (primary: ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8)
+DS|ttHTobb|/ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=7825000|nfiles=17|size_TB=0.034
+RESULT|ttHTobb|EXACT|1
+
+### MC ttHToNonbb  (primary: ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8)
+DS|ttHToNonbb|/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5070989|nfiles=12|size_TB=0.022
+RESULT|ttHToNonbb|EXACT|1
+
+### MC tHq  (primary: THQ_ctcvcp_4f_Hincl_TuneCP5_13TeV_madgraph_pythia8)
+DS|tHq|/THQ_ctcvcp_4f_Hincl_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=29132984|nfiles=43|size_TB=0.098
+RESULT|tHq|EXACT|1
+
+### MC tHW  (primary: THW_ctcvcp_5f_Hincl_TuneCP5_13TeV_madgraph_pythia8)
+  (exact primary empty -> relaxed query: /THW_ctcvcp_5f_Hincl*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+RESULT|tHW|NOT_FOUND|0
+
+### MC TTZToBB  (primary: TTZToBB_TuneCP5_13TeV-amcatnlo-pythia8)
+  (exact primary empty -> relaxed query: /TTZToBB*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+RESULT|TTZToBB|NOT_FOUND|0
+
+### MC TTWJetsToQQ  (primary: TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8)
+DS|TTWJetsToQQ|/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=655018|nfiles=3|size_TB=0.003
+RESULT|TTWJetsToQQ|EXACT|1
+
+### MC TTWJetsToLNu  (primary: TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8)
+DS|TTWJetsToLNu|/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=7460671|nfiles=13|size_TB=0.031
+RESULT|TTWJetsToLNu|EXACT|1
+
+### MC TTZToLLNuNu  (primary: TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8)
+DS|TTZToLLNuNu|/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=14196000|nfiles=23|size_TB=0.055
+RESULT|TTZToLLNuNu|EXACT|1
+
+### MC TTZHTo4b  (primary: TTZHTo4b_TuneCP5_13TeV-madgraph-pythia8)
+  (exact primary empty -> relaxed query: /TTZHTo4b*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+RESULT|TTZHTo4b|NOT_FOUND|0
+
+### MC TTZZTo4b  (primary: TTZZTo4b_TuneCP5_13TeV-madgraph-pythia8)
+  (exact primary empty -> relaxed query: /TTZZTo4b*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+RESULT|TTZZTo4b|NOT_FOUND|0
+
+### MC TTWW  (primary: TTWW_TuneCP5_13TeV-madgraph-pythia8)
+DS|TTWW|/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=698000|nfiles=2|size_TB=0.003
+DS|TTWW|/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=9971000|nfiles=20|size_TB=0.047
+RESULT|TTWW|EXACT|2
+
+### MC TTWH  (primary: TTWH_TuneCP5_13TeV-madgraph-pythia8)
+DS|TTWH|/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=360000|nfiles=2|size_TB=0.002
+RESULT|TTWH|EXACT|1
+
+### MC TTWZ  (primary: TTWZ_TuneCP5_13TeV-madgraph-pythia8)
+DS|TTWZ|/TTWZ_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=350000|nfiles=1|size_TB=0.002
+RESULT|TTWZ|EXACT|1
+
+### MC TTTW  (primary: TTTW_TuneCP5_13TeV-madgraph-pythia8)
+  (exact primary empty -> relaxed query: /TTTW*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+DS|TTTW|/TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=3291000|nfiles=8|size_TB=0.018
+DS|TTTW|/TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=3389000|nfiles=8|size_TB=0.018
+RESULT|TTTW|RELAXED|2
+
+### MC TTTT  (primary: TTTT_TuneCP5_13TeV-amcatnlo-pythia8)
+DS|TTTT|/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=10351000|nfiles=26|size_TB=0.063
+RESULT|TTTT|EXACT|1
+
+### MC TT4b  (primary: TT4b_TuneCP5_13TeV_madgraph_pythia8)
+  (exact primary empty -> relaxed query: /TT4b*/RunIISummer20UL17NanoAODv15*/NANOAODSIM)
+RESULT|TT4b|NOT_FOUND|0
+
+### MC ST_t_top  (primary: ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8)
+DS|ST_t_top|/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=129903000|nfiles=136|size_TB=0.302
+DS|ST_t_top|/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=129903000|nfiles=239|size_TB=0.596
+DS|ST_t_top|/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/NANOAODSIM|nevents=129903000|nfiles=318|size_TB=0.944
+RESULT|ST_t_top|EXACT|3
+
+### MC ST_t_antitop  (primary: ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8)
+DS|ST_t_antitop|/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=69921000|nfiles=74|size_TB=0.163
+DS|ST_t_antitop|/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=69921000|nfiles=144|size_TB=0.318
+DS|ST_t_antitop|/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/NANOAODSIM|nevents=69921000|nfiles=179|size_TB=0.506
+RESULT|ST_t_antitop|EXACT|3
+
+### MC ST_tW_top  (primary: ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8)
+DS|ST_tW_top|/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5649000|nfiles=9|size_TB=0.016
+DS|ST_tW_top|/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/NANOAODSIM|nevents=5649000|nfiles=18|size_TB=0.051
+RESULT|ST_tW_top|EXACT|2
+
+### MC ST_tW_antitop  (primary: ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8)
+DS|ST_tW_antitop|/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5674000|nfiles=9|size_TB=0.016
+DS|ST_tW_antitop|/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/NANOAODSIM|nevents=5674000|nfiles=18|size_TB=0.052
+RESULT|ST_tW_antitop|EXACT|2
+
+### MC ST_s_lep  (primary: ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8)
+DS|ST_s_lep|/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=13882000|nfiles=19|size_TB=0.031
+DS|ST_s_lep|/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=13882000|nfiles=26|size_TB=0.060
+RESULT|ST_s_lep|EXACT|2
+
+### MC ST_s_had  (primary: ST_s-channel_4f_hadronicDecays_TuneCP5_13TeV-amcatnlo-pythia8)
+DS|ST_s_had|/ST_s-channel_4f_hadronicDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=11696999|nfiles=15|size_TB=0.026
+RESULT|ST_s_had|EXACT|1
+
+### MC WW  (primary: WW_TuneCP5_13TeV-pythia8)
+DS|WW|/WW_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=15634000|nfiles=16|size_TB=0.027
+DS|WW|/WW_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=15290000|nfiles=33|size_TB=0.058
+DS|WW|/WW_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/NANOAODSIM|nevents=15634000|nfiles=31|size_TB=0.082
+RESULT|WW|EXACT|3
+
+### MC WZ  (primary: WZ_TuneCP5_13TeV-pythia8)
+DS|WZ|/WZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=7889000|nfiles=10|size_TB=0.014
+DS|WZ|/WZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=7889000|nfiles=19|size_TB=0.030
+DS|WZ|/WZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v3/NANOAODSIM|nevents=7889000|nfiles=16|size_TB=0.043
+RESULT|WZ|EXACT|3
+
+### MC ZZ  (primary: ZZ_TuneCP5_13TeV-pythia8)
+DS|ZZ|/ZZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=2706000|nfiles=4|size_TB=0.005
+DS|ZZ|/ZZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=2706000|nfiles=6|size_TB=0.010
+DS|ZZ|/ZZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv15-BTVNanoV15_150X_mc2017_realistic_v1-v2/NANOAODSIM|nevents=2706000|nfiles=7|size_TB=0.015
+RESULT|ZZ|EXACT|3
+
+### MC WJetsToQQ_HT400to600  (primary: WJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToQQ_HT400to600|/WJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=9927793|nfiles=15|size_TB=0.030
+RESULT|WJetsToQQ_HT400to600|EXACT|1
+
+### MC WJetsToQQ_HT600to800  (primary: WJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToQQ_HT600to800|/WJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=14667933|nfiles=24|size_TB=0.053
+RESULT|WJetsToQQ_HT600to800|EXACT|1
+
+### MC WJetsToQQ_HT800toInf  (primary: WJetsToQQ_HT-800toInf_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToQQ_HT800toInf|/WJetsToQQ_HT-800toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=14722417|nfiles=24|size_TB=0.060
+RESULT|WJetsToQQ_HT800toInf|EXACT|1
+
+### MC ZJetsToQQ_HT400to600  (primary: ZJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|ZJetsToQQ_HT400to600|/ZJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=14884962|nfiles=26|size_TB=0.045
+RESULT|ZJetsToQQ_HT400to600|EXACT|1
+
+### MC ZJetsToQQ_HT600to800  (primary: ZJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|ZJetsToQQ_HT600to800|/ZJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=11702567|nfiles=18|size_TB=0.043
+RESULT|ZJetsToQQ_HT600to800|EXACT|1
+
+### MC ZJetsToQQ_HT800toInf  (primary: ZJetsToQQ_HT-800toInf_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|ZJetsToQQ_HT800toInf|/ZJetsToQQ_HT-800toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=9384525|nfiles=19|size_TB=0.039
+RESULT|ZJetsToQQ_HT800toInf|EXACT|1
+
+### MC WJetsToLNu_HT70To100  (primary: WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToLNu_HT70To100|/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=44736228|nfiles=40|size_TB=0.078
+DS|WJetsToLNu_HT70To100|/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=47501268|nfiles=43|size_TB=0.083
+DS|WJetsToLNu_HT70To100|/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=47501268|nfiles=79|size_TB=0.175
+RESULT|WJetsToLNu_HT70To100|EXACT|3
+
+### MC WJetsToLNu_HT100To200  (primary: WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToLNu_HT100To200|/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=46292124|nfiles=47|size_TB=0.092
+DS|WJetsToLNu_HT100To200|/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=49697704|nfiles=59|size_TB=0.099
+DS|WJetsToLNu_HT100To200|/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=49697704|nfiles=85|size_TB=0.199
+RESULT|WJetsToLNu_HT100To200|EXACT|3
+
+### MC WJetsToLNu_HT200To400  (primary: WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToLNu_HT200To400|/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=42602407|nfiles=49|size_TB=0.110
+DS|WJetsToLNu_HT200To400|/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=44483093|nfiles=47|size_TB=0.115
+DS|WJetsToLNu_HT200To400|/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=44483093|nfiles=106|size_TB=0.213
+RESULT|WJetsToLNu_HT200To400|EXACT|3
+
+### MC WJetsToLNu_HT400To600  (primary: WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToLNu_HT400To600|/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5468473|nfiles=10|size_TB=0.019
+DS|WJetsToLNu_HT400To600|/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=1435543|nfiles=3|size_TB=0.005
+DS|WJetsToLNu_HT400To600|/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=7073294|nfiles=11|size_TB=0.024
+DS|WJetsToLNu_HT400To600|/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=7073294|nfiles=20|size_TB=0.041
+RESULT|WJetsToLNu_HT400To600|EXACT|4
+
+### MC WJetsToLNu_HT600To800  (primary: WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToLNu_HT600To800|/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5545298|nfiles=10|size_TB=0.022
+DS|WJetsToLNu_HT600To800|/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=4481777|nfiles=10|size_TB=0.018
+DS|WJetsToLNu_HT600To800|/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=11350845|nfiles=21|size_TB=0.044
+DS|WJetsToLNu_HT600To800|/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=11092775|nfiles=28|size_TB=0.071
+RESULT|WJetsToLNu_HT600To800|EXACT|4
+
+### MC WJetsToLNu_HT800To1200  (primary: WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToLNu_HT800To1200|/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5088483|nfiles=10|size_TB=0.022
+DS|WJetsToLNu_HT800To1200|/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=3348141|nfiles=8|size_TB=0.014
+DS|WJetsToLNu_HT800To1200|/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=9826122|nfiles=18|size_TB=0.042
+DS|WJetsToLNu_HT800To1200|/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=9826122|nfiles=34|size_TB=0.066
+RESULT|WJetsToLNu_HT800To1200|EXACT|4
+
+### MC WJetsToLNu_HT1200To2500  (primary: WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToLNu_HT1200To2500|/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=4955636|nfiles=11|size_TB=0.023
+DS|WJetsToLNu_HT1200To2500|/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=3997268|nfiles=9|size_TB=0.019
+DS|WJetsToLNu_HT1200To2500|/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=10422803|nfiles=21|size_TB=0.048
+DS|WJetsToLNu_HT1200To2500|/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=10422803|nfiles=36|size_TB=0.075
+RESULT|WJetsToLNu_HT1200To2500|EXACT|4
+
+### MC WJetsToLNu_HT2500ToInf  (primary: WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8)
+DS|WJetsToLNu_HT2500ToInf|/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=1185699|nfiles=4|size_TB=0.006
+DS|WJetsToLNu_HT2500ToInf|/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext1-v1/NANOAODSIM|nevents=6713866|nfiles=15|size_TB=0.035
+DS|WJetsToLNu_HT2500ToInf|/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=10717381|nfiles=22|size_TB=0.056
+DS|WJetsToLNu_HT2500ToInf|/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1_ext2-v1/NANOAODSIM|nevents=10717381|nfiles=34|size_TB=0.083
+RESULT|WJetsToLNu_HT2500ToInf|EXACT|4
+
+### MC DYJetsToLL_M50_HT70to100  (primary: DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8)
+DS|DYJetsToLL_M50_HT70to100|/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=12205958|nfiles=15|size_TB=0.026
+DS|DYJetsToLL_M50_HT70to100|/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=12205958|nfiles=25|size_TB=0.050
+RESULT|DYJetsToLL_M50_HT70to100|EXACT|2
+
+### MC DYJetsToLL_M50_HT100to200  (primary: DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8)
+DS|DYJetsToLL_M50_HT100to200|/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=18955253|nfiles=23|size_TB=0.045
+DS|DYJetsToLL_M50_HT100to200|/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=18955253|nfiles=35|size_TB=0.085
+RESULT|DYJetsToLL_M50_HT100to200|EXACT|2
+
+### MC DYJetsToLL_M50_HT200to400  (primary: DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8)
+DS|DYJetsToLL_M50_HT200to400|/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=12513057|nfiles=22|size_TB=0.038
+DS|DYJetsToLL_M50_HT200to400|/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=12513057|nfiles=34|size_TB=0.067
+RESULT|DYJetsToLL_M50_HT200to400|EXACT|2
+
+### MC DYJetsToLL_M50_HT400to600  (primary: DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8)
+DS|DYJetsToLL_M50_HT400to600|/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5543804|nfiles=12|size_TB=0.022
+DS|DYJetsToLL_M50_HT400to600|/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5543804|nfiles=16|size_TB=0.035
+RESULT|DYJetsToLL_M50_HT400to600|EXACT|2
+
+### MC DYJetsToLL_M50_HT600to800  (primary: DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8)
+DS|DYJetsToLL_M50_HT600to800|/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5278417|nfiles=12|size_TB=0.023
+DS|DYJetsToLL_M50_HT600to800|/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=5278417|nfiles=18|size_TB=0.037
+RESULT|DYJetsToLL_M50_HT600to800|EXACT|2
+
+### MC DYJetsToLL_M50_HT800to1200  (primary: DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8)
+DS|DYJetsToLL_M50_HT800to1200|/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=4506887|nfiles=11|size_TB=0.021
+DS|DYJetsToLL_M50_HT800to1200|/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=4506887|nfiles=17|size_TB=0.033
+RESULT|DYJetsToLL_M50_HT800to1200|EXACT|2
+
+### MC DYJetsToLL_M50_HT1200to2500  (primary: DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8)
+DS|DYJetsToLL_M50_HT1200to2500|/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=4802716|nfiles=11|size_TB=0.024
+DS|DYJetsToLL_M50_HT1200to2500|/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=4802716|nfiles=18|size_TB=0.037
+RESULT|DYJetsToLL_M50_HT1200to2500|EXACT|2
+
+### MC DYJetsToLL_M50_HT2500toInf  (primary: DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8)
+DS|DYJetsToLL_M50_HT2500toInf|/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=1480047|nfiles=5|size_TB=0.008
+DS|DYJetsToLL_M50_HT2500toInf|/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv15-20UL17JMENano_150X_mc2017_realistic_v1-v1/NANOAODSIM|nevents=1480047|nfiles=5|size_TB=0.012
+RESULT|DYJetsToLL_M50_HT2500toInf|EXACT|2
+
+### DATA JetHT
+RESULT|JetHT|NOT_FOUND|0
+
+### DATA BTagCSV
+RESULT|BTagCSV|NOT_FOUND|0
+
+### DATA SingleMuon
+RESULT|SingleMuon|NOT_FOUND|0
+
+=========================================================================
+das_scan.sh DONE   era=2017UL nano=v15   MC=61 DATA=3   2026-08-30T18:38:15Z
+  next: python3 script/build_from_scan_log.py <this log>
+  NOTE: NOT_FOUND rows above do not fail this script. The builder does.
+=========================================================================

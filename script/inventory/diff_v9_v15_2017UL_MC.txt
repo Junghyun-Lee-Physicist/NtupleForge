@@ -1,0 +1,651 @@
+# Branch inventory diff
+#   A = 2017UL_v9_MC   (1676 branches)
+#   B = 2017UL_v15_MC   (1919 branches)
+
+## Removed in B (127)
+  -  Events/ChsMET_phi	Float_t
+  -  Events/ChsMET_pt	Float_t
+  -  Events/ChsMET_sumEt	Float_t
+  -  Events/Electron_cleanmask	UChar_t
+  -  Events/Electron_dEscaleDown	Float_t
+  -  Events/Electron_dEscaleUp	Float_t
+  -  Events/Electron_dEsigmaDown	Float_t
+  -  Events/Electron_dEsigmaUp	Float_t
+  -  Events/Electron_eCorr	Float_t
+  -  Events/Electron_mvaFall17V2Iso	Float_t
+  -  Events/Electron_mvaFall17V2Iso_WP80	Bool_t
+  -  Events/Electron_mvaFall17V2Iso_WP90	Bool_t
+  -  Events/Electron_mvaFall17V2Iso_WPL	Bool_t
+  -  Events/Electron_mvaFall17V2noIso	Float_t
+  -  Events/Electron_mvaFall17V2noIso_WP80	Bool_t
+  -  Events/Electron_mvaFall17V2noIso_WP90	Bool_t
+  -  Events/Electron_mvaFall17V2noIso_WPL	Bool_t
+  -  Events/Electron_mvaTTH	Float_t
+  -  Events/FatJet_btagCSVV2	Float_t
+  -  Events/FatJet_btagDDBvLV2	Float_t
+  -  Events/FatJet_btagDDCvBV2	Float_t
+  -  Events/FatJet_btagDDCvLV2	Float_t
+  -  Events/FatJet_btagDeepB	Float_t
+  -  Events/FatJet_btagHbb	Float_t
+  -  Events/FatJet_deepTagMD_H4qvsQCD	Float_t
+  -  Events/FatJet_deepTagMD_HbbvsQCD	Float_t
+  -  Events/FatJet_deepTagMD_TvsQCD	Float_t
+  -  Events/FatJet_deepTagMD_WvsQCD	Float_t
+  -  Events/FatJet_deepTagMD_ZHbbvsQCD	Float_t
+  -  Events/FatJet_deepTagMD_ZHccvsQCD	Float_t
+  -  Events/FatJet_deepTagMD_ZbbvsQCD	Float_t
+  -  Events/FatJet_deepTagMD_ZvsQCD	Float_t
+  -  Events/FatJet_deepTagMD_bbvsLight	Float_t
+  -  Events/FatJet_deepTagMD_ccvsLight	Float_t
+  -  Events/FatJet_deepTag_H	Float_t
+  -  Events/FatJet_deepTag_QCD	Float_t
+  -  Events/FatJet_deepTag_QCDothers	Float_t
+  -  Events/FatJet_deepTag_TvsQCD	Float_t
+  -  Events/FatJet_deepTag_WvsQCD	Float_t
+  -  Events/FatJet_deepTag_ZvsQCD	Float_t
+  -  Events/FatJet_jetId	Int_t
+  -  Events/FatJet_nBHadrons	UChar_t
+  -  Events/FatJet_nCHadrons	UChar_t
+  -  Events/FatJet_particleNetMD_QCD	Float_t
+  -  Events/FatJet_particleNetMD_Xbb	Float_t
+  -  Events/FatJet_particleNetMD_Xcc	Float_t
+  -  Events/FatJet_particleNetMD_Xqq	Float_t
+  -  Events/FatJet_particleNet_H4qvsQCD	Float_t
+  -  Events/FatJet_particleNet_HbbvsQCD	Float_t
+  -  Events/FatJet_particleNet_HccvsQCD	Float_t
+  -  Events/FatJet_particleNet_TvsQCD	Float_t
+  -  Events/FatJet_particleNet_WvsQCD	Float_t
+  -  Events/FatJet_particleNet_ZvsQCD	Float_t
+  -  Events/FatJet_particleNet_mass	Float_t
+  -  Events/Jet_bRegCorr	Float_t
+  -  Events/Jet_bRegRes	Float_t
+  -  Events/Jet_btagCSVV2	Float_t
+  -  Events/Jet_btagDeepB	Float_t
+  -  Events/Jet_btagDeepCvB	Float_t
+  -  Events/Jet_btagDeepCvL	Float_t
+  -  Events/Jet_cRegCorr	Float_t
+  -  Events/Jet_cRegRes	Float_t
+  -  Events/Jet_chFPV0EF	Float_t
+  -  Events/Jet_cleanmask	UChar_t
+  -  Events/Jet_jetId	Int_t
+  -  Events/Jet_puId	Int_t
+  -  Events/Jet_qgl	Float_t
+  -  Events/L1_UnprefireableEvent	Bool_t
+  -  Events/MET_MetUnclustEnUpDeltaX	Float_t
+  -  Events/MET_MetUnclustEnUpDeltaY	Float_t
+  -  Events/MET_covXX	Float_t
+  -  Events/MET_covXY	Float_t
+  -  Events/MET_covYY	Float_t
+  -  Events/MET_fiducialGenPhi	Float_t
+  -  Events/MET_fiducialGenPt	Float_t
+  -  Events/MET_phi	Float_t
+  -  Events/MET_pt	Float_t
+  -  Events/MET_significance	Float_t
+  -  Events/MET_sumEt	Float_t
+  -  Events/MET_sumPtUnclustered	Float_t
+  -  Events/Muon_cleanmask	UChar_t
+  -  Events/Muon_mvaId	UChar_t
+  -  Events/Muon_mvaLowPtId	UChar_t
+  -  Events/Muon_mvaTTH	Float_t
+  -  Events/Photon_charge	Int_t
+  -  Events/Photon_cleanmask	UChar_t
+  -  Events/Photon_cutBased_Fall17V1Bitmap	Int_t
+  -  Events/Photon_dEscaleDown	Float_t
+  -  Events/Photon_dEscaleUp	Float_t
+  -  Events/Photon_dEsigmaDown	Float_t
+  -  Events/Photon_dEsigmaUp	Float_t
+  -  Events/Photon_eCorr	Float_t
+  -  Events/Photon_mass	Float_t
+  -  Events/Photon_mvaID_Fall17V1p1	Float_t
+  -  Events/Photon_pdgId	Int_t
+  -  Events/PuppiMET_phiJERDown	Float_t
+  -  Events/PuppiMET_phiJERUp	Float_t
+  -  Events/PuppiMET_phiJESDown	Float_t
+  -  Events/PuppiMET_phiJESUp	Float_t
+  -  Events/PuppiMET_ptJERDown	Float_t
+  -  Events/PuppiMET_ptJERUp	Float_t
+  -  Events/PuppiMET_ptJESDown	Float_t
+  -  Events/PuppiMET_ptJESUp	Float_t
+  -  Events/RawMET_phi	Float_t
+  -  Events/RawMET_pt	Float_t
+  -  Events/RawMET_sumEt	Float_t
+  -  Events/SubJet_btagCSVV2	Float_t
+  -  Events/SubJet_btagDeepB	Float_t
+  -  Events/Tau_cleanmask	UChar_t
+  -  Events/Tau_idDeepTau2017v2p1VSe	UChar_t
+  -  Events/Tau_idDeepTau2017v2p1VSjet	UChar_t
+  -  Events/Tau_idDeepTau2017v2p1VSmu	UChar_t
+  -  Events/Tau_rawDeepTau2017v2p1VSe	Float_t
+  -  Events/Tau_rawDeepTau2017v2p1VSjet	Float_t
+  -  Events/Tau_rawDeepTau2017v2p1VSmu	Float_t
+  -  Events/TkMET_phi	Float_t
+  -  Events/TkMET_pt	Float_t
+  -  Events/TkMET_sumEt	Float_t
+  -  Events/boostedTau_idMVAoldDMdR032017v2	UChar_t
+  -  Events/boostedTau_rawMVAoldDMdR032017v2	Float_t
+  -  Events/btagWeight_CSVV2	Float_t
+  -  Events/btagWeight_DeepCSVB	Float_t
+  -  Events/fixedGridRhoFastjetAll	Float_t
+  -  Events/fixedGridRhoFastjetCentral	Float_t
+  -  Events/fixedGridRhoFastjetCentralCalo	Float_t
+  -  Events/fixedGridRhoFastjetCentralChargedPileUp	Float_t
+  -  Events/fixedGridRhoFastjetCentralNeutral	Float_t
+
+## Added in B (370)
+  +  Events/BeamSpot_sigmaZ	Float_t
+  +  Events/BeamSpot_sigmaZError	Float_t
+  +  Events/BeamSpot_type	Short_t
+  +  Events/BeamSpot_z	Float_t
+  +  Events/BeamSpot_zError	Float_t
+  +  Events/CorrT1METJet_EmEF	Float_t
+  +  Events/CorrT1METJet_muonSubtrDeltaEta	Float_t
+  +  Events/CorrT1METJet_muonSubtrDeltaPhi	Float_t
+  +  Events/CorrT1METJet_rawMass	Float_t
+  +  Events/DST_CaloJet40_BTagScouting	Bool_t
+  +  Events/DST_CaloJet40_CaloBTagScouting	Bool_t
+  +  Events/DST_CaloJet40_CaloScouting_PFScouting	Bool_t
+  +  Events/DST_DoubleMu3_noVtx_CaloScouting	Bool_t
+  +  Events/DST_DoubleMu3_noVtx_CaloScouting_Monitoring	Bool_t
+  +  Events/DST_HT250_CaloBTagScouting	Bool_t
+  +  Events/DST_HT250_CaloScouting	Bool_t
+  +  Events/DST_HT410_BTagScouting	Bool_t
+  +  Events/DST_HT410_PFScouting	Bool_t
+  +  Events/DST_L1DoubleMu_BTagScouting	Bool_t
+  +  Events/DST_L1DoubleMu_CaloScouting_PFScouting	Bool_t
+  +  Events/DST_L1HTT_BTagScouting	Bool_t
+  +  Events/DST_L1HTT_CaloBTagScouting	Bool_t
+  +  Events/DST_L1HTT_CaloScouting_PFScouting	Bool_t
+  +  Events/DST_ZeroBias_BTagScouting	Bool_t
+  +  Events/DST_ZeroBias_CaloScouting_PFScouting	Bool_t
+  +  Events/Electron_IPx	Float_t
+  +  Events/Electron_IPy	Float_t
+  +  Events/Electron_IPz	Float_t
+  +  Events/Electron_PreshowerEnergy	Float_t
+  +  Events/Electron_ecalEnergy	Float_t
+  +  Events/Electron_ecalEnergyError	Float_t
+  +  Events/Electron_fbrem	Float_t
+  +  Events/Electron_fsrPhotonIdx	Short_t
+  +  Events/Electron_gsfTrketaMode	Float_t
+  +  Events/Electron_gsfTrkpMode	Float_t
+  +  Events/Electron_gsfTrkpModeErr	Float_t
+  +  Events/Electron_gsfTrkphiMode	Float_t
+  +  Events/Electron_ipLengthSig	Float_t
+  +  Events/Electron_isEB	Bool_t
+  +  Events/Electron_isEcalDriven	Bool_t
+  +  Events/Electron_jetDF	Float_t
+  +  Events/Electron_mvaHZZIso	Float_t
+  +  Events/Electron_mvaIso	Float_t
+  +  Events/Electron_mvaIso_WP80	Bool_t
+  +  Events/Electron_mvaIso_WP90	Bool_t
+  +  Events/Electron_mvaIso_WPL	Bool_t
+  +  Events/Electron_mvaNoIso	Float_t
+  +  Events/Electron_mvaNoIso_WP80	Bool_t
+  +  Events/Electron_mvaNoIso_WP90	Bool_t
+  +  Events/Electron_mvaNoIso_WPL	Bool_t
+  +  Events/Electron_pfRelIso04_all	Float_t
+  +  Events/Electron_promptMVA	Float_t
+  +  Events/Electron_rawEnergy	Float_t
+  +  Events/Electron_seediEtaOriX	Short_t
+  +  Events/Electron_seediPhiOriY	Short_t
+  +  Events/Electron_superclusterEta	Float_t
+  +  Events/Electron_svIdx	Short_t
+  +  Events/FatJetPFCand_jetIdx	Int_t
+  +  Events/FatJetPFCand_pfCandIdx	Int_t
+  +  Events/FatJet_chEmEF	Float_t
+  +  Events/FatJet_chHEF	Float_t
+  +  Events/FatJet_chMultiplicity	Short_t
+  +  Events/FatJet_globalParT3_QCD	Float_t
+  +  Events/FatJet_globalParT3_TopbWev	Float_t
+  +  Events/FatJet_globalParT3_TopbWmv	Float_t
+  +  Events/FatJet_globalParT3_TopbWq	Float_t
+  +  Events/FatJet_globalParT3_TopbWqq	Float_t
+  +  Events/FatJet_globalParT3_TopbWtauhv	Float_t
+  +  Events/FatJet_globalParT3_WvsQCD	Float_t
+  +  Events/FatJet_globalParT3_XWW3q	Float_t
+  +  Events/FatJet_globalParT3_XWW4q	Float_t
+  +  Events/FatJet_globalParT3_XWWqqev	Float_t
+  +  Events/FatJet_globalParT3_XWWqqmv	Float_t
+  +  Events/FatJet_globalParT3_Xbb	Float_t
+  +  Events/FatJet_globalParT3_Xcc	Float_t
+  +  Events/FatJet_globalParT3_Xcs	Float_t
+  +  Events/FatJet_globalParT3_Xqq	Float_t
+  +  Events/FatJet_globalParT3_Xtauhtaue	Float_t
+  +  Events/FatJet_globalParT3_Xtauhtauh	Float_t
+  +  Events/FatJet_globalParT3_Xtauhtaum	Float_t
+  +  Events/FatJet_globalParT3_massCorrGeneric	Float_t
+  +  Events/FatJet_globalParT3_massCorrX2p	Float_t
+  +  Events/FatJet_globalParT3_withMassTopvsQCD	Float_t
+  +  Events/FatJet_globalParT3_withMassWvsQCD	Float_t
+  +  Events/FatJet_globalParT3_withMassZvsQCD	Float_t
+  +  Events/FatJet_hfEmEF	Float_t
+  +  Events/FatJet_hfHEF	Float_t
+  +  Events/FatJet_muEF	Float_t
+  +  Events/FatJet_neEmEF	Float_t
+  +  Events/FatJet_neHEF	Float_t
+  +  Events/FatJet_neMultiplicity	Short_t
+  +  Events/FatJet_particleNetLegacy_QCD	Float_t
+  +  Events/FatJet_particleNetLegacy_Xbb	Float_t
+  +  Events/FatJet_particleNetLegacy_Xcc	Float_t
+  +  Events/FatJet_particleNetLegacy_Xqq	Float_t
+  +  Events/FatJet_particleNetLegacy_mass	Float_t
+  +  Events/FatJet_particleNetWithMass_H4qvsQCD	Float_t
+  +  Events/FatJet_particleNetWithMass_HbbvsQCD	Float_t
+  +  Events/FatJet_particleNetWithMass_HccvsQCD	Float_t
+  +  Events/FatJet_particleNetWithMass_QCD	Float_t
+  +  Events/FatJet_particleNetWithMass_TvsQCD	Float_t
+  +  Events/FatJet_particleNetWithMass_WvsQCD	Float_t
+  +  Events/FatJet_particleNetWithMass_ZvsQCD	Float_t
+  +  Events/FatJet_particleNet_QCD0HF	Float_t
+  +  Events/FatJet_particleNet_QCD1HF	Float_t
+  +  Events/FatJet_particleNet_QCD2HF	Float_t
+  +  Events/FatJet_particleNet_WVsQCD	Float_t
+  +  Events/FatJet_particleNet_XbbVsQCD	Float_t
+  +  Events/FatJet_particleNet_XccVsQCD	Float_t
+  +  Events/FatJet_particleNet_XggVsQCD	Float_t
+  +  Events/FatJet_particleNet_XqqVsQCD	Float_t
+  +  Events/FatJet_particleNet_XteVsQCD	Float_t
+  +  Events/FatJet_particleNet_XtmVsQCD	Float_t
+  +  Events/FatJet_particleNet_XttVsQCD	Float_t
+  +  Events/FatJet_particleNet_massCorr	Float_t
+  +  Events/FiducialMET_phi	Float_t
+  +  Events/FiducialMET_pt	Float_t
+  +  Events/FsrPhoton_electronIdx	Short_t
+  +  Events/GenJetAK8_nBHadrons	UChar_t
+  +  Events/GenJetAK8_nCHadrons	UChar_t
+  +  Events/GenJet_nBHadrons	UChar_t
+  +  Events/GenJet_nCHadrons	UChar_t
+  +  Events/GenPart_iso	Float_t
+  +  Events/GenProton_isPU	Bool_t
+  +  Events/GenProton_px	Float_t
+  +  Events/GenProton_py	Float_t
+  +  Events/GenProton_pz	Float_t
+  +  Events/GenProton_vz	Float_t
+  +  Events/HTXS_Mjj	Float_t
+  +  Events/HTXS_V_pt	Float_t
+  +  Events/HTXS_dPhijj	Float_t
+  +  Events/HTXS_ptHjj	Float_t
+  +  Events/Jet_PNetRegPtRawCorr	Float_t
+  +  Events/Jet_PNetRegPtRawCorrNeutrino	Float_t
+  +  Events/Jet_PNetRegPtRawRes	Float_t
+  +  Events/Jet_UParTAK4RegPtRawCorr	Float_t
+  +  Events/Jet_UParTAK4RegPtRawCorrNeutrino	Float_t
+  +  Events/Jet_UParTAK4RegPtRawRes	Float_t
+  +  Events/Jet_UParTAK4V1RegPtRawCorr	Float_t
+  +  Events/Jet_UParTAK4V1RegPtRawCorrNeutrino	Float_t
+  +  Events/Jet_UParTAK4V1RegPtRawRes	Float_t
+  +  Events/Jet_btagPNetB	Float_t
+  +  Events/Jet_btagPNetCvB	Float_t
+  +  Events/Jet_btagPNetCvL	Float_t
+  +  Events/Jet_btagPNetCvNotB	Float_t
+  +  Events/Jet_btagPNetQvG	Float_t
+  +  Events/Jet_btagPNetTauVJet	Float_t
+  +  Events/Jet_btagUParTAK4B	Float_t
+  +  Events/Jet_btagUParTAK4CvB	Float_t
+  +  Events/Jet_btagUParTAK4CvL	Float_t
+  +  Events/Jet_btagUParTAK4CvNotB	Float_t
+  +  Events/Jet_btagUParTAK4Ele	Float_t
+  +  Events/Jet_btagUParTAK4Mu	Float_t
+  +  Events/Jet_btagUParTAK4QvG	Float_t
+  +  Events/Jet_btagUParTAK4SvCB	Float_t
+  +  Events/Jet_btagUParTAK4SvUDG	Float_t
+  +  Events/Jet_btagUParTAK4TauVJet	Float_t
+  +  Events/Jet_btagUParTAK4UDG	Float_t
+  +  Events/Jet_btagUParTAK4probb	Float_t
+  +  Events/Jet_btagUParTAK4probbb	Float_t
+  +  Events/Jet_chMultiplicity	UChar_t
+  +  Events/Jet_hfEmEF	Float_t
+  +  Events/Jet_hfHEF	Float_t
+  +  Events/Jet_muonSubtrDeltaEta	Float_t
+  +  Events/Jet_muonSubtrDeltaPhi	Float_t
+  +  Events/Jet_nSVs	UChar_t
+  +  Events/Jet_neMultiplicity	UChar_t
+  +  Events/Jet_svIdx1	Short_t
+  +  Events/Jet_svIdx2	Short_t
+  +  Events/L1_FinalOR_BXmin1	Bool_t
+  +  Events/L1_FinalOR_BXmin2	Bool_t
+  +  Events/L1_UnprefireableEvent_FirstBxInTrain	Bool_t
+  +  Events/L1_UnprefireableEvent_TriggerRules	Bool_t
+  +  Events/LHEPart_firstMotherIdx	Short_t
+  +  Events/LHEPart_lastMotherIdx	Short_t
+  +  Events/LowPtElectron_electronIdx	Short_t
+  +  Events/LowPtElectron_photonIdx	Short_t
+  +  Events/Muon_IPx	Float_t
+  +  Events/Muon_IPy	Float_t
+  +  Events/Muon_IPz	Float_t
+  +  Events/Muon_VXBS_Cov00	Float_t
+  +  Events/Muon_VXBS_Cov03	Float_t
+  +  Events/Muon_VXBS_Cov33	Float_t
+  +  Events/Muon_bestTrackType	UChar_t
+  +  Events/Muon_bsConstrainedChi2	Float_t
+  +  Events/Muon_bsConstrainedPt	Float_t
+  +  Events/Muon_bsConstrainedPtErr	Float_t
+  +  Events/Muon_dxybsErr	Float_t
+  +  Events/Muon_ipLengthSig	Float_t
+  +  Events/Muon_jetDF	Float_t
+  +  Events/Muon_mvaMuID	Float_t
+  +  Events/Muon_mvaMuID_WP	UChar_t
+  +  Events/Muon_pnScore_heavy	Float_t
+  +  Events/Muon_pnScore_light	Float_t
+  +  Events/Muon_pnScore_prompt	Float_t
+  +  Events/Muon_pnScore_tau	Float_t
+  +  Events/Muon_promptMVA	Float_t
+  +  Events/Muon_softMvaRun3	Float_t
+  +  Events/Muon_svIdx	Short_t
+  +  Events/Muon_tuneP_charge	Float_t
+  +  Events/Muon_tuneP_pterr	Float_t
+  +  Events/OtherPV_score	Float_t
+  +  Events/PFCand_eta	Float_t
+  +  Events/PFCand_mass	Float_t
+  +  Events/PFCand_pdgId	Int_t
+  +  Events/PFCand_phi	Float_t
+  +  Events/PFCand_pt	Float_t
+  +  Events/PFMET_covXX	Float_t
+  +  Events/PFMET_covXY	Float_t
+  +  Events/PFMET_covYY	Float_t
+  +  Events/PFMET_phi	Float_t
+  +  Events/PFMET_phiUnclusteredDown	Float_t
+  +  Events/PFMET_phiUnclusteredUp	Float_t
+  +  Events/PFMET_pt	Float_t
+  +  Events/PFMET_ptUnclusteredDown	Float_t
+  +  Events/PFMET_ptUnclusteredUp	Float_t
+  +  Events/PFMET_significance	Float_t
+  +  Events/PFMET_sumEt	Float_t
+  +  Events/PFMET_sumPtUnclustered	Float_t
+  +  Events/PVBS_chi2	Float_t
+  +  Events/PVBS_cov00	Float_t
+  +  Events/PVBS_cov10	Float_t
+  +  Events/PVBS_cov11	Float_t
+  +  Events/PVBS_cov20	Float_t
+  +  Events/PVBS_cov21	Float_t
+  +  Events/PVBS_cov22	Float_t
+  +  Events/PVBS_x	Float_t
+  +  Events/PVBS_y	Float_t
+  +  Events/PVBS_z	Float_t
+  +  Events/PV_sumpt2	Float_t
+  +  Events/PV_sumpx	Float_t
+  +  Events/PV_sumpy	Float_t
+  +  Events/Photon_ecalPFClusterIso	Float_t
+  +  Events/Photon_energyRaw	Float_t
+  +  Events/Photon_esEffSigmaRR	Float_t
+  +  Events/Photon_esEnergyOverRawE	Float_t
+  +  Events/Photon_etaWidth	Float_t
+  +  Events/Photon_haloTaggerMVAVal	Float_t
+  +  Events/Photon_hasConversionTracks	Bool_t
+  +  Events/Photon_hcalPFClusterIso	Float_t
+  +  Events/Photon_hoe_Tower	Float_t
+  +  Events/Photon_pfChargedIso	Float_t
+  +  Events/Photon_pfChargedIsoPFPV	Float_t
+  +  Events/Photon_pfChargedIsoWorstVtx	Float_t
+  +  Events/Photon_pfPhoIso03	Float_t
+  +  Events/Photon_phiWidth	Float_t
+  +  Events/Photon_s4	Float_t
+  +  Events/Photon_seediEtaOriX	Short_t
+  +  Events/Photon_seediPhiOriY	Short_t
+  +  Events/Photon_sieip	Float_t
+  +  Events/Photon_sipip	Float_t
+  +  Events/Photon_superclusterEta	Float_t
+  +  Events/Photon_trkSumPtHollowConeDR03	Float_t
+  +  Events/Photon_trkSumPtSolidConeDR04	Float_t
+  +  Events/Photon_x_calo	Float_t
+  +  Events/Photon_y_calo	Float_t
+  +  Events/Photon_z_calo	Float_t
+  +  Events/PuppiMET_covXX	Float_t
+  +  Events/PuppiMET_covXY	Float_t
+  +  Events/PuppiMET_covYY	Float_t
+  +  Events/PuppiMET_significance	Float_t
+  +  Events/PuppiMET_sumPtUnclustered	Float_t
+  +  Events/RawPFMET_phi	Float_t
+  +  Events/RawPFMET_pt	Float_t
+  +  Events/RawPFMET_sumEt	Float_t
+  +  Events/Rho_fixedGridRhoAll	Float_t
+  +  Events/Rho_fixedGridRhoFastjetAll	Float_t
+  +  Events/Rho_fixedGridRhoFastjetCentral	Float_t
+  +  Events/Rho_fixedGridRhoFastjetCentralCalo	Float_t
+  +  Events/Rho_fixedGridRhoFastjetCentralChargedPileUp	Float_t
+  +  Events/Rho_fixedGridRhoFastjetCentralNeutral	Float_t
+  +  Events/ScoutingCaloMuonOutput	Bool_t
+  +  Events/ScoutingPFOutput	Bool_t
+  +  Events/SubJet_UParTAK4RegPtRawCorr	Float_t
+  +  Events/SubJet_UParTAK4RegPtRawCorrNeutrino	Float_t
+  +  Events/SubJet_UParTAK4RegPtRawRes	Float_t
+  +  Events/SubJet_UParTAK4V1RegPtRawCorr	Float_t
+  +  Events/SubJet_UParTAK4V1RegPtRawCorrNeutrino	Float_t
+  +  Events/SubJet_UParTAK4V1RegPtRawRes	Float_t
+  +  Events/SubJet_area	Float_t
+  +  Events/SubJet_btagDeepFlavB	Float_t
+  +  Events/SubJet_btagUParTAK4B	Float_t
+  +  Events/SubJet_subGenJetAK8Idx	Short_t
+  +  Events/TauProd_eta	Float_t
+  +  Events/TauProd_pdgId	Int_t
+  +  Events/TauProd_phi	Float_t
+  +  Events/TauProd_pt	Float_t
+  +  Events/TauProd_tauIdx	Short_t
+  +  Events/TauSpinner_weight_cp_0	Double_t
+  +  Events/TauSpinner_weight_cp_0_alt	Double_t
+  +  Events/TauSpinner_weight_cp_0p25	Double_t
+  +  Events/TauSpinner_weight_cp_0p25_alt	Double_t
+  +  Events/TauSpinner_weight_cp_0p375	Double_t
+  +  Events/TauSpinner_weight_cp_0p375_alt	Double_t
+  +  Events/TauSpinner_weight_cp_0p5	Double_t
+  +  Events/TauSpinner_weight_cp_0p5_alt	Double_t
+  +  Events/TauSpinner_weight_cp_minus0p25	Double_t
+  +  Events/TauSpinner_weight_cp_minus0p25_alt	Double_t
+  +  Events/Tau_IPx	Float_t
+  +  Events/Tau_IPy	Float_t
+  +  Events/Tau_IPz	Float_t
+  +  Events/Tau_decayModePNet	Short_t
+  +  Events/Tau_decayModeUParT	Short_t
+  +  Events/Tau_eleIdx	Short_t
+  +  Events/Tau_hasRefitSV	Bool_t
+  +  Events/Tau_idDecayModeNewDMs	Bool_t
+  +  Events/Tau_idDeepTau2018v2p5VSe	UChar_t
+  +  Events/Tau_idDeepTau2018v2p5VSjet	UChar_t
+  +  Events/Tau_idDeepTau2018v2p5VSmu	UChar_t
+  +  Events/Tau_ipLengthSig	Float_t
+  +  Events/Tau_muIdx	Short_t
+  +  Events/Tau_nSVs	UChar_t
+  +  Events/Tau_probDM0PNet	Float_t
+  +  Events/Tau_probDM0UParT	Float_t
+  +  Events/Tau_probDM10PNet	Float_t
+  +  Events/Tau_probDM10UParT	Float_t
+  +  Events/Tau_probDM11PNet	Float_t
+  +  Events/Tau_probDM11UParT	Float_t
+  +  Events/Tau_probDM1PNet	Float_t
+  +  Events/Tau_probDM1UParT	Float_t
+  +  Events/Tau_probDM2PNet	Float_t
+  +  Events/Tau_probDM2UParT	Float_t
+  +  Events/Tau_ptCorrPNet	Float_t
+  +  Events/Tau_ptCorrUParT	Float_t
+  +  Events/Tau_qConfPNet	Float_t
+  +  Events/Tau_qConfUParT	Float_t
+  +  Events/Tau_rawDeepTau2018v2p5VSe	Float_t
+  +  Events/Tau_rawDeepTau2018v2p5VSjet	Float_t
+  +  Events/Tau_rawDeepTau2018v2p5VSmu	Float_t
+  +  Events/Tau_rawPNetVSe	Float_t
+  +  Events/Tau_rawPNetVSjet	Float_t
+  +  Events/Tau_rawPNetVSmu	Float_t
+  +  Events/Tau_rawUParTVSe	Float_t
+  +  Events/Tau_rawUParTVSjet	Float_t
+  +  Events/Tau_rawUParTVSmu	Float_t
+  +  Events/Tau_refitSVchi2	Float_t
+  +  Events/Tau_refitSVcov00	Float_t
+  +  Events/Tau_refitSVcov10	Float_t
+  +  Events/Tau_refitSVcov11	Float_t
+  +  Events/Tau_refitSVcov20	Float_t
+  +  Events/Tau_refitSVcov21	Float_t
+  +  Events/Tau_refitSVcov22	Float_t
+  +  Events/Tau_refitSVx	Float_t
+  +  Events/Tau_refitSVy	Float_t
+  +  Events/Tau_refitSVz	Float_t
+  +  Events/Tau_svIdx1	Short_t
+  +  Events/Tau_svIdx2	Short_t
+  +  Events/TrackGenJetAK4_eta	Float_t
+  +  Events/TrackGenJetAK4_phi	Float_t
+  +  Events/TrackGenJetAK4_pt	Float_t
+  +  Events/TrkMET_phi	Float_t
+  +  Events/TrkMET_pt	Float_t
+  +  Events/TrkMET_sumEt	Float_t
+  +  Events/boostedTau_rawBoostedDeepTauRunIIv2p0VSe	Float_t
+  +  Events/boostedTau_rawBoostedDeepTauRunIIv2p0VSjet	Float_t
+  +  Events/boostedTau_rawBoostedDeepTauRunIIv2p0VSmu	Float_t
+  +  Events/bunchCrossing	UInt_t
+  +  Events/nFatJetPFCand	Int_t
+  +  Events/nGenProton	Int_t
+  +  Events/nPFCand	Int_t
+  +  Events/nPVBS	Int_t
+  +  Events/nTauProd	Int_t
+  +  Events/nTrackGenJetAK4	Int_t
+  +  Events/orbitNumber	UInt_t
+  +  LuminosityBlocks/GenFilter_filterEfficiency	Float_t
+  +  LuminosityBlocks/GenFilter_filterEfficiencyError	Float_t
+  +  LuminosityBlocks/GenFilter_numEventsPassed	Int_t
+  +  LuminosityBlocks/GenFilter_numEventsTotal	Int_t
+  +  Runs/PSSumw	Double_t
+  +  Runs/nPSSumw	Int_t
+
+## Type changed (86)
+  ~  Events/Electron_cutBased	Int_t -> UChar_t
+  ~  Events/Electron_genPartIdx	Int_t -> Short_t
+  ~  Events/Electron_jetIdx	Int_t -> Short_t
+  ~  Events/Electron_photonIdx	Int_t -> Short_t
+  ~  Events/Electron_tightCharge	Int_t -> UChar_t
+  ~  Events/FatJet_electronIdx3SJ	Int_t -> Short_t
+  ~  Events/FatJet_genJetAK8Idx	Int_t -> Short_t
+  ~  Events/FatJet_hadronFlavour	Int_t -> UChar_t
+  ~  Events/FatJet_muonIdx3SJ	Int_t -> Short_t
+  ~  Events/FatJet_subJetIdx1	Int_t -> Short_t
+  ~  Events/FatJet_subJetIdx2	Int_t -> Short_t
+  ~  Events/FsrPhoton_muonIdx	Int_t -> Short_t
+  ~  Events/GenJetAK8_partonFlavour	Int_t -> Short_t
+  ~  Events/GenJet_partonFlavour	Int_t -> Short_t
+  ~  Events/GenPart_genPartIdxMother	Int_t -> Short_t
+  ~  Events/GenPart_statusFlags	Int_t -> UShort_t
+  ~  Events/GenVisTau_charge	Int_t -> Short_t
+  ~  Events/GenVisTau_genPartIdxMother	Int_t -> Short_t
+  ~  Events/GenVisTau_status	Int_t -> UChar_t
+  ~  Events/IsoTrack_charge	Int_t -> Short_t
+  ~  Events/IsoTrack_fromPV	Int_t -> Short_t
+  ~  Events/Jet_electronIdx1	Int_t -> Short_t
+  ~  Events/Jet_electronIdx2	Int_t -> Short_t
+  ~  Events/Jet_genJetIdx	Int_t -> Short_t
+  ~  Events/Jet_hadronFlavour	Int_t -> UChar_t
+  ~  Events/Jet_muonIdx1	Int_t -> Short_t
+  ~  Events/Jet_muonIdx2	Int_t -> Short_t
+  ~  Events/Jet_nElectrons	Int_t -> UChar_t
+  ~  Events/Jet_nMuons	Int_t -> UChar_t
+  ~  Events/Jet_partonFlavour	Int_t -> Short_t
+  ~  Events/LowPtElectron_convWP	Int_t -> UChar_t
+  ~  Events/LowPtElectron_genPartIdx	Int_t -> Short_t
+  ~  Events/Muon_fsrPhotonIdx	Int_t -> Short_t
+  ~  Events/Muon_genPartIdx	Int_t -> Short_t
+  ~  Events/Muon_jetIdx	Int_t -> Short_t
+  ~  Events/Muon_nStations	Int_t -> UChar_t
+  ~  Events/Muon_nTrackerLayers	Int_t -> UChar_t
+  ~  Events/Muon_tightCharge	Int_t -> UChar_t
+  ~  Events/PV_npvs	Int_t -> UChar_t
+  ~  Events/PV_npvsGood	Int_t -> UChar_t
+  ~  Events/Photon_cutBased	Int_t -> UChar_t
+  ~  Events/Photon_electronIdx	Int_t -> Short_t
+  ~  Events/Photon_genPartIdx	Int_t -> Short_t
+  ~  Events/Photon_jetIdx	Int_t -> Short_t
+  ~  Events/SV_charge	Int_t -> Short_t
+  ~  Events/SubJet_hadronFlavour	Int_t -> UChar_t
+  ~  Events/Tau_charge	Int_t -> Short_t
+  ~  Events/Tau_decayMode	Int_t -> UChar_t
+  ~  Events/Tau_genPartIdx	Int_t -> Short_t
+  ~  Events/Tau_jetIdx	Int_t -> Short_t
+  ~  Events/TrigObj_filterBits	Int_t -> ULong64_t
+  ~  Events/TrigObj_id	Int_t -> UShort_t
+  ~  Events/TrigObj_l1charge	Int_t -> Short_t
+  ~  Events/boostedTau_genPartIdx	Int_t -> Short_t
+  ~  Events/boostedTau_jetIdx	Int_t -> Short_t
+  ~  Events/boostedTau_rawAntiEleCat2018	Int_t -> Short_t
+  ~  Events/nCorrT1METJet	UInt_t -> Int_t
+  ~  Events/nElectron	UInt_t -> Int_t
+  ~  Events/nFatJet	UInt_t -> Int_t
+  ~  Events/nFsrPhoton	UInt_t -> Int_t
+  ~  Events/nGenDressedLepton	UInt_t -> Int_t
+  ~  Events/nGenIsolatedPhoton	UInt_t -> Int_t
+  ~  Events/nGenJet	UInt_t -> Int_t
+  ~  Events/nGenJetAK8	UInt_t -> Int_t
+  ~  Events/nGenPart	UInt_t -> Int_t
+  ~  Events/nGenVisTau	UInt_t -> Int_t
+  ~  Events/nIsoTrack	UInt_t -> Int_t
+  ~  Events/nJet	UInt_t -> Int_t
+  ~  Events/nLHEPart	UInt_t -> Int_t
+  ~  Events/nLHEPdfWeight	UInt_t -> Int_t
+  ~  Events/nLHEReweightingWeight	UInt_t -> Int_t
+  ~  Events/nLHEScaleWeight	UInt_t -> Int_t
+  ~  Events/nLowPtElectron	UInt_t -> Int_t
+  ~  Events/nMuon	UInt_t -> Int_t
+  ~  Events/nOtherPV	UInt_t -> Int_t
+  ~  Events/nPSWeight	UInt_t -> Int_t
+  ~  Events/nPhoton	UInt_t -> Int_t
+  ~  Events/nSV	UInt_t -> Int_t
+  ~  Events/nSoftActivityJet	UInt_t -> Int_t
+  ~  Events/nSubGenJetAK8	UInt_t -> Int_t
+  ~  Events/nSubJet	UInt_t -> Int_t
+  ~  Events/nTau	UInt_t -> Int_t
+  ~  Events/nTrigObj	UInt_t -> Int_t
+  ~  Events/nboostedTau	UInt_t -> Int_t
+  ~  Runs/nLHEPdfSumw	UInt_t -> Int_t
+  ~  Runs/nLHEScaleSumw	UInt_t -> Int_t
+
+## Rename candidates (a removed branch whose name is a suffix/substring
+## of an added one, or vice versa). HEURISTIC -- confirm each by hand.
+  ?  ChsMET_phi  ->  FiducialMET_phi
+  ?  ChsMET_pt  ->  FiducialMET_pt
+  ?  ChsMET_sumEt  ->  PFMET_sumEt
+  ?  Electron_mvaFall17V2Iso_WP80  ->  Electron_mvaIso_WP80
+  ?  Electron_mvaFall17V2Iso_WP90  ->  Electron_mvaIso_WP90
+  ?  Electron_mvaFall17V2Iso_WPL  ->  Electron_mvaIso_WPL
+  ?  Electron_mvaFall17V2noIso_WP80  ->  Electron_mvaIso_WP80
+  ?  Electron_mvaFall17V2noIso_WP90  ->  Electron_mvaIso_WP90
+  ?  Electron_mvaFall17V2noIso_WPL  ->  Electron_mvaIso_WPL
+  ?  FatJet_deepTagMD_H4qvsQCD  ->  FatJet_particleNetWithMass_H4qvsQCD
+  ?  FatJet_deepTagMD_HbbvsQCD  ->  FatJet_particleNetWithMass_HbbvsQCD
+  ?  FatJet_deepTagMD_TvsQCD  ->  FatJet_particleNetWithMass_TvsQCD
+  ?  FatJet_deepTagMD_WvsQCD  ->  FatJet_globalParT3_WvsQCD
+  ?  FatJet_deepTagMD_ZvsQCD  ->  FatJet_particleNetWithMass_ZvsQCD
+  ?  FatJet_deepTag_QCD  ->  FatJet_globalParT3_QCD
+  ?  FatJet_deepTag_TvsQCD  ->  FatJet_particleNetWithMass_TvsQCD
+  ?  FatJet_deepTag_WvsQCD  ->  FatJet_globalParT3_WvsQCD
+  ?  FatJet_deepTag_ZvsQCD  ->  FatJet_particleNetWithMass_ZvsQCD
+  ?  FatJet_nBHadrons  ->  GenJetAK8_nBHadrons
+  ?  FatJet_nCHadrons  ->  GenJetAK8_nCHadrons
+  ?  FatJet_particleNetMD_QCD  ->  FatJet_globalParT3_QCD
+  ?  FatJet_particleNetMD_Xbb  ->  FatJet_globalParT3_Xbb
+  ?  FatJet_particleNetMD_Xcc  ->  FatJet_globalParT3_Xcc
+  ?  FatJet_particleNetMD_Xqq  ->  FatJet_globalParT3_Xqq
+  ?  FatJet_particleNet_H4qvsQCD  ->  FatJet_particleNetWithMass_H4qvsQCD
+  ?  FatJet_particleNet_HbbvsQCD  ->  FatJet_particleNetWithMass_HbbvsQCD
+  ?  FatJet_particleNet_HccvsQCD  ->  FatJet_particleNetWithMass_HccvsQCD
+  ?  FatJet_particleNet_TvsQCD  ->  FatJet_particleNetWithMass_TvsQCD
+  ?  FatJet_particleNet_WvsQCD  ->  FatJet_globalParT3_WvsQCD
+  ?  FatJet_particleNet_ZvsQCD  ->  FatJet_particleNetWithMass_ZvsQCD
+  ?  FatJet_particleNet_mass  ->  FatJet_particleNetLegacy_mass
+  ?  L1_UnprefireableEvent  ->  L1_UnprefireableEvent_FirstBxInTrain
+  ?  MET_covXX  ->  PFMET_covXX
+  ?  MET_covXY  ->  PFMET_covXY
+  ?  MET_covYY  ->  PFMET_covYY
+  ?  MET_phi  ->  FiducialMET_phi
+  ?  MET_pt  ->  FiducialMET_pt
+  ?  MET_significance  ->  PFMET_significance
+  ?  MET_sumEt  ->  PFMET_sumEt
+  ?  MET_sumPtUnclustered  ->  PFMET_sumPtUnclustered
+  ?  Photon_charge  ->  Muon_tuneP_charge
+  ?  Photon_mass  ->  FatJet_particleNetLegacy_mass
+  ?  Photon_pdgId  ->  PFCand_pdgId
+  ?  RawMET_phi  ->  FiducialMET_phi
+  ?  RawMET_pt  ->  FiducialMET_pt
+  ?  RawMET_sumEt  ->  PFMET_sumEt
+  ?  TkMET_phi  ->  FiducialMET_phi
+  ?  TkMET_pt  ->  FiducialMET_pt
+  ?  TkMET_sumEt  ->  PFMET_sumEt
+  ?  fixedGridRhoFastjetAll  ->  Rho_fixedGridRhoFastjetAll
+  ?  fixedGridRhoFastjetCentral  ->  Rho_fixedGridRhoFastjetCentral
+  ?  fixedGridRhoFastjetCentralCalo  ->  Rho_fixedGridRhoFastjetCentralCalo
+  ?  fixedGridRhoFastjetCentralChargedPileUp  ->  Rho_fixedGridRhoFastjetCentralChargedPileUp
+  ?  fixedGridRhoFastjetCentralNeutral  ->  Rho_fixedGridRhoFastjetCentralNeutral
+
+## Summary: 127 removed, 370 added, 86 retyped
