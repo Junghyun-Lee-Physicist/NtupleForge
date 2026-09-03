@@ -1,0 +1,15 @@
+{
+ "nano": "forged_v9_test.root",
+ "gencat": "../TopCPVGenCategorizer/gencat_v9_test.root",
+ "ftol": 0.0001,
+ "n_matched": 2000,
+ "n_rows_mismatched": 0,
+ "n_unmatched_gencat_only": 0,
+ "n_unmatched_events_only": 0,
+ "n_gencat_branches": 64,
+ "n_compared": 61,
+ "uncompared": [],
+ "missing": [],
+ "per_branch_fail": {},
+ "exit_code": 0
+}
