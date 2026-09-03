@@ -427,19 +427,50 @@ MC-only 였습니다 — `genWeight` 존재로 tier 를 실측 판정해 `MC-ONL
 - Approach 2 (MiniAOD → 중앙과 동일한 NanoAOD + 추가 branch) 는 **이미 실증**됐습니다:
   v7.2 (2026-05-28), 공통 1,665 branch 전부 sum-ratio 1.000.
   (`TTHHGenCategoryTools/docs/10_enriched_nanoaod_archive.md`)
-- 당시 폐기 사유는 **storage 100 배**였는데, 그건 355 M event 짜리 ttbar 이야기이고
-  9.5 M event / 0.027 TB 짜리 TT4b 에는 적용되지 않습니다.
+- 당시 폐기 사유는 **storage 100 배**였습니다. *(2026-08-31 같은 날 정정)* 이 문장을 처음엔
+  "TT4b 는 작아서 해당 없다" 고 썼는데 **틀렸습니다** — TT4b 도 enriched 약 27 GB 대 sidecar 약 0.3 GB 로
+  상대 배율은 여전히 ~90 배입니다. 바뀐 것은 배율이 아니라 **비교 대상**입니다: D1 의 100 배는
+  "중앙본을 복제" 하는 비용이었고, 이 6 샘플은 **복제할 중앙 v15 자체가 없습니다.** 중복이 아니라
+  유일본의 비용입니다. TTHHGenCategoryTools D17 근거 2.
 
 ⇒ **혼합**: ttbar 3 종은 sidecar 유지, `TT4b`·`TTHHto4b`·`TTZHTo4b`·`TTZZTo4b`·
 `tHW`·`TTZToBB` 는 enriched 사설 생산.
 
-## 13. 지금 상태
+## 13. 지금 상태 (2026-09-02)
 
-**닫힘:** CPV gen categorizer의 v9→v15 동일성 (143,000 event × 61 branch, 비트 단위,
-불일치 0). 상세와 검증 사슬은 [08](08_branch_schema_migration.md) 6절.
+**닫힘 (NtupleForge 쪽):** CPV gen categorizer 의 v9→v15 동일성 (143,000 event × 61 branch, 비트 단위,
+불일치 0) — [08](08_branch_schema_migration.md) 6 절. 데이터셋 가용성 전수 조사 — 10 절.
 
-**남은 것:** [01_STATUS](01_STATUS.md)의 OPEN 절이 단일 출처입니다. 요약하면 —
-다른 ttbar 샘플(`TTToHadronic`, `TTTo2L2Nu`)의 코드 경로 미검증, Data tier 미검증,
-ttHH branch 목록의 dead 패턴 정리와 첫 v15 ntuple 생산, analyzer 쪽 jetId/puId
-재계산, `Expanded_genTtbarId`의 ntuple forge 단계 통합, 2018UL·Run3 확장,
-TT4b v15 부재에 따른 사설 생산.
+**닫힘 (TTHHGenCategoryTools 쪽, 이 캠페인이 촉발):** enriched NanoAOD 경로가 v9 에서 **값 단위로 증명**됐고
+v15 에서 스키마까지 통과했다 — 14 절.
+
+**남은 것:** [01_STATUS](01_STATUS.md) OPEN 절이 단일 출처다. 그룹 A(enriched 통합: `job_type: cmsrun`,
+`units_per_job`, 적용 순서, 컬럼 이름 결정), B(ttHH v15 passthrough 잔여), C(CPV 잔여: 다른 ttbar 샘플·Data tier),
+D(2018UL·Run3).
+
+> 2026-08-31 판의 이 절에 있던 "`Expanded_genTtbarId` 의 ntuple forge 단계 통합" 은 **범위가 바뀌었다**.
+> 그 문구는 최상위 `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` 의 patch-파일 주입 계획(DEFERRED)을
+> 가리켰는데, 중앙 v15 가 없는 6 샘플은 이제 NanoAOD 안에 컬럼이 **직접** 들어가므로 그 주입이 필요 없다.
+> 주입 계획은 sidecar 로 남는 ttbar 3 종에만 해당한다.
+
+## 14. 2026-08-31 ~ 09-02 — enriched NanoAOD: 12 절의 방향이 실측으로 확인됨
+
+작업은 TTHHGenCategoryTools 저장소에서 했고 기록도 거기 있다 — **`TTHHGenCategoryTools/docs/11_enriched_nanoaod.md`**.
+NtupleForge 관점의 요지만:
+
+- **중앙 cmsDriver 원문을 DAS 에서 받았다.** `dasgoclient -query="config dataset=..."` → ReqMgr config cache.
+  v9 = CMSSW_10_6_26 / `106X_mc2017_realistic_v9`, v15 = CMSSW_15_0_18 / `150X_mc2017_realistic_v1`.
+  **`--era Run2_2017,run2_nanoAOD_106Xv2` 와 부모 MiniAODv2 가 완전히 같다.** 이 캠페인의 61-branch 비트 동일
+  결과와 정합한다 — gen 은 릴리스·GT 와 무관하다.
+- **customise 하나로 끝났다.** `--customise Configuration/DataProcessing/Utils.addMonitoring,TTHHGenCategoryTools/TtbarIdExtender/ttbarIdTable_cff.customise`.
+  중앙도 그 슬롯을 쓰므로 정규 사용법이다. 새 C++ 없음.
+- **v9 검증**: 2000 event × 1666 branch = 3,332,000 값, `--ftol 0`, **실질 불일치 0**. 우리에만 3 branch, 중앙에만 0.
+  이 비교가 10_6_26(중앙) 대 10_6_32_patch1(우리)라 patch 차이의 영향이 0 임도 같이 증명됐다.
+- **v15**: 15_0_18 에서 무수정 빌드, 1906 = 1903 + 3, 타입 동일. 값 비교 대기.
+- **이 저장소의 도구가 쓰였고 고쳐졌다.** `compare_v9_v15.py` 가 NaN==NaN 을 100 % 불일치로 보고했다 — A21.
+  같은 커밋(`c0eab1e`)에서 인덱싱을 key 3 branch 로 줄여 20m46s → 수 분. 짝 찾기는 `pair_v9_v15.py`(lumi) 가
+  아니라 `dasgoclient -query="child file=<MiniAOD LFN>"`(부모 확정)이 정확했다 — 우리 산출물 대 중앙본에는 이쪽.
+- **처리율**: v9 6.4 Hz(WAN 포함) / v15 2.4 Hz(200 ev, 로컬). v15 NANO 는 ParticleNetAK4 를 재계산한다.
+  `units_per_job` 은 이 값 기준이며 2000 ev 로 재측정 후 확정.
+- **사고 2 건**: proxy 만료 + MiniAOD WAN 직독 → 18m53s 소모 후 exit 84 (08 2 절 Step 2 의 "로컬 디스크" 규칙이
+  MiniAOD 입력에도 그대로). stale 영역(v10 이름)에 파일을 먼저 만들었다가 정본으로 옮김. 둘 다 TTHH 08 T-28·T-32.

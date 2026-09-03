@@ -262,22 +262,31 @@
 > `TTHHto4b`(신호), `TT4b`, `TTZHTo4b`, `TTZZTo4b`, `tHW`, `TTZToBB`.
 > Data 는 전부 존재합니다 (`UL2017_NanoAODv15-v1`). 09 10 절.
 
-### A. 방향 전환 — enriched NanoAOD (최우선)
+### A. 방향 전환 — enriched NanoAOD (최우선) · 2026-09-02 갱신
 
-`TTHHGenCategoryTools/docs/04_decisions.md` **D17** (PROPOSED, D-DEP1 부분 번복).
+`TTHHGenCategoryTools/docs/04_decisions.md` **D17** (PROPOSED, D-DEP1 부분 번복). 이론·레시피·증거는
+**`TTHHGenCategoryTools/docs/11_enriched_nanoaod.md`** 가 단일 출처다. 여기에는 NtupleForge 가 해야 할 것만 남긴다.
 
-1. **FlatTable producer 작성** — `ExtendedTtbarIdProducer` 는 그대로 두고 NanoAOD
-   table 컬럼만 붙이는 customise. 아카이브 cfg 는 실행 불가(`TtbbStudies.NanoExtension`
-   경로가 v10 에서 제거).
-2. **레시피 byte-identity 재검증** — 중앙본이 **있는** 샘플(`TTbb_4f_TTToHadronic` v9)
-   에서 먼저 증명. `script/pair_v9_v15.py` + `script/compare_v9_v15.py`.
-3. **확장값 검증** — v7.2 검증은 sub-code 56 버그 시절이라 61/62/71/72 를 만든 적이
-   없습니다. 새로 검증 대상.
-4. **`TT4b` → `TTHHto4b` 순으로 적용.** v15 는 CMSSW_15_0_X 필요.
-5. **CRAB `units_per_job`** — MiniAOD 는 파일 수가 많습니다. NanoAOD config 값을
-   그대로 가져오면 안 됩니다 (05 A16, TTHHGenCategoryTools D15).
-6. **NtupleForge 에 `job_type: cmsrun | postproc`** — registry·das_scan·preflight·
-   submit/status/report 는 job type 과 무관하므로 재사용. 별도 repo 는 만들지 않습니다.
+> **CLOSED — gate 1·2 (v9).** `ttbarIdTable_cff.py`(python 71 줄, **새 C++ 0**) customise 로 3 컬럼이
+> top-level 로 나오고, 중앙 v9 와 **3,332,000 값 `--ftol 0` 실질 불일치 0**(branch 1669 = 1666 + 3, 타입 동일).
+> 2026-08-31 의 A1 "FlatTable producer 작성" 은 **비용 추정이 틀렸던 항목** — 릴리스 관용구로 끝났다.
+> A2 "byte-identity 재검증" 도 닫혔다. A3 "확장값 검증" 은 61/62 까지(71/72 는 `TT4b` 필요).
+> **gate 5 (v15, CMSSW_15_0_18)**: 무수정 빌드, 스키마 1906 = 1903 + 3, 타입 동일, **값 비교 대기**.
+
+1. **`job_type: cmsrun | postproc`** — NtupleForge config YAML 에 job type 을 넣어 registry · `das_scan` ·
+   preflight · submit/status/report 를 재사용한다. 별도 repo 는 만들지 않는다. `cmsrun` 타입은 cfg 파일 +
+   `--customise` 인자 + 릴리스(10_6_32_patch1 / 15_0_18)를 지정해야 한다.
+2. **CRAB `units_per_job` 산정 (D17 gate 4)** — MiniAOD 는 파일 수가 많고(2018 `TTbar_SemiLep` 10,010 파일)
+   v15 NANO 는 v9 보다 CPU 가 훨씬 비싸다(200 ev 2.4 Hz — ParticleNetAK4 재계산; 2000 ev 로 재측정 필요).
+   `--preflight --check-das` 가 `ceil(nfiles/upj)` 로 10,000 상한(05 A16, TTHH D15)을 검사한다.
+3. **입력 로컬화** — `cmsrun` job 은 MiniAOD 를 WAN 직독하면 안 된다(TTHH T-28: proxy 만료 + 직독 = 18 분
+   소모 후 exit 84). CRAB 에서는 사이트 로컬 읽기라 해당 없음; **로컬/condor 테스트에서만** `xrdcp` 선행.
+4. **적용 순서** — `TT4b`(71/72 확인 겸) → `TTHHto4b`(신호) → `TTZHTo4b`·`TTZZTo4b`·`tHW`·`TTZToBB`.
+5. **컬럼 이름 결정 대기** — NanoAOD 컬럼은 `expandedGenTtbarId`(camelCase), sidecar/analyzer 계약은
+   `Expanded_genTtbarId`. 혼합 생산이므로 tempTTHH 가 둘 다 읽어야 한다. 결정은 TTHH D17 에 기록.
+6. **비교기 `script/compare_v9_v15.py`** — NaN==NaN 을 agreement 로(건수 출력), 인덱싱은 key 3 branch 만
+   (`c0eab1e`). float 판정이 **이름 기반**(`_pt/_eta/_phi/_mass/_energy`)이라 그 외 float 은 `--ftol` 무관하게
+   완전일치 비교임을 알고 쓴다 (05 A21).
 
 ### B. ttHH v15 passthrough (진행 중)
 
