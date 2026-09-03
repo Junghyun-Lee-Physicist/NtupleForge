@@ -130,10 +130,32 @@ def data_per_era(recs):
     return per
 
 
+VN_SUFFIX = re.compile(r"-v(\d+)/([A-Z]+)$")
+
+
+def mc_datasets(recs):
+    """MC: the plain datasets that carry DISTINCT events, i.e. nominal + _extN.
+
+    A superseded re-release of the SAME production shows up as the same name
+    with a higher -vN; keep only the highest -vN per name so nothing is counted
+    twice. Flavours (JMENano/BTVNano/PFNano/PUFor*/Pilot) are already gone.
+    2017UL v9 examples: TTZHTo4b = nominal 5.0M + ext1 5.0M (two datasets,
+    both real); WJetsToLNu_HT400To600 = nominal + ext1 + ext2.
+    """
+    best = {}
+    for r in plain(recs):
+        m = VN_SUFFIX.search(r["dataset"])
+        stem = VN_SUFFIX.sub("/\\2", r["dataset"]) if m else r["dataset"]
+        vn = int(m.group(1)) if m else 0
+        if stem not in best or vn > best[stem][0]:
+            best[stem] = (vn, r)
+    return [best[s][1] for s in sorted(best)]
+
+
 def pick(recs, is_data):
     """-> (dataset_shown, nevents, nfiles, n_datasets, per_era_or_None)
 
-    MC   : the plain nominal dataset (first non-flavour DS line).
+    MC   : nominal + _extN summed (see mc_datasets); shown = the first one.
     DATA : one dataset per run era (see data_per_era), summed; the shown path
            has the era replaced by '*'.
     """
@@ -141,14 +163,27 @@ def pick(recs, is_data):
     if not pl:
         return "", None, None, 0, None
     if not is_data:
-        r = pl[0]
-        return r["dataset"], r["nevents"], r["nfiles"], len(pl), None
+        recs1 = mc_datasets(recs)
+        ne = sum(r["nevents"] or 0 for r in recs1)
+        nf = sum(r["nfiles"] or 0 for r in recs1)
+        return recs1[0]["dataset"], ne, nf, len(recs1), None
     per = data_per_era(recs)
     recs1 = [per[e] for e in sorted(per)]
     ne = sum(r["nevents"] or 0 for r in recs1)
     nf = sum(r["nfiles"] or 0 for r in recs1)
     shown = ERA_TOKEN.sub("/Run20XX*-", recs1[0]["dataset"], count=1)
     return shown, ne, nf, len(recs1), per
+
+
+def primaries_of(recs, is_data):
+    """distinct primary dataset names among the counted datasets"""
+    rs = [per for per in data_per_era(recs).values()] if is_data else mc_datasets(recs)
+    out = []
+    for r in rs:
+        p = primary_of(r["dataset"])
+        if p not in out:
+            out.append(p)
+    return out
 
 
 def primary_of(dataset):
@@ -200,15 +235,23 @@ def main():
     for k in keys:
         sa, sb = res_a.get(k, "NOT_FOUND"), res_b.get(k, "NOT_FOUND")
         typ = reg.get(k, ("?", "", ""))[0]
-        is_data = (typ == "DATA")
+        # Do not depend on the registry alone: the tier in the dataset path is
+        # authoritative (Data = /NANOAOD, MC = /NANOAODSIM).
+        tiers = {r["dataset"].rstrip("/").split("/")[-1] for r in ds_a.get(k, []) + ds_b.get(k, [])}
+        is_data = (typ == "DATA") or (tiers == {"NANOAOD"})
+        if typ == "?":
+            typ = "DATA" if is_data else "MC"
         da, na, nfa, cnt_a, era_a = pick(ds_a.get(k, []), is_data)
         db, nb, nfb, cnt_b, era_b = pick(ds_b.get(k, []), is_data)
+        prims_a = primaries_of(ds_a.get(k, []), is_data)
+        prims_b = primaries_of(ds_b.get(k, []), is_data)
         row = {"key": k, "group": reg.get(k, ("", "", "?"))[2], "type": typ,
                "sa": sa, "sb": sb, "na": na, "nb": nb,
                "da": da, "db": db, "nfa": nfa, "nfb": nfb,
                "cnt_a": cnt_a, "cnt_b": cnt_b, "era_a": era_a, "era_b": era_b,
-               "prim_a": primary_of(da) if da else "", "prim_b": primary_of(db) if db else "",
-               "prim_differs": bool(da and db and primary_of(da) != primary_of(db))}
+               "prims_a": prims_a, "prims_b": prims_b,
+               "prim_a": prims_a[0] if prims_a else "", "prim_b": prims_b[0] if prims_b else "",
+               "prim_differs": bool(prims_a and prims_b and set(prims_a) != set(prims_b))}
         if sa != "NOT_FOUND" and sb == "NOT_FOUND":
             missing.append(row)
         elif sb == "RELAXED":
@@ -225,7 +268,8 @@ def main():
     print("-" * 78)
     print("[1] present in %s, NOT_FOUND in %s" % (la, lb))
     for r in missing:
-        print("  %-22s %-9s %s=%s  %s" % (r["key"], r["group"], la, fmt_int(r["na"]), r["da"]))
+        ext = "  [%d datasets: nominal+ext]" % r["cnt_a"] if r["cnt_a"] > 1 else ""
+        print("  %-22s %-9s %s=%s%s  %s" % (r["key"], r["group"], la, fmt_int(r["na"]), ext, r["da"]))
     print("-" * 78)
     print("[2] RELAXED in %s (campaign string did not match exactly -- check what was matched)" % lb)
     for r in relaxed:
@@ -241,8 +285,8 @@ def main():
         print("  %-22s %-9s %s=%-14s %s=%-14s%s%s"
               % (r["key"], r["group"], la, fmt_int(r["na"]), lb, fmt_int(r["nb"]), era_note, flag))
         if r["prim_differs"]:
-            print("      %s primary: %s" % (la, r["prim_a"]))
-            print("      %s primary: %s" % (lb, r["prim_b"]))
+            print("      %s primary: %s" % (la, ", ".join(r["prims_a"])))
+            print("      %s primary: %s" % (lb, ", ".join(r["prims_b"])))
         else:
             print("      %s: %s" % (lb, r["db"]))
         if r["type"] == "DATA" and r["era_a"] and r["era_b"]:
@@ -281,11 +325,18 @@ def main():
     w(r"    \toprule")
     w(r"    sample & group & %s events & %s dataset \\" % (tex_escape(la), tex_escape(la)))
     w(r"    \midrule")
+    any_ext = False
     for r in missing:
+        ds_tex = tex_tt(r["da"])
+        if r["cnt_a"] > 1:
+            any_ext = True
+            ds_tex += r" {\scriptsize(+%d ext)}" % (r["cnt_a"] - 1)
         w(r"    %s & %s & %s & {\scriptsize %s} \\"
-          % (tex_tt(r["key"]), tex_escape(r["group"]), fmt_int(r["na"]), tex_tt(r["da"])))
+          % (tex_tt(r["key"]), tex_escape(r["group"]), fmt_int(r["na"]), ds_tex))
     w(r"    \bottomrule")
     w(r"  \end{tabular}")
+    if any_ext:
+        w(r"  \par\smallskip\raggedright\footnotesize Event counts include the \texttt{\_ext} extensions of the same production where they exist (\texttt{+N ext}).")
     w(r"\end{table}")
     w("")
     if relaxed:
@@ -305,14 +356,16 @@ def main():
             if r["na"] is None or r["nb"] is None or not r["na"]:
                 dl = "--"
             else:
-                dl = "%+.1f\\%%" % (100.0 * (r["nb"] - r["na"]) / r["na"])
-            prim = r["prim_b"]
+                pct = 100.0 * (r["nb"] - r["na"]) / r["na"]
+                dl = ("%+.2f\\%%" if abs(pct) < 0.1 else "%+.1f\\%%") % pct
             if r["prim_differs"]:
-                prim_tex = r"\textbf{" + tex_tt(prim) + "}"
+                prim_tex = r"\textbf{" + r" \\ ".join(tex_tt(p) for p in r["prims_b"]) + "}"
+                if len(r["prims_b"]) > 1:
+                    prim_tex = r"\begin{tabular}[t]{@{}l@{}}\textbf{" + r"} \\ \textbf{".join(tex_tt(p) for p in r["prims_b"]) + r"}\end{tabular}"
             elif r["type"] == "DATA":
-                prim_tex = tex_tt(prim) + r" {\scriptsize(proc.\ string only)}"
+                prim_tex = tex_tt(r["prim_b"]) + r" {\scriptsize(proc.\ string only)}"
             else:
-                prim_tex = tex_tt(prim)
+                prim_tex = tex_tt(r["prim_b"])
             w(r"    %s & %s & %s & %s & %s & {\scriptsize %s} \\"
               % (tex_tt(r["key"]), tex_escape(r["group"]), fmt_int(r["na"]), fmt_int(r["nb"]), dl, prim_tex))
         w(r"    \bottomrule")
