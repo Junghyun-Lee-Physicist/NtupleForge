@@ -9,6 +9,67 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-09-07: Run 3 kickoff — plan doc, era table, family discovery script, `had`/`lep` registry tags
+
+Parallel to the enriched-NanoAOD validation batch (TTHHGenCategoryTools D17).
+No physics logic changed; nothing was submitted or produced.
+
+### Added
+- **`docs/ttHH/03_run3_plan.md`** — Run 3 (2022, 2022EE, 2023, 2023BPix, 2024;
+  2025 to investigate) on NanoAODv15: scope decisions D-R3-1…6, a 15-item
+  event-level checklist of what Run 3 requires beyond Run 2 (jet veto maps incl.
+  the 2023BPix `jetvetomap_bpix`, the Run 3 MET-filter list with
+  `Flag_BadPFMuonDzFilter`/`Flag_hfNoisyHitsFilter`, `Jet_jetId` recomputation,
+  PUPPI jets/MET, era JEC/JER and pileup keys, PNet/UParT taggers, FH trigger
+  paths; prefiring and HEM switched OFF), each row marked measured / from
+  memory / rule — **the "from memory" rows must be checked against the twiki
+  before any value enters code** (the pages could not be opened in this
+  session). Dataset section: Run 2 → Run 3 naming table (patterns, not names),
+  campaign-string templates (all UNVERIFIED until `--probe`), the discovery
+  procedure, and the `had`/`lep` production order.
+- **`script/das_discover_run3.sh`** — one DAS wildcard per physics *family* per
+  era (`TTto4Q_*`, `QCD-4Jets_HT-*`, `TTHH*`, `Wto2Q*`, `DYto2L*`, …; PDs
+  `JetMET[0|1]`, `Muon[0|1]`, `EGamma[0|1]`, `BTagMu`, `JetHT`) → `HIT|MC|<family>|<had|lep>|<dataset>`,
+  `HIT|DATA|…`, `NONE|…`, `CAMP|DATA|<pd>|<campaign>`. The only permitted source
+  for primary names in `samples_registry_run3.txt` (same rule as `das_scan.sh`:
+  never guess a dataset name). Mock-tested only; not yet run against DAS.
+
+### Changed
+- **`script/das_scan.sh`** — era table gains six Run 3 rows (`2022 2022EE 2023
+  2023BPix 2024 2025`; MC prefixes `Run3Summer22…`, `RunIII2024Summer24…`; data
+  procs `NanoAODv15` / `MINIv6NANOv15` / `PromptReco`) flagged `RUN3=1`, which
+  switches `--probe` to 13.6 TeV probe primaries (`TTto4Q_…`, `TTtoLNu2Q_…`;
+  PDs `JetMET`, `JetMET0`, `Muon`, `Muon0`). All six rows are UNVERIFIED
+  templates until the probe has been run. Header documents the `had`/`lep`
+  tags.
+- **`script/samples_registry.txt`** — the 64 ttHH rows carry a use tag in the
+  WORKSTREAM column: `ttHH,had` (47: signal, tt̄, tt̄bb̄, QCD, tt̄H, tH, tt̄V, tt̄VV,
+  single top, diboson, W/Z→qq̄, JetHT, BTagCSV), `ttHH,lep` (16: `WJetsToLNu_HT*`,
+  `DYJetsToLL_M50_HT*`), `ttHH,CPV,had,lep` (SingleMuon). Existing readers use
+  columns 1, 2, 4 only; `--workstream had` selects the hadronic set. Row count,
+  keys and primaries unchanged (172 rows).
+- `docs/01_STATUS.md` (block E, items 21–25), `docs/README.md`,
+  `docs/ttHH/README.md` — index entries.
+
+### Decided
+- `D-2026-09-07-run3-scope` in `03_DECISIONS.md` (pointer to D-R3-1…6).
+
+### Same day, second pass — facts from the PdmVRun3Analysis twiki (r223) and the PPD Run3 2025 table
+- `03_run3_plan.md` §1/§2/§4: **2025 is the primary target** (data = T0 prompt MINIAODv6/NANOv15,
+  GT `150X_dataRun3_Prompt_v1`; **no 2025 MC campaign — PPD says use Summer24**, GT
+  `150X_mcRun3_2024_realistic_v2`). Golden JSONs 2022–2025, era run boundaries, per-era
+  golden luminosities (2024 109.95, 2025 110.63 prelim), Run 3 EGM ID names and the EE+ leak
+  veto, the JME "all analyses use jetvetomap" policy and the 2022 prompt HCAL-barrel issue
+  (use ReReco for 2022 A–E) moved from "from memory" to measured. 2024 campaign strings
+  confirmed from a reference analysis list (`RunIII2024Summer24NanoAODv15-…_v2-vN`,
+  `Run2024C..I-MINIv6NANOv15-v1|v2`); Summer24 uses the `Par-`/`Bin-`/`Fil-` naming.
+- `das_scan.sh`: the 2025 row scans Summer24 MC (a NOTE line says so); sources in comments.
+- `das_discover_run3.sh`: 2025 → Summer24 MC; family wildcards widened to prefixes
+  (`QCD-4Jets*`, `TTH*`, `DYto2L*`, `WW*` …) so both the Summer22/23 and the Summer24
+  spellings are caught.
+
+---
+
 ## [Unreleased] — 2026-08-30: v9 ↔ v15 event-matched 동일성 확인 (불일치 0), A18, 검증 전용 branch 목록
 
 ### Result — CPV gen categorizer 의 v9→v15 마이그레이션은 물리 결과를 바꾸지 않습니다

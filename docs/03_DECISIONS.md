@@ -11,6 +11,44 @@
 
 ---
 
+## D-2026-09-07-run3-scope — Run 3 on NanoAODv15 only, separate registry, no name guessing, `had` first
+**DECIDED (D-R3-1…5) / PROPOSED (D-R3-6) · 2026-09-07 · detail table: `ttHH/03_run3_plan.md` §1**
+
+- **Context.** The ttHH → 4b pipeline is being widened to Run 3 while the
+  Run 2 v9 → v15 migration is closing. Run 3 primary-dataset names, PDs, MC
+  campaigns, HT binning, cleaning rules and cross sections all differ from
+  Run 2, and CMS twiki pages could not be opened in the working session.
+- **Decision.**
+  1. **Eras** 2022, 2022EE, 2023, 2023BPix, 2024; 2025 investigated first
+     (campaign existence), produced only if a golden JSON and MC campaign exist.
+  2. **NanoAODv15 only** — one schema for Run 2 UL re-nano and Run 3, one set
+     of tools (`compare_v9_v15.py`, branch inventories).
+  3. **`script/samples_registry_run3.txt` is a separate file.** The Run 2
+     registry's premise "PRIMARY is era-independent" breaks at 13.6 TeV. KEYs
+     stay identical to Run 2 so xsec DB, filelists and patch-file names carry
+     across years.
+  4. **No dataset-name guessing.** Primary names enter the Run 3 registry only
+     from `script/das_discover_run3.sh` `HIT|` lines (family wildcards answered
+     by DAS). Same rule `das_scan.sh` already enforces for campaign strings.
+  5. **`had`/`lep` use tags** in the WORKSTREAM column (Run 2 rows tagged today:
+     47/16/1). **Production order: `--workstream had` first** — the leptonic
+     set (DY, W→ℓν) exists for data/MC agreement tests, not for the signal
+     region. User decision 2026-09-07.
+  6. (PROPOSED) 13.6 TeV cross sections are taken fresh (XSDB / GenXSecAnalyzer);
+     no reuse of `samples_2017UL.json` values.
+- **Alternatives considered.** (a) One registry with an era-conditional PRIMARY
+  column — rejected: every reader would need era logic and the 2-column join
+  key breaks. (b) Hand-writing Run 3 names from memory to save a DAS round —
+  rejected: Summer22 → Summer24 naming drifts even within Run 3; the 2018 scan
+  showed 8 of 63 Run 2 names already needed relaxed matching. (c) Produce
+  had+lep together — rejected by the user; lep doubles QCD-free CPU for a
+  cross-check sample set.
+- **Status notes.** Everything in `03_run3_plan.md` §2 marked "기억" (from
+  memory) is not yet a decision input — it must be verified against the twiki
+  before any value is coded (OPEN item 23 in `01_STATUS.md`).
+
+---
+
 ## D-2026-07-02-prewarm-readers — pre-register all branch readers in beginFile; no mid-loop reader creation
 **DECIDED · 2026-07-02 · complements D-2026-07-01-count-branch-length (which was necessary but not sufficient)**
 

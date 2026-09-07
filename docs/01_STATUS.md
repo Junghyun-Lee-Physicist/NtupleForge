@@ -2,7 +2,7 @@
 
 > **Purpose:** the single place to answer "where are we right now?" for any
 > contributor (human or AI) joining cold. **Audience:** all. **Updated:**
-> 2026-08-17. Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
+> 2026-09-07 (Run 3 block E). Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
 
 ## Read this first (repo-level facts)
 
@@ -324,7 +324,27 @@
     재생성. 현재 헤더는 2017+2018 superset(HLT 583) 입니다.
 19. **TTHHGenCategoryTools 2018 `TTToSemiLeptonic` 검증 실패** 미해결
     (467,498,000 vs 476,408,000). `ttnb_TTbar_SemiLep.root`(2018) 보류 중.
-20. **2018UL 확장, Run 3** — era table 의 Run 3 행은 UNVERIFIED 추정치입니다.
+20. **2018UL 확장** — 2018UL v9/v15 스캔 완료 (2026-09-03, 63 key: 47 EXACT / 10 RELAXED / 6 NOT_FOUND —
+    2017UL 과 같은 6 개 부재, 같은 8 개 sibling). Run 3 는 아래 E.
+
+### E. Run 3 확장 (2022–2025, v15) · 2026-09-07 시작 — 계획 [`ttHH/03_run3_plan.md`](ttHH/03_run3_plan.md)
+
+> 결정 D-R3-1…6 (**2025 기본** — data T0 prompt NANOv15 + MC 는 Summer24(PPD 권고, 2025 MC 없음) —, 2024, 2023/BPix, 2022/EE;
+> v15 만, `samples_registry_run3.txt` 분리, 이름 추정 금지, `had`/`lep` 태그 + hadronic 우선, 13.6 TeV xsec 새로).
+> 도구: `das_scan.sh` era 표에 Run 3 6 행 — 2024 두 문자열은 참조 목록으로 확인(`RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2`,
+> `Run2024X-MINIv6NANOv15-vN`), 나머지는 `--probe` 전까지 UNVERIFIED —, 새 `script/das_discover_run3.sh`(family 별 접두어 wildcard →
+> `HIT|` 줄), registry ttHH 64 행에 `had` 47 / `lep` 16 / `had,lep` 1 태그. golden JSON·era 경계·루미·GT 는 PdmV twiki r223 / PPD 2025 표 원문으로 확정(03_run3_plan §2, §4.2).
+
+21. **probe + discover 실행** (lxplus, 03_run3_plan §4.3 (0)·(1)) — 캠페인 문자열과 primary 이름 확정.
+    로그 `script/das_probe_<era>_v15.log`, `script/das_discover_<era>_v15_*.log` 커밋.
+22. **`samples_registry_run3.txt` 작성** — `HIT|` 줄에서만; KEY 는 Run 2 와 동일. 첫 답: 신호 `TTHHto4b` 와
+    ttVV 5 종의 Run 3 중앙 생산 존재 여부 (없으면 D17 사설 생산이 Run 3 로 늘어남).
+23. **event-level 항목의 "기억" 확정** — 03_run3_plan §2 의 jet veto map 키·MET filter 목록(ecalBadCalib
+    보정 수치)·JEC/JER 태그·golden JSON 이름·PU 키를 twiki 원문으로 대조하고 상태 열 갱신. **값을 코드에
+    넣기 전에 반드시.**
+24. **Run 3 브랜치 인벤토리 스윕** (08 Step 3b) → `branch_hadronic_<era>_v15_{MC,Data}.txt`; HLT 블록은 era 별.
+25. **analyzer(tempTTHH) 작업 항목 발행** — Run 3 cleaning 5 (veto map, MET filter, jet ID 재계산,
+    PUPPI, b-tagger) + off 2 (prefiring, HEM). NtupleForge 밖.
 
 ## Documentation
 - **2026-07-01:** docs restructured into per-workstream subdirs

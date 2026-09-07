@@ -34,6 +34,10 @@
 #    bash script/das_scan.sh --era 2018UL --nano v9  --out script/das_2018UL_v9_$(date +%Y%m%d_%H%M).log
 #    bash script/das_scan.sh --era 2017UL --nano v15 --out script/das_2017UL_v15_$(date +%Y%m%d_%H%M).log
 #    bash script/das_scan.sh --era 2018UL --nano v15 --out script/das_2018UL_v15_$(date +%Y%m%d_%H%M).log
+#    # Run 3: probe first (13p6TeV primaries, JetMET/Muon PDs), then scan with the Run 3 registry
+#    bash script/das_scan.sh --era 2022 --nano v15 --probe
+#    bash script/das_scan.sh --era 2022 --nano v15 --registry script/samples_registry_run3.txt --workstream had \
+#         --out script/das_ttHH_2022_v15_$(date +%Y%m%d_%H%M).log
 #
 #    # (2) one example file per dataset, for the branch-inventory step
 #    bash script/das_scan.sh --era 2018UL --nano v9 --sample-file --only TTbar_SemiLep,JetHT
@@ -61,9 +65,15 @@
 #                       enumerates BOTH (172 rows) and most of the other
 #                       workstream's samples are wasted queries. Tags:
 #                         ttHH    the ttHH -> 4b campaign        (64 rows)
+#                         had     ttHH rows used by the fully-hadronic channel
+#                                 (signal, backgrounds, JetHT/BTagCSV/SingleMuon; 48)
+#                         lep     ttHH rows for the leptonic-selection data/MC
+#                                 test (DY, W->lnu HT, SingleMuon; 17)
 #                         CPV     the top-CPV / SSB campaign     (109 rows)
 #                         CPVval  the 13-sample CPV cross-validation subset
 #                       Combine with --only for a hand-picked subset.
+#                       Production order (docs/ttHH/03_run3_plan.md section 5):
+#                       --workstream had first, lep in a later round.
 #    --registry PATH    Registry file (default: <script dir>/samples_registry.txt)
 #    --out PATH         Write the log here AND to stdout. If omitted, stdout
 #                       only -- then you must `tee` it yourself, and the
@@ -136,33 +146,59 @@ era_table () {
     2018UL)        MC_CAMPAIGN="RunIISummer20UL18NanoAOD@V@"
                    DATA_RUNERA="Run2018"
                    DATA_PROC="UL2018_MiniAODv2_NanoAOD@V@" ;;
-    # --- Run 3 placeholders. UNVERIFIED: run --probe before enabling. The
-    #     sample primaries also change (TuneCP5_13p6TeV) -- add Run-3 rows to
-    #     the registry, do not reuse the 13 TeV ones.
+    # --- Run 3 (13.6 TeV). NanoAODv15 is the target version (same as the Run 2
+    #     re-nano, docs/ttHH/03_run3_plan.md section 4.2). Sources, 2026-09-07:
+    #     PdmVRun3Analysis twiki r223 and the PPD "Run3 2025 Summary Table"
+    #     (20 Jan 2026), plus one reference analysis' dataset list.
+    #       2024 MC     RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-vN   VERIFIED (reference list)
+    #       2024 data   Run2024C..I-MINIv6NANOv15-v1|v2  (re-mini v6 + re-nano v15)     VERIFIED (reference list)
+    #       2025 data   T0 prompt MINIAODv6/NANOv15, GT 150X_dataRun3_Prompt_v1:
+    #                   expected /PD/Run2025<E>-PromptReco-v<N>/NANOAOD (2023-era-D naming rule)  UNVERIFIED
+    #       2025 MC     NONE YET -- PPD: "use Summer24 MC for now", so the 2025
+    #                   row points at the Summer24 campaign (same datasets as 2024).
+    #       2022/2023   Run2022C-NanoAODv15-v1 seen for JetHT (probe 2026-09-07);
+    #                   MC prefixes Run3Summer22/22EE/23/23BPix + NanoAODv15    UNVERIFIED
+    #     A Run 3 row is trusted only after `--probe --nano v15` returns HIT|
+    #     lines for it; the probe uses 13p6TeV primaries and Run 3 PDs.
+    #     Sample primaries also change (TuneCP5_13p6TeV; Summer24 adds the
+    #     Bin-/Par-/Fil- convention) -- Run 3 rows live in samples_registry_run3.txt
+    #     (--registry), never reuse the 13 TeV ones.
+    #     Prompt data: take EVERY processing version (v1 AND v2 of an era; PPD note).
     2022)          MC_CAMPAIGN="Run3Summer22NanoAOD@V@"
                    DATA_RUNERA="Run2022"
-                   DATA_PROC="22Sep2023" ;;
+                   DATA_PROC="NanoAOD@V@" ; RUN3=1 ;;
     2022EE)        MC_CAMPAIGN="Run3Summer22EENanoAOD@V@"
                    DATA_RUNERA="Run2022"
-                   DATA_PROC="22Sep2023" ;;
+                   DATA_PROC="NanoAOD@V@" ; RUN3=1 ;;
     2023)          MC_CAMPAIGN="Run3Summer23NanoAOD@V@"
                    DATA_RUNERA="Run2023"
-                   DATA_PROC="22Sep2023" ;;
+                   DATA_PROC="NanoAOD@V@" ; RUN3=1 ;;
     2023BPix)      MC_CAMPAIGN="Run3Summer23BPixNanoAOD@V@"
                    DATA_RUNERA="Run2023"
-                   DATA_PROC="22Sep2023" ;;
+                   DATA_PROC="NanoAOD@V@" ; RUN3=1 ;;
+    2024)          MC_CAMPAIGN="RunIII2024Summer24NanoAOD@V@"
+                   DATA_RUNERA="Run2024"
+                   DATA_PROC="MINIv6NANO@V@" ; RUN3=1 ;;
+    2025)          MC_CAMPAIGN="RunIII2024Summer24NanoAOD@V@"      # no 2025 MC campaign yet (PPD 2026-01-20)
+                   DATA_RUNERA="Run2025"
+                   DATA_PROC="PromptReco" ; RUN3=1 ;;
     *) return 1 ;;
   esac
   return 0
 }
 
-ALL_ERAS="2016preVFPUL 2016postVFPUL 2017UL 2018UL 2022 2022EE 2023 2023BPix"
+ALL_ERAS="2016preVFPUL 2016postVFPUL 2017UL 2018UL 2022 2022EE 2023 2023BPix 2024 2025"
 
 # Probe primaries: a ttbar MC that exists in every era, and the two PDs.
 # Deliberately small -- the point is to enumerate campaigns, not samples.
 PROBE_MC=( "TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8"
            "TTToHadronic_TuneCP5_13TeV-powheg-pythia8" )
 PROBE_DATA=( "JetHT" "SingleMuon" )
+# Run 3 (13.6 TeV) names differ; the 2022 PDs JetMET/Muon were split into
+# JetMET0/1 and Muon0/1 from 2023 on. Selected after era_table sets RUN3=1.
+PROBE_MC_RUN3=( "TTto4Q_TuneCP5_13p6TeV_powheg-pythia8"
+                "TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8" )
+PROBE_DATA_RUN3=( "JetMET" "JetMET0" "Muon" "Muon0" )
 
 # -----------------------------------------------------------------------------
 # ARGUMENTS
@@ -190,7 +226,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 [[ -z "$ERA" ]] && { echo "FATAL: --era is required (see --list-eras)" >&2; exit 3; }
+RUN3=0
 era_table "$ERA" || { echo "FATAL: unknown era '$ERA'. Known: $ALL_ERAS" >&2; exit 3; }
+if [[ $RUN3 -eq 1 ]]; then PROBE_MC=( "${PROBE_MC_RUN3[@]}" ); PROBE_DATA=( "${PROBE_DATA_RUN3[@]}" ); fi
 if [[ $PROBE -eq 0 && -z "$NANO" ]]; then
   echo "FATAL: --nano is required unless --probe (e.g. --nano v9 / --nano v15)" >&2; exit 3
 fi
@@ -221,6 +259,7 @@ echo "  registry           : ${REGISTRY}"
 echo "  workstream filter  : ${WORKSTREAM:-<none: BOTH ttHH and CPV>}"
 echo "========================================================================="
 echo "META|era=${ERA}|nano=${NANO}|mc_campaign=${MC_CAMPAIGN}|data_runera=${DATA_RUNERA}|data_proc=${DATA_PROC}|registry=${REGISTRY}|workstream=${WORKSTREAM}|utc=$(date -u +%FT%TZ)"
+[[ "$ERA" == "2025" ]] && echo "### NOTE: 2025 has no MC campaign yet -- MC is scanned in RunIII2024Summer24 (PPD Run3 2025 table, 20 Jan 2026: use Summer24 MC for now)"
 
 # -----------------------------------------------------------------------------
 # HELPERS

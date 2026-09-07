@@ -55,6 +55,9 @@ setup과 실행 커맨드만 다루고, 그보다 깊은 내용은 전부 여기
   ([01_physics.md](ttHH/01_physics.md)), 은퇴한 tt+jets categorization
   파이프라인의 전체 기록
   ([02_legacy_ttbar_pipeline.md](ttHH/02_legacy_ttbar_pipeline.md)),
+  **Run 3 확장 계획** — era·v15 범위, Run 3 event-level 필수 항목(jet veto
+  map, MET filter, jet ID 재계산 …), 13.6 TeV 데이터셋 확정 절차, `had`/`lep`
+  용도 태그 ([03_run3_plan.md](ttHH/03_run3_plan.md)),
   verbatim 소스 아카이브 ([legacy/code/](ttHH/legacy/code/)).
 
 ## 배치 원칙 (why this layout)
