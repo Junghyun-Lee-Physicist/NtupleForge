@@ -1,0 +1,214 @@
+=========================================================================
+das_scan.sh   era=2024   nano=v15   2026-09-07T13:47:24Z
+  MC campaign prefix : RunIII2024Summer24NanoAODv15
+  Data era / proc    : Run2024* / MINIv6NANOv15*
+  registry           : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/samples_registry.txt
+  workstream filter  : <none: BOTH ttHH and CPV>
+=========================================================================
+META|era=2024|nano=v15|mc_campaign=RunIII2024Summer24NanoAODv15|data_runera=Run2024|data_proc=MINIv6NANOv15|registry=/afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/samples_registry.txt|workstream=|utc=2026-09-07T13:47:24Z
+
+### PROBE: every NanoAOD campaign visible for the probe primaries.
+###        Read the CAMP| lines and copy the exact campaign PREFIX
+###        into the era table at the top of this script.
+
+### PROBE MC TTto4Q_TuneCP5_13p6TeV_powheg-pythia8
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv11-126X_mcRun3_2022_realistic_postEE_v1-v1
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6_ext1-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv12-JMENano12p5_132X_mcRun3_2022_realistic_postEE_v4_ext1-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv12-JMENano12p5_132X_mcRun3_2022_realistic_postEE_v4-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv11-126X_mcRun3_2022_realistic_v2-v1
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv12-JMENano12p5_132X_mcRun3_2022_realistic_v3_ext1-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv12-JMENano12p5_132X_mcRun3_2022_realistic_v3-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23BPixNanoAODv12-JMENano12p5_132X_mcRun3_2023_realistic_postBPix_v4-v1
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23NanoAODv12-JMENano12p5_132X_mcRun3_2023_realistic_v5-v1
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAOD-140X_mcRun3_2024_realistic_v26_ext1-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAOD-140X_mcRun3_2024_realistic_v26-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAODv15-BTVNanoV15_150X_mcRun3_2024_realistic_v2-v1
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAODv15-FS_150X_mcRun3_2024_realistic_v2-v2
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAODv15-JMENanoV15_150X_mcRun3_2024_realistic_v2-v1
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2026LowPUSummer26NanoAODv15-DRLowPU_Miniv6LowPU_JMENano_160X_mcRun3_2026_lowPU_v3-v1
+CAMP|MC|TTto4Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2026LowPUSummer26NanoAODv15-DRLowPU_Miniv6LowPU_Nanov15LowPU_160X_mcRun3_2026_lowPU_v3-v2
+
+### PROBE MC TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv11-126X_mcRun3_2022_realistic_postEE_v1-v1
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv11-Poisson60ForMUOVal_126X_mcRun3_2022_realistic_postEE_v1-v1
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6_ext1-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv12-JMENano12p5_132X_mcRun3_2022_realistic_postEE_v4_ext1-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv12-JMENano12p5_132X_mcRun3_2022_realistic_postEE_v4-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv12-Poisson60ForMUOVal_130X_mcRun3_2022_realistic_postEE_v6-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv11-126X_mcRun3_2022_realistic_v2-v1
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv12-JMENano12p5_132X_mcRun3_2022_realistic_v3_ext1-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23BPixNanoAODv12-JMENano12p5_132X_mcRun3_2023_realistic_postBPix_v4-v5
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23NanoAODv12-JMENano12p5_132X_mcRun3_2023_realistic_v5-v1
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|Run3Winter24NanoAOD-JMENanoV14_133X_mcRun3_2024_realistic_v10-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAOD-140X_mcRun3_2024_realistic_v26-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAODv15-BTVNanoV15_150X_mcRun3_2024_realistic_v2-v1
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAODv15-FS_150X_mcRun3_2024_realistic_v2-v2
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2024Summer24NanoAODv15-JMENanoV15_150X_mcRun3_2024_realistic_v2-v1
+CAMP|MC|TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8|RunIII2026LowPUSummer26NanoAODv15-DRLowPU_Miniv6LowPU_Nanov15LowPU_160X_mcRun3_2026_lowPU_v3-v2
+
+### PROBE DATA JetMET
+CAMP|DATA|JetMET|Run2022C-BTVNanoAODv15-v1
+CAMP|DATA|JetMET|Run2022C-JMENanoAODv15-v1
+CAMP|DATA|JetMET|Run2022C-NanoAODv15-v1
+CAMP|DATA|JetMET|Run2022C-PromptNanoAODv10-v1
+CAMP|DATA|JetMET|Run2022C-PromptNanoAODv10_v1-v1
+CAMP|DATA|JetMET|Run2022C-ReRecoNanoAODv11-v1
+CAMP|DATA|JetMET|Run2022D-BTVNanoAODv15-v1
+CAMP|DATA|JetMET|Run2022D-JMENanoAODv15-v1
+CAMP|DATA|JetMET|Run2022D-NanoAODv15-v1
+CAMP|DATA|JetMET|Run2022D-PromptNanoAODv10_v1-v1
+CAMP|DATA|JetMET|Run2022D-PromptNanoAODv10_v2-v1
+CAMP|DATA|JetMET|Run2022D-ReRecoNanoAODv11-v1
+CAMP|DATA|JetMET|Run2022E-BTVNanoAODv15-v1
+CAMP|DATA|JetMET|Run2022E-JMENanoAODv15-v1
+CAMP|DATA|JetMET|Run2022E-NanoAODv15-v1
+CAMP|DATA|JetMET|Run2022E-PromptNanoAODv10_v1-v3
+CAMP|DATA|JetMET|Run2022E-ReRecoNanoAODv11-v1
+CAMP|DATA|JetMET|Run2022F-BTVNanoAODv15-v1
+CAMP|DATA|JetMET|Run2022F-JMENanoAODv15-v1
+CAMP|DATA|JetMET|Run2022F-NanoAODv15-v1
+CAMP|DATA|JetMET|Run2022F-PromptNanoAODv10_v1-v2
+CAMP|DATA|JetMET|Run2022F-PromptNanoAODv11_v1-v2
+CAMP|DATA|JetMET|Run2022G-BTVNanoAODv15-v1
+CAMP|DATA|JetMET|Run2022G-JMENanoAODv15-v1
+CAMP|DATA|JetMET|Run2022G-NanoAODv15-v1
+CAMP|DATA|JetMET|Run2022G-PromptNanoAODv10_v1-v1
+CAMP|DATA|JetMET|Run2022G-PromptNanoAODv11_v1-v2
+
+### PROBE DATA JetMET0
+CAMP|DATA|JetMET0|Run2023A-PromptNanoAODv11p9_v2-v1
+CAMP|DATA|JetMET0|Run2023B-NanoAODv15-v1
+CAMP|DATA|JetMET0|Run2023B-PromptNanoAODv11p9_v1-v1
+CAMP|DATA|JetMET0|Run2023C-BTVNanoAODv15-v1
+CAMP|DATA|JetMET0|Run2023C-BTVNanoAODv15_v2-v1
+CAMP|DATA|JetMET0|Run2023C-BTVNanoAODv15_v3-v1
+CAMP|DATA|JetMET0|Run2023C-BTVNanoAODv15_v4-v1
+CAMP|DATA|JetMET0|Run2023C-JMENanoAODv15-v1
+CAMP|DATA|JetMET0|Run2023C-JMENanoAODv15_v2-v1
+CAMP|DATA|JetMET0|Run2023C-JMENanoAODv15_v3-v1
+CAMP|DATA|JetMET0|Run2023C-JMENanoAODv15_v4-v1
+CAMP|DATA|JetMET0|Run2023C-NanoAODv15-v1
+CAMP|DATA|JetMET0|Run2023C-NanoAODv15_v2-v1
+CAMP|DATA|JetMET0|Run2023C-NanoAODv15_v3-v1
+CAMP|DATA|JetMET0|Run2023C-NanoAODv15_v4-v1
+CAMP|DATA|JetMET0|Run2023C-PromptNanoAODv11p9_v1-v1
+CAMP|DATA|JetMET0|Run2023C-PromptNanoAODv12_v3-v1
+CAMP|DATA|JetMET0|Run2023C-PromptNanoAODv12_v4-v1
+CAMP|DATA|JetMET0|Run2023D-BTVNanoAODv15-v1
+CAMP|DATA|JetMET0|Run2023D-BTVNanoAODv15_v2-v1
+CAMP|DATA|JetMET0|Run2023D-JMENanoAODv15-v1
+CAMP|DATA|JetMET0|Run2023D-JMENanoAODv15_v2-v1
+CAMP|DATA|JetMET0|Run2023D-NanoAODv15-v1
+CAMP|DATA|JetMET0|Run2023D-NanoAODv15_v2-v1
+
+### PROBE DATA Muon
+CAMP|DATA|Muon|Run2022C-BTVNanoAODv15-v1
+CAMP|DATA|Muon|Run2022C-JMENanoAODv15-v2
+CAMP|DATA|Muon|Run2022C-NanoAODv15-v1
+CAMP|DATA|Muon|Run2022C-PromptNanoAODv10-v1
+CAMP|DATA|Muon|Run2022C-PromptNanoAODv10_v1-v1
+CAMP|DATA|Muon|Run2022C-ReRecoNanoAODv11-v1
+CAMP|DATA|Muon|Run2022D-BTVNanoAODv15-v1
+CAMP|DATA|Muon|Run2022D-JMENanoAODv15-v1
+CAMP|DATA|Muon|Run2022D-NanoAODv15-v1
+CAMP|DATA|Muon|Run2022D-PromptNanoAODv10_v1-v1
+CAMP|DATA|Muon|Run2022D-PromptNanoAODv10_v2-v1
+CAMP|DATA|Muon|Run2022D-ReRecoNanoAODv11-v1
+CAMP|DATA|Muon|Run2022E-BTVNanoAODv15-v1
+CAMP|DATA|Muon|Run2022E-JMENanoAODv15-v1
+CAMP|DATA|Muon|Run2022E-NanoAODv15-v1
+CAMP|DATA|Muon|Run2022E-PromptNanoAODv10_v1-v3
+CAMP|DATA|Muon|Run2022E-ReRecoNanoAODv11-v1
+CAMP|DATA|Muon|Run2022F-BTVNanoAODv15-v1
+CAMP|DATA|Muon|Run2022F-JMENanoAODv15-v1
+CAMP|DATA|Muon|Run2022F-NanoAODv15-v1
+CAMP|DATA|Muon|Run2022F-PromptNanoAODv10_v1-v2
+CAMP|DATA|Muon|Run2022F-PromptNanoAODv11_v1-v2
+CAMP|DATA|Muon|Run2022G-BTVNanoAODv15-v1
+CAMP|DATA|Muon|Run2022G-JMENanoAODv15-v1
+CAMP|DATA|Muon|Run2022G-NanoAODv15-v1
+CAMP|DATA|Muon|Run2022G-PromptNanoAODv10_v1-v1
+CAMP|DATA|Muon|Run2022G-PromptNanoAODv11_v1-v2
+
+### PROBE DATA Muon0
+CAMP|DATA|Muon0|Run2023A-PromptNanoAODv11p9_v2-v1
+CAMP|DATA|Muon0|Run2023B-NanoAODv15-v1
+CAMP|DATA|Muon0|Run2023B-PromptNanoAODv11p9_v1-v2
+CAMP|DATA|Muon0|Run2023C-BTVNanoAODv15-v1
+CAMP|DATA|Muon0|Run2023C-BTVNanoAODv15_v2-v1
+CAMP|DATA|Muon0|Run2023C-BTVNanoAODv15_v3-v1
+CAMP|DATA|Muon0|Run2023C-BTVNanoAODv15_v4-v1
+CAMP|DATA|Muon0|Run2023C-JMENanoAODv15-v2
+CAMP|DATA|Muon0|Run2023C-JMENanoAODv15_v2-v2
+CAMP|DATA|Muon0|Run2023C-JMENanoAODv15_v3-v1
+CAMP|DATA|Muon0|Run2023C-JMENanoAODv15_v4-v1
+CAMP|DATA|Muon0|Run2023C-NanoAODv15-v1
+CAMP|DATA|Muon0|Run2023C-NanoAODv15_v2-v1
+CAMP|DATA|Muon0|Run2023C-NanoAODv15_v3-v1
+CAMP|DATA|Muon0|Run2023C-NanoAODv15_v4-v1
+CAMP|DATA|Muon0|Run2023C-PromptNanoAODv11p9_v1-v1
+CAMP|DATA|Muon0|Run2023C-PromptNanoAODv12_v3-v1
+CAMP|DATA|Muon0|Run2023C-PromptNanoAODv12_v4-v1
+CAMP|DATA|Muon0|Run2023D-BTVNanoAODv15-v1
+CAMP|DATA|Muon0|Run2023D-BTVNanoAODv15_v2-v1
+CAMP|DATA|Muon0|Run2023D-JMENanoAODv15-v1
+CAMP|DATA|Muon0|Run2023D-JMENanoAODv15_v2-v1
+CAMP|DATA|Muon0|Run2023D-NanoAODv15-v1
+CAMP|DATA|Muon0|Run2023D-NanoAODv15_v2-v1
+
+### PROBE narrowed to nano=v15 (does it exist for era 2024?)
+###   TTto4Q_TuneCP5_13p6TeV_powheg-pythia8  <-  RunIII2024Summer24NanoAODv15*
+HIT|/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+HIT|/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-BTVNanoV15_150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM
+HIT|/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-FS_150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+HIT|/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-JMENanoV15_150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM
+###   TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8  <-  RunIII2024Summer24NanoAODv15*
+HIT|/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+HIT|/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-BTVNanoV15_150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM
+HIT|/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-FS_150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+HIT|/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-JMENanoV15_150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM
+###   JetMET  <-  Run2024*-MINIv6NANOv15*
+###   JetMET0  <-  Run2024*-MINIv6NANOv15*
+HIT|/JetMET0/Run2024C-MINIv6NANOv15-v1/NANOAOD
+HIT|/JetMET0/Run2024D-MINIv6NANOv15-v1/NANOAOD
+HIT|/JetMET0/Run2024E-MINIv6NANOv15-v1/NANOAOD
+HIT|/JetMET0/Run2024F-MINIv6NANOv15-v2/NANOAOD
+HIT|/JetMET0/Run2024G-MINIv6NANOv15-v2/NANOAOD
+HIT|/JetMET0/Run2024H-MINIv6NANOv15-v2/NANOAOD
+HIT|/JetMET0/Run2024I-MINIv6NANOv15-v2/NANOAOD
+HIT|/JetMET0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD
+###   Muon  <-  Run2024*-MINIv6NANOv15*
+###   Muon0  <-  Run2024*-MINIv6NANOv15*
+HIT|/Muon0/Run2024C-MINIv6NANOv15-v1/NANOAOD
+HIT|/Muon0/Run2024D-MINIv6NANOv15-v1/NANOAOD
+HIT|/Muon0/Run2024E-MINIv6NANOv15-v1/NANOAOD
+HIT|/Muon0/Run2024F-MINIv6NANOv15-v1/NANOAOD
+HIT|/Muon0/Run2024G-MINIv6NANOv15-v1/NANOAOD
+HIT|/Muon0/Run2024H-MINIv6NANOv15-v1/NANOAOD
+HIT|/Muon0/Run2024I-MINIv6NANOv15-v1/NANOAOD
+HIT|/Muon0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD
+
+### PROBE DONE. If the narrowed query returned nothing, the campaign
+### prefix in the era table is wrong for this version -- fix it from
+### the CAMP| lines above. Do NOT run a full scan until it returns hits.
