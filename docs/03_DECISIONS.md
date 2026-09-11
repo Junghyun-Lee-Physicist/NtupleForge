@@ -46,6 +46,23 @@
 - **Status notes.** Everything in `03_run3_plan.md` §2 marked "기억" (from
   memory) is not yet a decision input — it must be verified against the twiki
   before any value is coded (OPEN item 23 in `01_STATUS.md`).
+- **Amendment, same day (after the DAS probe + discovery).** **D-R3-7 —
+  PROPOSED:** the first Run 3 round is **2024 + 2025 with Summer24 NanoAODv15 MC**
+  (PPD: no 2025 MC campaign yet). 2022/2022EE/2023/2023BPix are deferred: their
+  v15 re-nano is partial — the same 70 standard datasets per era (ttbar, ttV,
+  single top t/s/tW, VV, QCD-PT, DY, W→ℓν), no signal / ttbb / QCD-HT / ttH / tH / ttVV — so a v15-only
+  hadronic set cannot be assembled for them without mixing in NanoAODv12, which
+  D-R3-2 forbids. Revisit when a fuller v15 re-nano exists. Also recorded: Summer24
+  v15 carries the ttHH signal and the former "absent six" centrally — including
+  `TT4b`, which the 2026-09-07 text listed as missing: it exists as
+  `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` and was missed by a case-sensitive DAS
+  pattern (corrected 2026-09-10, `03_run3_plan.md` §4.6) — so D17 (enriched
+  NanoAOD) does **not** extend to Run 3 (`03_run3_plan.md` §4.5).
+- **D-R3-8 (2026-09-10) — `TT4b` in Run 3 = central `TT4B`.** No private tt+4b
+  production and no `TTBB*`-based substitute for Run 3; the registry key `TT4b`
+  maps to `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` (Summer24 NanoAODv15, 9.9M).
+  A Sherpa tt+4b sample, if ever produced, is a generator-comparison sample, not
+  a replacement.
 
 ---
 

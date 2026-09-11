@@ -9,6 +9,45 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-09-11: `das_inventory.sh` (campaign dump + case-insensitive matching + status/events TSV)
+
+### Added
+- **`script/das_inventory.sh`** — lists every dataset of a campaign with
+  `status=*` (`/*/<campaign>*/<tier>`, first-letter fallback), matches the
+  registry PRIMARYs and free tokens **locally and case-insensitively**
+  (`EXACT` / `CASE_ONLY` / `NOT_FOUND` / `GREP`), and records per dataset
+  status, nevents, nfiles, size, creation date in a TSV (details for matching
+  datasets by default; `--details all|none`). Tested end-to-end against a
+  `dasgoclient` stub (not yet against DAS). Procedure in `03_run3_plan.md` §4.3 (4).
+- `03_run3_plan.md` §4.6: prefix audit (`TTtoL*` added to `das_discover_run3.sh`
+  for the charge-split Sherpa names), the tt+jets multileg alternatives already
+  in Summer24 v15 (`TTto4Q-2Jets_…amcatnloFXFX` NLO 0,1,2 jets; `TTto4Q-3Jets_…madgraphMLM`),
+  and the powheg `TTto4Q` systematic variants (Hdamp, MT, CR, tune, ERD, BBDPS).
+
+## [Unreleased] — 2026-09-10: `TT4b` found in Summer24 v15 (`TT4B`), discover script case fix, BTV UParTAK4 note
+
+### Fixed
+- **`script/samples_registry_run3.txt`** — `TT4b` row added:
+  `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` (Summer24 NanoAODv15, 9,898,300 events, VALID).
+  The 2026-09-07 discovery reported it absent because `das_discover_run3.sh` queried
+  `TT4b*`/`TTbbbb*` and DAS wildcards are case-sensitive; the Run 3 naming spells
+  `4B`/`BB`. Found through the SL-channel team's dataset list (2026-09-10).
+  Registry now MC 78 (`had` 59 / `lep` 19), DATA 11.
+- **`script/das_discover_run3.sh`** — `TT4B*` and `TTBBBB*` added to the
+  `ttVV_4top` family; header comment on case sensitivity.
+- **`docs/ttHH/03_run3_plan.md`** — BLUF, §4.1, §4.4, §4.5 and §6 item 4 corrected
+  (`TT4b` decision closed: use central `TT4B`); new §4.6 with the Summer24 event
+  counts read from DAS (`TTtoLNu2Q` 484.5M, `TTBBtoLNu2Q` 22.5M, `TTH-Hto2B` 2.44M,
+  `TTHH`/`TTZH`/`TTZZ`/`TT4B` ≈10M each) and the lesson on case-sensitive patterns.
+
+### Added
+- **BTV recommendation recorded** (03_run3_plan §2 row 9): for the re-NanoAODv15
+  campaigns (Run 2, 2022/2023) the 2024 UParTv2/UParTAK4 working points apply to
+  `Jet_btagUParTAK4B`; RobustParT WPs/SFs must not be reused (CMS-talk
+  "UParTAK4 working points for 2022/2023 NanoAODv15", 2026-09-09).
+- **`01_STATUS.md` E 22d/22e** — MC-request status (deck `ttHH_latex/GenRequest_Sep2026`,
+  group feedback of 2026-09-10) and the BTV note.
+
 ## [Unreleased] — 2026-09-07: Run 3 kickoff — plan doc, era table, family discovery script, `had`/`lep` registry tags
 
 Parallel to the enriched-NanoAOD validation batch (TTHHGenCategoryTools D17).
@@ -67,6 +106,30 @@ No physics logic changed; nothing was submitted or produced.
 - `das_discover_run3.sh`: 2025 → Summer24 MC; family wildcards widened to prefixes
   (`QCD-4Jets*`, `TTH*`, `DYto2L*`, `WW*` …) so both the Summer22/23 and the Summer24
   spellings are caught.
+
+### Same day, third pass — probe + discovery run on lxplus; Run 3 registry written
+- Logs committed: `script/das_probe_{2022,2022EE,2023,2023BPix,2024,2025}_v15.log`,
+  `script/das_discover_<era>_v15_20260907_*.log`. All six era rows of `das_scan.sh` are
+  now DAS-verified (MC campaign + GT, data processing strings; `03_run3_plan.md` §4.2).
+- **Findings** (§4.5): Summer24 NanoAODv15 carries the whole hadronic set centrally —
+  `TTHH-HHto4B` (signal), `TTZH-ZHto4B`, `TTZZ-ZZto4B`, `THW/THQ`, `TTBBto*`, `QCD-4Jets_Bin-HT-*`,
+  `Wto2Q/Zto2Q`, single top, ttVV — only `TT4b` is absent; no enriched-NanoAOD production is needed
+  for Run 3. The 2022/2022EE/2023/2023BPix v15 re-nano is **partial** (the same 70 standard
+  datasets per era: ttbar, ttV, single top (t/s/tW), VV, QCD-PT, DY, W→ℓν) → D-R3-7 (PROPOSED): first Run 3 round =
+  2024 + 2025 with Summer24 MC. Data: 2025 `PromptReco-v1` for B–G plus `-v2` for C and F (disjoint
+  runs, all kept); 2024 `MINIv6NANOv15` C–I plus `Run2024I-MINIv6NANOv15_v2`; 2023 `NanoAODv15{,_v2,_v3,_v4}`;
+  2022 `NanoAODv15-v1` C–G.
+- **New `script/samples_registry_run3.txt`** — 77 MC rows (58 `had`, 19 `lep`) + 11 DATA rows, every
+  PRIMARY copied from a `HIT|` line. Run 2 KEYs kept where the sample is the same; new KEYs where
+  Run 3 splits/merges (`TTZToQQ`, `TTTWminus/plus`, `ST_t_top_had/lep`, `ST_tW_top_had/semilep/dilep`,
+  `ST_s_*`, `QCD_HT200to400…`, `WJetsToLNu_HT*_MLNu*`, `DYJetsToLL_M50to120_HT*`). `TTWJetsToLNu` is
+  listed but will be NOT_FOUND (v15 has `TTLNu-1Jets` only as `mg35x_`); `BTagMu` commented out.
+- `das_scan.sh`: Run 3 + v15 MC queries are **GT-anchored** (`/<primary>/<campaign>-<MC_GT_V15>*/NANOAODSIM`)
+  so the flavour re-productions sharing the prefix (JMENanoV15_, BTVNanoV15_, FS_, NoPU_, FlatPU_,
+  EpsilonPU_, EGMNanoV15_, MUOPOGNano_, mg35x_) are not scanned; `_pilot` datasets dropped; Run 3 eras
+  auto-select `samples_registry_run3.txt` when `--registry` is not given; `META|` gains `mc_gt=`.
+- Known follow-up: `build_from_scan_log.py` must keep every prompt `-vN` / `_vN` data variant for Run 3
+  (today it keeps one canonical per (PD, era)); flavour EXCLUDE list to extend (`01_STATUS.md` 22b).
 
 ---
 

@@ -1,0 +1,174 @@
+# =============================================================================
+#  samples_registry_run3.txt  --  ttHH -> 4b sample keys for RUN 3 (13.6 TeV)
+# =============================================================================
+#  Created 2026-09-07 from the DAS family discovery of the same day
+#  (script/das_discover_<era>_v15_20260907_*.log, script/das_probe_<era>_v15.log).
+#  EVERY PRIMARY below was copied from a HIT| line of those logs -- nothing is
+#  guessed (docs/ttHH/03_run3_plan.md D-R3-4). Same 6-column format and the
+#  same KEY vocabulary as samples_registry.txt (D-R3-3): a KEY that also exists
+#  for Run 2 means the same physics sample, so xsec DB / filelists / patches
+#  stay year-generic. Where Run 3 splits or merges a Run 2 sample the KEY is
+#  new and says so (e.g. TTZToQQ replaces TTZToBB; ST_t_top_had / _lep).
+#
+#  ERAS  2024,2025 = RunIII2024Summer24 NanoAODv15 MC (GT 150X_mcRun3_2024_realistic_v2).
+#        2025 has NO MC campaign yet: PPD (Run3 2025 Summary Table, 2026-01-20)
+#        says to use Summer24 MC, so das_scan.sh --era 2025 scans Summer24 too.
+#        2022,2022EE,2023,2023BPix are listed ONLY where the v15 re-nano exists
+#        under the identical PRIMARY. The 2022/2023 v15 re-nano is PARTIAL
+#        (70 datasets: ttbar, ttV, single top, VV, QCD-PT, DY, W->lnu; NO signal / ttbb / QCD-HT /
+#        ttH / tH / ttVV / V->qq) -- 03_run3_plan.md section 4.5. A 2022/2023
+#        row that DAS lacks reports NOT_FOUND, which is the honest record.
+#
+#  DATA  PDs are split into <PD>0/<PD>1 from 2023 on; BOTH halves are needed
+#        (PdmV). 2022: JetMET/Muon/EGamma (C-G) plus the pre-merge JetHT/
+#        SingleMuon (A-C only). Prompt 2025: every -vN of an era is a disjoint
+#        run range (C and F have v1 AND v2) -> all are kept; 2023C _v2/_v3/_v4
+#        and 2024I _v2 likewise. Re-processed 2024 (MINIv6NANOv15) has one -vN
+#        per (PD, era).
+#
+#  Production order (user decision 2026-09-07): --workstream had first; lep later.
+#
+#  FORMAT:  <TYPE>  <KEY>  <PRIMARY>  <ERAS>  <GROUP>  <WORKSTREAM>
+#  ext variants are not listed (found by the campaign wildcard at scan time).
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# TYPE  KEY   PRIMARY   ERAS   GROUP   WORKSTREAM
+# ---------------------------------------------------------------------------
+
+# ===== ttHH / signal ===== (Summer24 has the 4b signal CENTRALLY -- unlike Run 2 UL v15)
+MC   TTHHto4b                 TTHH-HHto4B_TuneCP5_13p6TeV_madgraph-pythia8                        2024,2025                              signal     ttHH,had
+#    other decay modes exist (not our channel): TTHH-TTto2L2Nu-HHto2B2Tau/2B2W/2B2Z, TTHH-TTtoLNu2Q-HHto2B2Tau/2B2W/2B2Z
+
+# ===== ttbar ===== (same PRIMARY in Summer22/22EE/23/23BPix v15 -> all eras)
+MC   TTbar_SemiLep            TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8                            2022,2022EE,2023,2023BPix,2024,2025    ttbar      ttHH,had
+MC   TTbar_Hadronic           TTto4Q_TuneCP5_13p6TeV_powheg-pythia8                               2022,2022EE,2023,2023BPix,2024,2025    ttbar      ttHH,had
+MC   TTbar_DiLep              TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8                            2022,2022EE,2023,2023BPix,2024,2025    ttbar      ttHH,had
+
+# ===== ttbb (4FS Powheg) ===== Run 2 'TTbb_4f_TTTo*' -> Run 3 'TTBBto*'
+MC   TTbb_SemiLep             TTBBtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8                          2024,2025                              ttbb       ttHH,had
+MC   TTbb_Hadronic            TTBBto4Q_TuneCP5_13p6TeV_powheg-pythia8                             2024,2025                              ttbb       ttHH,had
+MC   TTbb_DiLep               TTBBto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8                          2024,2025                              ttbb       ttHH,had
+
+# ===== QCD multijet, HT-binned (MLM) ===== bins differ from Run 2 (200-400, 400-600, ...);
+#       lower bins 40to70 / 70to100 / 100to200 exist, not listed (below any FH selection)
+MC   QCD_HT200to400           QCD-4Jets_Bin-HT-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8       2024,2025                              qcd        ttHH,had
+MC   QCD_HT400to600           QCD-4Jets_Bin-HT-400to600_TuneCP5_13p6TeV_madgraphMLM-pythia8       2024,2025                              qcd        ttHH,had
+MC   QCD_HT600to800           QCD-4Jets_Bin-HT-600to800_TuneCP5_13p6TeV_madgraphMLM-pythia8       2024,2025                              qcd        ttHH,had
+MC   QCD_HT800to1000          QCD-4Jets_Bin-HT-800to1000_TuneCP5_13p6TeV_madgraphMLM-pythia8      2024,2025                              qcd        ttHH,had
+MC   QCD_HT1000to1200         QCD-4Jets_Bin-HT-1000to1200_TuneCP5_13p6TeV_madgraphMLM-pythia8     2024,2025                              qcd        ttHH,had
+MC   QCD_HT1200to1500         QCD-4Jets_Bin-HT-1200to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8     2024,2025                              qcd        ttHH,had
+MC   QCD_HT1500to2000         QCD-4Jets_Bin-HT-1500to2000_TuneCP5_13p6TeV_madgraphMLM-pythia8     2024,2025                              qcd        ttHH,had
+MC   QCD_HT2000toInf          QCD-4Jets_Bin-HT-2000_TuneCP5_13p6TeV_madgraphMLM-pythia8           2024,2025                              qcd        ttHH,had
+
+# ===== ttH ===== (Summer24 'Par-M-125' naming; tt-decay-split TTH-Hto2B-TTto4Q/LNu2Q/2L2Nu also exist)
+MC   ttHTobb                  TTH-Hto2B_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8                  2024,2025                              ttH        ttHH,had
+MC   ttHToNonbb               TTH-HtoNon2B_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8               2024,2025                              ttH        ttHH,had
+
+# ===== tH =====
+MC   tHq                      THQ-4FS-ctcvcp_Par-M-125_TuneCP5_13p6TeV_madgraph-pythia8           2024,2025                              tH         ttHH,had
+MC   tHW                      THW-5FS-ctcvcp_Par-M-125_TuneCP5_13p6TeV_madgraph-pythia8           2024,2025                              tH         ttHH,had
+
+# ===== ttV ===== Run 2 TTZToBB has no Run 3 twin: Z->qq inclusive (TTZToQQ) replaces it.
+#       TTZ-ZtoQQ-1J_..._madgraphMLM (LO) exists as an alternative; the FXFX one is listed.
+#       2022/2023 spell TTZ-ZtoQQ-1Jets_..._amcatnloFXFX (not 'FXFXold') and TTLL_MLL-* (no 'Bin-')
+#       -> those eras are NOT listed for the rows whose PRIMARY differs.
+MC   TTZToQQ                  TTZ-ZtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFXold-pythia8             2024,2025                              ttV_had    ttHH,had
+MC   TTWJetsToQQ              TTW-WtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFXold-pythia8             2022,2022EE,2023,2023BPix,2024,2025    ttV_had    ttHH,had
+MC   TTWJetsToLNu             TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8                    2024,2025                              ttV_lep    ttHH,had
+#    ^ Summer24 v15 has TTLNu-1Jets ONLY in the 'mg35x_' flavour (RunIII2024Summer24NanoAODv15-mg35x_150X...);
+#      the GT-anchored scan will say NOT_FOUND. Decide: accept the mg35x production or drop ttW->lnu.
+MC   TTLL_MLL50               TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8                    2024,2025                              ttV_lep    ttHH,had
+MC   TTLL_MLL4to50            TTLL_Bin-MLL-4to50_TuneCP5_13p6TeV_amcatnlo-pythia8                 2024,2025                              ttV_lep    ttHH,had
+MC   TTNuNu                   TTNuNu_TuneCP5_13p6TeV_amcatnlo-pythia8                             2022,2022EE,2023,2023BPix,2024,2025    ttV_lep    ttHH,had
+
+# ===== ttVV / 4 top ===== Run 2 TTTW -> Run 3 TTTWminus/TTTWplus (DR1; DRW variants exist)
+MC   TTZHTo4b                 TTZH-ZHto4B_TuneCP5_13p6TeV_madgraph-pythia8                        2024,2025                              ttVV       ttHH,had
+MC   TTZZTo4b                 TTZZ-ZZto4B_TuneCP5_13p6TeV_madgraph-pythia8                        2024,2025                              ttVV       ttHH,had
+MC   TTWW                     TTWW_TuneCP5_13p6TeV_madgraph-pythia8                               2024,2025                              ttVV       ttHH,had
+MC   TTWH                     TTWH_TuneCP5_13p6TeV_madgraph-pythia8                               2024,2025                              ttVV       ttHH,had
+MC   TTWZ                     TTWZ_TuneCP5_13p6TeV_madgraph-pythia8                               2024,2025                              ttVV       ttHH,had
+MC   TTTWminus                TTTWminus-DR1_TuneCP5_13p6TeV_amcatnlo-pythia8                      2024,2025                              ttVV       ttHH,had
+MC   TTTWplus                 TTTWplus-DR1_TuneCP5_13p6TeV_amcatnlo-pythia8                       2024,2025                              ttVV       ttHH,had
+MC   TTTT                     TTTT_TuneCP5_13p6TeV_amcatnlo-pythia8                               2024,2025                              ttVV       ttHH,had
+MC   TT4b                     TT4B_TuneCP5_13p6TeV_madgraph-pythia8                               2024,2025                              ttVV       ttHH,had
+#    TT4b (added 2026-09-10): Summer24 v15 HAS it -- /TT4B_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-
+#    150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM, 9,898,300 ev, 34 files, VALID (created 2025-03-27). The 2026-09-07
+#    discovery reported NONE because DAS wildcards are CASE-SENSITIVE and it queried TT4b*/TTbbbb* (Run 3 spells 4B, as in
+#    TTBBto4Q / TTHH-HHto4B). Found through the SL-channel team's dataset list. GROUP ttVV kept for Run 2 continuity.
+
+# ===== single top ===== Run 3 splits by top decay (2Q / LNu; tW: 4Q / LNu2Q / 2L2Nu)
+MC   ST_t_top_had             TBbarQto2Q-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8     2024,2025                              singletop  ttHH,had
+MC   ST_t_top_lep             TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8    2024,2025                              singletop  ttHH,had
+MC   ST_t_antitop_had         TbarBQto2Q-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8     2024,2025                              singletop  ttHH,had
+MC   ST_t_antitop_lep         TbarBQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8    2024,2025                              singletop  ttHH,had
+MC   ST_tW_top_had            TWminusto4Q_TuneCP5_13p6TeV_powheg-pythia8                          2022,2022EE,2023,2023BPix,2024,2025    singletop  ttHH,had
+MC   ST_tW_top_semilep        TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8                       2022,2022EE,2023,2023BPix,2024,2025    singletop  ttHH,had
+MC   ST_tW_top_dilep          TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8                       2022,2022EE,2023,2023BPix,2024,2025    singletop  ttHH,had
+MC   ST_tW_antitop_had        TbarWplusto4Q_TuneCP5_13p6TeV_powheg-pythia8                        2022,2022EE,2023,2023BPix,2024,2025    singletop  ttHH,had
+MC   ST_tW_antitop_semilep    TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8                     2022,2022EE,2023,2023BPix,2024,2025    singletop  ttHH,had
+MC   ST_tW_antitop_dilep      TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8                     2022,2022EE,2023,2023BPix,2024,2025    singletop  ttHH,had
+MC   ST_s_top_had             TBbarto2Q-s-channel_TuneCP5_13p6TeV_powheg-pythia8                  2024,2025                              singletop  ttHH,had
+MC   ST_s_top_lep             TBbartoLNu-s-channel_TuneCP5_13p6TeV_powheg-pythia8                 2024,2025                              singletop  ttHH,had
+MC   ST_s_antitop_had         TbarBto2Q-s-channel_TuneCP5_13p6TeV_powheg-pythia8                  2024,2025                              singletop  ttHH,had
+MC   ST_s_antitop_lep         TbarBtoLNu-s-channel_TuneCP5_13p6TeV_powheg-pythia8                 2024,2025                              singletop  ttHH,had
+
+# ===== diboson (inclusive pythia8) =====
+MC   WW                       WW_TuneCP5_13p6TeV_pythia8                                          2022,2022EE,2023,2023BPix,2024,2025    diboson    ttHH,had
+MC   WZ                       WZ_TuneCP5_13p6TeV_pythia8                                          2022,2022EE,2023,2023BPix,2024,2025    diboson    ttHH,had
+MC   ZZ                       ZZ_TuneCP5_13p6TeV_pythia8                                          2022,2022EE,2023,2023BPix,2024,2025    diboson    ttHH,had
+
+# ===== V(->qq)+jets, HT-binned (MLM) ===== bins 100-400 / 400-800 / 800-1500 / 1500-2500 / 2500
+#       (Run 2 started at 400; the 100to400 bin is not listed)
+MC   WJetsToQQ_HT400to800     Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8     2024,2025                              vjets_qq   ttHH,had
+MC   WJetsToQQ_HT800to1500    Wto2Q-3Jets_Bin-HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8    2024,2025                              vjets_qq   ttHH,had
+MC   WJetsToQQ_HT1500to2500   Wto2Q-3Jets_Bin-HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8   2024,2025                              vjets_qq   ttHH,had
+MC   WJetsToQQ_HT2500toInf    Wto2Q-3Jets_Bin-HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8         2024,2025                              vjets_qq   ttHH,had
+MC   ZJetsToQQ_HT400to800     Zto2Q-4Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8     2024,2025                              vjets_qq   ttHH,had
+MC   ZJetsToQQ_HT800to1500    Zto2Q-4Jets_Bin-HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8    2024,2025                              vjets_qq   ttHH,had
+MC   ZJetsToQQ_HT1500to2500   Zto2Q-4Jets_Bin-HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8   2024,2025                              vjets_qq   ttHH,had
+MC   ZJetsToQQ_HT2500toInf    Zto2Q-4Jets_Bin-HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8         2024,2025                              vjets_qq   ttHH,had
+
+# ===== W(->lnu)+jets, HT x M(lnu) binned (MLM) -- lep (data/MC test) =====
+#       Summer24 splits each HT bin into MLNu 0-120 and >120; both halves are needed.
+#       Alternatives: jet-binned WtoLNu-4Jets_Bin-{1J,2J,3J,4J}; NLO WtoLNu-2Jets_Bin-PTLNu-*.
+MC   WJetsToLNu_HT40to100_MLNu0to120        WtoLNu-4Jets_Bin-HT-40to100-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8       2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT40to100_MLNu120           WtoLNu-4Jets_Bin-HT-40to100-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8          2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT100to400_MLNu0to120       WtoLNu-4Jets_Bin-HT-100to400-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8      2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT100to400_MLNu120          WtoLNu-4Jets_Bin-HT-100to400-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8         2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT400to800_MLNu0to120       WtoLNu-4Jets_Bin-HT-400to800-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8      2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT400to800_MLNu120          WtoLNu-4Jets_Bin-HT-400to800-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8         2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT800to1500_MLNu0to120      WtoLNu-4Jets_Bin-HT-800to1500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8     2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT800to1500_MLNu120         WtoLNu-4Jets_Bin-HT-800to1500-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8        2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT1500to2500_MLNu0to120     WtoLNu-4Jets_Bin-HT-1500to2500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8    2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT1500to2500_MLNu120        WtoLNu-4Jets_Bin-HT-1500to2500-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8       2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT2500toInf_MLNu0to120      WtoLNu-4Jets_Bin-HT-2500-MLNu-0to120_TuneCP5_13p6TeV_madgraphMLM-pythia8          2024,2025   wjets_lnu  ttHH,lep
+MC   WJetsToLNu_HT2500toInf_MLNu120         WtoLNu-4Jets_Bin-HT-2500-MLNu-120_TuneCP5_13p6TeV_madgraphMLM-pythia8             2024,2025   wjets_lnu  ttHH,lep
+
+# ===== Drell-Yan, HT-binned, 50 < M(ll) < 120 (MLM) -- lep (data/MC test) =====
+#       MLL-120 and MLL-4to50 companions exist per HT bin; per-flavour NLO DYto2E/2Mu/2Tau-2Jets_Bin-{0J,1J,2J}-MLL-50 too.
+MC   DYJetsToLL_M50to120_HT40to70          DYto2L-4Jets_Bin-HT-40to70-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8         2024,2025   dy_ll      ttHH,lep
+MC   DYJetsToLL_M50to120_HT70to100         DYto2L-4Jets_Bin-HT-70to100-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8        2024,2025   dy_ll      ttHH,lep
+MC   DYJetsToLL_M50to120_HT100to400        DYto2L-4Jets_Bin-HT-100to400-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8       2024,2025   dy_ll      ttHH,lep
+MC   DYJetsToLL_M50to120_HT400to800        DYto2L-4Jets_Bin-HT-400to800-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8       2024,2025   dy_ll      ttHH,lep
+MC   DYJetsToLL_M50to120_HT800to1500       DYto2L-4Jets_Bin-HT-800to1500-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8      2024,2025   dy_ll      ttHH,lep
+MC   DYJetsToLL_M50to120_HT1500to2500      DYto2L-4Jets_Bin-HT-1500to2500-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8     2024,2025   dy_ll      ttHH,lep
+MC   DYJetsToLL_M50to120_HT2500toInf       DYto2L-4Jets_Bin-HT-2500-MLL-50to120_TuneCP5_13p6TeV_madgraphMLM-pythia8           2024,2025   dy_ll      ttHH,lep
+
+# ===== DATA ===== (KEY = PD; das_scan.sh enumerates the eras/versions that exist)
+#  2023-: split PDs, both halves needed. 2024 re-processing MINIv6NANOv15; 2025 T0 prompt (all -vN).
+DATA JetMET0                  JetMET0        2023,2023BPix,2024,2025                data       ttHH,had
+DATA JetMET1                  JetMET1        2023,2023BPix,2024,2025                data       ttHH,had
+DATA Muon0                    Muon0          2023,2023BPix,2024,2025                data       ttHH,had,lep
+DATA Muon1                    Muon1          2023,2023BPix,2024,2025                data       ttHH,had,lep
+DATA EGamma0                  EGamma0        2023,2023BPix,2024,2025                data       ttHH,lep
+DATA EGamma1                  EGamma1        2023,2023BPix,2024,2025                data       ttHH,lep
+#  BTagMu (b-tag muon-jet PD) exists for every era; NOT the Run 2 BTagCSV role. Add only if the FH
+#  b-tag trigger paths turn out to live there (check the HLT menu -> PD mapping, CMS HLT Info tool).
+#DATA BTagMu                  BTagMu         2023,2023BPix,2024,2025                data       ttHH,had
+#  2022: merged PDs from era C (JetHT+MET -> JetMET, SingleMuon+DoubleMuon -> Muon); A-C keep the old names.
+DATA JetMET                   JetMET         2022,2022EE                            data       ttHH,had
+DATA Muon                     Muon           2022,2022EE                            data       ttHH,had,lep
+DATA EGamma                   EGamma         2022,2022EE                            data       ttHH,lep
+DATA JetHT                    JetHT          2022,2022EE                            data       ttHH,had
+DATA SingleMuon               SingleMuon     2022,2022EE                            data       ttHH,had,lep

@@ -74,16 +74,24 @@ echo "META|era=${ERA}|nano=${NANO}|mc_campaign=${MC_CAMPAIGN}|data_runera=${DATA
 # (QCD-4Jets_Bin-HT-..., TTH-Hto2B_Par-M-125, DYto2E-2Jets_Bin-0J-MLL-50 -- seen
 # in a 2024 reference list, 2026-09-07). A prefix catches both spellings; the
 # registry step drops what does not belong.
+# DAS wildcards are CASE-SENSITIVE (DBS LIKE): TT4b* did NOT match the real
+# Summer24 name TT4B_TuneCP5_13p6TeV_madgraph-pythia8 (missed on 2026-09-07,
+# found 2026-09-10). Run 3 names spell b-quarks as 4B / BB (TTBBto4Q,
+# TTHH-HHto4B) -- list both spellings whenever a family can carry one.
+# TTtoL* (2026-09-11) catches the charge-split Sherpa names TTtoLminusNu2Q /
+# TTtoLplusNu2Q / TTtoLminusNuQ that TTtoLNu2Q* does not.
+# The case-proof way is script/das_inventory.sh: dump the whole campaign once
+# and match locally, case-insensitively; use this script for the quick look.
 MC_FAMILIES=(
   "signal_ttHH     had      TTHH*"
-  "ttbar           had      TTto4Q* TTtoLNu2Q* TTto2L2Nu*"
+  "ttbar           had      TTto4Q* TTtoLNu2Q* TTtoL* TTto2L2Nu*"
   "ttbb            had      TTbb* TTBB*"
   "qcd_ht          had      QCD-4Jets* QCD_HT* QCD_Bin-HT*"
   "qcd_pt          had      QCD_PT-* QCD_Bin-PT*"
   "ttH             had      TTH* ttH*"
   "tH              had      THQ* THW* TQ*H* TW*H*"
   "ttV             had      TTZ* TTLL* TTLNu* TTW* TTNuNu*"
-  "ttVV_4top       had      TTWW* TTWZ* TTZZ* TTWH* TTZH* TTTT* TTTW* TT4b* TTbbbb*"
+  "ttVV_4top       had      TTWW* TTWZ* TTZZ* TTWH* TTZH* TTTT* TTTW* TT4b* TT4B* TTbbbb* TTBBBB*"
   "singletop       had      TBbarQ* TbarBQ* TWminus* TbarWplus* TBbarto* TbarBto* ST_*"
   "diboson         had      WW* WZ* ZZ*"
   "vjets_qq        had      Wto2Q* Zto2Q*"

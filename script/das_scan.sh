@@ -150,36 +150,40 @@ era_table () {
     #     re-nano, docs/ttHH/03_run3_plan.md section 4.2). Sources, 2026-09-07:
     #     PdmVRun3Analysis twiki r223 and the PPD "Run3 2025 Summary Table"
     #     (20 Jan 2026), plus one reference analysis' dataset list.
-    #       2024 MC     RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-vN   VERIFIED (reference list)
-    #       2024 data   Run2024C..I-MINIv6NANOv15-v1|v2  (re-mini v6 + re-nano v15)     VERIFIED (reference list)
-    #       2025 data   T0 prompt MINIAODv6/NANOv15, GT 150X_dataRun3_Prompt_v1:
-    #                   expected /PD/Run2025<E>-PromptReco-v<N>/NANOAOD (2023-era-D naming rule)  UNVERIFIED
-    #       2025 MC     NONE YET -- PPD: "use Summer24 MC for now", so the 2025
-    #                   row points at the Summer24 campaign (same datasets as 2024).
-    #       2022/2023   Run2022C-NanoAODv15-v1 seen for JetHT (probe 2026-09-07);
-    #                   MC prefixes Run3Summer22/22EE/23/23BPix + NanoAODv15    UNVERIFIED
-    #     A Run 3 row is trusted only after `--probe --nano v15` returns HIT|
-    #     lines for it; the probe uses 13p6TeV primaries and Run 3 PDs.
+    #     ALL SIX ROWS VERIFIED by --probe --nano v15 on 2026-09-07 (HIT| lines
+    #     for TTto4Q/TTtoLNu2Q and JetMET(0)/Muon(0); logs script/das_probe_*_v15.log):
+    #       2022    MC Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v2        data Run2022C..G-NanoAODv15-v1
+    #       2022EE  MC Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v2
+    #       2023    MC Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v2        data Run2023B..D-NanoAODv15[_vN]-v1
+    #       2023BPix MC Run3Summer23BPixNanoAODv15-150X_mcRun3_2023_realistic_postBPix_v1-v2
+    #       2024    MC RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2   data Run2024C..I-MINIv6NANOv15[_v2]-vN
+    #       2025    MC NONE YET (PPD: use Summer24) -> the 2025 row scans Summer24  data Run2025B..G-PromptReco-v1|v2
+    #     The v15 MC GT (MC_GT_V15) anchors the MC query so that the flavour
+    #     re-productions sharing the prefix (JMENanoV15_, BTVNanoV15_, FS_, NoPU_,
+    #     EGMNanoV15_, MUOPOGNano_, mg35x_ ...) are not counted as our samples.
+    #     CAVEAT: for 2022/2023 the v15 re-nano is PARTIAL (70 datasets: ttbar, ttV,
+    #     single top, VV, QCD-PT, DY, W->lnu; no signal/ttbb/QCD-HT/ttH/tH/ttVV) -- see
+    #     docs/ttHH/03_run3_plan.md section 4.5.
     #     Sample primaries also change (TuneCP5_13p6TeV; Summer24 adds the
     #     Bin-/Par-/Fil- convention) -- Run 3 rows live in samples_registry_run3.txt
     #     (--registry), never reuse the 13 TeV ones.
     #     Prompt data: take EVERY processing version (v1 AND v2 of an era; PPD note).
-    2022)          MC_CAMPAIGN="Run3Summer22NanoAOD@V@"
+    2022)          MC_CAMPAIGN="Run3Summer22NanoAOD@V@"      MC_GT_V15="150X_mcRun3_2022_realistic_v1"
                    DATA_RUNERA="Run2022"
                    DATA_PROC="NanoAOD@V@" ; RUN3=1 ;;
-    2022EE)        MC_CAMPAIGN="Run3Summer22EENanoAOD@V@"
+    2022EE)        MC_CAMPAIGN="Run3Summer22EENanoAOD@V@"    MC_GT_V15="150X_mcRun3_2022_realistic_postEE_v1"
                    DATA_RUNERA="Run2022"
                    DATA_PROC="NanoAOD@V@" ; RUN3=1 ;;
-    2023)          MC_CAMPAIGN="Run3Summer23NanoAOD@V@"
+    2023)          MC_CAMPAIGN="Run3Summer23NanoAOD@V@"      MC_GT_V15="150X_mcRun3_2023_realistic_v1"
                    DATA_RUNERA="Run2023"
                    DATA_PROC="NanoAOD@V@" ; RUN3=1 ;;
-    2023BPix)      MC_CAMPAIGN="Run3Summer23BPixNanoAOD@V@"
+    2023BPix)      MC_CAMPAIGN="Run3Summer23BPixNanoAOD@V@"  MC_GT_V15="150X_mcRun3_2023_realistic_postBPix_v1"
                    DATA_RUNERA="Run2023"
                    DATA_PROC="NanoAOD@V@" ; RUN3=1 ;;
-    2024)          MC_CAMPAIGN="RunIII2024Summer24NanoAOD@V@"
+    2024)          MC_CAMPAIGN="RunIII2024Summer24NanoAOD@V@" MC_GT_V15="150X_mcRun3_2024_realistic_v2"
                    DATA_RUNERA="Run2024"
                    DATA_PROC="MINIv6NANO@V@" ; RUN3=1 ;;
-    2025)          MC_CAMPAIGN="RunIII2024Summer24NanoAOD@V@"      # no 2025 MC campaign yet (PPD 2026-01-20)
+    2025)          MC_CAMPAIGN="RunIII2024Summer24NanoAOD@V@" MC_GT_V15="150X_mcRun3_2024_realistic_v2"   # no 2025 MC campaign yet (PPD 2026-01-20)
                    DATA_RUNERA="Run2025"
                    DATA_PROC="PromptReco" ; RUN3=1 ;;
     *) return 1 ;;
@@ -206,6 +210,7 @@ PROBE_DATA_RUN3=( "JetMET" "JetMET0" "Muon" "Muon0" )
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ERA="" ; NANO="" ; PROBE=0 ; SAMPLE_FILE=0 ; ONLY="" ; OUT="" ; WORKSTREAM=""
 REGISTRY="${SCRIPT_DIR}/samples_registry.txt"
+REGISTRY_GIVEN=0
 
 usage () { sed -n '2,/^# ====/p' "${BASH_SOURCE[0]}" | sed 's/^#\{0,1\} \{0,1\}//' ; }
 
@@ -213,7 +218,7 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --era)         ERA="${2:-}"      ; shift 2 ;;
     --nano)        NANO="${2:-}"     ; shift 2 ;;
-    --registry)    REGISTRY="${2:-}" ; shift 2 ;;
+    --registry)    REGISTRY="${2:-}" ; REGISTRY_GIVEN=1 ; shift 2 ;;
     --only)        ONLY="${2:-}"     ; shift 2 ;;
     --workstream)  WORKSTREAM="${2:-}" ; shift 2 ;;
     --out)         OUT="${2:-}"      ; shift 2 ;;
@@ -226,9 +231,18 @@ while [[ $# -gt 0 ]]; do
 done
 
 [[ -z "$ERA" ]] && { echo "FATAL: --era is required (see --list-eras)" >&2; exit 3; }
-RUN3=0
+RUN3=0 ; MC_GT_V15="" ; MC_GT=""
 era_table "$ERA" || { echo "FATAL: unknown era '$ERA'. Known: $ALL_ERAS" >&2; exit 3; }
 if [[ $RUN3 -eq 1 ]]; then PROBE_MC=( "${PROBE_MC_RUN3[@]}" ); PROBE_DATA=( "${PROBE_DATA_RUN3[@]}" ); fi
+# Run 3 + v15: anchor the MC query on the campaign GT so flavour re-productions
+# (JMENanoV15_, BTVNanoV15_, FS_, NoPU_, ...) that share the prefix are excluded.
+# Other versions have no GT table here -> wildcard query as before.
+if [[ $RUN3 -eq 1 && "${NANO:-}" == "v15" ]]; then MC_GT="$MC_GT_V15"; fi
+# Run 3 rows live in their own registry (13p6TeV primaries; docs/ttHH/03_run3_plan.md
+# D-R3-3). If none was given, switch to it rather than scanning 13 TeV names.
+if [[ $RUN3 -eq 1 && $REGISTRY_GIVEN -eq 0 && -r "${SCRIPT_DIR}/samples_registry_run3.txt" ]]; then
+  REGISTRY="${SCRIPT_DIR}/samples_registry_run3.txt"
+fi
 if [[ $PROBE -eq 0 && -z "$NANO" ]]; then
   echo "FATAL: --nano is required unless --probe (e.g. --nano v9 / --nano v15)" >&2; exit 3
 fi
@@ -253,12 +267,12 @@ DATA_PROC="${DATA_PROC//@V@/${NANO}}"
 
 echo "========================================================================="
 echo "das_scan.sh   era=${ERA}   nano=${NANO:-<probe>}   $(date -u +%FT%TZ)"
-echo "  MC campaign prefix : ${MC_CAMPAIGN}"
+echo "  MC campaign prefix : ${MC_CAMPAIGN}${MC_GT:+-${MC_GT}  (GT-anchored: flavour re-productions excluded)}"
 echo "  Data era / proc    : ${DATA_RUNERA}* / ${DATA_PROC}*"
 echo "  registry           : ${REGISTRY}"
 echo "  workstream filter  : ${WORKSTREAM:-<none: BOTH ttHH and CPV>}"
 echo "========================================================================="
-echo "META|era=${ERA}|nano=${NANO}|mc_campaign=${MC_CAMPAIGN}|data_runera=${DATA_RUNERA}|data_proc=${DATA_PROC}|registry=${REGISTRY}|workstream=${WORKSTREAM}|utc=$(date -u +%FT%TZ)"
+echo "META|era=${ERA}|nano=${NANO}|mc_campaign=${MC_CAMPAIGN}|mc_gt=${MC_GT}|data_runera=${DATA_RUNERA}|data_proc=${DATA_PROC}|registry=${REGISTRY}|workstream=${WORKSTREAM}|utc=$(date -u +%FT%TZ)"
 [[ "$ERA" == "2025" ]] && echo "### NOTE: 2025 has no MC campaign yet -- MC is scanned in RunIII2024Summer24 (PPD Run3 2025 table, 20 Jan 2026: use Summer24 MC for now)"
 
 # -----------------------------------------------------------------------------
@@ -294,8 +308,9 @@ scan_mc () {
     local key="$1" primary="$2"
     echo ""
     echo "### MC ${key}  (primary: ${primary})"
-    local q1="/${primary}/${MC_CAMPAIGN}*/NANOAODSIM"
-    mapfile -t hits < <(dasgoclient -query "dataset=${q1}" 2>/dev/null)
+    local camp="${MC_CAMPAIGN}${MC_GT:+-${MC_GT}}"
+    local q1="/${primary}/${camp}*/NANOAODSIM"
+    mapfile -t hits < <(dasgoclient -query "dataset=${q1}" 2>/dev/null | grep -v '_pilot')
     local mode="EXACT"
     if [[ ${#hits[@]} -eq 0 || -z "${hits[0]:-}" ]]; then
         # Relaxed: truncate the primary at the tune token. Covers naming drift
@@ -304,9 +319,9 @@ scan_mc () {
         # TuneCP5_13p6TeV, which %%_TuneCP5* also truncates correctly.
         mode="RELAXED"
         local prefix="${primary%%_TuneCP5*}"
-        local q2="/${prefix}*/${MC_CAMPAIGN}*/NANOAODSIM"
+        local q2="/${prefix}*/${camp}*/NANOAODSIM"
         echo "  (exact primary empty -> relaxed query: ${q2})"
-        mapfile -t hits < <(dasgoclient -query "dataset=${q2}" 2>/dev/null)
+        mapfile -t hits < <(dasgoclient -query "dataset=${q2}" 2>/dev/null | grep -v '_pilot')
     fi
     if [[ ${#hits[@]} -eq 0 || -z "${hits[0]:-}" ]]; then
         echo "RESULT|${key}|NOT_FOUND|0"
@@ -328,7 +343,7 @@ scan_data () {
     echo "### DATA ${pd}"
     local q="/${pd}/${DATA_RUNERA}*-${DATA_PROC}*/NANOAOD"
     local how="EXACT"
-    mapfile -t hits < <(dasgoclient -query "dataset=${q}" 2>/dev/null)
+    mapfile -t hits < <(dasgoclient -query "dataset=${q}" 2>/dev/null | grep -v '_pilot')
 
     # Fallback, mirroring the MC path: the processing string is not the same
     # shape across NanoAOD versions -- v9 carries '_MiniAODv2_', v15 does not.

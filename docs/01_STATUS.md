@@ -335,10 +335,17 @@
 > `Run2024X-MINIv6NANOv15-vN`), 나머지는 `--probe` 전까지 UNVERIFIED —, 새 `script/das_discover_run3.sh`(family 별 접두어 wildcard →
 > `HIT|` 줄), registry ttHH 64 행에 `had` 47 / `lep` 16 / `had,lep` 1 태그. golden JSON·era 경계·루미·GT 는 PdmV twiki r223 / PPD 2025 표 원문으로 확정(03_run3_plan §2, §4.2).
 
-21. **probe + discover 실행** (lxplus, 03_run3_plan §4.3 (0)·(1)) — 캠페인 문자열과 primary 이름 확정.
-    로그 `script/das_probe_<era>_v15.log`, `script/das_discover_<era>_v15_*.log` 커밋.
-22. **`samples_registry_run3.txt` 작성** — `HIT|` 줄에서만; KEY 는 Run 2 와 동일. 첫 답: 신호 `TTHHto4b` 와
-    ttVV 5 종의 Run 3 중앙 생산 존재 여부 (없으면 D17 사설 생산이 Run 3 로 늘어남).
+21. ~~probe + discover 실행~~ **DONE 2026-09-07** — 6 era 캠페인 문자열 확정(로그 커밋됨). 결과 03_run3_plan §4.2/§4.5:
+    Summer24 v15 에 신호 `TTHH-HHto4B`·`TTZH-ZHto4B`·`TTZZ-ZZto4B`·`THW`·`TTZ-ZtoQQ` 가 **중앙에 있다**(→ Run 3 에 D17 확장 없음); `TT4b` 도 있다(`TT4B_…`, **09-10 수정** — 09-07 은 대소문자 패턴 미스로 '없음'이라 적었다, 03_run3_plan §4.6);
+    **2022/2023 v15 는 부분 재생산**(70 개; 신호·ttbb·QCD-HT·ttH·tH·ttVV 없음) → D-R3-7: 첫 라운드는 2024+2025.
+22. ~~registry 작성~~ **DONE** — `script/samples_registry_run3.txt` MC 78(had 59 / lep 19) + DATA 11 (09-10: `TT4b` ← `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` 추가; `das_discover_run3.sh` 에 `TT4B*`/`TTBBBB*` 접두어 추가).
+    `das_scan.sh` 는 Run 3 era 에서 이 registry 를 자동 선택하고 v15 MC 질의를 GT 로 고정한다(플레이버 재생산 제외).
+22a. **event/file 수 스캔** — `das_scan.sh --era 2025|2024 --nano v15 --workstream had`; 로그 커밋.
+22b. **`build_from_scan_log.py` Run 3 대응** — 플레이버 EXCLUDE 확장, prompt `-vN`/`_vN` 을 disjoint run 으로 전부 유지(03_run3_plan §6 항목 2).
+22c. **결정**: ~~`TT4b` 대체 vs 사설 생산~~ (해소 09-10: 중앙 `TT4B`); `TTWJetsToLNu`(v15 는 `mg35x_` 플레이버만) 수용 여부; 13.6 TeV xsec 표(D-R3-6).
+22d. **MC 요청 (2026-09-08~10, 덱 `ttHH_latex/GenRequest_Sep2026`)** — Run 2: 부재 6 종의 MiniAODv2→NanoAODv15 중앙 생산(16 dataset, ≈125M) 요청 예정; Run 3: Sherpa FH `TTto4Q-4Jets-1NLO3LO` 상태(PRODUCTION 80.5M / AHADIC INVALID)·통계·권고 판 문의, Sherpa 4FS ttbb·Sherpa tt4b 는 비교용 저순위, `GenHFHadronMatcher` 출력의 중앙 NanoAOD 탑재 문의. 그룹 피드백(Aurore 09-10): Run 2 세트 동의, Run 2 Sherpa tt+jets(FH·inclusive) 는 저순위로 요청, 24+25 우선 동의.
+22f. **inventory 실행 (09-11 도구 추가, 실행 대기)** — `das_inventory.sh` 로 Summer24 v15·UL17 v15·UL18 v15 세 캠페인을 전수 dump + registry 대소문자 점검 + status/nevents TSV(03_run3_plan §4.3 (4)). `CASE_ONLY` 0 건이면 09-07 결론이 확정된다. 로그 커밋.
+22e. **BTV 참고 (09-10)** — 재-NanoAODv15(Run 2, 2022/2023)는 Summer24 셋업이라 `Jet_btagUParTAK4B` 에 2024 UParTv2 WP 를 그대로 쓴다(CMS-talk 09-09) → 03_run3_plan §2 행 9.
 23. **event-level 항목의 "기억" 확정** — 03_run3_plan §2 의 jet veto map 키·MET filter 목록(ecalBadCalib
     보정 수치)·JEC/JER 태그·golden JSON 이름·PU 키를 twiki 원문으로 대조하고 상태 열 갱신. **값을 코드에
     넣기 전에 반드시.**
