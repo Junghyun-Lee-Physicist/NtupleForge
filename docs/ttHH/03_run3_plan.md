@@ -2,13 +2,13 @@
 
 > **목적**: ttHH → 4b 파이프라인을 Run 3 로 넓히기 위한 단일 참조. ① 범위와 결정, ② Run 2 와 달리 Run 3 에서 **반드시** 지켜야 할 event-level 항목(veto map, MET filter, jet ID 재계산 …)의 체크리스트, ③ 데이터셋을 **추정하지 않고 DAS 로 확정**하는 절차와 도구, ④ hadronic / leptonic 용도 구분(`had`/`lep` 태그)과 hadronic 우선 생산.
 > **대상 독자**: Run 3 registry 를 채우고 첫 ntuple 을 만들 사람; analyzer 에 Run 3 cleaning 을 넣을 사람.
-> **상태**: 살아있는 문서. 작성 **2026-09-07**, 갱신 **2026-09-10/11** (`TT4b` = 중앙 `TT4B` 확인 §4.6, BTV UParTAK4 WP 답변 §2 행 9, 캠페인 inventory 절차 §4.3 (4)); 같은 날 **PdmVRun3Analysis twiki r223(2026-09-07)** 과 **PPD "Run3 2025 Summary Table"(2026-01-20)** 원문(PDF)으로 era 경계·golden JSON·루미·GT·데이터 명명 규칙을 대조해 해당 행을 "실측" 으로 올렸다. 남은 "기억" 표시(veto map 키, MET filter 세부, JEC 태그, PU 키, 트리거 경로)는 POG twiki 원문 확인 전까지 **코드에 넣지 않는다**. **2026-09-07 저녁: probe·discovery 완료** — 6 era 의 캠페인 문자열 전부 DAS 로 확정(§4.2), Summer24 에 신호 `TTHH-HHto4B` 를 포함한 hadronic 세트가 **중앙 생산으로 존재**, 2022/2023 v15 는 부분 재생산(§4.5). `script/samples_registry_run3.txt` 작성(MC 77 = had 58 + lep 19, DATA 11).
+> **상태**: 살아있는 문서. 작성 **2026-09-07**, 갱신 **2026-09-10/11** (`TT4b` = 중앙 `TT4B` 확인 §4.6, BTV UParTAK4 WP 답변 §2 행 9, 캠페인 inventory 절차 §4.3 (4) 와 결과 §4.7; 09-11 ttH(bb) 분할 샘플 3 종 VALID 29.5M 씩 → `had`, 2025 MC 캠페인 없음 DAS 확인); 같은 날 **PdmVRun3Analysis twiki r223(2026-09-07)** 과 **PPD "Run3 2025 Summary Table"(2026-01-20)** 원문(PDF)으로 era 경계·golden JSON·루미·GT·데이터 명명 규칙을 대조해 해당 행을 "실측" 으로 올렸다. 남은 "기억" 표시(veto map 키, MET filter 세부, JEC 태그, PU 키, 트리거 경로)는 POG twiki 원문 확인 전까지 **코드에 넣지 않는다**. **2026-09-07 저녁: probe·discovery 완료** — 6 era 의 캠페인 문자열 전부 DAS 로 확정(§4.2), Summer24 에 신호 `TTHH-HHto4B` 를 포함한 hadronic 세트가 **중앙 생산으로 존재**, 2022/2023 v15 는 부분 재생산(§4.5). `script/samples_registry_run3.txt` 작성(MC 77 = had 58 + lep 19, DATA 11).
 > **관련**: Run 2 v15 마이그레이션 [`../09_v15_migration_log.md`](../09_v15_migration_log.md), 스캐너 [`../../script/das_scan.sh`](../../script/das_scan.sh), Run 3 discovery [`../../script/das_discover_run3.sh`](../../script/das_discover_run3.sh), 2018 확장 시 정한 multi-year 원칙 (workspace `00_CONTEXT…` §2.3).
 
 ## 결론 먼저 (BLUF)
 
 - **버전은 하나로 간다: NanoAODv15.** Run 2 UL 재생산도 v15 이고 Run 3 (2022, 2022EE, 2023, 2023BPix, 2024) 의 최신 재생산도 v15 라, analyzer 는 **하나의 스키마**만 알면 된다. **2025 (기본 대상)**: 데이터는 T0 prompt 로 MINIAODv6/NANOv15 (GT `150X_dataRun3_Prompt_v1`), **MC 캠페인은 아직 없다** → PPD 권고대로 **Summer24 MC** (`RunIII2024Summer24NanoAODv15`, GT `150X_mcRun3_2024_realistic_v2`) 를 2025 데이터에 쓴다 (§4.2).
-- **Discovery 결과 (§4.5)**: Summer24 v15 에는 우리 hadronic 세트가 **다 있다** — 신호 `TTHH-HHto4B`, `TTZH-ZHto4B`, `TTZZ-ZZto4B`, `TTBB*`(ttbb), `TTH-Hto2B`, `THQ/THW`, QCD-HT 11 구간, V→qq, 단일톱, ttVV, 그리고 **`TT4b` 도 있다** (`TT4B_TuneCP5_13p6TeV_madgraph-pythia8`, 9.9M ev — 09-07 조사는 `TT4b*` 패턴의 대소문자 때문에 놓쳤고 09-10 에 확인, §4.6). Run 2 의 부재 6 종 **전부**가 Run 3 에서는 중앙에 있다 → Run 3 에 enriched 생산은 필요 없고 expanded id 는 sidecar 경로. 반면 **2022/2023 의 v15 재생산은 부분적**(ttbar·ttV·tW·VV·QCD-PT·DY·W→ℓν 만) 이라 v15 단일 스키마로는 2024·2025 만 지금 가능하다.
+- **Discovery 결과 (§4.5)**: Summer24 v15 에는 우리 hadronic 세트가 **다 있다** — 신호 `TTHH-HHto4B`, `TTZH-ZHto4B`, `TTZZ-ZZto4B`, `TTBB*`(ttbb), `TTH-Hto2B-TTto4Q/-TTtoLNu2Q/-TTto2L2Nu`(ttH(bb) top-decay-split, 29.5M 씩; inclusive `TTH-Hto2B` 2.4M 은 `alt`), `THQ/THW`, QCD-HT 11 구간, V→qq, 단일톱, ttVV, 그리고 **`TT4b` 도 있다** (`TT4B_TuneCP5_13p6TeV_madgraph-pythia8`, 9.9M ev — 09-07 조사는 `TT4b*` 패턴의 대소문자 때문에 놓쳤고 09-10 에 확인, §4.6). Run 2 의 부재 6 종 **전부**가 Run 3 에서는 중앙에 있다 → Run 3 에 enriched 생산은 필요 없고 expanded id 는 sidecar 경로. 반면 **2022/2023 의 v15 재생산은 부분적**(ttbar·ttV·tW·VV·QCD-PT·DY·W→ℓν 만) 이라 v15 단일 스키마로는 2024·2025 만 지금 가능하다.
 - **Run 3 는 "Run 2 + 몇 가지" 가 아니라 cleaning 규칙이 다르다.** 필수: era 별 golden JSON, **jet veto map(전 era, event veto)** — 2023BPix 는 BPix 구멍이 따로 있음 —, Run 3 MET filter 목록(`Flag_BadPFMuonDzFilter`·`Flag_hfNoisyHitsFilter` 추가, `ecalBadCalibFilter` 의 2022–23 보정), NanoAOD `Jet_jetId` 를 PF fraction 으로 **재계산**, PUPPI jet/MET 기본, era 별 JEC/JER·pileup JSON, b-tagger 교체(PNet → UParT). L1 prefiring 과 HEM veto 는 Run 3 에 없다. 표는 §2.
 - **데이터셋 이름은 13.6 TeV 명명으로 전부 바뀐다** (`TTto4Q_TuneCP5_13p6TeV_powheg-pythia8`, `QCD-4Jets_HT-*`, `Wto2Q-3Jets_HT-*`, `DYto2L-4Jets_MLL-50*`, PD `JetMET0/1`, `Muon0/1`, `EGamma0/1`). 그래서 registry 는 **별도 파일**(`samples_registry_run3.txt`)로 두고, 이름은 `das_discover_run3.sh` 가 DAS 에서 가져온 것만 적는다 (§4).
 - **용도 태그 `had` / `lep` 를 registry 에 넣었다** (Run 2 포함). hadronic 채널의 signal·background·JetHT/BTagCSV 가 `had`(47 key), DY·W→ℓν HT 샘플이 `lep`(16), SingleMuon 은 둘 다. **ntuple 생산은 `--workstream had` 로 hadronic 먼저**, lep 는 다음 라운드 (§5).
@@ -194,6 +194,50 @@ Aurore 가 전달한 Gabriel 의 1 년 전 발표(2024 Run 3 tt(SL)HH4b 시작 �
 - **tt+jets 의 다른 multileg 샘플(09-07 로그에 이미 있음).** `TTto4Q-2Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8`(+ext1; `TTto2L2Nu-2Jets_…` 도) — **MG5_aMC@NLO FxFx, tt+0,1,2 jets NLO** — 와 `TTto4Q-3Jets_TuneCP5_13p6TeV_madgraphMLM-pythia8`(LO MLM). 동료가 말한 "2jet" 은 이 FxFx 샘플일 가능성이 크다. Sherpa 는 `-4Jets-1NLO3LO`(0,1 NLO + 2,3,4 LO) 로, 우리 표기가 맞다(09-07 discovery 로그의 `TTto2L2Nu-4Jets-1NLO3LO_Tune{AHADIC,SherpaDef}_13p6TeV_sherpaMEPS` HIT, 09-07 `status=*` 조회의 FH/SL 이름, GEN 발표 slide 5). FxFx 2Jets 는 **이미 VALID 인 NLO multileg 대안**이라 Sherpa FH 가 끝나기 전의 비교 생성기로 쓸 수 있다.
 - **powheg `TTto4Q` 의 계통 변형 샘플(Summer24 v15, 09-07 로그).** `Par-Hdamp-158/418`, `Par-MT-166p5…178p5`(6 점), `TuneCP5CR1/CR2`, `TuneCP5Up/Down`, `Par-ERD-On`, `BBDPS`. Run 2 와 같은 계통오차 세트가 있다 — registry 에는 넣지 않고 systematics 단계에서 쓴다.
 
+### 4.7 Inventory 결과 (2026-09-11, `das_inventory.sh`, 세 캠페인 전수)
+
+`script/das_inventory_{summer24_v15_20260911_0427,ul17_v15_20260911_0433,ul18_v15_20260911_0435}.tsv` (+`.names.txt`, `.match.txt`; 커밋됨).
+
+**대소문자 점검 — 끝.** 세 캠페인 모두 `CASE_ONLY` **0 건**. 09-07 의 결론은 그대로이고, 대소문자로 놓친 것은 `TT4B` 하나였다(지금은 `EXACT`).
+- Summer24 v15 (pattern `…realistic_v2*`, dataset 16,655 개): registry 78 행 중 **77 EXACT**, `NOT_FOUND` 1 = `TTWJetsToLNu`(`TTLNu-1Jets`, `mg35x_` 플레이버만 — 알던 것).
+- UL17 / UL18 v15: **108 EXACT** 씩. `NOT_FOUND` 27 = 부재 6 종 + QCD-HT madgraphMLM 7 + `TTTW`(형제 `TTTWminus/plus-DR1` 있음) + **CPV 워크스트림 13**(`QCD_Pt-*_EMEnriched` 8, `QCD_Pt-*_MuEnriched*` 2, `ST_tW_antitop_5f_NoFullyHadronicDecays_…PDFWeights`, `TTJets_TuneCP5_13TeV-madgraphMLM`(v15 는 `…amcatnloFXFX` 만), `TTZToQQ_TuneCP5_13TeV_amcatnlo`(밑줄 판; v15 는 `-amcatnlo` 판만)). 6 + 7 + 1 + 13 = 27. CPV 쪽 v15 이행 때 쓸 목록이다.
+
+**Run 2 v15 의 형제(hint 로 드러난 것).**
+| 없는 것 | v15 에 있는 이웃 이름 | UL17 / UL18 event | 판단 |
+|---|---|---:|---|
+| `TTHHTo4b` | `TTHH_TuneCP5_13TeV-madgraph-pythia8` (HH 붕괴 포괄) | 360k / 500k, 파일 1–2 개 (2025-10) | 시험 생산 수준 — 대체 불가 |
+| `TTZHTo4b`, `TTZZTo4b` | `TTZH_…`, `TTZZ_…` (붕괴 포괄) | 350k / 500k, 327k / 498k | 같음 — 대체 불가 |
+| `TTZToBB` | **`TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8`** | **13.98M / 19.82M**, VALID | **결정 09-11 (D-2026-09-11-ttz-hadronic-from-ttzqq): `TTZToQQ` 를 쓴다** — Run 3 와 같은 처리(Z→qq 포괄: bb + cc + light; 4b 선택에는 bb 가 직접, cc/light 가 mistag 로 들어오므로 v9 의 bb 전용보다 완전하다). Z→bb ≈ 22 % → 3.0M / 4.3M vs 전용 7.1M / 10.0M — 부차 background 에 충분. registry: `TTZToQQ`(`ttHH,had`, Run 3 와 같은 KEY), `TTZToBB` → `ttHH,alt`(v9 전용). **요청 목록 6 → 5 종**(14 datasets, ≈108M) |
+| `tHW`, `TT4b` | 없음 (hint 공백) | — | 요청 유지 |
+
+**Summer24 v15 수치 (DAS 2026-09-11, status / nevents).**
+| 샘플 | status | nevents | 비고 |
+|---|---|---:|---|
+| `TTto4Q_TuneCP5_13p6TeV_powheg-pythia8` (-v2) | VALID | 472,535,695 | **Sherpa 통계 요청의 기준** |
+| `TTtoLNu2Q_…powheg` (-v2) / `TTto2L2Nu_…powheg` (-v3; -v2 는 INVALID 0) | VALID | 484,475,057 / 470,123,263 | |
+| `TTto4Q-4Jets-1NLO3LO_TuneSherpaDef_…sherpaMEPS` | **PRODUCTION** | **100,807,210** (09-07: 80.5M) | 4 일에 +20M — 활발히 생산 중 |
+| `TTto4Q-4Jets-1NLO3LO_TuneAHADIC_…` | INVALID | 0 | |
+| SL Sherpa: `TTtoLminusNu2Q-…AHADIC` / `TTtoLplusNuQ-…SherpaDef` | VALID | 245.9M / 249.8M | `TTtoLplusNu2Q-…AHADIC` PROD 46.7M, `TTtoLminusNuQ-…SherpaDef` PROD 35.5M |
+| DL Sherpa AHADIC / SherpaDef | VALID | 499.1M / 496.1M | |
+| **`TTto4Q-2Jets_…amcatnloFXFX`** (-v2 + `_ext1-v2`) | VALID | 196.4M + 198.9M = **395M** | NLO multileg 대안, **지금 사용 가능** → registry `TTbar_Hadronic_FxFx2J` (alt) |
+| `TTto4Q-3Jets_…madgraphMLM` | VALID | 202.2M | LO multileg → `TTbar_Hadronic_MLM3J` (alt) |
+| `TTBBto4Q` / `TTBBtoLNu2Q` / `TTBBto2L2Nu` | VALID | 15.0M / 22.5M / 12.5M | `TuneCP5Up/Down`, `CR2` 변형은 PRODUCTION (2026-08/09) |
+| `TT4B` / `TTHH-HHto4B` / `TTZH-ZHto4B` / `TTZZ-ZZto4B` | VALID | 9.90M / 10.00M / 9.98M / 9.91M | |
+| `THQ-4FS-ctcvcp` / `THW-5FS-ctcvcp` | VALID | 20.0M / 15.0M | 2026-02 생산 |
+| **`TTH-Hto2B-TTto4Q` / `-TTtoLNu2Q` / `-TTto2L2Nu`** (`_Par-M-125_…powheg`, -v2) | VALID | **29.62M / 29.22M / 29.57M** | top-decay-split ttH(bb) (2026-03-23/25 생산; 09-11 08:57 `--grep tth-hto2b-tt` 조회). 셋이 함께 inclusive 를 대체 → registry `ttHTobb_had / _semilep / _dilep` (`had`) |
+| `TTH-Hto2B_Par-M-125` (inclusive) | VALID | 2.44M | 분할 세트의 1/36 → `ttHH,alt` 로 내림(키는 유지). 분할 세트와 **함께 쓰지 않는다**(이중 계수) |
+| `TTH-HtoNon2B_Par-M-125_…powheg` | VALID | 54.0M | (`-1Jets_…amcatnloFXFX-madspin` 판도 있음) |
+| `TTZ-ZtoQQ-1Jets_…amcatnloFXFXold` | VALID | 4.08M | 작다. `TTZ-ZtoQQ-1J_…madgraphMLM` 9.45M VALID → `TTZToQQ_MLM` (alt); `TTZ-ZtoQQ-TTtoLNu2Q-1Jets` PROD 3.9M (SL 전용) |
+| `TTW-WtoQQ-1Jets_…amcatnloFXFXold` | VALID | 6.21M | |
+
+Summer24 상세 316 행 중 VALID 269 / PRODUCTION 21 / INVALID 26 — INVALID 는 대부분 `-v2` 가 `-v3` 로 대체된 옛 판(예: `TTto2L2Nu` -v2)이라 "최고 -vN" 규칙으로 걸러진다.
+
+**2025 MC 캠페인 (09-11 확인).** `dasgoclient -query "dataset status=* dataset=/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2025*/NANOAODSIM"` → **빈 결과**(status=* 포함). PPD 의 "2025 는 Summer24 MC 로" 가 DAS 에서도 확인됐다. `--era 2025` 는 계속 Summer24 를 스캔한다.
+
+**ttH(bb) 분할 샘플 (09-11 08:57 CEST, `das_inventory_tth_split_20260911_0857.tsv`, lxplus 에 생성 — 커밋 필요).** 세 개 모두 VALID, 각 ~29.5M(파일 318–321, 0.13 TB), 2026-03-23/25 생산. 합 88.4M 으로 inclusive `TTH-Hto2B`(2.44M) 의 36 배. ttbar 와 같은 방식(`TTto4Q / TTtoLNu2Q / TTto2L2Nu`)으로 세 채널을 모두 `had` 에 넣는다 — SL·DL top 도 hadronic 선택을 통과할 수 있으므로 `TTto4Q` 하나만 쓰면 안 된다. inclusive 는 `alt` 로 내리고 키만 유지(D-R3-9). 결과: **Run 3 의 ttH(bb) 문의는 사라진다** — 요청도 문의도 없음.
+
+**결론.** ① 이름·대소문자 문제는 닫혔다. ② Run 3 는 요청할 것이 없고 문의는 Sherpa FH 하나만 남는다(완료·통계·판); ttH(bb) 는 분할 샘플 3 종으로 해결. ③ Run 2 요청은 **5 종**(`TTHHto4b`, `TT4b`, `TTZHTo4b`, `TTZZTo4b`, `tHW`; 14 datasets ≈108M) — `TTZToBB` 는 v15 의 `TTZToQQ` 로 대체(09-11 결정). ④ Sherpa FH 가 끝나기 전의 생성기 비교는 FxFx `TTto4Q-2Jets`(395M) 로 지금 시작할 수 있다. ⑤ 2025 MC 캠페인은 없다(DAS 확인).
+
 ## 5. `had` / `lep` — 용도 태그
 
 2026-09-07 에 `samples_registry.txt` 의 ttHH 행 64 개에 태그를 붙였다 (WORKSTREAM 컬럼, 기존 `--workstream` 필터로 바로 쓸 수 있고 다른 reader 는 컬럼 1·2·4 만 읽어 영향 없음):
@@ -204,7 +248,7 @@ Aurore 가 전달한 Gabriel 의 1 년 전 발표(2024 Run 3 tt(SL)HH4b 시작 �
 | `lep` | 16 | `WJetsToLNu_HT*` 8, `DYJetsToLL_M50_HT*` 8 — leptonic selection 의 data/MC 정합 테스트용 |
 | `had,lep` | 1 | `SingleMuon` — hadronic 트리거 효율의 기준 데이터셋이자 lepton CR 데이터 |
 
-`ttV_lep` 그룹(`TTWJetsToLNu`, `TTZToLLNuNu`)과 `ST_s_lep` 은 hadronic 채널의 background 이기도 하므로 `had` 다 — 그룹 이름의 "lep" 은 붕괴 모드지 용도가 아니다. **Run 3 registry** (`samples_registry_run3.txt`, 2026-09-07; `TT4b` 행 09-10 추가): MC 78 = `had` 59 + `lep` 19, DATA 11 (`JetMET0/1` had, `Muon0/1` had,lep, `EGamma0/1` lep; 2022 는 `JetMET`/`Muon`/`EGamma`/`JetHT`/`SingleMuon`). `--era 2025 --workstream had` 는 MC 58 + DATA 4 를 고른다.
+`ttV_lep` 그룹(`TTWJetsToLNu`, `TTZToLLNuNu`)과 `ST_s_lep` 은 hadronic 채널의 background 이기도 하므로 `had` 다 — 그룹 이름의 "lep" 은 붕괴 모드지 용도가 아니다. **Run 3 registry** (`samples_registry_run3.txt`, 2026-09-07; `TT4b` 행 09-10 추가; 09-11 `alt` 4 행 + ttH(bb) 분할 3 행, inclusive `ttHTobb` → `alt`): MC 85 = `had` 61 + `lep` 19 + `alt` 5, DATA 11 (`JetMET0/1` had, `Muon0/1` had,lep, `EGamma0/1` lep; 2022 는 `JetMET`/`Muon`/`EGamma`/`JetHT`/`SingleMuon`). `--era 2025 --workstream had` 는 MC 61 + DATA 4 를 고른다(09-11 이후; 그 전 58/59).
 
 **생산 순서**: `--workstream had` 로 Run 2 v15(2017UL, 2018UL) → Run 3 순. `lep` 은 hadronic 이 돌기 시작한 뒤 같은 config 에 블록으로 붙인다.
 
@@ -212,9 +256,9 @@ Aurore 가 전달한 Gabriel 의 1 년 전 발표(2024 Run 3 tt(SL)HH4b 시작 �
 
 ## 6. 다음 행동
 
-1. **event/file 수 스캔** — §4.3 (3): `--era 2025` 와 `--era 2024`, `--workstream had` (MC 58 + DATA 4). 로그 커밋. 예상되는 NOT_FOUND 는 `TTWJetsToLNu` 하나(mg35x 플레이버만) — 받아들일지 결정.
+1. **event/file 수 스캔** — §4.3 (3): `--era 2025` 와 `--era 2024`, `--workstream had` (MC 61 + DATA 4). 로그 커밋. 예상되는 NOT_FOUND 는 `TTWJetsToLNu` 하나(mg35x 플레이버만) — 받아들일지 결정. (MC 의 status·nevents 는 §4.7 inventory 로 이미 확보 — `das_scan` 은 DATA 와 `FILE|` 예시 LFN 을 위해 그대로 돈다.)
 2. **`build_from_scan_log.py` 의 Run 3 대응** — (a) `DEFAULT_EXCLUDE` 에 `BTVNano`, `FS_`, `NoPU`, `FlatPU`, `EpsilonPU`, `EGMNano`, `MUOPOG`, `mg35x`, `_pilot` (GT 고정 질의로 대부분 걸러지지만 이중 안전장치); (b) `_split_data_variants` 가 (PD, era) 당 하나만 남기는 규칙을 Run 3 에서는 **끄고**, prompt 의 `-vN` 과 proc 문자열의 `_vN` 을 disjoint run 으로 전부 넣는다(재처리 `MINIv6NANOv15` 는 (PD, era) 당 하나라 영향 없음); (c) `_meta` 의 lumi 와 골든 JSON 이름을 era 표에서.
-3. **xsec (D-R3-6)** — 13.6 TeV 단면적 표 `samples_2025.json`(= Summer24) 신설: XSDB + GenXSecAnalyzer; QCD-HT·V→qq·DY 구간이 Run 2 와 다르므로 전부 새로.
+3. **xsec (D-R3-6)** — 13.6 TeV 단면적 표 `samples_2025.json`(= Summer24) 신설: XSDB + GenXSecAnalyzer; QCD-HT·V→qq·DY 구간이 Run 2 와 다르므로 전부 새로. 새 키 `ttHTobb_had / _semilep / _dilep` 는 σ(ttH)×BR(H→bb)×BR(tt→4Q / ℓν2Q / 2ℓ2ν) (D-R3-9); `alt` 행(FxFx/MLM/Sherpa tt+jets, `TTZToQQ_MLM`, inclusive `ttHTobb`)도 비교용으로 값이 필요하다.
 4. ~~**`TT4b` 결정**~~ — **해소 (2026-09-10)**: 중앙 `TT4B_TuneCP5_13p6TeV_madgraph-pythia8`(Summer24 v15, 9.9M) 를 쓴다; registry 에 `TT4b` 행 추가(§4.6). 대체·사설 생산 논의는 필요 없다.
 5. **expanded ttbar id (Run 3)** — 전 샘플이 중앙에 있으므로 sidecar 경로: Summer24 **MiniAODv6** 부모에 `TtbarIdExtender` → `matchTtbarId`. `genTtbarId` 가 Run 3 v15 에 있는지는 브랜치 인벤토리에서 확인.
 6. **Run 3 브랜치 인벤토리 스윕** (08 Step 3b) — Summer24 MC 하나 + 2025 JetMET0 하나 → `branch_hadronic_2025_v15_{MC,Data}.txt`; HLT 블록은 2024/2025 별.

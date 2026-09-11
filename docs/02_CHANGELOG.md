@@ -9,6 +9,53 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-09-11 (evening, 2): Run 2 ttZ(had) from `TTZToQQ`; request list 6 → 5
+
+### Changed
+- `samples_registry.txt`: `TTZToQQ` (`TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8`, UL17 13.98M / UL18 19.82M, v15 VALID) is
+  now the ttHH `had` ttZ(hadronic Z) sample — same KEY as the Run 3 registry; `TTZToBB` demoted to `ttHH,alt`
+  (v9-only, no NanoAODv15 request; never combined with `TTZToQQ`). `TTZToQQ_v15alt` row removed (merged into `TTZToQQ`).
+  Counts unchanged (had 45 / lep 16 / alt 1).
+- Docs: `03_DECISIONS.md` **D-2026-09-11-ttz-hadronic-from-ttzqq** (DECIDED, user); `ttHH/03_run3_plan.md` §4.7 table row
+  and conclusion ③ (Run 2 request = five samples: `TTHHto4b`, `TT4b`, `TTZHTo4b`, `TTZZTo4b`, `tHW`; 14 datasets ≈108M);
+  `01_STATUS.md` 22g(a) DECIDED; `09_v15_migration_log.md` §15 (ttZ treatment change, enriched fallback list 6 → 5).
+
+## [Unreleased] — 2026-09-11 (evening): ttH(bb) split samples, 2025 campaign check
+
+### Changed
+- `samples_registry_run3.txt`: ttH(bb) now comes from the three top-decay-split Summer24 samples
+  `ttHTobb_had / _semilep / _dilep` (`TTH-Hto2B-TTto4Q / -TTtoLNu2Q / -TTto2L2Nu_Par-M-125_…powheg`,
+  all VALID, 29.62M / 29.22M / 29.57M events; `--grep tth-hto2b-tt` inventory 08:57 CEST); the
+  top-decay-inclusive `ttHTobb` (`TTH-Hto2B_Par-M-125`, 2.44M) is demoted to workstream `alt`
+  (key kept; never to be added to the split set). Counts: MC 85 = had 61 + lep 19 + alt 5, DATA 11.
+- Docs: `03_run3_plan.md` §4.7 (ttH split table row, 2025-campaign check, conclusions ⑤), §5/§6 counts,
+  header/BLUF; `01_STATUS.md` 22g(b) DONE, 22h; `03_DECISIONS.md` **D-R3-9** (proposed — confirm).
+
+### Notes
+- `dasgoclient -query "dataset status=* dataset=/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2025*/NANOAODSIM"`
+  returns nothing: no 2025 MC campaign on DAS (PPD statement confirmed); `--era 2025` keeps scanning Summer24.
+- New inventory output on lxplus, to be committed: `script/das_inventory_tth_split_20260911_0857.tsv`
+  (+ `.names.txt`, `.match.txt`; 16,658 datasets listed).
+
+## [Unreleased] — 2026-09-11 (later): inventory results, `alt` registry rows
+
+### Added
+- **Inventory logs** `script/das_inventory_{summer24_v15_20260911_0427,ul17_v15_20260911_0433,ul18_v15_20260911_0435}.tsv`
+  (+ `.names.txt`, `.match.txt`), run on lxplus. Result: `CASE_ONLY` 0 in all three campaigns —
+  the 2026-09-07 conclusions stand; `TT4B` was the only case miss. Numbers in `03_run3_plan.md` §4.7.
+- **Registry `alt` rows** (WORKSTREAM `ttHH,alt`, excluded by `--workstream had`):
+  Run 3 `TTbar_Hadronic_FxFx2J` (`TTto4Q-2Jets_…amcatnloFXFX`, 395M VALID), `TTbar_Hadronic_MLM3J`
+  (`TTto4Q-3Jets_…madgraphMLM`, 202M), `TTbar_Hadronic_Sherpa` (`TTto4Q-4Jets-1NLO3LO_TuneSherpaDef`,
+  PRODUCTION 100.8M), `TTZToQQ_MLM` (`TTZ-ZtoQQ-1J_…madgraphMLM`, 9.45M); Run 2 `TTZToQQ_v15alt`
+  (`TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8`, UL17 13.98M / UL18 19.82M — possible substitute for the
+  absent `TTZToBB`, decision open). Commented candidate `ttHTobb_had`
+  (`TTH-Hto2B-TTto4Q_Par-M-125_…`, status not yet queried).
+- `das_inventory.sh`: hint matching normalised (alnum on both sides).
+
+### Notes
+- Run 2 v15 also carries tiny inclusive `TTHH_`, `TTZH_`, `TTZZ_` samples (0.3–0.5M, 1–2 files, Oct 2025):
+  test-size, not substitutes. CPV workstream: 13 of its Run 2 samples have no v15 (list in §4.7).
+
 ## [Unreleased] — 2026-09-11: `das_inventory.sh` (campaign dump + case-insensitive matching + status/events TSV)
 
 ### Added

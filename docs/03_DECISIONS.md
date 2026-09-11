@@ -11,6 +11,38 @@
 
 ---
 
+## D-2026-09-11-ttz-hadronic-from-ttzqq — Run 2 on v15: ttZ(hadronic Z) from `TTZToQQ`; `TTZToBB` not requested
+**DECIDED · 2026-09-11 · user decision · detail: `ttHH/03_run3_plan.md` §4.7, `09_v15_migration_log.md` §15**
+
+- **Context.** `TTZToBB_TuneCP5_13TeV-amcatnlo-pythia8` (the Run 2 v9 analysis
+  sample for ttZ, Z→bb) has no NanoAODv15 (UL17, UL18) and was one of the six
+  samples for which a central "NanoAODv15 from MiniAODv2" request — or, as
+  fallback, the enriched private production (TTHHGenCategoryTools D17) — was
+  planned. The 2026-09-11 campaign inventory showed that v15 does carry the
+  inclusive `TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8` (UL17 13.98M, UL18 19.82M,
+  VALID), which Run 2 v9 never used in the ttHH workstream.
+- **Decision.** The Run 2 v15 analysis takes ttZ with a hadronic Z from
+  `TTZToQQ` (Z→bb + cc + light), exactly as Run 3 does (`TTZ-ZtoQQ-1Jets`;
+  same registry KEY `TTZToQQ`, so xsec table and filelists stay year-generic).
+  `TTZToBB` is demoted to workstream `alt` (v9-only; never combined with
+  `TTZToQQ` — Z→bb double counting). Consequences: the central request and the
+  enriched fallback list shrink from six to **five** samples (`TTHHto4b`,
+  `TT4b`, `TTZHTo4b`, `TTZZTo4b`, `tHW`; 14 datasets, ≈108M MiniAODv2 events);
+  the v9 → v15 ttZ treatment changes (documented in the migration log).
+- **Why it is also the better choice for the fully hadronic channel.** The
+  4b selection is entered by ttZ(bb) directly and by ttZ(cc) / ttZ(light)
+  through mistags; v9 modelled only the bb slice. The inclusive sample covers
+  all three with one cross section (σ(ttZ)·BR(Z→qq)), and the Z→bb component
+  (~22 % ≈ 3.0M / 4.3M events) is ample for a background that is roughly
+  half of ttH(bb) in rate before selection and much less after it.
+- **Alternatives considered.** (a) Request `TTZToBB` NanoAODv15 from MiniAODv2
+  with the other five — rejected: one more production for a sample whose
+  physics the existing `TTZToQQ` already contains, and a Run 2 / Run 3
+  asymmetry. (b) Private enriched production of `TTZToBB` — rejected for the
+  same reason (D17 list shrinks instead).
+
+---
+
 ## D-2026-09-07-run3-scope — Run 3 on NanoAODv15 only, separate registry, no name guessing, `had` first
 **DECIDED (D-R3-1…5) / PROPOSED (D-R3-6) · 2026-09-07 · detail table: `ttHH/03_run3_plan.md` §1**
 
@@ -63,6 +95,16 @@
   maps to `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` (Summer24 NanoAODv15, 9.9M).
   A Sherpa tt+4b sample, if ever produced, is a generator-comparison sample, not
   a replacement.
+- **D-R3-9 (2026-09-11, proposed — confirm) — ttH(bb) in Run 3 = the three
+  top-decay-split samples.** `TTH-Hto2B-TTto4Q / -TTtoLNu2Q / -TTto2L2Nu_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8`
+  (Summer24 NanoAODv15, all VALID, 29.62M / 29.22M / 29.57M events, DAS
+  2026-09-11) enter the registry as `ttHTobb_had / _semilep / _dilep`
+  (workstream `had`, all three — SL/DL tops also pass a hadronic selection, as
+  for ttbar). The top-decay-inclusive `TTH-Hto2B_Par-M-125` (2.44M) is demoted
+  to `alt` and must never be added to the split set (double counting); its key
+  `ttHTobb` is kept so the Run 2 ↔ Run 3 key map stays complete. Consequence:
+  the xsec table needs σ(ttH)·BR(H→bb)·BR(tt→X) per key (D-R3-6), and no ttH(bb)
+  request or question goes to the conveners.
 
 ---
 

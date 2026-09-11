@@ -135,7 +135,8 @@ if registry:
         else:
             # loose hint: primaries sharing the first 4 letters of the key, case-insensitive
             stem = re.sub(r"[^A-Za-z0-9]", "", key)[:4].lower()
-            hint = sorted(set(r[1] for r in rows if stem and r[1].lower().startswith(stem)))
+            hint = sorted(set(r[1] for r in rows
+                              if stem and re.sub(r"[^A-Za-z0-9]", "", r[1]).lower().startswith(stem)))
             report.append("NOT_FOUND|%s|%s|hint:%s" % (key, prim, ";".join(hint[:8])))
 # grep tokens
 for tok in [t.strip().lower() for t in tokens.split(",") if t.strip()]:

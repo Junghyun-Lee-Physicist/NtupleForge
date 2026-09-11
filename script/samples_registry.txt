@@ -127,7 +127,16 @@ MC   tHq                                                                     THQ
 MC   tHW                                                                     THW_ctcvcp_5f_Hincl_TuneCP5_13TeV_madgraph_pythia8                              2017UL,2018UL                             tH         ttHH,had
 
 # ===== ttHH / ttV_had =====
-MC   TTZToBB                                                                 TTZToBB_TuneCP5_13TeV-amcatnlo-pythia8                                          2017UL,2018UL                             ttV_had    ttHH,had
+MC   TTZToQQ                                                                 TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8                                          2017UL,2018UL                             ttV_had    ttHH,had
+#    ^ DECISION 2026-09-11 (v15 migration): ttZ with a hadronic Z is taken from the inclusive Z->qq sample
+#      (bb + cc + light), as Run 3 does (TTZ-ZtoQQ-1Jets). Same KEY as samples_registry_run3.txt -> year-generic
+#      xsec / filelists. v15: UL17 13.98M, UL18 19.82M ev, VALID. The Z->bb share is ~22% (~3.0M / 4.3M ev) vs
+#      7.1M / 10.0M in the dedicated v9 TTZToBB -- enough for a minor background; the cc / light decays are new
+#      coverage (they enter the 4b selection through mistags). No NanoAODv15 request for TTZToBB.
+MC   TTZToBB                                                                 TTZToBB_TuneCP5_13TeV-amcatnlo-pythia8                                          2017UL,2018UL                             ttV_v9     ttHH,alt
+#    ^ v9 ONLY (Run 2 v9 analysis sample; no NanoAODv15 exists, none requested). Replaced by TTZToQQ above --
+#      never use both (Z->bb double counting). Kept as 'alt' so v9 <-> v15 comparison scans (--workstream ttHH)
+#      still list it; --workstream had no longer selects it.
 MC   TTWJetsToQQ                                                             TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8                          2017UL,2018UL                             ttV_had    ttHH,had
 
 # ===== ttHH / ttV_lep =====

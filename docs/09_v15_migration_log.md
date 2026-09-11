@@ -474,3 +474,24 @@ NtupleForge 관점의 요지만:
   `units_per_job` 은 이 값 기준이며 2000 ev 로 재측정 후 확정.
 - **사고 2 건**: proxy 만료 + MiniAOD WAN 직독 → 18m53s 소모 후 exit 84 (08 2 절 Step 2 의 "로컬 디스크" 규칙이
   MiniAOD 입력에도 그대로). stale 영역(v10 이름)에 파일을 먼저 만들었다가 정본으로 옮김. 둘 다 TTHH 08 T-28·T-32.
+
+## 15. 2026-09-11 — `TTZToBB` 는 요청하지 않는다: v15 의 `TTZToQQ` 로 (부재 6 → 요청 5)
+
+`script/das_inventory.sh` 로 UL17/UL18 v15 캠페인을 전수 나열해(`status=*`, 각 108 EXACT) 10 절의 부재 6 종을 다시 봤다.
+부재 자체는 그대로다(대소문자 미스 0 건). 새로 보인 것은 **형제**다: v15 에 `TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8` 가
+UL17 13,982,000 / UL18 19,816,000 ev VALID 로 있다 — v9 분석의 ttHH 목록에는 없던 샘플이다.
+
+**결정(사용자, 2026-09-11).** Run 2 v15 는 ttZ(hadronic Z) 를 이 inclusive `TTZToQQ`(Z→bb + cc + light) 에서 취한다.
+Run 3 (`TTZ-ZtoQQ-1Jets`) 와 같은 처리라 registry KEY 도 `TTZToQQ` 로 같게 두었고(`ttHH,had`), `TTZToBB` 는 `ttHH,alt`
+(v9 전용) 로 내렸다. 둘을 함께 쓰면 Z→bb 가 이중 계수된다. 근거·대안은 [`03_DECISIONS.md`](03_DECISIONS.md)
+D-2026-09-11-ttz-hadronic-from-ttzqq; hadronic 채널에는 bb 전용보다 완전하다(cc/light 가 mistag 로 4b 선택에 들어온다).
+Z→bb 몫 ≈ 22 % → 3.0M / 4.3M ev — 부차 background 에 충분.
+
+**영향.** ① 컨비너에게 보내는 "MiniAODv2 → NanoAODv15" 요청은 **5 종 14 dataset ≈ 108M ev**(`TTHHto4b`, `TT4b`, `TTZHTo4b`,
+`TTZZTo4b`, `tHW`). ② 12 절의 enriched 사설 목록도 5 종 — TTHHGenCategoryTools D17 정정(`docs/04_decisions.md`,
+`11_enriched_nanoaod.md` §3.4: 3,192 파일 / 108,323,000 ev / ≈ 23,900 core-h). ③ v9 → v15 에서 ttZ 처리가 바뀐 유일한 곳이므로
+v9 대조 때 `TTZToBB`(v9) ↔ `TTZToQQ`(v15) 는 1:1 비교 대상이 아니다.
+
+같은 날 Summer24 쪽: ttH(bb) 는 top-decay-split 3 종(각 ~29.5M) 을 쓰고, 2025 MC 캠페인은 DAS 에 없음을 확인했다 —
+`ttHH/03_run3_plan.md` §4.7.
+

@@ -27,6 +27,10 @@
 #        per (PD, era).
 #
 #  Production order (user decision 2026-09-07): --workstream had first; lep later.
+#  WORKSTREAM tag 'alt' (2026-09-11): alternative-generator samples for comparison
+#        (FxFx / MLM / Sherpa tt+jets, LO ttZ) and superseded samples kept for the key map
+#        (inclusive ttH(bb) TTH-Hto2B, replaced by the top-decay-split set). Not selected by --workstream had;
+#        use --workstream ttHH or --only KEY.
 #
 #  FORMAT:  <TYPE>  <KEY>  <PRIMARY>  <ERAS>  <GROUP>  <WORKSTREAM>
 #  ext variants are not listed (found by the campaign wildcard at scan time).
@@ -45,6 +49,17 @@ MC   TTbar_SemiLep            TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8          
 MC   TTbar_Hadronic           TTto4Q_TuneCP5_13p6TeV_powheg-pythia8                               2022,2022EE,2023,2023BPix,2024,2025    ttbar      ttHH,had
 MC   TTbar_DiLep              TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8                            2022,2022EE,2023,2023BPix,2024,2025    ttbar      ttHH,had
 
+# ----- ttbar, alternative generators (2026-09-11 inventory; WORKSTREAM 'alt' -> not selected by --workstream had,
+#       selected by --workstream ttHH or --only). Same Summer24 v15 campaign. Numbers = DAS 2026-09-11.
+MC   TTbar_Hadronic_FxFx2J    TTto4Q-2Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8                   2024,2025                              ttbar_alt  ttHH,alt
+#    ^ MG5_aMC@NLO FxFx tt+0,1,2 jets NLO; 196.4M (-v2) + 198.9M (_ext1-v2), VALID -- the multileg NLO alternative available NOW
+MC   TTbar_Hadronic_MLM3J     TTto4Q-3Jets_TuneCP5_13p6TeV_madgraphMLM-pythia8                    2024,2025                              ttbar_alt  ttHH,alt
+#    ^ MadGraph MLM tt+0..3 jets LO; 202.2M VALID
+MC   TTbar_Hadronic_Sherpa    TTto4Q-4Jets-1NLO3LO_TuneSherpaDef_13p6TeV_sherpaMEPS               2024,2025                              ttbar_alt  ttHH,alt
+#    ^ Sherpa MEPS@NLO tt+0,1 jets NLO + 2,3,4 jets LO; PRODUCTION (100.8M on 2026-09-11, 80.5M on 09-07) -> das_scan
+#      (VALID-only) reports NOT_FOUND until DBS flips it. The TuneAHADIC twin is INVALID (0 ev). SL/DL Sherpa exist too
+#      (TTtoLminusNu2Q/TTtoLplusNu2Q/TTtoLminusNuQ/TTtoLplusNuQ-4Jets-1NLO3LO, TTto2L2Nu-4Jets-1NLO3LO) -- lep round.
+
 # ===== ttbb (4FS Powheg) ===== Run 2 'TTbb_4f_TTTo*' -> Run 3 'TTBBto*'
 MC   TTbb_SemiLep             TTBBtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8                          2024,2025                              ttbb       ttHH,had
 MC   TTbb_Hadronic            TTBBto4Q_TuneCP5_13p6TeV_powheg-pythia8                             2024,2025                              ttbb       ttHH,had
@@ -61,8 +76,18 @@ MC   QCD_HT1200to1500         QCD-4Jets_Bin-HT-1200to1500_TuneCP5_13p6TeV_madgra
 MC   QCD_HT1500to2000         QCD-4Jets_Bin-HT-1500to2000_TuneCP5_13p6TeV_madgraphMLM-pythia8     2024,2025                              qcd        ttHH,had
 MC   QCD_HT2000toInf          QCD-4Jets_Bin-HT-2000_TuneCP5_13p6TeV_madgraphMLM-pythia8           2024,2025                              qcd        ttHH,had
 
-# ===== ttH ===== (Summer24 'Par-M-125' naming; tt-decay-split TTH-Hto2B-TTto4Q/LNu2Q/2L2Nu also exist)
-MC   ttHTobb                  TTH-Hto2B_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8                  2024,2025                              ttH        ttHH,had
+# ===== ttH ===== (Summer24 'Par-M-125' naming). ttH(bb) is taken from the THREE top-decay-split
+#       samples (inventory 2026-09-11 08:57 CEST, all VALID, ~29.5M events each, created 2026-03-23/25);
+#       together they replace the inclusive TTH-Hto2B (2.44M), which is kept as 'alt' only --
+#       never add it to the split set (double counting). New KEYs -> xsec DB needs
+#       sigma(ttH) x BR(H->bb) x BR(tt->4Q / LNu2Q / 2L2Nu) entries (D-R3-9).
+MC   ttHTobb_had              TTH-Hto2B-TTto4Q_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8           2024,2025                              ttH        ttHH,had
+MC   ttHTobb_semilep          TTH-Hto2B-TTtoLNu2Q_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8        2024,2025                              ttH        ttHH,had
+MC   ttHTobb_dilep            TTH-Hto2B-TTto2L2Nu_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8        2024,2025                              ttH        ttHH,had
+#    ^ 29,624,000 / 29,222,000 / 29,565,000 events (Summer24 NanoAODv15 -v2, VALID).
+MC   ttHTobb                  TTH-Hto2B_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8                  2024,2025                              ttH_alt    ttHH,alt
+#    ^ inclusive in the top decay, only 2.44M ev (VALID, 2025-08-04) -- superseded by the split set above;
+#      the KEY is kept so the Run 2 <-> Run 3 key map stays complete (Run 2 ttHTobb is top-decay inclusive).
 MC   ttHToNonbb               TTH-HtoNon2B_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8               2024,2025                              ttH        ttHH,had
 
 # ===== tH =====
@@ -74,6 +99,9 @@ MC   tHW                      THW-5FS-ctcvcp_Par-M-125_TuneCP5_13p6TeV_madgraph-
 #       2022/2023 spell TTZ-ZtoQQ-1Jets_..._amcatnloFXFX (not 'FXFXold') and TTLL_MLL-* (no 'Bin-')
 #       -> those eras are NOT listed for the rows whose PRIMARY differs.
 MC   TTZToQQ                  TTZ-ZtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFXold-pythia8             2024,2025                              ttV_had    ttHH,had
+#    ^ only 4.08M ev (VALID). Alternatives seen 2026-09-11: TTZ-ZtoQQ-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8 (LO MLM, 9.45M, VALID)
+#      and TTZ-ZtoQQ-TTtoLNu2Q-1Jets_...amcatnloFXFXold (SL-only, PRODUCTION). LO alternative kept as 'alt':
+MC   TTZToQQ_MLM              TTZ-ZtoQQ-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8                    2024,2025                              ttV_alt    ttHH,alt
 MC   TTWJetsToQQ              TTW-WtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFXold-pythia8             2022,2022EE,2023,2023BPix,2024,2025    ttV_had    ttHH,had
 MC   TTWJetsToLNu             TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8                    2024,2025                              ttV_lep    ttHH,had
 #    ^ Summer24 v15 has TTLNu-1Jets ONLY in the 'mg35x_' flavour (RunIII2024Summer24NanoAODv15-mg35x_150X...);
