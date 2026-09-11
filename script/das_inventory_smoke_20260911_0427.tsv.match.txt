@@ -1,0 +1,2 @@
+GREP|tt4b|1|TT4B_TuneCP5_13p6TeV_madgraph-pythia8
+GREP|tthh|7|TTHH-HHto4B_TuneCP5_13p6TeV_madgraph-pythia8;TTHH-TTto2L2Nu-HHto2B2Tau_TuneCP5_13p6TeV_madgraph-pythia8;TTHH-TTto2L2Nu-HHto2B2W_TuneCP5_13p6TeV_madgraph-pythia8;TTHH-TTto2L2Nu-HHto2B2Z_TuneCP5_13p6TeV_madgraph-pythia8;TTHH-TTtoLNu2Q-HHto2B2Tau_TuneCP5_13p6TeV_madgraph-pythia8;TTHH-TTtoLNu2Q-HHto2B2W_TuneCP5_13p6TeV_madgraph-pythia8;TTHH-TTtoLNu2Q-HHto2B2Z_TuneCP5_13p6TeV_madgraph-pythia8
