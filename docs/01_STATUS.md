@@ -2,7 +2,7 @@
 
 > **Purpose:** the single place to answer "where are we right now?" for any
 > contributor (human or AI) joining cold. **Audience:** all. **Updated:**
-> 2026-09-07 (Run 3 block E). Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
+> 2026-09-16 (block E action table; CPV stale BLOCKED line corrected). Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
 
 ## Read this first (repo-level facts)
 
@@ -41,8 +41,17 @@
   beginFile pre-registration of all readers** — `05_troubleshooting.md`).
   A13 fix validated in-container against the real CMSSW_14_2_X framework
   sources (exact error reproduced; fixed module remake-free through the real
-  eventLoop). **BLOCKED on lxplus re-validation:** `-N 10` local run on a
-  TTZToQQ/DYJets file + `validate_topcpvcat.py` byte-identity, then resubmit.
+  eventLoop). ~~**BLOCKED on lxplus re-validation:** `-N 10` local run on a
+  TTZToQQ/DYJets file + `validate_topcpvcat.py` byte-identity, then resubmit.~~
+  **RESOLVED 2026-08-25 / 08-30 (this line was left stale until 2026-09-16):**
+  the module ran on lxplus on real NanoAOD and passed Gate 4 against the
+  standalone `GenCatTree` (TTToSemiLeptonic, 2000 events, 61/64 branches,
+  0 mismatches, exit 0) and the v9↔v15 event-matched comparison (143,000
+  events × 61 branches, 0 mismatches) — `09_v15_migration_log.md` §2, §6.
+  What is still open on lxplus is the *campaign-scale* step: the 13-sample
+  `GenCatTree` production (standalone `condor/submit_all.sh`) and the
+  per-sample `validate_topcpvcat.py` campaign on top of it, plus the
+  background-sample resubmission with the A14 module (OPEN CPV #2, #3).
 - **TopCPV C++ (companion):** the standalone `TopCPVGenCategorizer` (package
   renamed from `SSBGenCategorizer`, v1.9, 2026-07-11) was updated in
   lockstep (same restorations). Since 2026-07-10 the C++ IS compile- and
@@ -335,19 +344,41 @@
 > `Run2024X-MINIv6NANOv15-vN`), 나머지는 `--probe` 전까지 UNVERIFIED —, 새 `script/das_discover_run3.sh`(family 별 접두어 wildcard →
 > `HIT|` 줄), registry ttHH 64 행에 `had` 47 / `lep` 16 / `had,lep` 1 태그. golden JSON·era 경계·루미·GT 는 PdmV twiki r223 / PPD 2025 표 원문으로 확정(03_run3_plan §2, §4.2).
 
+**다음 행동 (2026-09-16 기준).** 근거와 이력은 22a~22k 에 있다. 여기에는 *무엇을 할 차례인가*만 적는다.
+
+| # | 할 일 | 누가 / 어디서 | 근거 |
+|---|---|---|---|
+| 1 | **MC 요청 메일 발송**, 답장 오면 기록 | 사용자 | [`ttHH/04_mc_request_2026-09.md`](ttHH/04_mc_request_2026-09.md) §5 |
+| 2 | **변경분 커밋** — NtupleForge 8 파일 + 신규 `ttHH/04_mc_request_2026-09.md`, TTHHGenCategoryTools 4 파일, 워크스페이스 `AI_LIMITS_AND_PROTOCOL.md`(git 밖) | 사용자 | 22i, 22k |
+| 3 | lxplus 의 `script/das_inventory_tth_split_20260911_0857.tsv*` 커밋 | lxplus | 22g(b) |
+| 4 | **2016 MiniAODv2 부모 조회** → 요청 표의 2016 열을 v9 수치에서 교체 (`das_inventory.sh --tier MINIAODSIM`, UL16 MiniAODv2 두 캠페인) | lxplus | 22k, 04 문서 §4 |
+| 5 | `das_scan.sh --era 2024\|2025 --nano v15 --workstream had` — MC 의 status·nevents 는 inventory 로 이미 있으므로 **DATA 와 `FILE\|` 예시 LFN 이 목적** | lxplus | 22a |
+| 6 | **`TTTW` 분할** — v15 는 `TTTWminus/plus-DR1` 2 종. KEY 2 개 + xsec 2 개 필요. 중앙 요청 대상 아님 | 미결 | 22k, registry 주석 |
+| 7 | **데이터 PD 2016 행** — `JetHT`/`BTagCSV` 에 CPV 식 run-era 분할 행(`<PD>_Run2016B-ver1` …) 추가. *(`das_scan.sh` 의 v15 데이터 문자열은 `scan_data()` 의 relaxed fallback 이 이미 처리한다 — 2026-09-16 확인)* | 미결 | 22k |
+| 8 | **xsec 표** — 13.6 TeV(D-R3-6) + 새 키 `ttHTobb_had/_semilep/_dilep`(D-R3-9) + `alt` 키; Run 2 는 `TTZToQQ` 항목을 새로 쓰면서 **861 fb vs 841 fb 정의 확정**(`00_START_HERE.md` §4 의 기존 열린 항목) | 미결 | 22g(a), D-2026-09-11-ttz |
+| 9 | **2016 확장의 analyzer 비용 산정** — `samples_2016*.json` 2 개, 2016 루미, golden JSON, 트리거, b-tag SF, JEC/JER | 미착수 | 22j |
+| 10 | **D-R3-9 확인** — ttH(bb) 를 top-decay-split 3 종으로 (현재 PROPOSED) | 사용자 | 22g(b) |
+| 11 | **FxFx `TTto4Q-2Jets` 로 생성기 비교를 먼저 시작할지** 결정 | 미결 | 22g(c) |
+| 12 | Sherpa variant·목표 통계는 **컨비너 답장 대기** | 대기 | 04 문서 §2 |
+
+실행 규약(09-16): lxplus 의 모든 단계는 `script/runlog.sh <step> -- <명령>` 으로 돌려 `script/runlogs/` 에 로그와 `LEDGER.tsv` 를 남긴다. 절차는 워크스페이스 `RUNBOOK_lxplus_2026-09-16.md`.
+
 21. ~~probe + discover 실행~~ **DONE 2026-09-07** — 6 era 캠페인 문자열 확정(로그 커밋됨). 결과 03_run3_plan §4.2/§4.5:
     Summer24 v15 에 신호 `TTHH-HHto4B`·`TTZH-ZHto4B`·`TTZZ-ZZto4B`·`THW`·`TTZ-ZtoQQ` 가 **중앙에 있다**(→ Run 3 에 D17 확장 없음); `TT4b` 도 있다(`TT4B_…`, **09-10 수정** — 09-07 은 대소문자 패턴 미스로 '없음'이라 적었다, 03_run3_plan §4.6);
     **2022/2023 v15 는 부분 재생산**(70 개; 신호·ttbb·QCD-HT·ttH·tH·ttVV 없음) → D-R3-7: 첫 라운드는 2024+2025.
-22. ~~registry 작성~~ **DONE** — `script/samples_registry_run3.txt` MC 78(had 59 / lep 19) + DATA 11 (09-10: `TT4b` ← `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` 추가; `das_discover_run3.sh` 에 `TT4B*`/`TTBBBB*` 접두어 추가).
+22. ~~registry 작성~~ **DONE** — `script/samples_registry_run3.txt` MC 78(had 59 / lep 19) + DATA 11 *(09-11 현재 MC 85 = had 61 + lep 19 + alt 5 — 22h 참조)* (09-10: `TT4b` ← `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` 추가; `das_discover_run3.sh` 에 `TT4B*`/`TTBBBB*` 접두어 추가).
     `das_scan.sh` 는 Run 3 era 에서 이 registry 를 자동 선택하고 v15 MC 질의를 GT 로 고정한다(플레이버 재생산 제외).
 22a. **event/file 수 스캔** — `das_scan.sh --era 2025|2024 --nano v15 --workstream had`; 로그 커밋.
 22b. **`build_from_scan_log.py` Run 3 대응** — 플레이버 EXCLUDE 확장, prompt `-vN`/`_vN` 을 disjoint run 으로 전부 유지(03_run3_plan §6 항목 2).
 22c. **결정**: ~~`TT4b` 대체 vs 사설 생산~~ (해소 09-10: 중앙 `TT4B`); `TTWJetsToLNu`(v15 는 `mg35x_` 플레이버만) 수용 여부; 13.6 TeV xsec 표(D-R3-6).
 22d. **MC 요청 (2026-09-08~10, 덱 `ttHH_latex/GenRequest_Sep2026`)** — Run 2: 부재 6 종의 MiniAODv2→NanoAODv15 중앙 생산(16 dataset, ≈125M) 요청 예정; Run 3: Sherpa FH `TTto4Q-4Jets-1NLO3LO` 상태(PRODUCTION 80.5M / AHADIC INVALID)·통계·권고 판 문의, Sherpa 4FS ttbb·Sherpa tt4b 는 비교용 저순위, `GenHFHadronMatcher` 출력의 중앙 NanoAOD 탑재 문의. 그룹 피드백(Aurore 09-10): Run 2 세트 동의, Run 2 Sherpa tt+jets(FH·inclusive) 는 저순위로 요청, 24+25 우선 동의.
+22e. **BTV 참고 (09-10)** — 재-NanoAODv15(Run 2, 2022/2023)는 Summer24 셋업이라 `Jet_btagUParTAK4B` 에 2024 UParTv2 WP 를 그대로 쓴다(CMS-talk 09-09) → 03_run3_plan §2 행 9.
 22f. ~~inventory 실행~~ **DONE 2026-09-11** — 세 캠페인 `CASE_ONLY` 0 건(09-07 결론 확정; `TT4B` 가 유일한 대소문자 미스). Summer24 77 EXACT / 1 NOT_FOUND(`TTLNu` mg35x); UL17/18 108 EXACT, NOT_FOUND 27 = 부재 6 + QCD-HT 7 + TTTW + **CPV 13**. 수치: powheg `TTto4Q` 472.5M, Sherpa FH PRODUCTION 100.8M(↑), FxFx `TTto4Q-2Jets` 395M VALID, `TT4B` 9.9M … (03_run3_plan §4.7). 로그 3 세트 커밋됨.
 22g. **결정 (09-11 신규)** — (a) ~~Run 2 `TTZToBB` 유지 vs 대체~~ **DECIDED 09-11 (사용자)**: v15 의 `TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8`(13.98M / 19.82M) 사용 — Run 3 와 같은 처리, hadronic 채널에 더 완전(bb + cc + light). registry `TTZToQQ`(`had`, Run 3 와 같은 KEY), `TTZToBB` → `alt`. **Run 2 요청 6 → 5 종**(14 datasets ≈108M); enriched 사설 목록(D17)도 5 종. `03_DECISIONS.md` D-2026-09-11-ttz-hadronic-from-ttzqq. (b) ~~`TTH-Hto2B-TTto4Q_…` 조회~~ **DONE 09-11 08:57** — 분할 3 종 모두 VALID 29.62M / 29.22M / 29.57M → registry `ttHTobb_had / _semilep / _dilep`(`had`), inclusive `ttHTobb` → `alt` (D-R3-9, 확인 요청). Run 3 ttH(bb) 문의는 삭제. `das_inventory_tth_split_20260911_0857.tsv*` 는 lxplus 에 있음 — 커밋 필요. (c) 생성기 비교: FxFx `TTto4Q-2Jets`(alt, 395M) 로 Sherpa 완료 전에 시작 — **미결**.
 22h. **2025 MC 캠페인 없음 — DAS 확인 (09-11)**: `dataset status=* dataset=/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2025*/NANOAODSIM` 빈 결과. `--era 2025` 는 Summer24 유지(03_run3_plan §4.7). registry 수: MC 85 = had 61 + lep 19 + alt 5, DATA 11.
-22e. **BTV 참고 (09-10)** — 재-NanoAODv15(Run 2, 2022/2023)는 Summer24 셋업이라 `Jet_btagUParTAK4B` 에 2024 UParTv2 WP 를 그대로 쓴다(CMS-talk 09-09) → 03_run3_plan §2 행 9.
+22i. **MC 요청 기록 (09-14)** — 보낸 메일 본문과 "요청하지 않은 것과 그 이유" 를 `docs/ttHH/04_mc_request_2026-09.md` 에 남겼다. 답장·발송 기록은 그 문서 §5 에 append 한다. 초안에 있던 `GenHFHadronMatcher` 요청은 사용자 판단으로 뺐다(일부 샘플만 가져도 전 샘플을 직접 만들어야 하므로 이점 없음).
+22j. **2016 확장의 analyzer 쪽 비용 (09-14, 미착수)** — MC 요청은 네 era-half 로 넓혔지만 `tempTTHH` 에는 `data/samples_2017UL.json`·`samples_2018UL.json` 만 있다. 2016 을 실제로 쓰려면 xsec 표 2 개, 2016 루미(`LUMI_SOURCES.md` 는 2017–2018 만), golden JSON, 트리거, b-tag SF, JEC/JER 이 필요하다. 범위 산정 안 됨.
+22k. **Run 2 범위 = full Run 2 (09-11 밤, 사용자 결정)** — 2016 preVFP/postVFP 를 `das_inventory.sh` 로 점검(v15 2 + v9 2, 로그 커밋). 네 Run 2 v15 캠페인의 `NOT_FOUND` 집합이 **동일**(diff 0) — 같은 5 종이 빠져 있고 나머지는 다 있다. 요청 = 5 종 × 4 era-half = **28 datasets ≈162M**(2016 은 v9 기준 27.1M/27.1M). registry: ttHH 62 행 ERAS 4 era-half 로 확장(era 당 had 45), QCD-HT PRIMARY 를 PSWeights 이름으로 교체(네 캠페인 EXACT) → 2017/18 v15 의 QCD-HT NOT_FOUND 도 해소(27 → 20). 남은 것: 2016 MiniAODv2 부모 수, `TTTW` 전하 분할 KEY 2 개 + xsec, 데이터 PD 2016 행. `03_DECISIONS.md` D-2026-09-11-run2-scope-2016, `09_v15_migration_log.md` 16 절.
 23. **event-level 항목의 "기억" 확정** — 03_run3_plan §2 의 jet veto map 키·MET filter 목록(ecalBadCalib
     보정 수치)·JEC/JER 태그·golden JSON 이름·PU 키를 twiki 원문으로 대조하고 상태 열 갱신. **값을 코드에
     넣기 전에 반드시.**

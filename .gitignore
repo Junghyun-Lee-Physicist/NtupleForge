@@ -44,3 +44,9 @@ local_test_*.log
 crab_args.txt
 submit_*.log
 crab_status_*.log
+
+# script/runlog.sh (2026-09-16): run records ARE committed -- they are small,
+# contain DAS/ROOT/python output only, and are the provenance for "did it run
+# and did it exit 0". The one exception is any run whose command mentions crab:
+# runlog.sh routes those under runlogs/nocommit/ (credential rule above).
+script/runlogs/nocommit/

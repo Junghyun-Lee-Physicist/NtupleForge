@@ -9,6 +9,109 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased] — 2026-09-16 (3): `script/runlog.sh` — every lxplus step leaves a record in the repo
+
+### Added
+- `script/runlog.sh <step> -- <command>` — wraps one step: header (step, start UTC, host, cwd, git HEAD + modified-tracked count,
+  exact command via `printf %q`, `CMSSW_BASE`, ROOT / dasgoclient versions, proxy time left), body (stdout+stderr, tee'd to the
+  terminal), footer (end UTC, wall seconds, **EXIT**, every file under `script/` and `branches/` modified during the run with sizes).
+  Appends one line to `script/runlogs/LEDGER.tsv`. Propagates the command's exit code. Commands mentioning `crab` are routed to
+  `script/runlogs/nocommit/` (gitignored) — credential rule D-2026-08-17-no-logs-in-git. Self-tested in the dev container:
+  exit-code propagation (0 / 4), output detection, nocommit routing, argument validation (exit 2). ASCII-only.
+- `script/runlogs/README.md` — what the records contain and how to read them (EXIT, outputs, git_head, reproducing from `cmd`).
+- `.gitignore`: `script/runlogs/nocommit/`.
+
+### Changed
+- `../../RUNBOOK_lxplus_2026-09-16.md`: every command wrapped in `runlog.sh`; a 30 s self-test gates the rest; commit step adds
+  `script/runlogs/`. Reason (user, 2026-09-16): a run must leave enough of a record that both the person and the AI can see that
+  the work actually happened and how it ended, not just the result files.
+
+## [Unreleased] — 2026-09-16 (2): lxplus runbook + sweep manifest; stale CPV status corrected
+
+### Added
+- `script/inventory_manifest_run3_2016.txt` — sweep manifest for what the 2017UL manifest never covered: Summer24 MC (3 primaries),
+  2024 Data per era (JetMET0 C–I, I_v2, Muon0 C), 2025 Data per era (JetMET0 B–G incl. C/F v2, Muon0 C), UL16 v15 MC both halves,
+  UL17 B–F and UL18 A–D v15 **Data** (only v9 Data was swept so far), UL18 v15 MC. Every name has a recorded provenance
+  (inventory TSV, discover HIT lines, docs/08 Step 1b); the two UL16 v15 Data rows are explicitly patterns pending a DAS look.
+- `../../RUNBOOK_lxplus_2026-09-16.md` (workspace top level) — the lxplus session for the user: UL16 MiniAODv2 inventory,
+  `das_scan.sh --era 2024|2025 --workstream had`, UL16 JetHT v15 discovery, the sweep, what to commit, and what the AI does with each result.
+
+### Fixed
+- `01_STATUS.md` CPV section still said **"BLOCKED on lxplus re-validation (-N 10 + validate_topcpvcat.py)"** from 2026-07-02,
+  although Gate 4 passed on 2026-08-25 and the v9↔v15 comparison on 2026-08-30 (`09_v15_migration_log.md` §2, §6). Struck
+  through with the resolution and the actual remaining campaign-scale steps. The 2026-09-16 position check in
+  `00_START_HERE.md` §4 ① had copied the stale sentence; corrected there too, and recorded as failure case 4 in
+  `../../AI_LIMITS_AND_PROTOCOL.md` §5.
+
+## [Unreleased] — 2026-09-16: session-memory limits in the working agreement; open items consolidated
+
+### Fixed
+- `01_STATUS.md` group E carried **two items numbered 22h** (the 2025-campaign check of 09-11 and the full-Run-2
+  scope decision of the same night), the 22x items were in insertion order rather than alphabetical, and item 22
+  still quoted the pre-09-11 Run 3 registry counts (MC 78 / had 59) that item 22h contradicts. The second 22h is
+  now **22k**, the block is ordered a→k, and item 22 points at the current counts.
+
+### Added
+- `01_STATUS.md` group E now opens with a **"다음 행동" table** (12 rows: what to do next, who does it and where,
+  and which item it comes from). The pending actions were previously buried inside prose in 22g and 22k.
+- `../../AI_LIMITS_AND_PROTOCOL.md` (workspace top level) — what an AI actually knows versus what must be
+  supplied, how session memory and compaction really behave (with the 1.91M-character corpus measurement),
+  which failure modes the training objective produces, the six observed cases from the 2026-09-11~14 session
+  (3 failures, 3 successes), and a 14-item working protocol.
+
+### Changed
+- `00_PROMPT.md` §3: session memory added as an environment limit alongside "no ROOT, no CRABClient".
+  Three rules: no bulk-loading of the docs (governance set at session start, topic docs read immediately
+  before use), state what you read, and never quote a number from memory — re-open the file or re-run the
+  query at the point of citation and mark unverified claims as inference. Header `Updated` 2026-07-01 → 2026-09-16.
+
+### Verified (no change needed)
+- `das_scan.sh` already handles the v15 data processing string: `scan_data()` strips `_MiniAODv2_` in a relaxed
+  fallback, so extending the data PDs to 2016 is a registry-row job only, not a script fix.
+
+### Added
+- `../../AI_LIMITS_AND_PROTOCOL.md` (workspace top level) — what an AI actually knows versus what must be
+  supplied, how session memory and compaction really behave (with the 1.91M-character corpus measurement),
+  which failure modes the training objective produces, the six observed cases from the 2026-09-11~14 session
+  (3 failures, 3 successes), and a 14-item working protocol.
+
+### Changed
+- `00_PROMPT.md` §3: session memory added as an environment limit alongside "no ROOT, no CRABClient".
+  Three rules: no bulk-loading of the docs (governance set at session start, topic docs read immediately
+  before use), state what you read, and never quote a number from memory — re-open the file or re-run the
+  query at the point of citation and mark unverified claims as inference. Header `Updated` 2026-07-01 → 2026-09-16.
+
+## [Unreleased] — 2026-09-14: MC request recorded; two unsourced claims corrected
+
+### Added
+- `docs/ttHH/04_mc_request_2026-09.md` — what was requested from the Hbb MC contact and why, what was **not**
+  requested and why, what falls to us if it is approved, and the verbatim e-mail body. Indexed in `docs/ttHH/README.md`.
+
+### Changed
+- `03_DECISIONS.md` D-2026-09-11-ttz-hadronic-from-ttzqq: the sentence "a background that is roughly half of ttH(bb)
+  in rate" was written from general knowledge, not from any project document. Replaced with the PDG branching ratio
+  (attributed as such) plus an explicit OPEN on whether the statistics suffice, and linked to the existing open item
+  on the ttZ cross-section definition (861 fb vs 841 fb).
+- `03_DECISIONS.md` D-2026-09-11-run2-scope-2016: added the analyzer-side cost of 2016 (no `samples_2016*.json`,
+  no 2016 luminosity reference, trigger / SF / JEC work), which was not stated when the decision was taken.
+- `01_STATUS.md`: items 22i (request record) and 22j (2016 analyzer-side cost, unscoped).
+
+## [Unreleased] — 2026-09-11 (night): Run 2 request = all four era-halves; QCD-HT primary fixed for v15
+
+### Added
+- `script/das_inventory_ul16{pre,post}_{v15,v9}_20260911_*.tsv` (+ `.names.txt`, `.match.txt`) — UL16 preVFP/postVFP,
+  NanoAODv15 and v9. v15: 109 EXACT / 27 NOT_FOUND each; v9: 129 / 7. The four Run 2 v15 NOT_FOUND key sets
+  (16pre, 16post, UL17, UL18) are **identical**.
+
+### Changed
+- `samples_registry.txt`: all 62 ttHH rows now read `2016postVFPUL,2016preVFPUL,2017UL,2018UL` (45 `had` MC rows per era,
+  no duplicate keys). QCD-HT PRIMARY `QCD_HT<bin>_TuneCP5_13TeV-madgraphMLM-pythia8` → `QCD_HT<bin>_TuneCP5_PSWeights_13TeV-madgraph-pythia8`
+  (the v9 name exists in no v15 campaign; the PSWeights name is EXACT in all four). KEYs unchanged.
+  `TTTW` left as is with a comment: v15 splits it by charge (`TTTWminus/plus-DR1`), which needs two KEYs and two xsec entries (OPEN).
+- Docs: `03_DECISIONS.md` **D-2026-09-11-run2-scope-2016** (DECIDED, user); `09_v15_migration_log.md` §16;
+  `ttHH/03_run3_plan.md` §4.7 conclusion ③; `01_STATUS.md` 22h.
+- Request to the conveners is now **five samples × four era-halves = 28 datasets, ≈162M events** (was 14 / ≈108M).
+
 ## [Unreleased] — 2026-09-11 (evening, 2): Run 2 ttZ(had) from `TTZToQQ`; request list 6 → 5
 
 ### Changed

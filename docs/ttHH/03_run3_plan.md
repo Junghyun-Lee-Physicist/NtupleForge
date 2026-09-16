@@ -236,7 +236,7 @@ Summer24 상세 316 행 중 VALID 269 / PRODUCTION 21 / INVALID 26 — INVALID �
 
 **ttH(bb) 분할 샘플 (09-11 08:57 CEST, `das_inventory_tth_split_20260911_0857.tsv`, lxplus 에 생성 — 커밋 필요).** 세 개 모두 VALID, 각 ~29.5M(파일 318–321, 0.13 TB), 2026-03-23/25 생산. 합 88.4M 으로 inclusive `TTH-Hto2B`(2.44M) 의 36 배. ttbar 와 같은 방식(`TTto4Q / TTtoLNu2Q / TTto2L2Nu`)으로 세 채널을 모두 `had` 에 넣는다 — SL·DL top 도 hadronic 선택을 통과할 수 있으므로 `TTto4Q` 하나만 쓰면 안 된다. inclusive 는 `alt` 로 내리고 키만 유지(D-R3-9). 결과: **Run 3 의 ttH(bb) 문의는 사라진다** — 요청도 문의도 없음.
 
-**결론.** ① 이름·대소문자 문제는 닫혔다. ② Run 3 는 요청할 것이 없고 문의는 Sherpa FH 하나만 남는다(완료·통계·판); ttH(bb) 는 분할 샘플 3 종으로 해결. ③ Run 2 요청은 **5 종**(`TTHHto4b`, `TT4b`, `TTZHTo4b`, `TTZZTo4b`, `tHW`; 14 datasets ≈108M) — `TTZToBB` 는 v15 의 `TTZToQQ` 로 대체(09-11 결정). ④ Sherpa FH 가 끝나기 전의 생성기 비교는 FxFx `TTto4Q-2Jets`(395M) 로 지금 시작할 수 있다. ⑤ 2025 MC 캠페인은 없다(DAS 확인).
+**결론.** ① 이름·대소문자 문제는 닫혔다. ② Run 3 는 요청할 것이 없고 문의는 Sherpa FH 하나만 남는다(완료·통계·판); ttH(bb) 는 분할 샘플 3 종으로 해결. ③ Run 2 요청은 **5 종**(`TTHHto4b`, `TT4b`, `TTZHTo4b`, `TTZZTo4b`, `tHW`) — `TTZToBB` 는 v15 의 `TTZToQQ` 로 대체(09-11 결정). 같은 날 밤 2016 을 점검해 **네 era-half 의 부재 목록이 동일**함을 확인했고 요청 범위를 full Run 2 로 넓혔다: **28 datasets ≈162M**([`../09_v15_migration_log.md`](../09_v15_migration_log.md) 16 절). ④ Sherpa FH 가 끝나기 전의 생성기 비교는 FxFx `TTto4Q-2Jets`(395M) 로 지금 시작할 수 있다. ⑤ 2025 MC 캠페인은 없다(DAS 확인).
 
 ## 5. `had` / `lep` — 용도 태그
 

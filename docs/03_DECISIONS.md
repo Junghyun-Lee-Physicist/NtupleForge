@@ -11,6 +11,45 @@
 
 ---
 
+## D-2026-09-11-run2-scope-2016 — the Run 2 request covers all four era-halves; QCD-HT switches to the PSWeights name
+**DECIDED · 2026-09-11 · user decision · detail: `09_v15_migration_log.md` §16**
+
+- **Context.** The Run 2 v15 work had only ever looked at UL17 and UL18 (every ttHH registry row read
+  `2017UL,2018UL`); 2016 appeared only in the CPV workstream. Before the MC request went out, 2016 was
+  checked with `das_inventory.sh` on four campaigns: UL16 preVFP / postVFP NanoAODv15
+  (`RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1*`,
+  `RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1*`) and the two matching v9 campaigns as a baseline.
+- **Result.** The **four Run 2 v15 `NOT_FOUND` key sets are identical** (27 keys each, diff = 0): the same five
+  samples are missing in 2016 as in 2017/2018 (`TTHHto4b`, `TT4b`, `TTZHTo4b`, `TTZZTo4b`, `tHW`), and they are
+  all present in 2016 v9 (129 EXACT / 7 NOT_FOUND there, the 7 being the QCD-HT naming below). `TTZToQQ` exists
+  in 2016 v15 as well (6.28M / 5.40M), so D-2026-09-11-ttz-hadronic-from-ttzqq holds for 2016 unchanged.
+- **Decision.** (a) The central request is the five samples in **all four era-halves — 28 datasets, ≈162M events**
+  (2016: 7 datasets and 27.1M events per half, NanoAODv9 counts; MiniAODv2 parents not yet queried).
+  (b) All 62 ttHH rows of `samples_registry.txt` now carry
+  `2016postVFPUL,2016preVFPUL,2017UL,2018UL`; each era selects 45 `had` MC rows.
+  (c) **QCD-HT PRIMARY changed** from `QCD_HT<bin>_TuneCP5_13TeV-madgraphMLM-pythia8` (the v9 name, which exists
+  in no v15 campaign) to `QCD_HT<bin>_TuneCP5_PSWeights_13TeV-madgraph-pythia8`, which is EXACT in all four v15
+  campaigns — same process and bin edges, so the KEY, xsec entry, filelists and patch names are unchanged. The CPV
+  rows already pointed at these datasets under their own keys, which is what confirmed the choice (2016 also has a
+  `-madgraphMLM-pythia8` PSWeights variant; not used, so one name covers all four halves).
+- **Consequences.** A v15 scan of 2017/2018 now resolves QCD-HT, so the "27 NOT_FOUND" of the 2026-09-11 morning
+  inventory becomes 20 (of which `had`: the five requested samples + `TTTW`). `TTTW` stays broken for v15 by
+  design — its v15 replacement is two charge-split datasets and needs two KEYs plus two xsec entries (OPEN, noted
+  in the registry; no central request is involved). Data PDs were **not** extended to 2016: `JetHT` / `BTagCSV`
+  need the per-run-era row pattern the CPV rows use (`<PD>_Run2016B-ver1`, …) and a DAS scan first.
+  **The analyzer side of 2016 was not part of this decision and is not free**: `tempTTHH` carries only
+  `data/samples_2017UL.json` and `samples_2018UL.json`, and `tempTTHH/docs/reference/LUMI_SOURCES.md`
+  documents 2017–2018 luminosity only. Using 2016 needs xsec tables for both halves, 2016 luminosity,
+  golden JSON, trigger paths and efficiencies, b-tag SFs and JEC/JER for 2016. The request is placed now
+  because production takes months; extending the analysis to 2016 is separate work that has not been scoped.
+- **Alternatives considered.** (a) Keep 2017/2018 only and request 2016 later — rejected by the user: the same
+  five samples, the same production step, and a second request means a second wait. (b) Give 2016 its own
+  registry file (the D-R3-3 precedent) — rejected: only QCD-HT differed, and it turned out to differ by version,
+  not by year. (c) A second QCD-HT row with disjoint ERAS — unnecessary once the PSWeights name was found to
+  cover all four.
+
+---
+
 ## D-2026-09-11-ttz-hadronic-from-ttzqq — Run 2 on v15: ttZ(hadronic Z) from `TTZToQQ`; `TTZToBB` not requested
 **DECIDED · 2026-09-11 · user decision · detail: `ttHH/03_run3_plan.md` §4.7, `09_v15_migration_log.md` §15**
 
@@ -33,13 +72,26 @@
   4b selection is entered by ttZ(bb) directly and by ttZ(cc) / ttZ(light)
   through mistags; v9 modelled only the bb slice. The inclusive sample covers
   all three with one cross section (σ(ttZ)·BR(Z→qq)), and the Z→bb component
-  (~22 % ≈ 3.0M / 4.3M events) is ample for a background that is roughly
-  half of ttH(bb) in rate before selection and much less after it.
+  is ~22 % of Z→qq (PDG branching ratios, not a project document), i.e. about
+  3.0M / 4.3M events in UL17 / UL18. **How much statistics this background
+  actually needs was not checked against a project document** — the relative
+  ttZ yield in our selection is not recorded in `ttHH/01_physics.md` or the
+  analyzer docs. Treat the sufficiency claim as OPEN until it is checked
+  against the analyzer's own yields.
+- **Open item this touches.** The ttZ cross section is already flagged:
+  `TTZToBB` = 861 fb (ttHH AN Tab.16) versus ttZ = 841 fb (AN Tab.9), definition
+  unresolved (`tempTTHH/docs/CHANGELOG.md`, `00_START_HERE.md` §4 "물리 값 확정").
+  Switching to `TTZToQQ` replaces that entry with σ(ttZ)·BR(Z→qq), so the
+  definition must be settled when the new xsec entry is written, not before.
 - **Alternatives considered.** (a) Request `TTZToBB` NanoAODv15 from MiniAODv2
   with the other five — rejected: one more production for a sample whose
   physics the existing `TTZToQQ` already contains, and a Run 2 / Run 3
   asymmetry. (b) Private enriched production of `TTZToBB` — rejected for the
   same reason (D17 list shrinks instead).
+- *(Scope note, same day: the five-sample list is unchanged but now covers all
+  four Run 2 era-halves — 28 datasets, ≈162M — see
+  D-2026-09-11-run2-scope-2016. The "14 datasets, ≈108M" above was the
+  2017/2018-only figure at the time of writing.)*
 
 ---
 

@@ -495,3 +495,37 @@ v9 대조 때 `TTZToBB`(v9) ↔ `TTZToQQ`(v15) 는 1:1 비교 대상이 아니�
 같은 날 Summer24 쪽: ttH(bb) 는 top-decay-split 3 종(각 ~29.5M) 을 쓰고, 2025 MC 캠페인은 DAS 에 없음을 확인했다 —
 `ttHH/03_run3_plan.md` §4.7.
 
+## 16. 2026-09-11 (밤) — 2016 점검: 네 era-half 가 똑같다, 요청은 28 datasets
+
+메일을 보내기 전에 2016 을 확인했다. `das_scan.sh` 는 쓸 수 없다 — ttHH 행의 ERAS 에 2016 이 없어서 전부 조용히 건너뛴다.
+그래서 ERAS 를 보지 않는 `das_inventory.sh` 로 네 캠페인을 전수 조회했다(로그 커밋됨):
+
+| tag | campaign | EXACT | NOT_FOUND |
+|---|---|---:|---:|
+| `ul16pre_v15` | `RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1*` | 109 | 27 |
+| `ul16post_v15` | `RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1*` | 109 | 27 |
+| `ul16pre_v9` | `RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11*` | 129 | 7 |
+| `ul16post_v9` | `RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17*` | 129 | 7 |
+
+**핵심 결과: 네 Run 2 v15 캠페인(16pre, 16post, UL17, UL18)의 `NOT_FOUND` 키 집합이 diff 0 으로 완전히 같다.** 27 개의 내역은
+요청 대상 5 종(`TTHHto4b`, `TT4b`, `TTZHTo4b`, `TTZZTo4b`, `tHW`) + `TTZToBB`(→ `TTZToQQ` 로 대체, 15 절) + 이름만 다른 8 종
+(QCD-HT 7, `TTTW`) + CPV 워크스트림 13 종이다. 2016 v9 의 `NOT_FOUND` 7 은 전부 QCD-HT 이름 문제이고, 5 종은 2016 v9 에 다 있다.
+`CASE_ONLY` 는 네 곳 모두 0.
+
+**2016 의 5 종 (NanoAODv9 event 수).** preVFP: `TTHHTo4b` 4,950,000 / `TT4b` 4,801,000 / `TTZHTo4b`(+ext1) 2,468,000+2,500,000 /
+`TTZZTo4b`(+ext1) 2,500,000+2,500,000 / `tHW` 7,430,000 = **27.1M, 7 datasets**. postVFP: 4,772,000 / 4,848,000 /
+2,500,000+2,500,000 / 2,468,000+2,500,000 / 7,484,000 = **27.1M, 7 datasets**. MiniAODv2 부모 수는 아직 조회하지 않았다
+(2017/2018 에서 v9 보다 1–4 % 많았다).
+
+**사용자 결정(2026-09-11).** 요청을 full Run 2 로 넓힌다 — 5 종 × 4 era-half = **28 datasets, 약 162M event**.
+`03_DECISIONS.md` D-2026-09-11-run2-scope-2016.
+
+**registry 변경.** ttHH 62 행 전부 ERAS = `2016postVFPUL,2016preVFPUL,2017UL,2018UL`(era 당 `had` 45 행, 중복 KEY 0).
+QCD-HT 는 PRIMARY 를 v9 이름(`..._TuneCP5_13TeV-madgraphMLM-pythia8`, v15 에는 어느 캠페인에도 없다)에서
+`..._TuneCP5_PSWeights_13TeV-madgraph-pythia8`(네 v15 캠페인 모두 EXACT)로 바꿨다. KEY 는 그대로라 xsec·filelist·patch 이름은
+영향 없다. 그 결과 **2017/2018 v15 스캔에서도 QCD-HT 가 이제 풀린다** — 09-11 오전의 "27 NOT_FOUND" 는 20 이 된다.
+
+**남은 것.** ① 2016 MiniAODv2 부모 조회(요청 표의 정확한 수). ② `TTTW` 는 v15 에서 전하별 2 종(`TTTWminus/plus-DR1`)이라
+KEY 두 개와 xsec 두 개가 필요하다(요청 대상 아님). ③ 데이터 PD(`JetHT`, `BTagCSV`)는 2016 을 넣지 않았다 — CPV 행이 쓰는
+run-era 분할 패턴(`<PD>_Run2016B-ver1` …)과 DAS 스캔이 먼저다. ④ 2016 의 era 별 JEC/JER·golden JSON·트리거는 analyzer 작업.
+

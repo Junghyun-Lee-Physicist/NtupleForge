@@ -7,7 +7,7 @@
 > (TopCPV and ttHH) — one contract, no per-directory prompts** (see
 > `03_DECISIONS.md` → D-2026-07-01-docs-topcpv-tthh-split for why).
 > **Audience:** AI contributors (humans too). **Status:** active.
-> **Updated:** 2026-07-01.
+> **Updated:** 2026-09-16 (§3: session-memory limits).
 > Read next in order: `01_STATUS.md` → `02_CHANGELOG.md` → `03_DECISIONS.md` → …
 > then the workstream subdir you are touching (`TopCPV/` or `ttHH/`) — see `README.md`.
 
@@ -43,6 +43,20 @@ network, and no real NanoAOD files**. Therefore:
   NanoAOD. Byte-identity is confirmed on lxplus with `script/validate_topcpvcat.py`.
 - Never imply you executed something you could not. Mark it **"unverified — run on
   lxplus"**.
+
+**Session memory is a hard limit too, and it fails silently.** Your context is finite,
+and a long session is *compacted*: the early part is replaced by a summary, so numbers
+you "remember" from early in the session may disagree with the files they came from
+(observed 2026-09-11: post-compaction recall of registry counts was wrong). Therefore:
+- **Do not bulk-load the docs.** This workspace holds ~1.9M characters of Markdown;
+  loading it costs context and it is the first thing compaction discards. At session
+  start read only the governance set (`00_START_HERE.md`, this file, `01_STATUS.md`,
+  `03_DECISIONS.md`, the workstream README — together ~6 % of the corpus), then read a
+  numbered doc **immediately before** touching its subject. **State what you read** (§7).
+- **Never quote a number from memory.** Re-open the file or re-run the query at the
+  moment you cite it, and mark any claim you did not verify as your inference, not as
+  established fact. Rationale, failure cases and the full working protocol:
+  [`../../AI_LIMITS_AND_PROTOCOL.md`](../../AI_LIMITS_AND_PROTOCOL.md).
 
 ## 4. Validation affordances in code (MANDATORY)
 Any code you add must be validatable:

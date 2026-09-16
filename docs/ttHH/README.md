@@ -3,7 +3,7 @@
 > **Purpose:** ttHH→4b workstream 문서의 지역 인덱스. **Audience:** ttHH ntuple
 > 생산이나 은퇴한 categorization 파이프라인 기록을 보는 사람.
 > **Status:** active (파이프라인은 full passthrough; categorization은 main
-> analyzer로 이관; **Run 3 확장 계획 시작 2026-09-07**). **Updated:** 2026-09-07.
+> analyzer로 이관; **Run 3 확장 계획 시작 2026-09-07**; **MC 생성 요청 기록 2026-09-14**). **Updated:** 2026-09-14.
 > 공통 문서(상태/변경/결정/트러블슈팅)는 [`../README.md`](../README.md) 참조.
 
 현재 ttHH ntuple 생산은 **full-NanoAOD passthrough**입니다
@@ -25,7 +25,10 @@ analyzer에서 수행합니다 — 이 디렉토리는 그 물리 배경과 은�
    PU, b-tagger …; 항목마다 실측/기억/규칙 표시), 13.6 TeV 데이터셋 명명과
    **DAS 로 확정하는 절차**(`script/das_discover_run3.sh`), `had`/`lep` 용도
    태그와 hadronic 우선 생산.
-4. **[`legacy/code/`](legacy/code/)** — verbatim 소스 아카이브 (비유지보수):
+4. **[`04_mc_request_2026-09.md`](04_mc_request_2026-09.md)** — **중앙 MC 생성 요청 기록**
+   (Hbb MC contact 앞, 2026-09-14): Run 2 5 종 28 dataset, Run 3 Sherpa tt 계열, **요청하지
+   않은 것과 그 이유**, 승인 시 우리 쪽에 남는 일, 보낸 메일 본문 원문.
+5. **[`legacy/code/`](legacy/code/)** — verbatim 소스 아카이브 (비유지보수):
    categorizer 모듈, compat shim(원래 이름 `_nanoaod_compat.py`), branch 목록들,
    원본 CRAB config, 검증 tool.
 
@@ -38,9 +41,12 @@ analyzer에서 수행합니다 — 이 디렉토리는 그 물리 배경과 은�
 - 이 workstream에서 발견된 PyROOT 함정들(`UChar_t`-as-bytes 등)은 공통 규칙
   [`../06_nanoaod_branch_access.md`](../06_nanoaod_branch_access.md)으로
   일반화되어 TopCPV 모듈에도 적용됩니다.
-- registry(`script/samples_registry.txt`)의 ttHH 행은 용도 태그를 갖습니다:
-  `had` 47 + `lep` 16 + `had,lep` 1(SingleMuon). **ntuple 생산은
-  `--workstream had`(hadronic) 먼저**, lep 는 다음 라운드
-  ([`03_run3_plan.md`](03_run3_plan.md) §5).
+- registry(`script/samples_registry.txt`)의 ttHH 행은 용도 태그를 갖습니다 (2026-09-11 기준):
+  `had` 48행(MC 45 + DATA 3) + `lep` 17행(MC 16 + DATA 1) + `alt` 1행(`TTZToBB`, v9 전용),
+  `SingleMuon` 은 `had,lep` 둘 다. **ntuple 생산은 `--workstream had`(hadronic) 먼저**,
+  lep 는 다음 라운드 ([`03_run3_plan.md`](03_run3_plan.md) §5).
+- ttHH MC 행의 ERAS 는 2026-09-11 부터 **네 Run 2 era-half 전부**
+  (`2016postVFPUL,2016preVFPUL,2017UL,2018UL`)입니다 — era 당 `had` 45 행이 선택됩니다
+  (`../03_DECISIONS.md` D-2026-09-11-run2-scope-2016).
 - Run 3 데이터셋 이름은 추정하지 않습니다 — `script/das_discover_run3.sh` 의
   `HIT|` 줄만 `samples_registry_run3.txt` 로 옮깁니다 (§4).

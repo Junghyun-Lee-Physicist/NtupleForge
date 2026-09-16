@@ -1,0 +1,76 @@
+# =============================================================================
+# inventory_manifest_run3_2016.txt -- branch-inventory sweep for what the
+# 2017UL manifest does not cover: Run 3 (Summer24 MC, 2024/2025 Data), UL16
+# preVFP/postVFP v15, and the UL17/UL18 v15 *Data* eras (only v9 Data and v15
+# MC were swept so far -- script/inventory/ has no inv_2017*_v15_Data.tsv).
+#
+#   /bin/bash script/sweep_inventories.sh script/inventory_manifest_run3_2016.txt
+#
+# Same rule as the 2017UL manifest: one file per (tier x run era x NanoAOD
+# version). Run era matters most (HLT menu), a second MC primary a little,
+# more MC primaries almost nothing. Schema-only reads over XRootD, seconds each.
+#
+# PROVENANCE OF THE NAMES (D-R3-4: nothing here is guessed)
+#   Summer24 MC        script/das_inventory_summer24_v15_20260911_0427.tsv (VALID rows)
+#   2024 / 2025 Data   HIT| lines of script/das_discover_2024_v15_20260907_1547.log
+#                      and script/das_discover_2025_v15_20260907_1548.log
+#   UL16 v15 MC        dasgoclient answer of 2026-09-11 (both halves, -v2 chosen)
+#   UL17 / UL18 v15 Data
+#                      docs/08 Step 1b (Run2017B-UL2017_NanoAODv15-v1) and the relaxed
+#                      query in script/das_ttHH_2018UL_v15_20260903_1016.log
+#                      (Run2018A-UL2018_NanoAODv15-v2). The literal 'UL201x_NanoAODv15'
+#                      excludes the BTVNanoAODv15 / JMENanoAODv15 flavours, which
+#                      would otherwise be picked first (head -1 is alphabetical).
+#   UL16 v15 Data      ** PATTERNS, not verified names ** -- no UL16 v15 data scan
+#                      exists yet. The sweep prints the dataset it resolved; replace
+#                      these two rows by explicit per-era rows once
+#                      dasgoclient -query "dataset=/JetHT/Run2016*UL2016*NanoAODv15*/NANOAOD"
+#                      has been looked at (see RUNBOOK_lxplus_2026-09-16.md step 1c).
+# =============================================================================
+
+# ---- Run 3 MC: Summer24 NanoAODv15 (13.6 TeV) --------------------------------
+Summer24_v15_MC        /TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+Summer24_v15_MC_TTBB   /TTBBto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2*/NANOAODSIM
+Summer24_v15_MC_TTHH   /TTHH-HHto4B_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2*/NANOAODSIM
+
+# ---- 2024 Data, per run era (JetMET0 = hadronic PD; MINIv6NANOv15 re-processing)
+2024C_v15_Data         /JetMET0/Run2024C-MINIv6NANOv15-v1/NANOAOD
+2024D_v15_Data         /JetMET0/Run2024D-MINIv6NANOv15-v1/NANOAOD
+2024E_v15_Data         /JetMET0/Run2024E-MINIv6NANOv15-v1/NANOAOD
+2024F_v15_Data         /JetMET0/Run2024F-MINIv6NANOv15-v2/NANOAOD
+2024G_v15_Data         /JetMET0/Run2024G-MINIv6NANOv15-v2/NANOAOD
+2024H_v15_Data         /JetMET0/Run2024H-MINIv6NANOv15-v2/NANOAOD
+2024I_v15_Data         /JetMET0/Run2024I-MINIv6NANOv15-v2/NANOAOD
+2024Iv2_v15_Data       /JetMET0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD
+2024C_v15_Muon         /Muon0/Run2024C-MINIv6NANOv15-v1/NANOAOD
+
+# ---- 2025 Data, per run era (T0 prompt NANOv15; C and F have v1 AND v2 = disjoint runs)
+2025B_v15_Data         /JetMET0/Run2025B-PromptReco-v1/NANOAOD
+2025C_v15_Data         /JetMET0/Run2025C-PromptReco-v1/NANOAOD
+2025Cv2_v15_Data       /JetMET0/Run2025C-PromptReco-v2/NANOAOD
+2025D_v15_Data         /JetMET0/Run2025D-PromptReco-v1/NANOAOD
+2025E_v15_Data         /JetMET0/Run2025E-PromptReco-v1/NANOAOD
+2025F_v15_Data         /JetMET0/Run2025F-PromptReco-v1/NANOAOD
+2025Fv2_v15_Data       /JetMET0/Run2025F-PromptReco-v2/NANOAOD
+2025G_v15_Data         /JetMET0/Run2025G-PromptReco-v1/NANOAOD
+2025C_v15_Muon         /Muon0/Run2025C-PromptReco-v1/NANOAOD
+
+# ---- UL16 v15 MC, both halves ---------------------------------------------------
+2016preVFP_v15_MC      /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1-v2/NANOAODSIM
+2016postVFP_v15_MC     /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2/NANOAODSIM
+
+# ---- UL16 v15 Data (PATTERNS -- see header; the sweep prints what it resolved)
+2016preVFP_v15_Data    /JetHT/Run2016*-HIPM_UL2016_NanoAODv15*/NANOAOD
+2016postVFP_v15_Data   /JetHT/Run2016*-UL2016_NanoAODv15*/NANOAOD
+
+# ---- UL17 / UL18 v15 Data, per run era (fills the gap next to inv_2017*_v9_Data)
+2017B_v15_Data         /JetHT/Run2017B-UL2017_NanoAODv15*/NANOAOD
+2017C_v15_Data         /JetHT/Run2017C-UL2017_NanoAODv15*/NANOAOD
+2017D_v15_Data         /JetHT/Run2017D-UL2017_NanoAODv15*/NANOAOD
+2017E_v15_Data         /JetHT/Run2017E-UL2017_NanoAODv15*/NANOAOD
+2017F_v15_Data         /JetHT/Run2017F-UL2017_NanoAODv15*/NANOAOD
+2018A_v15_Data         /JetHT/Run2018A-UL2018_NanoAODv15*/NANOAOD
+2018B_v15_Data         /JetHT/Run2018B-UL2018_NanoAODv15*/NANOAOD
+2018C_v15_Data         /JetHT/Run2018C-UL2018_NanoAODv15*/NANOAOD
+2018D_v15_Data         /JetHT/Run2018D-UL2018_NanoAODv15*/NANOAOD
+2018UL_v15_MC          /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1*/NANOAODSIM
