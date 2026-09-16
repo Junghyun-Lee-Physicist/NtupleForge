@@ -1,0 +1,99 @@
+=== RUNLOG ================================================================
+step        : sweep_run3_2016
+start_utc   : 2026-09-16T07:17:32Z
+host        : lxplus929   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : e6eb9c3   modified_tracked_files: 0
+cmd         : /bin/bash script/sweep_inventories.sh script/inventory_manifest_run3_2016.txt 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-16 09:17:32.569402695 +0200 CEST m=+0.006354511
+proxy_left_s: 41086
+===========================================================================
+========================================================================
+ sweep_inventories.sh   out=/afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/inventory
+ manifest=script/inventory_manifest_run3_2016.txt
+========================================================================
+  OK    Summer24_v15_MC        Events=2007  HLT=716   /TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  OK    Summer24_v15_MC_TTBB   Events=2007  HLT=716   /TTBBto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  OK    Summer24_v15_MC_TTHH   Events=2007  HLT=716   /TTHH-HHto4B_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM
+  OK    2024C_v15_Data         Events=2260  HLT=702   /JetMET0/Run2024C-MINIv6NANOv15-v1/NANOAOD
+  OK    2024D_v15_Data         Events=2236  HLT=702   /JetMET0/Run2024D-MINIv6NANOv15-v1/NANOAOD
+  OK    2024E_v15_Data         Events=2260  HLT=712   /JetMET0/Run2024E-MINIv6NANOv15-v1/NANOAOD
+  OK    2024F_v15_Data         Events=2265  HLT=716   /JetMET0/Run2024F-MINIv6NANOv15-v2/NANOAOD
+  OK    2024G_v15_Data         Events=2296  HLT=716   /JetMET0/Run2024G-MINIv6NANOv15-v2/NANOAOD
+  OK    2024H_v15_Data         Events=2297  HLT=717   /JetMET0/Run2024H-MINIv6NANOv15-v2/NANOAOD
+  OK    2024I_v15_Data         Events=2297  HLT=717   /JetMET0/Run2024I-MINIv6NANOv15-v2/NANOAOD
+  OK    2024Iv2_v15_Data       Events=2300  HLT=720   /JetMET0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD
+  OK    2024C_v15_Muon         Events=2260  HLT=702   /Muon0/Run2024C-MINIv6NANOv15-v1/NANOAOD
+  OK    2025B_v15_Data         Events=1932  HLT=733   /JetMET0/Run2025B-PromptReco-v1/NANOAOD
+  OK    2025C_v15_Data         Events=1975  HLT=742   /JetMET0/Run2025C-PromptReco-v1/NANOAOD
+  OK    2025Cv2_v15_Data       Events=1975  HLT=742   /JetMET0/Run2025C-PromptReco-v2/NANOAOD
+  OK    2025D_v15_Data         Events=1975  HLT=743   /JetMET0/Run2025D-PromptReco-v1/NANOAOD
+  OK    2025E_v15_Data         Events=1984  HLT=744   /JetMET0/Run2025E-PromptReco-v1/NANOAOD
+  OK    2025F_v15_Data         Events=1984  HLT=744   /JetMET0/Run2025F-PromptReco-v1/NANOAOD
+  OK    2025Fv2_v15_Data       Events=1984  HLT=744   /JetMET0/Run2025F-PromptReco-v2/NANOAOD
+  OK    2025G_v15_Data         Events=1984  HLT=744   /JetMET0/Run2025G-PromptReco-v1/NANOAOD
+  OK    2025C_v15_Muon         Events=1975  HLT=742   /Muon0/Run2025C-PromptReco-v1/NANOAOD
+  OK    2016preVFP_v15_MC      Events=1741  HLT=601   /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1-v2/NANOAODSIM
+  OK    2016postVFP_v15_MC     Events=1741  HLT=601   /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2/NANOAODSIM
+  OK    2016preVFP_v15_Data    Events=1492  HLT=498   /JetHT/Run2016B-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+  OK    2016postVFP_v15_Data   Events=1564  HLT=534   /JetHT/Run2016F-UL2016_NanoAODv15-v1/NANOAOD
+  OK    2017B_v15_Data         Events=1399  HLT=269   /JetHT/Run2017B-UL2017_NanoAODv15-v1/NANOAOD
+  OK    2017C_v15_Data         Events=1716  HLT=481   /JetHT/Run2017C-UL2017_NanoAODv15-v1/NANOAOD
+  OK    2017D_v15_Data         Events=1777  HLT=526   /JetHT/Run2017D-UL2017_NanoAODv15-v1/NANOAOD
+  OK    2017E_v15_Data         Events=1819  HLT=526   /JetHT/Run2017E-UL2017_NanoAODv15-v1/NANOAOD
+  OK    2017F_v15_Data         Events=1873  HLT=580   /JetHT/Run2017F-UL2017_NanoAODv15-v1/NANOAOD
+  OK    2018A_v15_Data         Events=1703  HLT=610   /JetHT/Run2018A-UL2018_NanoAODv15-v2/NANOAOD
+  OK    2018B_v15_Data         Events=1778  HLT=685   /JetHT/Run2018B-UL2018_NanoAODv15-v2/NANOAOD
+  OK    2018C_v15_Data         Events=1753  HLT=642   /JetHT/Run2018C-UL2018_NanoAODv15-v2/NANOAOD
+  OK    2018D_v15_Data         Events=1772  HLT=657   /JetHT/Run2018D-UL2018_NanoAODv15-v2/NANOAOD
+  OK    2018UL_v15_MC          Events=1889  HLT=651   /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v2/NANOAODSIM
+------------------------------------------------------------------------
+ dumped=35  skipped=0  failed=0
+ next: python3 script/branch_presence_matrix.py --inventory-dir /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/inventory \
+           --profile main --mc --era 2017 --partial-only
+------------------------------------------------------------------------
+===========================================================================
+end_utc     : 2026-09-16T07:27:14Z
+wall_s      : 582
+EXIT        : 0
+outputs (modified during the run, under script/ and branches/):
+       64006  script/inventory/inv_2016postVFP_v15_Data.tsv
+       71366  script/inventory/inv_2016postVFP_v15_MC.tsv
+       61052  script/inventory/inv_2016preVFP_v15_Data.tsv
+       71376  script/inventory/inv_2016preVFP_v15_MC.tsv
+       57208  script/inventory/inv_2017B_v15_Data.tsv
+       71775  script/inventory/inv_2017C_v15_Data.tsv
+       74482  script/inventory/inv_2017D_v15_Data.tsv
+       76416  script/inventory/inv_2017E_v15_Data.tsv
+       79123  script/inventory/inv_2017F_v15_Data.tsv
+       72704  script/inventory/inv_2018A_v15_Data.tsv
+       76800  script/inventory/inv_2018B_v15_Data.tsv
+       74796  script/inventory/inv_2018C_v15_Data.tsv
+       75767  script/inventory/inv_2018D_v15_Data.tsv
+       79963  script/inventory/inv_2018UL_v15_MC.tsv
+      102267  script/inventory/inv_2024C_v15_Data.tsv
+      102265  script/inventory/inv_2024C_v15_Muon.tsv
+      101097  script/inventory/inv_2024D_v15_Data.tsv
+      102063  script/inventory/inv_2024E_v15_Data.tsv
+      102260  script/inventory/inv_2024F_v15_Data.tsv
+      103443  script/inventory/inv_2024G_v15_Data.tsv
+      103474  script/inventory/inv_2024H_v15_Data.tsv
+      103474  script/inventory/inv_2024I_v15_Data.tsv
+      103593  script/inventory/inv_2024Iv2_v15_Data.tsv
+       86217  script/inventory/inv_2025B_v15_Data.tsv
+       87908  script/inventory/inv_2025C_v15_Data.tsv
+       87906  script/inventory/inv_2025C_v15_Muon.tsv
+       87910  script/inventory/inv_2025Cv2_v15_Data.tsv
+       87854  script/inventory/inv_2025D_v15_Data.tsv
+       88300  script/inventory/inv_2025E_v15_Data.tsv
+       88300  script/inventory/inv_2025F_v15_Data.tsv
+       88302  script/inventory/inv_2025Fv2_v15_Data.tsv
+       88300  script/inventory/inv_2025G_v15_Data.tsv
+       88842  script/inventory/inv_Summer24_v15_MC.tsv
+       88849  script/inventory/inv_Summer24_v15_MC_TTBB.tsv
+       88854  script/inventory/inv_Summer24_v15_MC_TTHH.tsv
+log         : script/runlogs/run_sweep_run3_2016_20260916_071717.log
+=== END ===================================================================

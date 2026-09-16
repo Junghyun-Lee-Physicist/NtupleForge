@@ -1,0 +1,46 @@
+=== RUNLOG ================================================================
+step        : discover_ul16_jetht_v15
+start_utc   : 2026-09-16T07:17:04Z
+host        : lxplus929   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : e6eb9c3   modified_tracked_files: 0
+cmd         : dasgoclient -query dataset=/JetHT/Run2016\*UL2016\*NanoAODv15\*/NANOAOD 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-16 09:17:04.193651489 +0200 CEST m=+0.001130182
+proxy_left_s: 41114
+===========================================================================
+/JetHT/Run2016B-HIPM_UL2016_BTVNanoAODv15_v2-v1/NANOAOD
+/JetHT/Run2016B-HIPM_UL2016_JMENanoAODv15-v2/NANOAOD
+/JetHT/Run2016B-HIPM_UL2016_JMENanoAODv15_v2-v2/NANOAOD
+/JetHT/Run2016B-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+/JetHT/Run2016B-HIPM_UL2016_NanoAODv15_v2-v1/NANOAOD
+/JetHT/Run2016C-HIPM_UL2016_BTVNanoAODv15-v1/NANOAOD
+/JetHT/Run2016C-HIPM_UL2016_JMENanoAODv15-v2/NANOAOD
+/JetHT/Run2016C-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+/JetHT/Run2016D-HIPM_UL2016_BTVNanoAODv15-v1/NANOAOD
+/JetHT/Run2016D-HIPM_UL2016_JMENanoAODv15-v2/NANOAOD
+/JetHT/Run2016D-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+/JetHT/Run2016E-HIPM_UL2016_BTVNanoAODv15-v1/NANOAOD
+/JetHT/Run2016E-HIPM_UL2016_JMENanoAODv15-v3/NANOAOD
+/JetHT/Run2016E-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+/JetHT/Run2016F-HIPM_UL2016_BTVNanoAODv15-v1/NANOAOD
+/JetHT/Run2016F-HIPM_UL2016_JMENanoAODv15-v2/NANOAOD
+/JetHT/Run2016F-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+/JetHT/Run2016F-UL2016_BTVNanoAODv15-v1/NANOAOD
+/JetHT/Run2016F-UL2016_JMENanoAODv15-v2/NANOAOD
+/JetHT/Run2016F-UL2016_NanoAODv15-v1/NANOAOD
+/JetHT/Run2016G-UL2016_BTVNanoAODv15-v1/NANOAOD
+/JetHT/Run2016G-UL2016_JMENanoAODv15-v2/NANOAOD
+/JetHT/Run2016G-UL2016_NanoAODv15-v1/NANOAOD
+/JetHT/Run2016H-UL2016_BTVNanoAODv15-v1/NANOAOD
+/JetHT/Run2016H-UL2016_JMENanoAODv15-v2/NANOAOD
+/JetHT/Run2016H-UL2016_NanoAODv15-v1/NANOAOD
+===========================================================================
+end_utc     : 2026-09-16T07:17:04Z
+wall_s      : 0
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_discover_ul16_jetht_v15_20260916_071703.log
+=== END ===================================================================

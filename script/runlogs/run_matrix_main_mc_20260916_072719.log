@@ -1,0 +1,110 @@
+=== RUNLOG ================================================================
+step        : matrix_main_mc
+start_utc   : 2026-09-16T07:27:20Z
+host        : lxplus929   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : e6eb9c3   modified_tracked_files: 0
+cmd         : python3 script/branch_presence_matrix.py --inventory-dir script/inventory --profile main --mc --partial-only 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-16 09:27:20.543360951 +0200 CEST m=+0.001210644
+proxy_left_s: 40498
+===========================================================================
+==============================================================================
+inventories (48), tree 'Events':
+  2016postVFP_v15_Data      1564 branches   script/inventory/inv_2016postVFP_v15_Data.tsv
+  2016postVFP_v15_MC        1741 branches   script/inventory/inv_2016postVFP_v15_MC.tsv
+  2016preVFP_v15_Data       1492 branches   script/inventory/inv_2016preVFP_v15_Data.tsv
+  2016preVFP_v15_MC         1741 branches   script/inventory/inv_2016preVFP_v15_MC.tsv
+  2017B_v15_Data            1399 branches   script/inventory/inv_2017B_v15_Data.tsv
+  2017B_v9_BTagCSV          1208 branches   script/inventory/inv_2017B_v9_BTagCSV.tsv
+  2017B_v9_Data             1208 branches   script/inventory/inv_2017B_v9_Data.tsv
+  2017B_v9_SingleMuon       1207 branches   script/inventory/inv_2017B_v9_SingleMuon.tsv
+  2017C_v15_Data            1716 branches   script/inventory/inv_2017C_v15_Data.tsv
+  2017C_v9_Data             1523 branches   script/inventory/inv_2017C_v9_Data.tsv
+  2017D_v15_Data            1777 branches   script/inventory/inv_2017D_v15_Data.tsv
+  2017D_v9_Data             1570 branches   script/inventory/inv_2017D_v9_Data.tsv
+  2017E_v15_Data            1819 branches   script/inventory/inv_2017E_v15_Data.tsv
+  2017E_v9_Data             1612 branches   script/inventory/inv_2017E_v9_Data.tsv
+  2017F_v15_Data            1873 branches   script/inventory/inv_2017F_v15_Data.tsv
+  2017F_v9_BTagCSV          1666 branches   script/inventory/inv_2017F_v9_BTagCSV.tsv
+  2017F_v9_Data             1666 branches   script/inventory/inv_2017F_v9_Data.tsv
+  2017F_v9_SingleMuon       1612 branches   script/inventory/inv_2017F_v9_SingleMuon.tsv
+  2017UL_v15_MC             1903 branches   script/inventory/inv_2017UL_v15_MC.tsv
+  2017UL_v9_MC              1666 branches   script/inventory/inv_2017UL_v9_MC.tsv
+  2017UL_v9_MC_QCD          1666 branches   script/inventory/inv_2017UL_v9_MC_QCD.tsv
+  2017UL_v9_MC_TTbb         1666 branches   script/inventory/inv_2017UL_v9_MC_TTbb.tsv
+  2018A_v15_Data            1703 branches   script/inventory/inv_2018A_v15_Data.tsv
+  2018B_v15_Data            1778 branches   script/inventory/inv_2018B_v15_Data.tsv
+  2018C_v15_Data            1753 branches   script/inventory/inv_2018C_v15_Data.tsv
+  2018D_v15_Data            1772 branches   script/inventory/inv_2018D_v15_Data.tsv
+  2018UL_v15_MC             1889 branches   script/inventory/inv_2018UL_v15_MC.tsv
+  2024C_v15_Data            2260 branches   script/inventory/inv_2024C_v15_Data.tsv
+  2024C_v15_Muon            2260 branches   script/inventory/inv_2024C_v15_Muon.tsv
+  2024D_v15_Data            2236 branches   script/inventory/inv_2024D_v15_Data.tsv
+  2024E_v15_Data            2260 branches   script/inventory/inv_2024E_v15_Data.tsv
+  2024F_v15_Data            2265 branches   script/inventory/inv_2024F_v15_Data.tsv
+  2024G_v15_Data            2296 branches   script/inventory/inv_2024G_v15_Data.tsv
+  2024H_v15_Data            2297 branches   script/inventory/inv_2024H_v15_Data.tsv
+  2024I_v15_Data            2297 branches   script/inventory/inv_2024I_v15_Data.tsv
+  2024Iv2_v15_Data          2300 branches   script/inventory/inv_2024Iv2_v15_Data.tsv
+  2025B_v15_Data            1932 branches   script/inventory/inv_2025B_v15_Data.tsv
+  2025C_v15_Data            1975 branches   script/inventory/inv_2025C_v15_Data.tsv
+  2025C_v15_Muon            1975 branches   script/inventory/inv_2025C_v15_Muon.tsv
+  2025Cv2_v15_Data          1975 branches   script/inventory/inv_2025Cv2_v15_Data.tsv
+  2025D_v15_Data            1975 branches   script/inventory/inv_2025D_v15_Data.tsv
+  2025E_v15_Data            1984 branches   script/inventory/inv_2025E_v15_Data.tsv
+  2025F_v15_Data            1984 branches   script/inventory/inv_2025F_v15_Data.tsv
+  2025Fv2_v15_Data          1984 branches   script/inventory/inv_2025Fv2_v15_Data.tsv
+  2025G_v15_Data            1984 branches   script/inventory/inv_2025G_v15_Data.tsv
+  Summer24_v15_MC           2007 branches   script/inventory/inv_Summer24_v15_MC.tsv
+  Summer24_v15_MC_TTBB      2007 branches   script/inventory/inv_Summer24_v15_MC_TTBB.tsv
+  Summer24_v15_MC_TTHH      2007 branches   script/inventory/inv_Summer24_v15_MC_TTHH.tsv
+==============================================================================
+tier split (by genWeight): MC = 2016postVFP_v15_MC, 2016preVFP_v15_MC, 2017UL_v15_MC, 2017UL_v9_MC, 2017UL_v9_MC_QCD, 2017UL_v9_MC_TTbb, 2018UL_v15_MC, Summer24_v15_MC, Summer24_v15_MC_TTBB, Summer24_v15_MC_TTHH
+                           Data = 2016postVFP_v15_Data, 2016preVFP_v15_Data, 2017B_v15_Data, 2017B_v9_BTagCSV, 2017B_v9_Data, 2017B_v9_SingleMuon, 2017C_v15_Data, 2017C_v9_Data, 2017D_v15_Data, 2017D_v9_Data, 2017E_v15_Data, 2017E_v9_Data, 2017F_v15_Data, 2017F_v9_BTagCSV, 2017F_v9_Data, 2017F_v9_SingleMuon, 2018A_v15_Data, 2018B_v15_Data, 2018C_v15_Data, 2018D_v15_Data, 2024C_v15_Data, 2024C_v15_Muon, 2024D_v15_Data, 2024E_v15_Data, 2024F_v15_Data, 2024G_v15_Data, 2024H_v15_Data, 2024I_v15_Data, 2024Iv2_v15_Data, 2025B_v15_Data, 2025C_v15_Data, 2025C_v15_Muon, 2025Cv2_v15_Data, 2025D_v15_Data, 2025E_v15_Data, 2025F_v15_Data, 2025Fv2_v15_Data, 2025G_v15_Data
+==============================================================================
+                                         2016postVFP_v1 2016postVFP_v1 2016preVFP_v15 2016preVFP_v15 2017B_v15_Data 2017B_v9_BTagC 2017B_v9_Data  2017B_v9_Singl 2017C_v15_Data 2017C_v9_Data  2017D_v15_Data 2017D_v9_Data  2017E_v15_Data 2017E_v9_Data  2017F_v15_Data 2017F_v9_BTagC 2017F_v9_Data  2017F_v9_Singl 2017UL_v15_MC  2017UL_v9_MC   2017UL_v9_MC_Q 2017UL_v9_MC_T 2018A_v15_Data 2018B_v15_Data 2018C_v15_Data 2018D_v15_Data 2018UL_v15_MC  2024C_v15_Data 2024C_v15_Muon 2024D_v15_Data 2024E_v15_Data 2024F_v15_Data 2024G_v15_Data 2024H_v15_Data 2024I_v15_Data 2024Iv2_v15_Da 2025B_v15_Data 2025C_v15_Data 2025C_v15_Muon 2025Cv2_v15_Da 2025D_v15_Data 2025E_v15_Data 2025F_v15_Data 2025Fv2_v15_Da 2025G_v15_Data Summer24_v15_M Summer24_v15_M Summer24_v15_M
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+L1PreFiringWeight_Nom                    o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              o              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .               <-- PARTIAL
+fixedGridRhoFastjetAll                   .              .              .              .              .              o              o              o              .              o              .              o              .              o              .              o              o              o              .              o              o              o              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .               <-- PARTIAL
+MET_pt                                   .              .              .              .              .              o              o              o              .              o              .              o              .              o              .              o              o              o              .              o              o              o              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .               <-- PARTIAL
+Jet_jetId                                .              .              .              .              .              o              o              o              .              o              .              o              .              o              .              o              o              o              .              o              o              o              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .               <-- PARTIAL
+Jet_puId                                 .              .              .              .              .              o              o              o              .              o              .              o              .              o              .              o              o              o              .              o              o              o              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .               <-- PARTIAL
+Electron_mvaFall17V2Iso_WP90             .              .              .              .              .              o              o              o              .              o              .              o              .              o              .              o              o              o              .              o              o              o              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .              .               <-- PARTIAL
+
+present in ALL inventories   : 37
+absent  in ALL inventories   : 0
+MC-only   (expected, gen info): 19
+Data-only (expected)          : 0
+PARTIAL   (the dangerous set) : 6
+
+PARTIAL -- presence depends on era / primary dataset / tier.
+A keep-list or requirement derived from ONE file will be wrong for the
+others. Mark these era-conditional rather than 'missing' (A19).
+   L1PreFiringWeight_Nom
+      present: 2016postVFP_v15_Data, 2016postVFP_v15_MC, 2016preVFP_v15_Data, 2016preVFP_v15_MC, 2017B_v15_Data, 2017B_v9_BTagCSV, 2017B_v9_Data, 2017B_v9_SingleMuon, 2017C_v15_Data, 2017C_v9_Data, 2017D_v15_Data, 2017D_v9_Data, 2017E_v15_Data, 2017E_v9_Data, 2017F_v15_Data, 2017F_v9_BTagCSV, 2017F_v9_Data, 2017F_v9_SingleMuon, 2017UL_v15_MC, 2017UL_v9_MC, 2017UL_v9_MC_QCD, 2017UL_v9_MC_TTbb, 2018A_v15_Data, 2018B_v15_Data, 2018C_v15_Data, 2018D_v15_Data, 2018UL_v15_MC
+      absent : 2024C_v15_Data, 2024C_v15_Muon, 2024D_v15_Data, 2024E_v15_Data, 2024F_v15_Data, 2024G_v15_Data, 2024H_v15_Data, 2024I_v15_Data, 2024Iv2_v15_Data, 2025B_v15_Data, 2025C_v15_Data, 2025C_v15_Muon, 2025Cv2_v15_Data, 2025D_v15_Data, 2025E_v15_Data, 2025F_v15_Data, 2025Fv2_v15_Data, 2025G_v15_Data, Summer24_v15_MC, Summer24_v15_MC_TTBB, Summer24_v15_MC_TTHH
+   fixedGridRhoFastjetAll
+      present: 2017B_v9_BTagCSV, 2017B_v9_Data, 2017B_v9_SingleMuon, 2017C_v9_Data, 2017D_v9_Data, 2017E_v9_Data, 2017F_v9_BTagCSV, 2017F_v9_Data, 2017F_v9_SingleMuon, 2017UL_v9_MC, 2017UL_v9_MC_QCD, 2017UL_v9_MC_TTbb
+      absent : 2016postVFP_v15_Data, 2016postVFP_v15_MC, 2016preVFP_v15_Data, 2016preVFP_v15_MC, 2017B_v15_Data, 2017C_v15_Data, 2017D_v15_Data, 2017E_v15_Data, 2017F_v15_Data, 2017UL_v15_MC, 2018A_v15_Data, 2018B_v15_Data, 2018C_v15_Data, 2018D_v15_Data, 2018UL_v15_MC, 2024C_v15_Data, 2024C_v15_Muon, 2024D_v15_Data, 2024E_v15_Data, 2024F_v15_Data, 2024G_v15_Data, 2024H_v15_Data, 2024I_v15_Data, 2024Iv2_v15_Data, 2025B_v15_Data, 2025C_v15_Data, 2025C_v15_Muon, 2025Cv2_v15_Data, 2025D_v15_Data, 2025E_v15_Data, 2025F_v15_Data, 2025Fv2_v15_Data, 2025G_v15_Data, Summer24_v15_MC, Summer24_v15_MC_TTBB, Summer24_v15_MC_TTHH
+   MET_pt
+      present: 2017B_v9_BTagCSV, 2017B_v9_Data, 2017B_v9_SingleMuon, 2017C_v9_Data, 2017D_v9_Data, 2017E_v9_Data, 2017F_v9_BTagCSV, 2017F_v9_Data, 2017F_v9_SingleMuon, 2017UL_v9_MC, 2017UL_v9_MC_QCD, 2017UL_v9_MC_TTbb
+      absent : 2016postVFP_v15_Data, 2016postVFP_v15_MC, 2016preVFP_v15_Data, 2016preVFP_v15_MC, 2017B_v15_Data, 2017C_v15_Data, 2017D_v15_Data, 2017E_v15_Data, 2017F_v15_Data, 2017UL_v15_MC, 2018A_v15_Data, 2018B_v15_Data, 2018C_v15_Data, 2018D_v15_Data, 2018UL_v15_MC, 2024C_v15_Data, 2024C_v15_Muon, 2024D_v15_Data, 2024E_v15_Data, 2024F_v15_Data, 2024G_v15_Data, 2024H_v15_Data, 2024I_v15_Data, 2024Iv2_v15_Data, 2025B_v15_Data, 2025C_v15_Data, 2025C_v15_Muon, 2025Cv2_v15_Data, 2025D_v15_Data, 2025E_v15_Data, 2025F_v15_Data, 2025Fv2_v15_Data, 2025G_v15_Data, Summer24_v15_MC, Summer24_v15_MC_TTBB, Summer24_v15_MC_TTHH
+   Jet_jetId
+      present: 2017B_v9_BTagCSV, 2017B_v9_Data, 2017B_v9_SingleMuon, 2017C_v9_Data, 2017D_v9_Data, 2017E_v9_Data, 2017F_v9_BTagCSV, 2017F_v9_Data, 2017F_v9_SingleMuon, 2017UL_v9_MC, 2017UL_v9_MC_QCD, 2017UL_v9_MC_TTbb
+      absent : 2016postVFP_v15_Data, 2016postVFP_v15_MC, 2016preVFP_v15_Data, 2016preVFP_v15_MC, 2017B_v15_Data, 2017C_v15_Data, 2017D_v15_Data, 2017E_v15_Data, 2017F_v15_Data, 2017UL_v15_MC, 2018A_v15_Data, 2018B_v15_Data, 2018C_v15_Data, 2018D_v15_Data, 2018UL_v15_MC, 2024C_v15_Data, 2024C_v15_Muon, 2024D_v15_Data, 2024E_v15_Data, 2024F_v15_Data, 2024G_v15_Data, 2024H_v15_Data, 2024I_v15_Data, 2024Iv2_v15_Data, 2025B_v15_Data, 2025C_v15_Data, 2025C_v15_Muon, 2025Cv2_v15_Data, 2025D_v15_Data, 2025E_v15_Data, 2025F_v15_Data, 2025Fv2_v15_Data, 2025G_v15_Data, Summer24_v15_MC, Summer24_v15_MC_TTBB, Summer24_v15_MC_TTHH
+   Jet_puId
+      present: 2017B_v9_BTagCSV, 2017B_v9_Data, 2017B_v9_SingleMuon, 2017C_v9_Data, 2017D_v9_Data, 2017E_v9_Data, 2017F_v9_BTagCSV, 2017F_v9_Data, 2017F_v9_SingleMuon, 2017UL_v9_MC, 2017UL_v9_MC_QCD, 2017UL_v9_MC_TTbb
+      absent : 2016postVFP_v15_Data, 2016postVFP_v15_MC, 2016preVFP_v15_Data, 2016preVFP_v15_MC, 2017B_v15_Data, 2017C_v15_Data, 2017D_v15_Data, 2017E_v15_Data, 2017F_v15_Data, 2017UL_v15_MC, 2018A_v15_Data, 2018B_v15_Data, 2018C_v15_Data, 2018D_v15_Data, 2018UL_v15_MC, 2024C_v15_Data, 2024C_v15_Muon, 2024D_v15_Data, 2024E_v15_Data, 2024F_v15_Data, 2024G_v15_Data, 2024H_v15_Data, 2024I_v15_Data, 2024Iv2_v15_Data, 2025B_v15_Data, 2025C_v15_Data, 2025C_v15_Muon, 2025Cv2_v15_Data, 2025D_v15_Data, 2025E_v15_Data, 2025F_v15_Data, 2025Fv2_v15_Data, 2025G_v15_Data, Summer24_v15_MC, Summer24_v15_MC_TTBB, Summer24_v15_MC_TTHH
+   Electron_mvaFall17V2Iso_WP90
+      present: 2017B_v9_BTagCSV, 2017B_v9_Data, 2017B_v9_SingleMuon, 2017C_v9_Data, 2017D_v9_Data, 2017E_v9_Data, 2017F_v9_BTagCSV, 2017F_v9_Data, 2017F_v9_SingleMuon, 2017UL_v9_MC, 2017UL_v9_MC_QCD, 2017UL_v9_MC_TTbb
+      absent : 2016postVFP_v15_Data, 2016postVFP_v15_MC, 2016preVFP_v15_Data, 2016preVFP_v15_MC, 2017B_v15_Data, 2017C_v15_Data, 2017D_v15_Data, 2017E_v15_Data, 2017F_v15_Data, 2017UL_v15_MC, 2018A_v15_Data, 2018B_v15_Data, 2018C_v15_Data, 2018D_v15_Data, 2018UL_v15_MC, 2024C_v15_Data, 2024C_v15_Muon, 2024D_v15_Data, 2024E_v15_Data, 2024F_v15_Data, 2024G_v15_Data, 2024H_v15_Data, 2024I_v15_Data, 2024Iv2_v15_Data, 2025B_v15_Data, 2025C_v15_Data, 2025C_v15_Muon, 2025Cv2_v15_Data, 2025D_v15_Data, 2025E_v15_Data, 2025F_v15_Data, 2025Fv2_v15_Data, 2025G_v15_Data, Summer24_v15_MC, Summer24_v15_MC_TTBB, Summer24_v15_MC_TTHH
+===========================================================================
+end_utc     : 2026-09-16T07:27:21Z
+wall_s      : 1
+EXIT        : 2
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_matrix_main_mc_20260916_072719.log
+=== END ===================================================================
