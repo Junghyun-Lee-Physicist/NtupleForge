@@ -1,0 +1,47 @@
+=== RUNLOG ================================================================
+step        : check_2016_data_list
+start_utc   : 2026-09-17T06:08:37Z
+host        : lxplus982   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 8690132   modified_tracked_files: 1
+cmd         : /bin/bash -c for\ e\ in\ B\ Bv2\ C\ D\ E\ FHIPM\ F\ G\ H\;\ do\ echo\ \"===\ 2016\$e\"\;\ python3\ script/check_branchlist.py\ branches/branch_hadronic_2016_v15_Data.txt\ --inventory\ script/inventory/inv_2016\$\{e\}_v15_Data.tsv\ --era\ 2016\ \|\ grep\ -E\ \"kept\|match\ NOTHING\|line\ \|exit\"\;\ done 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-17 08:08:37.586443496 +0200 CEST m=+0.001315941
+proxy_left_s: 43064
+===========================================================================
+=== 2016B
+  kept     : 541  (36.3 % of the input)
+[check] exit 3
+=== 2016Bv2
+  kept     : 565  (36.4 % of the input)
+[check] exit 3
+=== 2016C
+  kept     : 565  (36.5 % of the input)
+[check] exit 3
+=== 2016D
+  kept     : 565  (36.5 % of the input)
+[check] exit 3
+=== 2016E
+  kept     : 570  (36.3 % of the input)
+[check] exit 3
+=== 2016FHIPM
+  kept     : 578  (36.3 % of the input)
+[check] exit 3
+=== 2016F
+  kept     : 566  (36.2 % of the input)
+[check] exit 3
+=== 2016G
+  kept     : 566  (36.1 % of the input)
+[check] exit 3
+=== 2016H
+  kept     : 540  (34.7 % of the input)
+[check] exit 3
+===========================================================================
+end_utc     : 2026-09-17T06:08:42Z
+wall_s      : 5
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_check_2016_data_list_20260917_060836.log
+=== END ===================================================================

@@ -1,0 +1,28 @@
+=== RUNLOG ================================================================
+step        : runs_ul16B_v15
+start_utc   : 2026-09-17T06:06:31Z
+host        : lxplus982   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 8690132   modified_tracked_files: 1
+cmd         : /bin/bash -c for\ d\ in\ /JetHT/Run2016B-HIPM_UL2016_NanoAODv15-v1/NANOAOD\ /JetHT/Run2016B-HIPM_UL2016_NanoAODv15_v2-v1/NANOAOD\;\ do\ echo\ \"==\ \$d\"\;\ dasgoclient\ -query\ \"summary\ dataset=\$d\"\;\ dasgoclient\ -query\ \"run\ dataset=\$d\"\ \|\ sort\ -n\ \|\ sed\ -n\ \"1p\;\\\$p\"\;\ done 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-17 08:06:31.771956346 +0200 CEST m=+0.000951823
+proxy_left_s: 43190
+===========================================================================
+== /JetHT/Run2016B-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+[{"file_size":14862201403,"max_ldate":1762023418,"median_cdate":1762023418,"median_ldate":1762023418,"nblocks":2,"nevents":9726665,"nfiles":11,"nlumis":6657,"num_block":2,"num_event":9726665,"num_file":11,"num_lumi":6657}]
+272760
+273017
+== /JetHT/Run2016B-HIPM_UL2016_NanoAODv15_v2-v1/NANOAOD
+[{"file_size":280972210033,"max_ldate":1763399642,"median_cdate":1763201315,"median_ldate":1763201315,"nblocks":7,"nevents":133752091,"nfiles":145,"nlumis":59642,"num_block":7,"num_event":133752091,"num_file":145,"num_lumi":59642}]
+273150
+275376
+===========================================================================
+end_utc     : 2026-09-17T06:06:32Z
+wall_s      : 1
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_runs_ul16B_v15_20260917_060631.log
+=== END ===================================================================

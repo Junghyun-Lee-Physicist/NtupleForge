@@ -1,0 +1,80 @@
+=== RUNLOG ================================================================
+step        : sweep_ul16_data_eras
+start_utc   : 2026-09-17T06:06:54Z
+host        : lxplus982   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 8690132   modified_tracked_files: 1
+cmd         : /bin/bash script/sweep_inventories.sh script/inventory_manifest_run3_2016.txt 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-17 08:06:54.428349681 +0200 CEST m=+0.004090024
+proxy_left_s: 43167
+===========================================================================
+========================================================================
+ sweep_inventories.sh   out=/afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/inventory
+ manifest=script/inventory_manifest_run3_2016.txt
+========================================================================
+  have  Summer24_v15_MC        Events=2007  HLT=716   (skip)
+  have  Summer24_v15_MC_TTBB   Events=2007  HLT=716   (skip)
+  have  Summer24_v15_MC_TTHH   Events=2007  HLT=716   (skip)
+  have  2024C_v15_Data         Events=2260  HLT=702   (skip)
+  have  2024D_v15_Data         Events=2236  HLT=702   (skip)
+  have  2024E_v15_Data         Events=2260  HLT=712   (skip)
+  have  2024F_v15_Data         Events=2265  HLT=716   (skip)
+  have  2024G_v15_Data         Events=2296  HLT=716   (skip)
+  have  2024H_v15_Data         Events=2297  HLT=717   (skip)
+  have  2024I_v15_Data         Events=2297  HLT=717   (skip)
+  have  2024Iv2_v15_Data       Events=2300  HLT=720   (skip)
+  have  2024C_v15_Muon         Events=2260  HLT=702   (skip)
+  have  2025B_v15_Data         Events=1932  HLT=733   (skip)
+  have  2025C_v15_Data         Events=1975  HLT=742   (skip)
+  have  2025Cv2_v15_Data       Events=1975  HLT=742   (skip)
+  have  2025D_v15_Data         Events=1975  HLT=743   (skip)
+  have  2025E_v15_Data         Events=1984  HLT=744   (skip)
+  have  2025F_v15_Data         Events=1984  HLT=744   (skip)
+  have  2025Fv2_v15_Data       Events=1984  HLT=744   (skip)
+  have  2025G_v15_Data         Events=1984  HLT=744   (skip)
+  have  2025C_v15_Muon         Events=1975  HLT=742   (skip)
+  have  2016preVFP_v15_MC      Events=1741  HLT=601   (skip)
+  have  2016postVFP_v15_MC     Events=1741  HLT=601   (skip)
+  OK    2016B_v15_Data         Events=1492  HLT=498   /JetHT/Run2016B-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+  OK    2016Bv2_v15_Data       Events=1554  HLT=538   /JetHT/Run2016B-HIPM_UL2016_NanoAODv15_v2-v1/NANOAOD
+  OK    2016C_v15_Data         Events=1548  HLT=537   /JetHT/Run2016C-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+  OK    2016D_v15_Data         Events=1547  HLT=536   /JetHT/Run2016D-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+  OK    2016E_v15_Data         Events=1571  HLT=549   /JetHT/Run2016E-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+  OK    2016FHIPM_v15_Data     Events=1593  HLT=560   /JetHT/Run2016F-HIPM_UL2016_NanoAODv15-v1/NANOAOD
+  OK    2016F_v15_Data         Events=1564  HLT=534   /JetHT/Run2016F-UL2016_NanoAODv15-v1/NANOAOD
+  OK    2016G_v15_Data         Events=1566  HLT=549   /JetHT/Run2016G-UL2016_NanoAODv15-v1/NANOAOD
+  OK    2016H_v15_Data         Events=1556  HLT=519   /JetHT/Run2016H-UL2016_NanoAODv15-v1/NANOAOD
+  have  2017B_v15_Data         Events=1399  HLT=269   (skip)
+  have  2017C_v15_Data         Events=1716  HLT=481   (skip)
+  have  2017D_v15_Data         Events=1777  HLT=526   (skip)
+  have  2017E_v15_Data         Events=1819  HLT=526   (skip)
+  have  2017F_v15_Data         Events=1873  HLT=580   (skip)
+  have  2018A_v15_Data         Events=1703  HLT=610   (skip)
+  have  2018B_v15_Data         Events=1778  HLT=685   (skip)
+  have  2018C_v15_Data         Events=1753  HLT=642   (skip)
+  have  2018D_v15_Data         Events=1772  HLT=657   (skip)
+  have  2018UL_v15_MC          Events=1889  HLT=651   (skip)
+------------------------------------------------------------------------
+ dumped=9  skipped=33  failed=0
+ next: python3 script/branch_presence_matrix.py --inventory-dir /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/inventory \
+           --profile main --mc --era 2017 --partial-only
+------------------------------------------------------------------------
+===========================================================================
+end_utc     : 2026-09-17T06:08:35Z
+wall_s      : 101
+EXIT        : 0
+outputs (modified during the run, under script/ and branches/):
+       61047  script/inventory/inv_2016B_v15_Data.tsv
+       63665  script/inventory/inv_2016Bv2_v15_Data.tsv
+       63349  script/inventory/inv_2016C_v15_Data.tsv
+       63376  script/inventory/inv_2016D_v15_Data.tsv
+       64392  script/inventory/inv_2016E_v15_Data.tsv
+       65454  script/inventory/inv_2016FHIPM_v15_Data.tsv
+       64000  script/inventory/inv_2016F_v15_Data.tsv
+       64079  script/inventory/inv_2016G_v15_Data.tsv
+       63460  script/inventory/inv_2016H_v15_Data.tsv
+log         : script/runlogs/run_sweep_ul16_data_eras_20260917_060650.log
+=== END ===================================================================

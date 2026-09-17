@@ -1,0 +1,26 @@
+=== RUNLOG ================================================================
+step        : runs_2018A_firstfile
+start_utc   : 2026-09-17T06:06:34Z
+host        : lxplus982   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 8690132   modified_tracked_files: 1
+cmd         : /bin/bash -c f=\$\(grep\ -m1\ \"\^#\ source\"\ script/inventory/inv_2018A_v15_Data.tsv\ \|\ sed\ \"s#.\*root://cms-xrd-global.cern.ch/##\"\)\;\ echo\ \"file:\ \$f\"\;\ dasgoclient\ -query\ \"run\ file=\$f\"\ \|\ sort\ -n\ \|\ sed\ -n\ \"1p\;\\\$p\"\;\ echo\ \"dataset:\"\;\ dasgoclient\ -query\ \"run\ dataset=/JetHT/Run2018A-UL2018_NanoAODv15-v2/NANOAOD\"\ \|\ sort\ -n\ \|\ sed\ -n\ \"1p\;\\\$p\" 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-17 08:06:34.875988188 +0200 CEST m=+0.000812639
+proxy_left_s: 43187
+===========================================================================
+file: /store/data/Run2018A/JetHT/NANOAOD/UL2018_NanoAODv15-v2/90000/8a1a5246-49b6-45e0-bbc0-5385e8dae5fd.root
+316058
+316719
+dataset:
+315257
+316995
+===========================================================================
+end_utc     : 2026-09-17T06:06:35Z
+wall_s      : 1
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_runs_2018A_firstfile_20260917_060634.log
+=== END ===================================================================

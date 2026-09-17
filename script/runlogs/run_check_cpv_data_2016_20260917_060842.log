@@ -1,0 +1,47 @@
+=== RUNLOG ================================================================
+step        : check_cpv_data_2016
+start_utc   : 2026-09-17T06:08:43Z
+host        : lxplus982   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 8690132   modified_tracked_files: 1
+cmd         : /bin/bash -c for\ e\ in\ B\ Bv2\ C\ D\ E\ FHIPM\ F\ G\ H\;\ do\ echo\ \"===\ 2016\$e\"\;\ python3\ script/check_branchlist.py\ branches/branch_CPV_Run2_Data_v15.txt\ --inventory\ script/inventory/inv_2016\$\{e\}_v15_Data.tsv\ --profile\ cpv\ \|\ grep\ -E\ \"kept\|match\ NOTHING\|line\ \|exit\"\;\ done 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-17 08:08:43.723240795 +0200 CEST m=+0.000906843
+proxy_left_s: 43058
+===========================================================================
+=== 2016B
+  kept     : 1011  (67.8 % of the input)
+[check] exit 0
+=== 2016Bv2
+  kept     : 1053  (67.8 % of the input)
+[check] exit 0
+=== 2016C
+  kept     : 1047  (67.6 % of the input)
+[check] exit 0
+=== 2016D
+  kept     : 1049  (67.8 % of the input)
+[check] exit 0
+=== 2016E
+  kept     : 1065  (67.8 % of the input)
+[check] exit 0
+=== 2016FHIPM
+  kept     : 1084  (68.0 % of the input)
+[check] exit 0
+=== 2016F
+  kept     : 1073  (68.6 % of the input)
+[check] exit 0
+=== 2016G
+  kept     : 1060  (67.7 % of the input)
+[check] exit 0
+=== 2016H
+  kept     : 1051  (67.5 % of the input)
+[check] exit 0
+===========================================================================
+end_utc     : 2026-09-17T06:08:48Z
+wall_s      : 5
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_check_cpv_data_2016_20260917_060842.log
+=== END ===================================================================
