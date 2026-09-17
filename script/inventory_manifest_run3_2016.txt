@@ -33,10 +33,12 @@
 #                      new sweeps. B-HIPM and F therefore appear twice in the presence
 #                      matrix (old label + era label): expected, not a defect.
 #                      Run2016B-HIPM_UL2016_NanoAODv15-v1 vs ..._NanoAODv15_v2-v1: two
-#                      DBS datasets for the same run era; which runs each covers (v9 had
-#                      Run2016B-ver1/ver2) is NOT verified yet -- check with
-#                      dasgoclient -query "run dataset=..." before using either in a
-#                      Data campaign.
+#                      DBS datasets for the same run era = the v9 ver1 / ver2 split,
+#                      measured 2026-09-17 (run_runs_ul16B_v15_20260917_060631.log,
+#                      dasgoclient summary + run):
+#                        -v1     runs 272760-273017,   9,726,665 ev,  11 files (= ver1)
+#                        _v2-v1  runs 273150-275376, 133,752,091 ev, 145 files (= ver2)
+#                      Disjoint run ranges: a Data campaign needs BOTH.
 # =============================================================================
 
 # ---- Run 3 MC: Summer24 NanoAODv15 (13.6 TeV) --------------------------------

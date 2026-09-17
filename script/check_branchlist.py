@@ -234,8 +234,11 @@ HLT_ERA_CONDITIONAL = {
     # 2026-09-16 on the first file of /JetHT/Run2018A-UL2018_NanoAODv15-v2:
     # 2p2 and 1p5 present, 2p94 and 1p59 ABSENT (Run B has both sets, C and D
     # only the new ones). So a Run2018A file can lack the paths the analyzer's
-    # requireTriggerBranches2018_() demands -- an analyzer-side question, and
-    # a one-file measurement (the run range of that file is not verified).
+    # requireTriggerBranches2018_() demands -- an analyzer-side question. That
+    # file covers runs 316058-316719 (dataset 315257-316995; measured
+    # 2026-09-17, run_runs_2018A_firstfile_20260917_060634.log), so the 2p94 /
+    # 1p59 paths were not in the menu at least up to run 316719; where exactly
+    # they start (late 2018A or 2018B) is still to be bracketed.
     "2018": ["HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2",
              "HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5"],
     # 2016 / 2024 / 2025: the analysis has no trigger decision for these eras

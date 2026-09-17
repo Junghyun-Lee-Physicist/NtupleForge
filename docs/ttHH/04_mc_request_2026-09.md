@@ -3,7 +3,7 @@
 > **목적**: ttHH→4b fully hadronic 채널을 위해 중앙 MC 생성에 **무엇을 요청했는지**와 **왜 그것만 요청했는지**를
 > 한 곳에 남긴다. 보낸 메일 본문을 그대로 보존하므로, 답장이 오거나 생산이 시작될 때 이 문서가 대조 기준이 된다.
 > **대상 독자**: 요청 상태를 추적할 사람, 답장을 받아 후속 작업을 할 사람.
-> **상태**: 살아있는 문서. 작성 **2026-09-14**, 갱신 **2026-09-16**(2016 열을 MiniAODv2 부모 수치로 교체). 메일 발송 여부와 답장은 아래 §5 에 기록한다.
+> **상태**: 살아있는 문서. 작성 **2026-09-14**, 갱신 **2026-09-16**(2016 열을 MiniAODv2 부모 수치로 교체), **09-17**(§4 데이터 PD: v15 JetHT 2016 dataset 9 개와 B ver1/ver2 run 범위). 메일 발송 여부와 답장은 아래 §5 에 기록한다.
 > **관련**: 조사 근거 [`03_run3_plan.md`](03_run3_plan.md) §4.6·§4.7, [`../09_v15_migration_log.md`](../09_v15_migration_log.md)
 > 10·15·16 절, 결정 [`../03_DECISIONS.md`](../03_DECISIONS.md) D-2026-09-11-ttz-hadronic-from-ttzqq ·
 > D-2026-09-11-run2-scope-2016, 슬라이드 `~/claude/NtuplizerDev/ttHH_latex/GenRequest_Sep2026/`.
@@ -74,7 +74,10 @@ hadronic selection 을 통과한다). 그런데 **어느 variant 도 세 채널�
 | single top / 하드로닉 VV / ttV / ttVV / four top 의 Sherpa 판 | CMS 중앙 생산 전례가 없고 우리 영역 기여가 작다 |
 | 중앙 NanoAOD 에 `GenHFHadronMatcher` 출력 포함 | 초안에 있었으나 **뺐다**(사용자 판단 2026-09-14): 일부 샘플만 가져도 우리는 어차피 전 샘플에 대해 직접 만들어야 하므로 이점이 없다 |
 
-## 4. 이 요청이 승인될 경우 우리 쪽에 남는 일
+## 4. 우리 쪽에 남는 일 (승인 여부와 무관)
+
+**2026-09-17 사용자 결정**: 같은 5 종을 MiniAODv2 부모에서 직접 만드는 enriched 생산(TTHHGenCategoryTools D17)을 중앙 요청과 **병행**한다.
+답장을 기다리지 않고, 중앙본이 오면 같은 부모에서 나온 두 산출물을 교차 검증한다(`../03_DECISIONS.md` D-2026-09-17-run2-v15-two-tracks).
 
 - ~~**2016 MiniAODv2 부모 조회.**~~ **끝남 (2026-09-16).** `das_inventory.sh --tier MINIAODSIM` 으로 두 캠페인을 조회해 §1 표를
   MiniAODv2 수치로 바꿨다. 두 캠페인 모두 registry 136 키 전부 EXACT(`NOT_FOUND` 0) 였다. 즉 v15 에 없는 5 종뿐 아니라
@@ -84,7 +87,11 @@ hadronic selection 을 통과한다). 그런데 **어느 variant 도 세 채널�
   2017–2018 만 인용원을 정리했다), golden JSON, 트리거 경로·효율, b-tag SF, JEC/JER 을 전부 2016 용으로 추가해야 한다.
   **요청은 지금 해 두고 분석 확장은 별도 작업으로 계획한다.**
 - **데이터 PD.** registry 의 `JetHT`/`BTagCSV` 행에는 2016 을 넣지 않았다. CPV 행이 쓰는 run-era 분할 패턴
-  (`<PD>_Run2016B-ver1` …)과 DAS 스캔이 먼저다.
+  (`<PD>_Run2016B-ver1` …)과 DAS 스캔이 먼저다. **v15 의 JetHT 2016 dataset 9 개는 확정됐다**(2026-09-16/17,
+  `script/runlogs/run_discover_ul16_jetht_v15_*.log`, `run_runs_ul16B_v15_*.log`): preVFP(HIPM) `Run2016B-HIPM_UL2016_NanoAODv15-v1`
+  (= v9 의 ver1: run 272760–273017, 9,726,665 ev, 11 file), `Run2016B-HIPM_UL2016_NanoAODv15_v2-v1`(= ver2: run 273150–275376,
+  133,752,091 ev, 145 file), `Run2016C/D/E/F-HIPM_UL2016_NanoAODv15-v1`; postVFP `Run2016F/G/H-UL2016_NanoAODv15-v1`. B 의 두 dataset 은
+  run 이 겹치지 않으므로 둘 다 넣는다. registry 행 작성만 남았다(`BTagCSV` 는 별도 discovery 필요).
 - **`TTZToQQ` 로 바꾼 데 따른 xsec.** `TTZToBB` 의 861 fb 항목이 AN Tab.9 의 ttZ 841 fb 와 어긋난다는 **기존 열린
   항목**(`tempTTHH/docs/CHANGELOG.md`, `00_START_HERE.md` §4)이 그대로 이어진다. 새 항목은 σ(ttZ)×BR(Z→qq) 이므로
   정의를 이때 확정한다.

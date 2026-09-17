@@ -9,6 +9,25 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-17: second recorded lxplus batch folded in (UL16 JetHT eras, 2016B ver1/ver2, 2018A run range)
+
+Source: `script/runlogs/LEDGER.tsv` rows of 2026-09-17 (lxplus commit `15f377b`), read from the repository. `09_v15_migration_log.md` 18, `10_validation_ledger.md` V21 to V25.
+
+### Changed
+- `script/inventory_manifest_run3_2016.txt`: header now states what the two Run2016B v15 datasets are: `-v1` = ver1 (runs 272760-273017,
+  9,726,665 events, 11 files), `_v2-v1` = ver2 (runs 273150-275376, 133,752,091 events, 145 files), disjoint, both needed.
+- `branches/branch_hadronic_2016_v15_Data.txt`: header records the check against all nine UL16 era inventories (dead 0 everywhere); the AK8
+  note corrected (HLT_AK8PFJet450/500 absent only in the B ver1 file; HLT_PFHT800 absent in H only). `branches/branch_CPV_Run2_Data_v15.txt`:
+  nine-era result (exit 0) recorded.
+- `script/check_branchlist.py`: the 2018 era-conditional comment carries the measured run range of the 2018A first file.
+- `docs/ttHH/04_mc_request_2026-09.md` 4: the data-PD item now lists the nine verified UL16 JetHT v15 datasets with the B ver1/ver2 run ranges.
+- `docs/08_branch_schema_migration.md` 7.1/7.3/7.4/7.5, `docs/01_STATUS.md` (table row 3 and 6, 22l-2, 22n), `docs/10_validation_ledger.md` (V21 to V25).
+
+### Found
+- The 2018A first file covers runs 316058-316719 (dataset 315257-316995): `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94` and
+  `HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` were not in the menu at least up to run 316719. Bracketing the first run with those paths is the
+  next lxplus step (RUNBOOK 7).
+
 ## [Unreleased], 2026-09-16 (4): first recorded lxplus batch folded in: UL16 MiniAODv2 counts, Run 3 scans, 35-inventory sweep, 10 branch lists checked
 
 Everything below reads from the run records the user produced on lxplus with `runlog.sh` (commit `a781cb3`: `script/runlogs/run_*.log`,

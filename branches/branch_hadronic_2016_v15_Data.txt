@@ -6,7 +6,8 @@
 #  Created 2026-09-16 from branch_hadronic_2018_v15_Data.txt (the checked 2018 list) by substitution only:
 #  the era-specific parts (L1 prefiring, trigger notes, branch counts) changed,
 #  every other rule is identical to the 2018 file. STATUS: **checked 2026-09-16
-#  against the real v15 schema** (script/inventory/inv_2016preVFP_v15_Data.tsv (Run2016B-HIPM) and inv_2016postVFP_v15_Data.tsv (Run2016F);
+#  against the real v15 schema** (script/inventory/inv_2016preVFP_v15_Data.tsv (Run2016B-HIPM) and inv_2016postVFP_v15_Data.tsv (Run2016F),
+#  then on 2026-09-17 all nine era files inv_2016{B,Bv2,C,D,E,FHIPM,F,G,H}_v15_Data.tsv;
 #  sweep record script/runlogs/run_sweep_run3_2016_20260916_071717.log, results
 #  docs/08 section 7):
 #    (A) every keep/drop pattern matches at least one branch in every inventory listed;
@@ -14,9 +15,11 @@
 #    (C) Jet_jetId and Jet_puId do NOT exist in v15 -> analyzer-side recomputation
 #        (docs/08 section 3.4), not a branch-list matter. check_branchlist.py exits 3
 #        for that reason alone.
-#        Only two of the nine UL16 JetHT era datasets were swept so far (B-HIPM, F);
-#        the per-era manifest rows exist (inventory_manifest_run3_2016.txt), re-check
-#        this file against all nine once they are swept.
+#        2026-09-17: re-checked against ALL NINE UL16 JetHT era inventories
+#        (inv_2016{B,Bv2,C,D,E,FHIPM,F,G,H}_v15_Data.tsv, sweep
+#        run_sweep_ul16_data_eras_20260917_060650.log, check
+#        run_check_2016_data_list_20260917_060836.log): dead patterns 0 in every
+#        era, exit 3 everywhere for the Jet_jetId / Jet_puId reason only.
 #    Re-run after ANY edit of this file:
 #
 #      python3 script/check_branchlist.py branches/branch_hadronic_2016_v15_Data.txt \
@@ -171,8 +174,11 @@ keep HLT_PFMET*
 #   HLT_PFHT450_SixJet40_BTagCSV_p056, HLT_PFHT400_SixJet30_DoubleBTagCSV_p056
 #   (+ un-tagged HLT_PFHT450_SixJet40 / HLT_PFHT400_SixJet30), HLT_PFHT900
 #   (2016 has HLT_PFHT900, not HLT_PFHT1050), HLT_PFJet450 / 500.
-# HLT_AK8PFJet450/500 exist from era F on only (absent in the B-HIPM file); the
-# HLT_AK8PFJet* wildcard still matches other AK8 paths in B, so it is not dead.
+# HLT_AK8PFJet450/500 are absent ONLY in the Run2016B ver1 file (-v1, runs
+# 272760-273017) and present from B ver2 (_v2-v1) through H; HLT_PFHT800 is
+# absent in H only. The HLT_AK8PFJet* wildcard still matches other AK8 paths in
+# B ver1, so it is not dead. The four six-jet paths above exist in all nine era
+# files (2026-09-17).
 # Which paths the analysis triggers on for 2016 is NOT decided (the analyzer has
 # no 2016 era config at all, D-2026-09-11-run2-scope-2016); the wildcards keep
 # them all and check_branchlist.py --era 2016 lists them as era-conditional.

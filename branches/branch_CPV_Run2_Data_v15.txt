@@ -42,6 +42,8 @@
 # against all eleven inventories above: the only dead patterns are the shared
 # 2016-name HLT families described above (2 per 2017C..F / 2018 file, 6 in
 # Run2017B, 0 in 2016); every required (run, luminosityBlock, event) survives.
+# 2026-09-17: all nine UL16 JetHT era files (inv_2016{B,Bv2,C,D,E,FHIPM,F,G,H})
+# exit 0, dead 0 (run_check_cpv_data_2016_20260917_060842.log).
 # ==========================================================================
 
 # --- collections the CPV workstream never reads from Data (identical to v9) ---

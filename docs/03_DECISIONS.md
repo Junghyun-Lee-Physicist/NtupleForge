@@ -11,6 +11,35 @@
 
 ---
 
+## D-2026-09-17-run2-v15-two-tracks: the five missing Run 2 samples are produced privately (enriched) in parallel with the central request, not after it
+**DECIDED · 2026-09-17 · user decision · detail: TTHHGenCategoryTools `docs/04_decisions.md` D17, `docs/11_enriched_nanoaod.md`**
+
+- **Context.** `ttHH/04_mc_request_2026-09.md` asks the Hbb MC contact for NanoAODv15 of `TTHHto4b`, `TT4b`, `TTZHTo4b`,
+  `TTZZTo4b`, `tHW` in all four Run 2 era-halves (28 datasets, 162.6M events). Until now every document treated the private
+  MiniAODv2 -> NanoAOD production with the three expanded-id columns (TTHHGenCategoryTools D17, "enriched NanoAOD") as the
+  fallback for a refusal: `00_START_HERE.md` 4 ("승인이면 enriched 는 불필요"), TTHHGenCategoryTools D17 ("중앙 생산이 거절될 때의
+  enriched 대체 생산").
+- **Decision (user, 2026-09-17).** Run both tracks at the same time: wait for the central answer AND start the enriched production
+  of the same five samples from their MiniAODv2 parents now. Neither waits for the other.
+- **Why (as stated).** The central answer has no date; the enriched recipe is validated on 2017 (D17 gates 1 to 5); producing now
+  gives usable v15 ntuples with the expanded id regardless of the answer. If the central samples do arrive, the enriched files
+  become a cross-check of the private NANO step against the central one on identical MiniAOD parents (same events), which no other
+  validation gives.
+- **What it unblocks / requires now** (all tracked in `01_STATUS.md`, START_HERE 4 ②):
+  1. production glue: `job_type: cmsrun` inside NtupleForge (reuse registry, das_scan, preflight, submit) vs a pset swap in
+     `TTHHGenCategoryTools/TtbarIdExtender/crab/` (OPEN, STATUS A.1);
+  2. column name `expandedGenTtbarId` vs `Expanded_genTtbarId` (D17 DECIDED record is held back on this);
+  3. per-era NANO recipes: 2017 validated; 2018 and both 2016 halves need the central cmsDriver fragments transplanted
+     (D17 정정 문단);
+  4. resources: 28 tasks, about 36,000 core-h and 0.47 TB output (event-proportional estimate from the 2017/2018 measurement); the
+     2016 MiniAODv2 inputs are now known: preVFP 873 files / 27,245,000 ev / 2.10 TB, postVFP 864 files / 27,098,000 ev / 2.12 TB
+     (`script/das_inventory_ul16{pre,post}_miniaodv2_20260916_*.tsv`), so 2017+2018+2016 = 4,929 files / 162,666,000 ev.
+- **Alternatives.** (a) wait for the answer (the previous plan): no CPU spent twice, but no v15 ntuples for these five until then and no
+  cross-check. (b) enriched only, withdraw the request: loses the central provenance the analysis review will prefer. Rejected by the user in
+  favour of both.
+- **Consequences for documents.** START_HERE 4 ② row, STATUS action table, `ttHH/04` 4 heading, TTHHGenCategoryTools D17 wording
+  ("대체" -> "병행") updated 2026-09-17.
+
 ## D-2026-09-11-run2-scope-2016 — the Run 2 request covers all four era-halves; QCD-HT switches to the PSWeights name
 **DECIDED · 2026-09-11 · user decision · detail: `09_v15_migration_log.md` §16**
 

@@ -571,3 +571,18 @@ v15 에서는 `-v1` 과 `_v2-v1` 두 dataset 으로 나타나는데, 둘의 run 
 prefiring 부재가 더해진다. `Jet_*` 집합은 UL18 v15 MC 와 Summer24 v15 MC 가 **완전히 같다**(PNet/UParT 태거, `Jet_puIdDisc`,
 `Jet_chMultiplicity`/`neMultiplicity` 포함). 자세한 브랜치 목록 결과와 HLT 표는 `08_branch_schema_migration.md` §7.
 
+## 18. 2026-09-17: lxplus 배치 2 (2016B 정체, 2018A run 범위, UL16 era 9 스윕, 2016 목록 재점검)
+
+RUNBOOK §6 그대로, lxplus982, git `8690132` → 커밋 `15f377b`. 전부 EXIT 0 (LEDGER 6 행: selftest 포함).
+
+| step | 결과 | 산출물 |
+|---|---|---|
+| `runs_ul16B_v15` (1 s) | `-v1`: run 272760–273017, 9,726,665 ev, 11 file. `_v2-v1`: run 273150–275376, 133,752,091 ev, 145 file. **v9 의 ver1/ver2 분할과 같고 run 이 겹치지 않는다** → Data 캠페인에 둘 다 필요 | `run_runs_ul16B_v15_20260917_060631.log` |
+| `runs_2018A_firstfile` (1 s) | 첫 파일 run 316058–316719, dataset 315257–316995 → `…_2p94`/`…_1p59` 는 적어도 316719 까지 메뉴에 없음 | `run_runs_2018A_firstfile_20260917_060634.log` |
+| `sweep_ul16_data_eras` (101 s) | dumped 9 / skipped 33 / failed 0. Events 1492(B ver1)…1593(F HIPM), HLT 498…560 | `inv_2016{B,Bv2,C,D,E,FHIPM,F,G,H}_v15_Data.tsv` |
+| `check_2016_data_list` (5 s) | 9 era 전부 exit 3 (`Jet_jetId`/`Jet_puId` 만), dead 0 | `run_check_2016_data_list_20260917_060836.log` |
+| `check_cpv_data_2016` (5 s) | 9 era 전부 exit 0 | `run_check_cpv_data_2016_20260917_060842.log` |
+
+반영: manifest 머리(B 두 dataset 의 run·event 수), `ttHH/04_mc_request_2026-09.md` §4(v15 JetHT 2016 dataset 9 개), `branch_hadronic_2016_v15_Data.txt`·
+`branch_CPV_Run2_Data_v15.txt` 머리, `08` §7.1·§7.3·§7.4·§7.5, `10_validation_ledger.md` V21–V25, `01_STATUS.md` 22l-2·22n·행동 표.
+남은 lxplus 항목은 2018A 의 메뉴 전환 run bracket(RUNBOOK §7)이다.
