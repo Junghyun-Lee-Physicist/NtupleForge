@@ -3,18 +3,22 @@
 #  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection
 #  Target: 2017 x NanoAOD **v15**, MC (NANOAODSIM)
 # =============================================================================
-#  Created 2026-08-17.  STATUS: **UNVERIFIED against a real v15 file.**
-#  Do not submit a campaign with this file until you have run:
+#  Created 2026-08-17.  STATUS: **checked 2026-09-16 against the real v15 schema**
+#  (script/inventory/inv_2017UL_v15_MC.tsv,
+#  script/check_branchlist.py --era 2017 --mc; sweep record
+#  script/runlogs/run_sweep_run3_2016_20260916_071717.log, results docs/08 section 7):
+#    (A) every keep/drop pattern matches at least one branch;
+#    (B) all 67 analyzer requirements (incl. 5 HLT paths) survive the rule chain;
+#    (C) Jet_jetId and Jet_puId do NOT exist in v15 -> analyzer-side recomputation
+#        (docs/08 section 3.4), not a branch-list matter. check_branchlist.py exits 3
+#        for that reason alone. Re-run after ANY edit of this file:
 #
-#      python3 script/dump_branch_inventory.py <one real v15 MC (NANOAODSIM) file> \
-#              --label 2017_v15_MC -o script/inventory/inv_2017_v15_MC.tsv
 #      python3 script/check_branchlist.py branches/branch_hadronic_2017_v15_MC.txt \
-#              --inventory script/inventory/inv_2017_v15_MC.tsv --era 2017 --mc
+#              --inventory script/inventory/inv_2017UL_v15_MC.tsv --era 2017 --mc
 #
-#  and fixed every pattern it reports. A `keep` pattern that matches nothing
-#  makes ROOT emit a SetBranchStatus error ONCE PER JOB -- it is not silently
-#  ignored (docs/02_CHANGELOG.md 2026-07-27, which is why the prescan lists are
-#  split per year in the first place).
+#  A `keep` pattern that matches nothing makes ROOT emit a SetBranchStatus error
+#  ONCE PER JOB -- it is not silently ignored (docs/02_CHANGELOG.md 2026-07-27,
+#  which is why the prescan lists are split per year in the first place).
 #
 # -----------------------------------------------------------------------------
 #  SEMANTICS (NanoAODTools branch selection)
@@ -155,7 +159,8 @@ keep nLHEReweightingWeight
 keep PSWeight
 keep nPSWeight
 keep LHEWeight_originalXWGTUP
-keep btagWeight_*
+# btagWeight_* : gone in v15 (docs/08 section 3.2; zero matches in inv_2017UL_v15_MC.tsv).
+# 'keep btagWeight_*' stood here until 2026-09-16 = one ROOT SetBranchStatus error per job.
 
 # L1 prefiring. Applies to 2016/2017 only. 2018 NanoAODv9 has NO such branch,
 # and the analyzer's era config disables it for 2018 -- an ungated multiply

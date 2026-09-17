@@ -525,7 +525,49 @@ QCD-HT 는 PRIMARY 를 v9 이름(`..._TuneCP5_13TeV-madgraphMLM-pythia8`, v15 �
 `..._TuneCP5_PSWeights_13TeV-madgraph-pythia8`(네 v15 캠페인 모두 EXACT)로 바꿨다. KEY 는 그대로라 xsec·filelist·patch 이름은
 영향 없다. 그 결과 **2017/2018 v15 스캔에서도 QCD-HT 가 이제 풀린다** — 09-11 오전의 "27 NOT_FOUND" 는 20 이 된다.
 
-**남은 것.** ① 2016 MiniAODv2 부모 조회(요청 표의 정확한 수). ② `TTTW` 는 v15 에서 전하별 2 종(`TTTWminus/plus-DR1`)이라
+**남은 것.** ① ~~2016 MiniAODv2 부모 조회(요청 표의 정확한 수)~~ 17 절에서 끝남(09-16). ② `TTTW` 는 v15 에서 전하별 2 종(`TTTWminus/plus-DR1`)이라
 KEY 두 개와 xsec 두 개가 필요하다(요청 대상 아님). ③ 데이터 PD(`JetHT`, `BTagCSV`)는 2016 을 넣지 않았다 — CPV 행이 쓰는
-run-era 분할 패턴(`<PD>_Run2016B-ver1` …)과 DAS 스캔이 먼저다. ④ 2016 의 era 별 JEC/JER·golden JSON·트리거는 analyzer 작업.
+run-era 분할 패턴(`<PD>_Run2016B-ver1` …)과 DAS 스캔이 먼저다(v15 의 2016 JetHT era 문자열은 17 절에 있다). ④ 2016 의 era 별 JEC/JER·golden JSON·트리거는 analyzer 작업.
+
+## 17. 2026-09-16: lxplus 실행 기록 도입, UL16 MiniAODv2 부모, Run 3 had 스캔, 35 인벤토리 스윕
+
+이날부터 lxplus 의 모든 단계를 `script/runlog.sh` 로 감싼다(`script/runlogs/run_<step>_<UTC>.log` + `LEDGER.tsv`, 규약은
+`script/runlogs/README.md`). 이 절의 숫자는 전부 그 로그와 산출물에서 읽었다. 실행은 사용자가 lxplus929 에서 했고 git HEAD 는
+`e6eb9c3`, 결과 커밋은 `a781cb3`. 검증 원장 [`10_validation_ledger.md`](10_validation_ledger.md) 에도 같은 실행이 등재돼 있다.
+
+| step (LEDGER) | EXIT | 소요 | 산출물 / 결과 |
+|---|---:|---:|---|
+| `selftest` ×2 | 0 | 0 s | 게이트 통과 (ROOT 6.40.04 호스트, dasgoclient v02.04.54, proxy 43,153 s) |
+| `ul16pre_miniaodv2` | 0 | 93 s | `das_inventory_ul16pre_miniaodv2_20260916_0856.tsv` 30,897 dataset; registry 136 키 **전부 EXACT** |
+| `ul16post_miniaodv2` | 0 | 109 s | `das_inventory_ul16post_miniaodv2_20260916_0857.tsv` 31,683 dataset; 136 키 전부 EXACT |
+| `das_scan_2024_had` | 0 | 75 s | `das_ttHH_2024_v15_20260916_0859.log`: 65 선택(MC 61 + DATA 4), EXACT 64, NOT_FOUND 1 (`TTWJetsToLNu`) |
+| `das_scan_2025_had` | 0 | 53 s | `das_ttHH_2025_v15_20260916_0900.log`: MC 부분은 2024 로그와 동일(Summer24), DATA 2025B–G |
+| `discover_ul16_jetht_v15` ×2 | 0 | 0 s | JetHT UL16 v15 dataset 26 줄(BTV/JME 플레이버 포함), `_UL2016_NanoAODv15` 9 개 |
+| `sweep_run3_2016` | 0 | 582 s | `inv_*.tsv` **35 개, dumped=35 skipped=0 failed=0** (cmssw-el8 안, ROOT 6.30.09) |
+| `matrix_hlt` | 2 | 3 s | `--pattern '^HLT_' --partial-only`, 48 인벤토리 (2 = PARTIAL 있음, 정상) |
+| `matrix_main_mc` | 2 | 1 s | `--profile main --mc`: 37 전부 존재 / 19 MC 전용 / **PARTIAL 6** (아래) |
+
+**2016 MiniAODv2 부모 (요청 표 확정).** preVFP `TTHHTo4b` 4,950,000 / `TT4b` 4,801,000 / `TTZHTo4b` 2,496,000 + ext1 2,500,000 /
+`TTZZTo4b` 2,500,000 + ext1 2,500,000 / `THW` 7,498,000 = **27,245,000 (27.2M)**. postVFP 4,798,000 / 4,848,000 / 2,500,000 + 2,500,000 /
+2,468,000 + 2,500,000 / 7,484,000 = **27,098,000 (27.1M)**. 전부 VALID. 16 절의 v9 수치보다 preVFP `TTZHTo4b` +28,000, `THW` +68,000,
+postVFP `TTHHTo4b` +26,000 만큼 많고(2017/2018 과 같은 방향), 합계 162.6M 은 "약 162M" 그대로다. `ttHH/04_mc_request_2026-09.md` §1 과
+덱 v1.9 에 반영했다. MiniAODv2 에는 현재 registry 136 키가 **모두** 있다. v15 에 없는 20 키(5 종 + `TTZToBB` + `TTTW` + CPV 13)도
+포함되므로, 우리가 5 종만 요청한 것은 가용성이 아니라 필요성의 선택이다.
+
+**Run 3 had 스캔.** MC 60 개 dataset 전부 정확히 1 개씩 매칭(ext·복수 버전 없음). DATA 는 PD 4 개 × 8 dataset:
+2024 `JetMET0/1`, `Muon0/1` 의 `Run2024C..I-MINIv6NANOv15-v1|v2` + `Run2024I-MINIv6NANOv15_v2-v1|v2`; 2025 는 `Run2025B..G-PromptReco-v1`
++ `Run2025C/F-PromptReco-v2`. **DBS 버전 꼬리(-v1/-v2)가 PD 마다 다르다**(예: 2024F/G 는 JetMET0 `-v2`, Muon0 `-v1`; 2024I 는 JetMET0 `-v2`
+JetMET1 `-v1`). 따라서 DATA 행은 PD×era 별 정확한 이름을 스캔 로그에서 가져와야 하며 패턴으로 적으면 안 된다. 2024 JetMET0 합계
+1,210,265,110 ev(8 dataset), 2025 JetMET0 합계 1,190,559,370 ev. RUNBOOK 의 기대값 "MC 45" 는 틀렸다(Run 2 registry 의 had 수를 옮겨 적음);
+Run 3 registry 는 had 61 이다(`ttHH/README.md`).
+
+**UL16 v15 JetHT era 문자열 (discover 로그).** preVFP: `Run2016B-HIPM_UL2016_NanoAODv15-v1`, `Run2016B-HIPM_UL2016_NanoAODv15_v2-v1`,
+`Run2016C/D/E/F-HIPM_UL2016_NanoAODv15-v1`; postVFP: `Run2016F/G/H-UL2016_NanoAODv15-v1`. v9 의 `Run2016B-ver1_HIPM`/`ver2_HIPM` 구분이
+v15 에서는 `-v1` 과 `_v2-v1` 두 dataset 으로 나타나는데, 둘의 run 범위는 아직 확인하지 않았다(다음 lxplus 항목). BTV/JME 플레이버는 제외.
+
+**스윕과 교차표.** `--profile main` 의 PARTIAL 6 은 새 발견이 아니라 이미 알던 것의 확인이다: `fixedGridRhoFastjetAll`, `MET_pt`,
+`Jet_jetId`, `Jet_puId`, `Electron_mvaFall17V2Iso_WP90` 는 **v9 에만** 있고(08 문서 §3.1·§3.2 의 rename/삭제), `L1PreFiringWeight_Nom` 은
+**Run 2 에만** 있다(Run 3 21 인벤토리 전부 부재). 즉 UL16·UL18 v15 는 UL17 v15 와 같은 스키마 변화를 보이고, Run 3 는 거기에
+prefiring 부재가 더해진다. `Jet_*` 집합은 UL18 v15 MC 와 Summer24 v15 MC 가 **완전히 같다**(PNet/UParT 태거, `Jet_puIdDisc`,
+`Jet_chMultiplicity`/`neMultiplicity` 포함). 자세한 브랜치 목록 결과와 HLT 표는 `08_branch_schema_migration.md` §7.
 

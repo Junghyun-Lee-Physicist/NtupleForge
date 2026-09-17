@@ -1,0 +1,101 @@
+# ==========================================================================
+# CPV (top CP-violation / SSB gen categorization) -- Run2 UL -- Data -- NanoAODv15
+# ==========================================================================
+# Ported from branch_CPV_Run2_Data.txt (v9) on 2026-09-16 against the REAL v15
+# Data schemas, never from memory (the MC counterpart branch_CPV_Run2_MC_v15.txt
+# was ported the same way on 2026-08-27):
+#   inventories : script/inventory/inv_2016preVFP_v15_Data.tsv (Run2016B-HIPM, 1492)
+#                 inv_2016postVFP_v15_Data.tsv (Run2016F, 1564)
+#                 inv_2017{B,C,D,E,F}_v15_Data.tsv (1399 / 1716 / 1777 / 1819 / 1873)
+#                 inv_2018{A,B,C,D}_v15_Data.tsv (1703 / 1778 / 1753 / 1772)
+#                 all JetHT, one file each, sweep 2026-09-16
+#                 (script/runlogs/run_sweep_run3_2016_20260916_071717.log)
+#   v9 baseline : inv_2017F_v9_Data.tsv (1666): v15 adds 328 branches, of which
+#                 260 survive the v9 rule chain (FatJet 56, Jet 37, Electron 32,
+#                 Photon 25, Muon 24, DST 16, PFMET 12, PVBS 10, Rho 6, ...).
+#
+# SEMANTICS -- there is no leading `drop *`. An unmatched branch is KEPT. This
+# is a "drop these collections" list and it is deliberately permissive (see the
+# MC v15 file for the reasoning: over-keeping costs disk, under-keeping silently
+# costs coverage).
+#
+# ONE DIMENSION OF CHANGE. Relative to the v9 file this changes ONLY what the
+# v15 schema forces. Two known defects are carried over DELIBERATELY UNCHANGED,
+# and the 2026-09-16 inventories now give their exact per-era footprint:
+#   * `keep HLT_IsoTkMu*` / `keep HLT_L2DoubleMu*` are 2016 path names: they
+#     match 5-6 / 3 branches in the two 2016 files and ZERO in every 2017 and
+#     2018 file (v9 and v15 alike) => one ROOT SetBranchStatus error per job
+#     for 2017/2018. `keep HLT_TkMu*`, `keep HLT_TrkMu*`, `keep HLT_DoubleIsoMu*`,
+#     `keep HLT_MET*` additionally match ZERO in Run2017B (the 269-path early-2017
+#     menu; they do match from Run2017C on), so Run2017B has 6 dead patterns.
+#     This file is shared by every Run 2 era, so deleting them would SILENTLY
+#     drop those branches from the 2016 output.
+#     The fix is a per-era split of the CPV lists, tracked as its own change
+#     (docs/01_STATUS.md). Do NOT sed them out here.
+#   * the SoftActivityJetHT*/Njets* rules are redundant with
+#     `drop SoftActivityJet*`. Harmless (they do match); left in place so this
+#     file diffs cleanly against the v9 one.
+#
+# Checked 2026-09-16 with
+#     python3 script/check_branchlist.py branches/branch_CPV_Run2_Data_v15.txt \
+#         --inventory script/inventory/inv_<era>_v15_Data.tsv --profile cpv
+# against all eleven inventories above: the only dead patterns are the shared
+# 2016-name HLT families described above (2 per 2017C..F / 2018 file, 6 in
+# Run2017B, 0 in 2016); every required (run, luminosityBlock, event) survives.
+# ==========================================================================
+
+# --- collections the CPV workstream never reads from Data (identical to v9) ---
+drop IsoTrack*
+drop LowPtElectron*
+drop PPSLocalTrack*
+drop SoftActivityJet*
+drop SoftActivityJetHT*
+drop SoftActivityJetHT10*
+drop SoftActivityJetHT2*
+drop SoftActivityJetHT5*
+drop SoftActivityJetNjets10*
+drop SoftActivityJetNjets2*
+drop SoftActivityJetNjets5*
+drop SubJet*
+drop Tau*
+drop boostedTau*
+
+# --- NEW IN v15 (Data) -----------------------------------------------------
+# The per-candidate / unused-subsystem collections that v15 adds to Data and
+# that the v9 rule chain would keep. Same choice as the MC v15 file, minus the
+# MC-only ones (TrackGenJetAK4_*, GenProton_*, Scouting*: zero matches in every
+# Data file -> they would be dead patterns here) and minus `drop DST_*`:
+# DST_* (15-18 scouting trigger bits) matches ZERO branches in Run2017B, so a
+# drop rule for it would be one ROOT error per 2017B job to save 18 booleans.
+# Kept instead. Everything else new in v15 is intentionally KEPT: the renamed
+# MET/Rho (PFMET_*, RawPFMET_*, TrkMET_*, FiducialMET_*, Rho_*) and the new
+# Jet/FatJet taggers (PNet / UParT / globalParT3).
+#
+# NOTE `drop Tau*` above already absorbs the new TauProd_* arrays, but NOT the
+# lowercase count branch -- hence `drop nTauProd`.
+drop PFCand_*
+drop nPFCand
+drop FatJetPFCand_*
+drop nFatJetPFCand
+drop PVBS_*
+drop nPVBS
+drop nTauProd
+
+# --- trigger: drop all, then re-keep the muon/electron families (as v9) ---
+drop HLT*
+keep HLT_BTagMu*
+keep HLT_DoubleEle*
+keep HLT_DoubleIsoMu*
+keep HLT_DoubleMu*
+keep HLT_Ele*
+keep HLT_IsoMu*
+keep HLT_IsoTkMu*
+keep HLT_L1SingleMu*
+keep HLT_L2DoubleMu*
+keep HLT_L2Mu*
+keep HLT_MET*
+keep HLT_Mu*
+keep HLT_PFMET*
+keep HLT_TkMu*
+keep HLT_TripleMu*
+keep HLT_TrkMu*

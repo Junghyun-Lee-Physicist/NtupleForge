@@ -2,7 +2,7 @@
 
 > **목적**: ttHH → 4b 파이프라인을 Run 3 로 넓히기 위한 단일 참조. ① 범위와 결정, ② Run 2 와 달리 Run 3 에서 **반드시** 지켜야 할 event-level 항목(veto map, MET filter, jet ID 재계산 …)의 체크리스트, ③ 데이터셋을 **추정하지 않고 DAS 로 확정**하는 절차와 도구, ④ hadronic / leptonic 용도 구분(`had`/`lep` 태그)과 hadronic 우선 생산.
 > **대상 독자**: Run 3 registry 를 채우고 첫 ntuple 을 만들 사람; analyzer 에 Run 3 cleaning 을 넣을 사람.
-> **상태**: 살아있는 문서. 작성 **2026-09-07**, 갱신 **2026-09-10/11** (`TT4b` = 중앙 `TT4B` 확인 §4.6, BTV UParTAK4 WP 답변 §2 행 9, 캠페인 inventory 절차 §4.3 (4) 와 결과 §4.7; 09-11 ttH(bb) 분할 샘플 3 종 VALID 29.5M 씩 → `had`, 2025 MC 캠페인 없음 DAS 확인); 같은 날 **PdmVRun3Analysis twiki r223(2026-09-07)** 과 **PPD "Run3 2025 Summary Table"(2026-01-20)** 원문(PDF)으로 era 경계·golden JSON·루미·GT·데이터 명명 규칙을 대조해 해당 행을 "실측" 으로 올렸다. 남은 "기억" 표시(veto map 키, MET filter 세부, JEC 태그, PU 키, 트리거 경로)는 POG twiki 원문 확인 전까지 **코드에 넣지 않는다**. **2026-09-07 저녁: probe·discovery 완료** — 6 era 의 캠페인 문자열 전부 DAS 로 확정(§4.2), Summer24 에 신호 `TTHH-HHto4B` 를 포함한 hadronic 세트가 **중앙 생산으로 존재**, 2022/2023 v15 는 부분 재생산(§4.5). `script/samples_registry_run3.txt` 작성(MC 77 = had 58 + lep 19, DATA 11).
+> **상태**: 살아있는 문서. 작성 **2026-09-07**, 갱신 **2026-09-16** (§6 항목 1·2·5·6: Run 3 had 스캔 2024/2025 완료, `build_from_scan_log.py` Run 3 데이터 변형 처리, `genTtbarId` 존재 확인, 브랜치 인벤토리 스윕 완료), 그 전 **2026-09-10/11** (`TT4b` = 중앙 `TT4B` 확인 §4.6, BTV UParTAK4 WP 답변 §2 행 9, 캠페인 inventory 절차 §4.3 (4) 와 결과 §4.7; 09-11 ttH(bb) 분할 샘플 3 종 VALID 29.5M 씩 → `had`, 2025 MC 캠페인 없음 DAS 확인); 같은 날 **PdmVRun3Analysis twiki r223(2026-09-07)** 과 **PPD "Run3 2025 Summary Table"(2026-01-20)** 원문(PDF)으로 era 경계·golden JSON·루미·GT·데이터 명명 규칙을 대조해 해당 행을 "실측" 으로 올렸다. 남은 "기억" 표시(veto map 키, MET filter 세부, JEC 태그, PU 키, 트리거 경로)는 POG twiki 원문 확인 전까지 **코드에 넣지 않는다**. **2026-09-07 저녁: probe·discovery 완료** — 6 era 의 캠페인 문자열 전부 DAS 로 확정(§4.2), Summer24 에 신호 `TTHH-HHto4B` 를 포함한 hadronic 세트가 **중앙 생산으로 존재**, 2022/2023 v15 는 부분 재생산(§4.5). `script/samples_registry_run3.txt` 작성(MC 77 = had 58 + lep 19, DATA 11).
 > **관련**: Run 2 v15 마이그레이션 [`../09_v15_migration_log.md`](../09_v15_migration_log.md), 스캐너 [`../../script/das_scan.sh`](../../script/das_scan.sh), Run 3 discovery [`../../script/das_discover_run3.sh`](../../script/das_discover_run3.sh), 2018 확장 시 정한 multi-year 원칙 (workspace `00_CONTEXT…` §2.3).
 
 ## 결론 먼저 (BLUF)
@@ -256,11 +256,24 @@ Summer24 상세 316 행 중 VALID 269 / PRODUCTION 21 / INVALID 26 — INVALID �
 
 ## 6. 다음 행동
 
-1. **event/file 수 스캔** — §4.3 (3): `--era 2025` 와 `--era 2024`, `--workstream had` (MC 61 + DATA 4). 로그 커밋. 예상되는 NOT_FOUND 는 `TTWJetsToLNu` 하나(mg35x 플레이버만) — 받아들일지 결정. (MC 의 status·nevents 는 §4.7 inventory 로 이미 확보 — `das_scan` 은 DATA 와 `FILE|` 예시 LFN 을 위해 그대로 돈다.)
-2. **`build_from_scan_log.py` 의 Run 3 대응** — (a) `DEFAULT_EXCLUDE` 에 `BTVNano`, `FS_`, `NoPU`, `FlatPU`, `EpsilonPU`, `EGMNano`, `MUOPOG`, `mg35x`, `_pilot` (GT 고정 질의로 대부분 걸러지지만 이중 안전장치); (b) `_split_data_variants` 가 (PD, era) 당 하나만 남기는 규칙을 Run 3 에서는 **끄고**, prompt 의 `-vN` 과 proc 문자열의 `_vN` 을 disjoint run 으로 전부 넣는다(재처리 `MINIv6NANOv15` 는 (PD, era) 당 하나라 영향 없음); (c) `_meta` 의 lumi 와 골든 JSON 이름을 era 표에서.
+1. ~~**event/file 수 스캔**~~ **끝남 (2026-09-16, lxplus, `runlog.sh` 기록).** `das_scan.sh --era 2024|2025 --nano v15 --workstream had` →
+   `script/das_ttHH_2024_v15_20260916_0859.log`, `script/das_ttHH_2025_v15_20260916_0900.log`(실행 기록 `script/runlogs/run_das_scan_2024_had_*.log`,
+   `run_das_scan_2025_had_*.log`, EXIT 0). 선택 65 = MC 61 + DATA 4, RESULT EXACT 64, NOT_FOUND 1 = `TTWJetsToLNu`(예상대로, `mg35x_` 플레이버만).
+   MC 60 dataset 은 키당 정확히 1 개(ext·복수 버전 없음). DATA 는 PD 4 개 × 8 dataset: 2024 `Run2024C..I-MINIv6NANOv15-v1|v2` + `Run2024I-MINIv6NANOv15_v2-v1|v2`,
+   2025 `Run2025B..G-PromptReco-v1` + `Run2025C/F-PromptReco-v2`. **DBS `-vN` 꼬리는 PD 마다 다르다**(2024F/G: JetMET0 `-v2`, Muon0 `-v1`; 2024I: JetMET0
+   `-v2`, JetMET1 `-v1`) → DATA 행 이름은 반드시 스캔 로그에서 가져온다. 2024 JetMET0 합계 1,210,265,110 ev, 2025 JetMET0 합계 1,190,559,370 ev.
+   **남은 결정**: `TTWJetsToLNu` 를 (a) `mg35x_` 플레이버 dataset 을 PRIMARY 로 받아들이거나 (b) ERAS 에서 2024/2025 를 빼거나. 이것이 남아 있는 동안
+   `build_from_scan_log.py` 는 config 를 내지 않는다(NOT_FOUND 는 exit 3 로 config 발행을 막는다).
+2. **`build_from_scan_log.py` 의 Run 3 대응** — (a)·(b) **끝남 (2026-09-16)**: `--data-variants {auto,canonical,all}` 추가, `auto` 는 Run 3 era
+   (`RUN3_ERAS`)에서 `all` = (PD, era) 당 하나만 남기는 규칙을 끄고 모든 DBS 변형을 `<PD>_<processed string>` 키의 독립 행으로 둔다(2024I 의 `-v2` + `_v2-v1`,
+   2025C/F 의 `-v1` + `-v2` 전부 유지; 고치기 전에는 `Run2025C-PromptReco-v1` 155M ev 가 alternate 로 밀렸다). Data 플레이버 `BTVNano`/`JMENano` 는
+   제외하고 review 표에 나열(고치기 전에는 Run 2 v15 `JetHT_Run2018A` 의 canonical 이 알파벳순 첫 항목 `UL2018_BTVNanoAODv15-v1` 이었다);
+   canonical 매칭은 META 의 `_MiniAODv2_` 를 뺀 v15 문자열도 받는다. `DEFAULT_EXCLUDE` 에 Run 3 플레이버 토큰 추가. 검증: 2024/2025 로그로 review 표
+   32 DATA 행, 2018UL 09-03 로그로 JetHT 4 era 가 `UL2018_NanoAODv15-v2` 로 잡힘, NOT_FOUND 를 뺀 2024 로그 사본으로 `--emit-config` dry-run(YAML 파싱 OK).
+   (c) `_meta` 의 lumi·골든 JSON 은 **미착수**.
 3. **xsec (D-R3-6)** — 13.6 TeV 단면적 표 `samples_2025.json`(= Summer24) 신설: XSDB + GenXSecAnalyzer; QCD-HT·V→qq·DY 구간이 Run 2 와 다르므로 전부 새로. 새 키 `ttHTobb_had / _semilep / _dilep` 는 σ(ttH)×BR(H→bb)×BR(tt→4Q / ℓν2Q / 2ℓ2ν) (D-R3-9); `alt` 행(FxFx/MLM/Sherpa tt+jets, `TTZToQQ_MLM`, inclusive `ttHTobb`)도 비교용으로 값이 필요하다.
 4. ~~**`TT4b` 결정**~~ — **해소 (2026-09-10)**: 중앙 `TT4B_TuneCP5_13p6TeV_madgraph-pythia8`(Summer24 v15, 9.9M) 를 쓴다; registry 에 `TT4b` 행 추가(§4.6). 대체·사설 생산 논의는 필요 없다.
-5. **expanded ttbar id (Run 3)** — 전 샘플이 중앙에 있으므로 sidecar 경로: Summer24 **MiniAODv6** 부모에 `TtbarIdExtender` → `matchTtbarId`. `genTtbarId` 가 Run 3 v15 에 있는지는 브랜치 인벤토리에서 확인.
-6. **Run 3 브랜치 인벤토리 스윕** (08 Step 3b) — Summer24 MC 하나 + 2025 JetMET0 하나 → `branch_hadronic_2025_v15_{MC,Data}.txt`; HLT 블록은 2024/2025 별.
+5. **expanded ttbar id (Run 3)** — 전 샘플이 중앙에 있으므로 sidecar 경로: Summer24 **MiniAODv6** 부모에 `TtbarIdExtender` → `matchTtbarId`. `genTtbarId` 는 Run 3 v15 에 **있다**(Int_t; `script/inventory/inv_Summer24_v15_MC.tsv`, 2026-09-16 스윕).
+6. ~~**Run 3 브랜치 인벤토리 스윕**~~ **끝남 (2026-09-16)**: Summer24 MC 3(TTto4Q, TTBB, TTHH) + 2024 Data 9 era-row + 2025 Data 9 era-row, 전부 OK(`script/inventory/inv_2024*_v15_*.tsv`, `inv_2025*`, `inv_Summer24_v15_MC*.tsv`; `script/runlogs/run_sweep_run3_2016_20260916_071717.log`). 브랜치 목록 초안 `branches/branch_hadronic_2024_v15_{MC,Data}.txt`, `branch_hadronic_2025_v15_Data.txt` 와 HLT 표는 `../08_branch_schema_migration.md` §7.
 7. **§2 의 남은 "기억" 항목** — jet veto map 키·MET filter 의 ecalBadCalib 보정 수치·JEC/JER 태그 버전·PU 키·트리거 경로를 POG twiki 원문으로 확정. (golden JSON·era 경계·루미·EGM ID·GT·캠페인 문자열은 2026-09-07 에 확정했다.)
 8. analyzer(tempTTHH) 에 Run 3 cleaning 5 + off 2 를 넣는 작업 항목 발행 — NtupleForge 밖이라 여기서는 목록만 (§2).

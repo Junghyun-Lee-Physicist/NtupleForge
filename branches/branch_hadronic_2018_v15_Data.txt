@@ -3,18 +3,22 @@
 #  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection
 #  Target: 2018 x NanoAOD **v15**, Data (NANOAOD)
 # =============================================================================
-#  Created 2026-08-17.  STATUS: **UNVERIFIED against a real v15 file.**
-#  Do not submit a campaign with this file until you have run:
+#  Created 2026-08-17.  STATUS: **checked 2026-09-16 against the real v15 schema**
+#  (script/inventory/inv_2018?_v15_Data.tsv (one per run era),
+#  script/check_branchlist.py --era 2018; sweep record
+#  script/runlogs/run_sweep_run3_2016_20260916_071717.log, results docs/08 section 7):
+#    (A) every keep/drop pattern matches at least one branch;
+#    (B) all 47 analyzer requirements (incl. 5 HLT paths) survive the rule chain;
+#    (C) Jet_jetId and Jet_puId do NOT exist in v15 -> analyzer-side recomputation
+#        (docs/08 section 3.4), not a branch-list matter. check_branchlist.py exits 3
+#        for that reason alone. Re-run after ANY edit of this file:
 #
-#      python3 script/dump_branch_inventory.py <one real v15 Data (NANOAOD) file> \
-#              --label 2018_v15_Data -o script/inventory/inv_2018_v15_Data.tsv
 #      python3 script/check_branchlist.py branches/branch_hadronic_2018_v15_Data.txt \
-#              --inventory script/inventory/inv_2018_v15_Data.tsv --era 2018
+#              --inventory script/inventory/inv_2018A_v15_Data.tsv --era 2018
 #
-#  and fixed every pattern it reports. A `keep` pattern that matches nothing
-#  makes ROOT emit a SetBranchStatus error ONCE PER JOB -- it is not silently
-#  ignored (docs/02_CHANGELOG.md 2026-07-27, which is why the prescan lists are
-#  split per year in the first place).
+#  A `keep` pattern that matches nothing makes ROOT emit a SetBranchStatus error
+#  ONCE PER JOB -- it is not silently ignored (docs/02_CHANGELOG.md 2026-07-27,
+#  which is why the prescan lists are split per year in the first place).
 #
 # -----------------------------------------------------------------------------
 #  SEMANTICS (NanoAODTools branch selection)

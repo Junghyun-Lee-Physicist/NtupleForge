@@ -1,20 +1,23 @@
 # =============================================================================
-#  branch_hadronic_2018_v15_MC.txt
+#  branch_hadronic_2025_v15_Data.txt
 #  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection
-#  Target: 2018 x NanoAOD **v15**, MC (NANOAODSIM)
+#  Target: 2025 x NanoAOD **v15**, Data (NANOAOD; JetMET0 PromptReco, eras B..G, C-v2 and F-v2 included)
 # =============================================================================
-#  Created 2026-08-17.  STATUS: **checked 2026-09-16 against the real v15 schema**
-#  (script/inventory/inv_2018UL_v15_MC.tsv,
-#  script/check_branchlist.py --era 2018 --mc; sweep record
-#  script/runlogs/run_sweep_run3_2016_20260916_071717.log, results docs/08 section 7):
-#    (A) every keep/drop pattern matches at least one branch;
-#    (B) all 67 analyzer requirements (incl. 5 HLT paths) survive the rule chain;
+#  Created 2026-09-16 from branch_hadronic_2018_v15_Data.txt (the checked 2018 list) by substitution only:
+#  the era-specific parts (L1 prefiring, trigger notes, branch counts) changed,
+#  every other rule is identical to the 2018 file. STATUS: **checked 2026-09-16
+#  against the real v15 schema** (script/inventory/inv_2025{B,C,Cv2,D,E,F,Fv2,G}_v15_Data.tsv and inv_2025C_v15_Muon.tsv;
+#  sweep record script/runlogs/run_sweep_run3_2016_20260916_071717.log, results
+#  docs/08 section 7):
+#    (A) every keep/drop pattern matches at least one branch in every inventory listed;
+#    (B) all 42 analyzer requirements survive the rule chain (no HLT path is required yet for 2025);
 #    (C) Jet_jetId and Jet_puId do NOT exist in v15 -> analyzer-side recomputation
 #        (docs/08 section 3.4), not a branch-list matter. check_branchlist.py exits 3
-#        for that reason alone. Re-run after ANY edit of this file:
+#        for that reason alone.
+#    Re-run after ANY edit of this file:
 #
-#      python3 script/check_branchlist.py branches/branch_hadronic_2018_v15_MC.txt \
-#              --inventory script/inventory/inv_2018UL_v15_MC.tsv --era 2018 --mc
+#      python3 script/check_branchlist.py branches/branch_hadronic_2025_v15_Data.txt \
+#              --inventory script/inventory/inv_2025D_v15_Data.tsv --era 2025
 #
 #  A `keep` pattern that matches nothing makes ROOT emit a SetBranchStatus error
 #  ONCE PER JOB -- it is not silently ignored (docs/02_CHANGELOG.md 2026-07-27,
@@ -124,49 +127,12 @@ keep nElectron
 keep Electron_*
 
 # -----------------------------------------------------------------------------
-# 5. Gen-level (MC only)
-#    GenJet_* and GenPart_* are required by the in-analyzer ttbar
-#    categorization; GenJet_eta and GenPart_eta are the collection-sizing
-#    branches. genTtbarId is the CMS GenTtbarCategorizer output -- if it is
-#    absent, eventBuffer defaults it to 0 and EVERY ttbar MC event is binned as
-#    tt+LF, with no error. Verify it exists in v15 before trusting any yield.
+# 5. Gen-level -- NOT APPLICABLE (Data)
+#    genWeight / genTtbarId / GenJet_* / GenPart_* / LHE* / PSWeight /
+#    Pileup_* / L1PreFiringWeight_* do not exist in Data. Keeping any of
+#    them here would be an unmatched pattern = one ROOT error per job.
+#    This is the only difference between this file and the MC one.
 # -----------------------------------------------------------------------------
-keep genWeight
-keep genTtbarId
-keep Generator_*
-keep Pileup_*
-keep nGenJet
-keep GenJet_*
-keep nGenPart
-keep GenPart_*
-keep GenMET_*
-keep nGenVisTau
-keep GenVisTau_*
-
-# Theory weights. LHEScaleWeight (~9) and PSWeight (~4) are cheap.
-# LHEPdfWeight is ~100 floats/event and is the single most expensive thing in
-# this file -- the analyzer does not use it today. If output size becomes a
-# problem, this is the first line to delete.
-keep LHE_*
-keep nLHEPart
-keep LHEPart_*
-keep LHEScaleWeight
-keep nLHEScaleWeight
-keep LHEPdfWeight
-keep nLHEPdfWeight
-keep LHEReweightingWeight
-keep nLHEReweightingWeight
-keep PSWeight
-keep nPSWeight
-keep LHEWeight_originalXWGTUP
-# btagWeight_* : gone in v15 (docs/08 section 3.2; zero matches in inv_2018UL_v15_MC.tsv).
-# 'keep btagWeight_*' stood here until 2026-09-16 = one ROOT SetBranchStatus error per job.
-
-# L1 prefiring. Applies to 2016/2017 only. 2018 NanoAODv9 has NO such branch,
-# and the analyzer's era config disables it for 2018 -- an ungated multiply
-# would zero every 2018 MC weight. VERIFY whether v15 ships it for this era;
-# if not, DELETE this line (an unmatched keep = one ROOT error per job).
-keep L1PreFiringWeight_*
 
 # -----------------------------------------------------------------------------
 # 6. MET filters -- all of them
@@ -177,16 +143,16 @@ keep L1PreFiringWeight_*
 keep Flag_*
 
 # -----------------------------------------------------------------------------
-# 7. Triggers -- 2018
+# 7. Triggers -- 2025
 #    Wildcards, not names: the analyzer's required paths are asserted in
-#    script/check_branchlist.py --era 2018, where a missing one FAILS instead
+#    script/check_branchlist.py --era 2025, where a missing one FAILS instead
 #    of silently evaluating false.
 #
 #    !! HARD GATE FOR v15 !! The v12 -> v15 change set REMOVES deprecated HLT
 #    and L1 branches. If the b-tag quad/six-jet paths this analysis triggers on
 #    are among them, the analysis cannot run on v15 for this era at all -- no
 #    branch list fixes that. Confirm their presence with
-#    check_branchlist.py --era 2018 section (C) BEFORE anything else.
+#    check_branchlist.py --era 2025 section (C) BEFORE anything else.
 # -----------------------------------------------------------------------------
 keep HLT_PFHT*
 keep HLT_PFJet*
@@ -196,15 +162,28 @@ keep HLT_IsoMu*
 keep HLT_Mu*
 keep HLT_Ele*
 keep HLT_PFMET*
-# 2018 has no HLT_HT* calo-jet b-tag paths (the CSV-era menu is 2017-only),
-# so no HLT_HT* line here -- adding one would be an unmatched pattern.
+# 2025 Data (JetMET0, PromptReco eras B..G incl. the C-v2 / F-v2 disjoint-run
+# datasets): 21 multi-jet b-tag paths under HLT_PFHT*, measured 2026-09-16 in
+# inv_2025?_v15_Data.tsv, the same set in every era. Identical to 2024 except
+# that HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepJet_4p5 is gone
+# (PNet-only menu). Main candidates:
+#   HLT_PFHT400_SixPFJet32_PNet2BTagMean0p50, HLT_PFHT450_SixPFJet36_PNetBTag0p35,
+#   HLT_PFHT330PT30_QuadPFJet_75_60_45_40_PNet3BTag_2p0 / _4p3,
+#   HLT_PFHT400_FivePFJet_120_120_60_30_30_PNet2BTag_4p3 / _5p6, HLT_PFHT1050.
+# Which of these the Run 3 analysis triggers on is NOT decided (an analysis
+# decision, ttHH/03_run3_plan.md section 2); the wildcards keep them all.
+# Flag_METFilters (the combined flag) does NOT exist in 2025 PromptReco NanoAOD
+# (present in 2024 MINIv6NANOv15 Data and in all Run 2 v15); the individual
+# Flag_* do, and 'keep Flag_*' covers them. The analyzer must not read the
+# combined flag for 2025 (eventBuffer would default it to 0 = every event fails).
+# No HLT_HT* calo paths in Run 3 -> no HLT_HT* line (unmatched pattern otherwise).
 
 # =============================================================================
 #  DELIBERATELY NOT KEPT -- each line is a decision, not an oversight
 # =============================================================================
-#  L1_*                      442 branches. Never read by the analyzer. The
+#  L1_*                      467 (2025D Data) branches. Never read by the analyzer. The
 #                            single largest branch-count saving in this file.
-#  HLT_* (everything else)   569 HLT branches exist; the 8 wildcards above cover
+#  HLT_* (everything else)   733..744 (per era) HLT branches exist; the 8 wildcards above cover
 #                            the ~11 the analyzer names plus the muon/MET
 #                            reference menu. The rest are other analyses'.
 #  FatJet_*, SubJet_*        ZERO reads in the current analyzer -- the only
@@ -218,7 +197,7 @@ keep HLT_PFMET*
 #  IsoTrack_*, SoftActivityJet_*, SV_*, TrigObj_*   zero reads.
 #  CorrT1METJet_*            only needed to re-derive Type-1 MET from scratch.
 #                            Add back if MET is ever recomputed downstream.
-#  CaloMET_*, ChsMET_*, TrkMET_*, DeepMET*   zero reads. PF and PUPPI MET (kept
+#  CaloMET_*, TrkMET_*, DeepMET*   zero reads (ChsMET_* no longer exists in v15). PF and PUPPI MET (kept
 #                            above) cover the validation region; add a specific
 #                            one back if a study needs it.
 #  PPSLocalTrack_*, Proton_*, HTXS_*, GenDressedLepton_*, GenIsolatedPhoton_*

@@ -221,12 +221,46 @@ CPV_REQUIRED = [
 # So they exist and fire on the Run2017B primary datasets, and are correctly 0
 # elsewhere. tempTTHH/include/eventBuffer.h is a deliberate 2017+2018 superset
 # header (583 HLT) whose input->present() guard handles their absence.
+# Run 3 era tokens (same set as build_from_scan_log.py RUN3_ERAS).
+RUN3_ERAS = ("2022", "2022EE", "2023", "2023BPix", "2024", "2025")
+
 HLT_ERA_CONDITIONAL = {
     "2017": ["HLT_HT300PT30_QuadJet_75_60_45_40",
              "HLT_HT300PT30_QuadJet_75_60_45_40_TripeCSV_p07",
              "HLT_PFHT430_SixJet40_BTagCSV_p080",
              "HLT_PFHT380_SixJet32_DoubleBTagCSV_p075"],
-    "2018": [],
+    # 2018: the early-2018A menu carried the DeepCSV six-jet paths with the 2017
+    # thresholds; the 2p94 / 1p59 paths (HLT_REQUIRED) appear later. Measured
+    # 2026-09-16 on the first file of /JetHT/Run2018A-UL2018_NanoAODv15-v2:
+    # 2p2 and 1p5 present, 2p94 and 1p59 ABSENT (Run B has both sets, C and D
+    # only the new ones). So a Run2018A file can lack the paths the analyzer's
+    # requireTriggerBranches2018_() demands -- an analyzer-side question, and
+    # a one-file measurement (the run range of that file is not verified).
+    "2018": ["HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2",
+             "HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5"],
+    # 2016 / 2024 / 2025: the analysis has no trigger decision for these eras
+    # yet (2016: analyzer has no 2016 era config, D-2026-09-11-run2-scope-2016;
+    # Run 3: ttHH/03_run3_plan.md section 2). The candidates below are what the
+    # 2026-09-16 inventories contain (docs/08 section 7); they are reported as
+    # information until HLT_REQUIRED for the era is decided.
+    "2016": ["HLT_PFHT450_SixJet40_BTagCSV_p056",
+             "HLT_PFHT400_SixJet30_DoubleBTagCSV_p056",
+             "HLT_PFHT900", "HLT_PFJet450", "HLT_AK8PFJet450", "HLT_IsoMu24"],
+    "2024": ["HLT_PFHT400_SixPFJet32_PNet2BTagMean0p50",
+             "HLT_PFHT450_SixPFJet36_PNetBTag0p35",
+             "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_PNet3BTag_2p0",
+             "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_PNet3BTag_4p3",
+             "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepJet_4p5",
+             "HLT_PFHT400_FivePFJet_120_120_60_30_30_PNet2BTag_4p3",
+             "HLT_PFHT400_FivePFJet_120_120_60_30_30_PNet2BTag_5p6",
+             "HLT_PFHT1050", "HLT_IsoMu24"],
+    "2025": ["HLT_PFHT400_SixPFJet32_PNet2BTagMean0p50",
+             "HLT_PFHT450_SixPFJet36_PNetBTag0p35",
+             "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_PNet3BTag_2p0",
+             "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_PNet3BTag_4p3",
+             "HLT_PFHT400_FivePFJet_120_120_60_30_30_PNet2BTag_4p3",
+             "HLT_PFHT400_FivePFJet_120_120_60_30_30_PNet2BTag_5p6",
+             "HLT_PFHT1050", "HLT_IsoMu24"],
 }
 
 # The analyzer FATALs if the 2018 four are absent (requireTriggerBranches2018_(),
@@ -240,6 +274,13 @@ HLT_REQUIRED = {
              "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5",
              "HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94",
              "HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59"],
+    # EMPTY on purpose (2026-09-16): no trigger decision exists for these eras.
+    # An empty list means "--era 2016/2024/2025 checks nothing as required" --
+    # it does NOT mean the era is trigger-safe. Fill it when the analysis
+    # decides (then the era-conditional list above shrinks accordingly).
+    "2016": [],
+    "2024": [],
+    "2025": [],
 }
 
 
@@ -308,6 +349,15 @@ def main():
     rules = read_rules(args.branchlist)
     required = {"prescan": PRESCAN_REQUIRED,
                 "cpv": CPV_REQUIRED}.get(args.profile, REQUIRED)
+    if args.era in RUN3_ERAS:
+        # L1 prefiring is a Run 2 correction; Run 3 NanoAOD has no such branch
+        # (0 matches in 21 Run 3 inventories, 2026-09-16). Requiring it would
+        # make every Run 3 check fail for a branch that cannot exist.
+        n0 = len(required)
+        required = [r for r in required if "L1PreFiringWeight_Nom" not in r[0]]
+        if len(required) != n0:
+            print("[check] NOTE: era %s is Run 3 -> L1PreFiringWeight_Nom removed from the "
+                  "requirements (no such branch in Run 3 NanoAOD)." % args.era)
     if not rules:
         sys.exit("FATAL: no keep/drop rules found in '%s'" % args.branchlist)
     print("[check] %s: %d rule(s)  |  profile=%s  |  %s"

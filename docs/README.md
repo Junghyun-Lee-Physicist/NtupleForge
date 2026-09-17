@@ -42,6 +42,10 @@ setup과 실행 커맨드만 다루고, 그보다 깊은 내용은 전부 여기
 - **[09_v15_migration_log.md](09_v15_migration_log.md)** — v9→v15 마이그레이션
   **캠페인 로그**: 무엇을 언제 실행했고 원본 로그가 어땠는지 시간순 기록.
   결론·절차는 08 에 있고 이 문서는 거기를 가리킵니다 (한 사실은 한 곳에만).
+- **[10_validation_ledger.md](10_validation_ledger.md)**: 검증 원장. "확인했다"
+  고 말하는 모든 것의 색인(날짜, 규모, 결과, **증거 파일 경로**). 2026-09-16 부터
+  lxplus 실행은 `script/runlog.sh` 가 남기는 `script/runlogs/` 로그와
+  `LEDGER.tsv` 가 원자료이고, 이 표는 그 위의 사람용 색인입니다.
 
 **모듈별 (subdirectory, 각자 지역 번호와 지역 README 보유):**
 

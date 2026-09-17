@@ -3,7 +3,7 @@
 > **목적**: ttHH→4b fully hadronic 채널을 위해 중앙 MC 생성에 **무엇을 요청했는지**와 **왜 그것만 요청했는지**를
 > 한 곳에 남긴다. 보낸 메일 본문을 그대로 보존하므로, 답장이 오거나 생산이 시작될 때 이 문서가 대조 기준이 된다.
 > **대상 독자**: 요청 상태를 추적할 사람, 답장을 받아 후속 작업을 할 사람.
-> **상태**: 살아있는 문서. 작성 **2026-09-14**. 메일 발송 여부와 답장은 아래 §5 에 기록한다.
+> **상태**: 살아있는 문서. 작성 **2026-09-14**, 갱신 **2026-09-16**(2016 열을 MiniAODv2 부모 수치로 교체). 메일 발송 여부와 답장은 아래 §5 에 기록한다.
 > **관련**: 조사 근거 [`03_run3_plan.md`](03_run3_plan.md) §4.6·§4.7, [`../09_v15_migration_log.md`](../09_v15_migration_log.md)
 > 10·15·16 절, 결정 [`../03_DECISIONS.md`](../03_DECISIONS.md) D-2026-09-11-ttz-hadronic-from-ttzqq ·
 > D-2026-09-11-run2-scope-2016, 슬라이드 `~/claude/NtuplizerDev/ttHH_latex/GenRequest_Sep2026/`.
@@ -14,7 +14,7 @@
 Sherpa tt+jets 계열**(진행 중인 4 종의 완성 + Sherpa tt+bb / tt+4b 신규)이다. 그 밖에는 요청하지 않는다. 조사 결과
 나머지는 이미 중앙에 있거나(이름만 다름), 대체 샘플로 해결했거나, 우리 영역에서 기여가 작다.
 
-수신: Hbb MC contact. 근거 조사는 2026-09-03 / 09-07 / 09-11 의 DAS 조회이고 event 수는 그 시점 값이다.
+수신: Hbb MC contact. 근거 조사는 2026-09-03 / 09-07 / 09-11 / 09-16 의 DAS 조회이고 event 수는 그 시점 값이다.
 
 ## 1. Run 2 요청 (5 종, 28 dataset)
 
@@ -26,10 +26,18 @@ NanoAODv9 에는 있고 NanoAODv15 에는 없다. MiniAODv2 부모는 DAS 에 �
 | `TT4b_TuneCP5_13TeV_madgraph_pythia8` | 4.8M | 4.8M | 9.5M | 9.8M |
 | `TTZHTo4b_TuneCP5_13TeV-madgraph-pythia8` (+ext1) | 5.0M | 5.0M | 10.0M | 9.8M |
 | `TTZZTo4b_TuneCP5_13TeV-madgraph-pythia8` (+ext1) | 5.0M | 5.0M | 9.8M | 9.9M |
-| `THW_ctcvcp_5f_Hincl_TuneCP5_13TeV_madgraph_pythia8` | 7.4M | 7.5M | 15.0M | 15.0M |
-| **era-half 당 7 dataset** | **27.1M** | **27.1M** | **54.2M** | **54.1M** |
+| `THW_ctcvcp_5f_Hincl_TuneCP5_13TeV_madgraph_pythia8` | 7.5M | 7.5M | 15.0M | 15.0M |
+| **era-half 당 7 dataset** | **27.2M** | **27.1M** | **54.2M** | **54.1M** |
 
-2017/2018 은 MiniAODv2 부모 event 수, **2016 은 NanoAODv9 event 수**다(2016 MiniAODv2 부모는 미조회 — §4).
+네 열 모두 **MiniAODv2 부모의 event 수**다(2017/2018: DAS 2026-09-07, 2016: DAS 2026-09-16
+`script/das_inventory_ul16pre_miniaodv2_20260916_0856.tsv` · `script/das_inventory_ul16post_miniaodv2_20260916_0857.tsv`,
+실행 기록 `script/runlogs/run_ul16pre_miniaodv2_20260916_065618.log` · `run_ul16post_miniaodv2_20260916_065754.log`).
+2016 부모는 모두 VALID 이고, 정확한 값은 preVFP `TTHHTo4b` 4,950,000 · `TT4b` 4,801,000 · `TTZHTo4b` 2,496,000 + ext1 2,500,000 ·
+`TTZZTo4b` 2,500,000 + ext1 2,500,000 · `THW` 7,498,000 (합 27,245,000), postVFP `TTHHTo4b` 4,798,000 · `TT4b` 4,848,000 ·
+`TTZHTo4b` 2,500,000 + ext1 2,500,000 · `TTZZTo4b` 2,468,000 + ext1 2,500,000 · `THW` 7,484,000 (합 27,098,000). 2016 v9 수치(09-11)와의
+차이는 preVFP `THW` 7.4M → 7.5M 한 칸뿐이라 합계 약 162M(정확히 162.6M)은 그대로다. 캠페인 이름은
+`RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2`(ext1 은 `_v11_ext1-v2`) 와
+`RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2`(ext1 은 `_v17_ext1-v2`) 이다.
 네 era-half 를 한 번에 요청하는 근거는 네 v15 캠페인의 `NOT_FOUND` 키 집합이 diff 0 으로 동일하다는 것이다
 (D-2026-09-11-run2-scope-2016).
 
@@ -68,8 +76,9 @@ hadronic selection 을 통과한다). 그런데 **어느 variant 도 세 채널�
 
 ## 4. 이 요청이 승인될 경우 우리 쪽에 남는 일
 
-- **2016 MiniAODv2 부모 조회.** 요청 표의 2016 열은 v9 수치다. 2017/2018 에서 MiniAOD 부모가 v9 보다 1–4 % 많았다.
-  `das_inventory.sh --tier MINIAODSIM` 으로 UL16 MiniAODv2 두 캠페인을 조회하면 확정된다.
+- ~~**2016 MiniAODv2 부모 조회.**~~ **끝남 (2026-09-16).** `das_inventory.sh --tier MINIAODSIM` 으로 두 캠페인을 조회해 §1 표를
+  MiniAODv2 수치로 바꿨다. 두 캠페인 모두 registry 136 키 전부 EXACT(`NOT_FOUND` 0) 였다. 즉 v15 에 없는 5 종뿐 아니라
+  `TTZToBB`·CPV 13 종 등 registry 의 모든 샘플이 UL16 MiniAODv2 에는 있다.
 - **2016 을 분석에 넣는 비용은 샘플 요청만이 아니다.** analyzer(`tempTTHH`)에는 `data/samples_2017UL.json` 과
   `samples_2018UL.json` 만 있다. 2016 을 쓰려면 xsec 표 2 개(preVFP/postVFP), 2016 루미(현재 `LUMI_SOURCES.md` 는
   2017–2018 만 인용원을 정리했다), golden JSON, 트리거 경로·효율, b-tag SF, JEC/JER 을 전부 2016 용으로 추가해야 한다.

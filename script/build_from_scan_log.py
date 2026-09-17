@@ -9,6 +9,12 @@ hardwired to UL18 x NanoAODv9 (era string, lumi, Run2018[A-D] regex, the
 any sample a year does not have).
 
 Created 2026-08-17 for the v9 || v15 parallel campaign.
+2026-09-16: Run 3 Data variants kept as separate rows (--data-variants, default
+'auto' = all for Run 3 eras); Data flavour re-productions (BTVNano, JMENano)
+excluded and listed; canonical match tolerates the v15 Data string without
+'_MiniAODv2_'. Tested on das_ttHH_2024/2025_v15_20260916_*.log and on
+das_ttHH_2018UL_v15_20260903_1016.log (review tables only; config emission
+dry-run on a NOT_FOUND-free copy of the 2024 log).
 
 DESIGN POINT -- this tool's FIRST output is a review table, not a config.
 The workflow is: scan on lxplus -> read the table with a human -> then emit the
@@ -61,20 +67,48 @@ import sys
 from collections import OrderedDict
 
 # Campaign substrings that mark a non-standard reprocessing. Substring match
-# against the campaign field. FSUL covers FSUL16/17/18 (fast sim).
-DEFAULT_EXCLUDE = ("JMENano", "PUFor", "PU35For", "FSUL", "BPH_")
+# against the campaign (processed-string) field of MC datasets. FSUL covers
+# FSUL16/17/18 (fast sim). The Run 3 tokens (2026-09-16, ttHH/03_run3_plan.md
+# section 6 item 2a) are a second safety net: das_scan.sh already anchors the
+# MC query on the GT, so flavour campaigns such as
+# RunIII2024Summer24NanoAODv15-JMENanoV15_150X..., -BTVNanoV15_, -FS_, -NoPU_,
+# -FlatPU0to120_, -EpsilonPU_, -EGMNanoV15_, -MUOPOGNano_, -mg35x_ normally
+# never reach this script.
+DEFAULT_EXCLUDE = ("JMENano", "PUFor", "PU35For", "FSUL", "BPH_",
+                   "BTVNano", "-FS_", "NoPU", "FlatPU", "EpsilonPU", "EGMNano",
+                   "MUOPOG", "mg35x", "_pilot")
+
+# Run 3 eras (das_scan.sh era tokens). For these, Data processing variants of
+# one run era are DISJOINT run ranges, not re-processings of the same runs:
+# Run2024I-MINIv6NANOv15-v2 and Run2024I-MINIv6NANOv15_v2-v1 are both needed,
+# and so are Run2025C-PromptReco-v1 and -v2 (T0 prompt, split by run). The
+# Run 2 rule "canonical = highest -vN, rest = alternates" would silently drop
+# runs here (seen on the 2026-09-16 logs: 155M events of Run2025C demoted to
+# an alternate). See _split_data_variants() and --data-variants.
+RUN3_ERAS = ("2022", "2022EE", "2023", "2023BPix", "2024", "2025")
+
+# Data flavour re-productions (POG-specific NanoAOD content) that the relaxed
+# das_scan.sh data query pulls in next to the standard one: for v15 the query
+# 'Run2018A-UL2018*NanoAODv15*' returns UL2018_BTVNanoAODv15-v1,
+# UL2018_JMENanoAODv15-v2 AND UL2018_NanoAODv15-v2. Before 2026-09-16 the first
+# of them (alphabetical) became the canonical row when the META data_proc still
+# carried the v9-style 'UL2018_MiniAODv2_NanoAODv15' (no exact match). They are
+# excluded here and listed in the review table, never used.
+DATA_EXCLUDE = ("BTVNano", "JMENano")
 
 
 # ---------------------------------------------------------------------------
 # parsing
 # ---------------------------------------------------------------------------
 
-def parse_log(path, data_proc_override=None):
+def parse_log(path, data_proc_override=None, data_variants="auto"):
     """Return (meta, mc, data, files, notfound, dup).
 
     meta      dict from the META| line ({} if absent -- old logs have none)
     mc        OrderedDict outkey -> (dataset, nevents, nfiles, size_TB)
     data      OrderedDict "<PD>_<RunEra>" -> {"plain": tuple, "alt": [tuple,...]}
+              (data_variants "all", or "auto" on a Run 3 era: one row per DBS
+              processing variant, keyed "<PD>_<processed string>", no alternates)
     files     dict key -> lfn   (from --sample-file scans)
     notfound  list of keys whose RESULT| line said NOT_FOUND
     dup       list of (outkey, dataset) that collided with an existing key
@@ -132,6 +166,9 @@ def parse_log(path, data_proc_override=None):
                 mc[outkey] = (ds, nev, nf, sz)
             else:                                          # NANOAOD -> Data
                 pd = fields[1]
+                if any(x in camp for x in DATA_EXCLUDE):
+                    meta.setdefault("_data_excluded", []).append(ds)
+                    continue
                 m = re.match(r"(Run\d{4}[A-Z]?)", camp)
                 era = m.group(1) if m else camp.split("-")[0]
                 outkey = "%s_%s" % (pd, era)
@@ -140,7 +177,10 @@ def parse_log(path, data_proc_override=None):
     proc = data_proc_override or meta.get("data_proc", "")
     if data_proc_override:
         meta.setdefault("data_proc", data_proc_override)
-    data = _split_data_variants(data_raw, proc)
+    if data_variants == "auto":
+        data_variants = "all" if meta.get("era", "") in RUN3_ERAS else "canonical"
+    meta["data_variants"] = data_variants
+    data = _split_data_variants(data_raw, proc, keep_all=(data_variants == "all"))
     return meta, mc, data, files, notfound, dup
 
 
@@ -152,22 +192,41 @@ def _intfield(tok):
         return None
 
 
-def _split_data_variants(data_raw, data_proc):
+def _split_data_variants(data_raw, data_proc, keep_all=False):
     """Pick the canonical dataset per (PD, RunEra); the rest become alternates.
 
     Canonical = the one whose campaign is exactly '<RunEra>-<data_proc>-vN'
     (no extra token such as _GT36 between the processing string and -vN),
     highest N. This replaces the UL18-specific `"_GT36" in camp` test and works
     for any era/version without a code change.
+
+    keep_all=True (Run 3, or --data-variants all): every variant is its own row,
+    keyed '<PD>_<processed string>' (e.g. JetMET0_Run2024I-MINIv6NANOv15_v2-v1),
+    and nothing is demoted to an alternate. Sorted by processed string so the
+    output is deterministic.
     """
     out = OrderedDict()
+    if keep_all:
+        for key, variants in data_raw.items():
+            pd = key.split("_", 1)[0]
+            for tup in sorted(variants, key=lambda t: t[4]):
+                out["%s_%s" % (pd, tup[4])] = {"plain": tup, "alt": []}
+        return out
+    # Accepted processing strings: the META one, and (v15 Data drops the
+    # '_MiniAODv2_' token: Run2018A-UL2018_NanoAODv15-v2) the same string with
+    # that token removed, so a v9-style META data_proc still finds the canonical
+    # v15 row instead of falling back to the alphabetically first dataset.
+    procs = [data_proc] if data_proc else []
+    if data_proc and "_MiniAODv2_" in data_proc:
+        procs.append(data_proc.replace("_MiniAODv2_", "_"))
+    proc_re = "|".join(re.escape(x) for x in procs)
     for key, variants in data_raw.items():
         plain, alts = None, []
         best_v = -1
         for tup in variants:
             camp = tup[4]
-            m = re.match(r"^Run\d{4}[A-Z]?-" + re.escape(data_proc) + r"-v(\d+)$", camp) \
-                if data_proc else None
+            m = re.match(r"^Run\d{4}[A-Z]?-(?:" + proc_re + r")-v(\d+)$", camp) \
+                if proc_re else None
             if m and int(m.group(1)) > best_v:
                 if plain is not None:
                     alts.append(plain)
@@ -244,7 +303,18 @@ def write_table(out_md, out_tsv, meta, mc, data, files, notfound, dup, prov):
 
     d_ev = sum(v["plain"][1] for v in data.values() if v["plain"][1])
     d_f = sum(v["plain"][2] for v in data.values() if v["plain"][2])
-    L += ["## Data (%d)" % len(data), "",
+    L += ["## Data (%d)" % len(data), ""]
+    if meta.get("_data_excluded"):
+        L += ["NOTE: %d flavour re-production dataset(s) (%s) were EXCLUDED from the rows below:"
+              % (len(meta["_data_excluded"]), ", ".join(DATA_EXCLUDE))]
+        L += ["- `%s`" % d for d in meta["_data_excluded"]] + [""]
+    if meta.get("data_variants") == "all":
+        L += ["NOTE: data_variants=all (Run 3 default). Every DBS processing variant of a run era is",
+              "its own row, keyed `<PD>_<processed string>`, because in Run 3 the variants are",
+              "disjoint run ranges (e.g. `Run2024I-MINIv6NANOv15-v2` + `Run2024I-MINIv6NANOv15_v2-v1`,",
+              "`Run2025C-PromptReco-v1` + `-v2`). Nothing is demoted to an alternate. Use",
+              "`--data-variants canonical` to get the Run 2 behaviour.", ""]
+    L += [
           "| key | nevents | nfiles | TB | dataset | alternates |",
           "|---|---:|---:|---:|---|---|"]
     for k, v in data.items():
@@ -585,6 +655,12 @@ def main():
                     "UL2018_MiniAODv2_NanoAODv9. Only needed for pre-2026-08-17 "
                     "logs that carry no META| line; it decides which Data "
                     "processing variant is canonical and which are alternates.")
+    ap.add_argument("--data-variants", choices=("auto", "canonical", "all"), default="auto",
+                    help="how Data processing variants of one run era are treated. "
+                         "'canonical' (Run 2 rule): highest -vN is the row, the rest are "
+                         "alternates. 'all': one row per variant, no alternates (Run 3: the "
+                         "variants are disjoint run ranges). 'auto' (default): 'all' when the "
+                         "META era is a Run 3 era (%s), else 'canonical'." % ", ".join(RUN3_ERAS))
     args = ap.parse_args()
 
     if not os.path.isfile(args.log):
@@ -601,7 +677,7 @@ def main():
                 os.path.join(outdir, "compare_%s__vs__%s.md" % (stem, other)))
         return 0
 
-    meta, mc, data, files, notfound, dup = parse_log(args.log, args.data_proc)
+    meta, mc, data, files, notfound, dup = parse_log(args.log, args.data_proc, args.data_variants)
     prov = provenance(args.log, meta)
 
     if not meta:

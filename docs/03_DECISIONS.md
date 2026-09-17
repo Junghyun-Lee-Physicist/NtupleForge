@@ -24,7 +24,9 @@
   all present in 2016 v9 (129 EXACT / 7 NOT_FOUND there, the 7 being the QCD-HT naming below). `TTZToQQ` exists
   in 2016 v15 as well (6.28M / 5.40M), so D-2026-09-11-ttz-hadronic-from-ttzqq holds for 2016 unchanged.
 - **Decision.** (a) The central request is the five samples in **all four era-halves — 28 datasets, ≈162M events**
-  (2016: 7 datasets and 27.1M events per half, NanoAODv9 counts; MiniAODv2 parents not yet queried).
+  (2016: 7 datasets per half; 27.2M preVFP and 27.1M postVFP as MiniAODv2 parent counts, queried 2026-09-16 with
+  `das_inventory.sh --tier MINIAODSIM`, `script/das_inventory_ul16{pre,post}_miniaodv2_20260916_*.tsv`; the
+  2026-09-11 text here said 27.1M / 27.1M from NanoAODv9, superseded).
   (b) All 62 ttHH rows of `samples_registry.txt` now carry
   `2016postVFPUL,2016preVFPUL,2017UL,2018UL`; each era selects 45 `had` MC rows.
   (c) **QCD-HT PRIMARY changed** from `QCD_HT<bin>_TuneCP5_13TeV-madgraphMLM-pythia8` (the v9 name, which exists

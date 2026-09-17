@@ -9,6 +9,56 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-16 (4): first recorded lxplus batch folded in: UL16 MiniAODv2 counts, Run 3 scans, 35-inventory sweep, 10 branch lists checked
+
+Everything below reads from the run records the user produced on lxplus with `runlog.sh` (commit `a781cb3`: `script/runlogs/run_*.log`,
+`LEDGER.tsv`, 12 rows, all EXIT 0 except the two matrix steps at 2 = PARTIAL, expected). Log of what ran: `09_v15_migration_log.md` 17.
+Results and decisions: `08_branch_schema_migration.md` 7. Index: `10_validation_ledger.md` V11 to V20.
+
+### Added
+- `docs/10_validation_ledger.md`: the validation ledger (V01 to V20), one row per "we checked this" with date, scale, result and the evidence
+  file inside the repository. Older rows were copied from 08/09; from now on `LEDGER.tsv` is the raw source and this table the human index.
+- `branches/branch_hadronic_2016_v15_{MC,Data}.txt`, `branch_hadronic_2024_v15_{MC,Data}.txt`, `branch_hadronic_2025_v15_Data.txt`: derived from
+  the checked 2018 v15 lists by substitution only (a scratch generator asserted every anchor); era-specific parts: L1 prefiring (kept for 2016,
+  no keep for Run 3: 0 matches in all 21 Run 3 inventories), trigger notes with the measured b-tag paths, branch counts. All five: dead
+  patterns 0 against every matching inventory (2024 Data 9, 2025 Data 9, Summer24 MC 3, UL16 MC 2, UL16 Data 2).
+- `branches/branch_CPV_Run2_Data_v15.txt`: the v9 CPV Data list plus the v15 additions that exist in Data (`PFCand_*`, `nPFCand`,
+  `FatJetPFCand_*`, `nFatJetPFCand`, `PVBS_*`, `nPVBS`, `nTauProd`; not `DST_*`, which has 0 matches in Run2017B). Checked against the eleven
+  Run 2 v15 Data inventories; the only dead patterns are the deliberately shared 2016 path names (2 per 2017C..F / 2018 file, 6 in 2017B, 0 in 2016).
+- `script/check_branchlist.py`: `--era 2016|2024|2025`. `HLT_REQUIRED` for these eras is EMPTY on purpose (no trigger decision yet; an empty list
+  means "nothing checked", not "safe"); the candidate paths measured in the inventories are in `HLT_ERA_CONDITIONAL` and reported as information.
+  `HLT_ERA_CONDITIONAL["2018"]` now lists the early-2018A DeepCSV paths (`..._2p2`, `..._1p5`). For Run 3 eras the `L1PreFiringWeight_Nom`
+  requirement is dropped with a NOTE.
+- `script/build_from_scan_log.py`: `--data-variants {auto,canonical,all}` (default auto = all for Run 3 eras): every DBS processing variant of a
+  run era becomes its own row keyed `<PD>_<processed string>`; before, `Run2025C-PromptReco-v1` (155M events) and `Run2024I-MINIv6NANOv15_v2-v1`
+  were demoted to alternates and would have been dropped from an emitted config. Data flavour re-productions (`BTVNano`, `JMENano`) are excluded
+  and listed in the review table (before, the alphabetically first `UL2018_BTVNanoAODv15-v1` became the canonical `JetHT_Run2018A` for the
+  2026-09-03 log because its META data_proc still carried `_MiniAODv2_`); the canonical match now also accepts the v15 string without that token.
+  `DEFAULT_EXCLUDE` extended with the Run 3 flavour tokens. Tested on the 2024/2025 logs, the 2018UL 2026-09-03 log and a NOT_FOUND-free copy
+  of the 2024 log with `--emit-config` (YAML parses). No output committed.
+
+### Changed
+- `branches/branch_hadronic_2017_v15_MC.txt`, `branch_hadronic_2018_v15_MC.txt`: `keep btagWeight_*` removed (no such branch in v15; it was one
+  ROOT `SetBranchStatus` error per job since 2026-08-17). `branch_hadronic_2017_v15_Data.txt`: `keep HLT_QuadPFJet*` removed (0 matches in
+  Run2017B, C, D, E in v9 and v15 alike; the family exists from 2017F on, and the analyzer's quad-jet path lives under `HLT_PFHT*`). All four
+  headers: STATUS from UNVERIFIED to "checked 2026-09-16" with the exact re-check command; the 2018 MC prefiring VERIFY note resolved (11 branches present).
+- `script/inventory_manifest_run3_2016.txt`: the two 2016 Data PATTERN rows replaced by the nine verified per-era rows from the discover log
+  (B, B `_v2`, C, D, E, F with HIPM; F, G, H without). The two pattern-label inventories stay as the 2026-09-16 sweep record (cited by docs/08 7
+  and the 2016 list headers); B-HIPM and F will appear twice in the presence matrix once the nine rows are swept, which is expected.
+- `docs/ttHH/04_mc_request_2026-09.md` 1: 2016 columns now MiniAODv2 parent counts (preVFP `THW` 7.4M to 7.5M, preVFP total 27.1M to 27.2M; total
+  162.6M, still "about 162M"); 4: the MiniAODv2 query item closed. `03_DECISIONS.md` D-2026-09-11-run2-scope-2016 (a) updated accordingly.
+- `docs/ttHH/03_run3_plan.md` 6: items 1 (scan), 2 (a, b), 5 (`genTtbarId` exists in Summer24 v15), 6 (sweep) closed with pointers.
+- `docs/08_branch_schema_migration.md`: new section 7 (sweep coverage, main-profile matrix, list checks, HLT tables, what is left); 3.4 UNVERIFIED note resolved.
+- `docs/09_v15_migration_log.md`: section 17 (the batch, with the exact MiniAODv2 numbers and the Run 3 DATA findings). `docs/README.md`: index entry for 10.
+- `docs/01_STATUS.md`: action table rewritten (14 rows), 22a/22b/24 closed, 22k numbers, new 22l (batch record), 22m (list findings), 22n (2018A early menu).
+
+### Found, not yet fixed (tracked in 01_STATUS 22m, 22n)
+- `Flag_METFilters` (combined flag) does not exist in Summer24 v15 MC nor in 2025 PromptReco Data (it does in all Run 2 v15 and 2024 Data).
+- First file of `/JetHT/Run2018A-UL2018_NanoAODv15-v2` lacks `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94` and
+  `HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` (has the 2017-threshold DeepCSV paths instead); one-file measurement, run range unverified.
+- `branch_CPV_Run2_MC_v15.txt` has `drop Scouting*` dead on UL16 v15 MC; `branch_prescan_slim_2017.txt` has three Run B calo paths dead on UL17 MC (v9 too).
+- RUNBOOK expectation "MC 45" for the Run 3 scan was wrong (Run 2 count copied); the Run 3 registry selects 61 `had` MC rows.
+
 ## [Unreleased] — 2026-09-16 (3): `script/runlog.sh` — every lxplus step leaves a record in the repo
 
 ### Added

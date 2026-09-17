@@ -3,18 +3,22 @@
 #  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection
 #  Target: 2017 x NanoAOD **v15**, Data (NANOAOD)
 # =============================================================================
-#  Created 2026-08-17.  STATUS: **UNVERIFIED against a real v15 file.**
-#  Do not submit a campaign with this file until you have run:
+#  Created 2026-08-17.  STATUS: **checked 2026-09-16 against the real v15 schema**
+#  (script/inventory/inv_2017?_v15_Data.tsv (one per run era),
+#  script/check_branchlist.py --era 2017; sweep record
+#  script/runlogs/run_sweep_run3_2016_20260916_071717.log, results docs/08 section 7):
+#    (A) every keep/drop pattern matches at least one branch in every run era B..F;
+#    (B) all 47 analyzer requirements (incl. 5 HLT paths) survive the rule chain;
+#    (C) Jet_jetId and Jet_puId do NOT exist in v15 -> analyzer-side recomputation
+#        (docs/08 section 3.4), not a branch-list matter. check_branchlist.py exits 3
+#        for that reason alone. Re-run after ANY edit of this file:
 #
-#      python3 script/dump_branch_inventory.py <one real v15 Data (NANOAOD) file> \
-#              --label 2017_v15_Data -o script/inventory/inv_2017_v15_Data.tsv
 #      python3 script/check_branchlist.py branches/branch_hadronic_2017_v15_Data.txt \
-#              --inventory script/inventory/inv_2017_v15_Data.tsv --era 2017
+#              --inventory script/inventory/inv_2017B_v15_Data.tsv --era 2017
 #
-#  and fixed every pattern it reports. A `keep` pattern that matches nothing
-#  makes ROOT emit a SetBranchStatus error ONCE PER JOB -- it is not silently
-#  ignored (docs/02_CHANGELOG.md 2026-07-27, which is why the prescan lists are
-#  split per year in the first place).
+#  A `keep` pattern that matches nothing makes ROOT emit a SetBranchStatus error
+#  ONCE PER JOB -- it is not silently ignored (docs/02_CHANGELOG.md 2026-07-27,
+#  which is why the prescan lists are split per year in the first place).
 #
 # -----------------------------------------------------------------------------
 #  SEMANTICS (NanoAODTools branch selection)
@@ -150,7 +154,11 @@ keep Flag_*
 keep HLT_PFHT*
 keep HLT_PFJet*
 keep HLT_AK8PFJet*
-keep HLT_QuadPFJet*
+# HLT_QuadPFJet* : NOT in this Data list. The family exists only from Run 2017F on
+# (12 paths in inv_2017F_v15_Data / v9; ZERO in B, C, D, E -- measured 2026-09-16,
+# same in v9), so the wildcard was a dead pattern (one ROOT error per job) for four
+# of the five eras. The analyzer's quad-jet path is HLT_PFHT300PT30_QuadPFJet_...
+# and lives under HLT_PFHT*. The MC list keeps HLT_QuadPFJet* (UL17 MC has all 12).
 keep HLT_IsoMu*
 keep HLT_Mu*
 keep HLT_Ele*

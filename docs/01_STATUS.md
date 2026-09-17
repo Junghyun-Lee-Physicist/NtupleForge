@@ -2,7 +2,7 @@
 
 > **Purpose:** the single place to answer "where are we right now?" for any
 > contributor (human or AI) joining cold. **Audience:** all. **Updated:**
-> 2026-09-16 (block E action table; CPV stale BLOCKED line corrected). Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
+> 2026-09-16 evening (lxplus results folded in: action table rewritten, 22b/22k/22l–22n). Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
 
 ## Read this first (repo-level facts)
 
@@ -344,32 +344,36 @@
 > `Run2024X-MINIv6NANOv15-vN`), 나머지는 `--probe` 전까지 UNVERIFIED —, 새 `script/das_discover_run3.sh`(family 별 접두어 wildcard →
 > `HIT|` 줄), registry ttHH 64 행에 `had` 47 / `lep` 16 / `had,lep` 1 태그. golden JSON·era 경계·루미·GT 는 PdmV twiki r223 / PPD 2025 표 원문으로 확정(03_run3_plan §2, §4.2).
 
-**다음 행동 (2026-09-16 기준).** 근거와 이력은 22a~22k 에 있다. 여기에는 *무엇을 할 차례인가*만 적는다.
+**다음 행동 (2026-09-16 저녁 기준).** 근거와 이력은 22a~22n 에 있다. 여기에는 *무엇을 할 차례인가*만 적는다.
+같은 날 오전의 표에서 끝난 것: ~~4 (2016 MiniAODv2 부모)~~ → 22k, ~~5 (Run 3 had 스캔)~~ → 22a·22b, ~~3 (tth_split 커밋)~~ (lxplus 커밋 `a781cb3` 에 포함됐는지는 사용자 확인).
 
 | # | 할 일 | 누가 / 어디서 | 근거 |
 |---|---|---|---|
 | 1 | **MC 요청 메일 발송**, 답장 오면 기록 | 사용자 | [`ttHH/04_mc_request_2026-09.md`](ttHH/04_mc_request_2026-09.md) §5 |
-| 2 | **변경분 커밋** — NtupleForge 8 파일 + 신규 `ttHH/04_mc_request_2026-09.md`, TTHHGenCategoryTools 4 파일, 워크스페이스 `AI_LIMITS_AND_PROTOCOL.md`(git 밖) | 사용자 | 22i, 22k |
-| 3 | lxplus 의 `script/das_inventory_tth_split_20260911_0857.tsv*` 커밋 | lxplus | 22g(b) |
-| 4 | **2016 MiniAODv2 부모 조회** → 요청 표의 2016 열을 v9 수치에서 교체 (`das_inventory.sh --tier MINIAODSIM`, UL16 MiniAODv2 두 캠페인) | lxplus | 22k, 04 문서 §4 |
-| 5 | `das_scan.sh --era 2024\|2025 --nano v15 --workstream had` — MC 의 status·nevents 는 inventory 로 이미 있으므로 **DATA 와 `FILE\|` 예시 LFN 이 목적** | lxplus | 22a |
-| 6 | **`TTTW` 분할** — v15 는 `TTTWminus/plus-DR1` 2 종. KEY 2 개 + xsec 2 개 필요. 중앙 요청 대상 아님 | 미결 | 22k, registry 주석 |
-| 7 | **데이터 PD 2016 행** — `JetHT`/`BTagCSV` 에 CPV 식 run-era 분할 행(`<PD>_Run2016B-ver1` …) 추가. *(`das_scan.sh` 의 v15 데이터 문자열은 `scan_data()` 의 relaxed fallback 이 이미 처리한다 — 2026-09-16 확인)* | 미결 | 22k |
-| 8 | **xsec 표** — 13.6 TeV(D-R3-6) + 새 키 `ttHTobb_had/_semilep/_dilep`(D-R3-9) + `alt` 키; Run 2 는 `TTZToQQ` 항목을 새로 쓰면서 **861 fb vs 841 fb 정의 확정**(`00_START_HERE.md` §4 의 기존 열린 항목) | 미결 | 22g(a), D-2026-09-11-ttz |
-| 9 | **2016 확장의 analyzer 비용 산정** — `samples_2016*.json` 2 개, 2016 루미, golden JSON, 트리거, b-tag SF, JEC/JER | 미착수 | 22j |
-| 10 | **D-R3-9 확인** — ttH(bb) 를 top-decay-split 3 종으로 (현재 PROPOSED) | 사용자 | 22g(b) |
-| 11 | **FxFx `TTto4Q-2Jets` 로 생성기 비교를 먼저 시작할지** 결정 | 미결 | 22g(c) |
-| 12 | Sherpa variant·목표 통계는 **컨비너 답장 대기** | 대기 | 04 문서 §2 |
+| 2 | **변경분 커밋**(09-16 저녁 배치): 브랜치 목록 10 개(신규 6 + 수정 4), `check_branchlist.py`, `build_from_scan_log.py`, manifest, 문서 8 개 + 신규 `10_validation_ledger.md`; TTHHGenCategoryTools 4 파일(오전분); 워크스페이스 문서(git 밖) | 사용자 (맥) | 22l |
+| 3 | **lxplus 다음 배치** (RUNBOOK §6): 2016 Data 9 era 행 스윕(`sweep_inventories.sh`, 9 개 새로 뜸; 두 패턴 라벨 인벤토리는 문서가 인용하므로 그대로 둔다); `Run2016B-HIPM…-v1` vs `…_v2-v1` 의 run 범위; 2018A 첫 파일 run 범위(22n) | lxplus | 22l, 22n |
+| 4 | **`TTWJetsToLNu` (Run 3)**: `mg35x_` 플레이버를 PRIMARY 로 받아들일지, ERAS 에서 2024/2025 를 뺄지. 이것이 남는 동안 `build_from_scan_log.py` 는 Run 3 config 를 내지 않는다 | 미결 | 22b |
+| 5 | **`TTTW` 분할**: v15 는 `TTTWminus/plus-DR1` 2 종. KEY 2 개 + xsec 2 개 필요. 중앙 요청 대상 아님 | 미결 | 22k, registry 주석 |
+| 6 | **데이터 PD 2016 행**: `JetHT`/`BTagCSV` 에 run-era 분할 행 추가. v15 의 JetHT era 문자열 9 개는 확정됨(22k); B 의 두 dataset 은 run 범위 확인 뒤 | 미결 | 22k |
+| 7 | **xsec 표**: 13.6 TeV(D-R3-6) + 새 키 `ttHTobb_had/_semilep/_dilep`(D-R3-9) + `alt` 키; Run 2 는 `TTZToQQ` 항목을 새로 쓰면서 **861 fb vs 841 fb 정의 확정**(`00_START_HERE.md` §4 의 기존 열린 항목) | 미결 | 22g(a), D-2026-09-11-ttz |
+| 8 | **2016 확장의 analyzer 비용 산정**: `samples_2016*.json` 2 개, 2016 루미, golden JSON, 트리거, b-tag SF, JEC/JER | 미착수 | 22j |
+| 9 | **D-R3-9 확인**: ttH(bb) 를 top-decay-split 3 종으로 (현재 PROPOSED) | 사용자 | 22g(b) |
+| 10 | **FxFx `TTto4Q-2Jets` 로 생성기 비교를 먼저 시작할지** 결정 | 미결 | 22g(c) |
+| 11 | **트리거 결정 (2016, Run 3)** → `check_branchlist.py` `HLT_REQUIRED["2016"|"2024"|"2025"]` 채우기 (지금 비어 있음 = 검사 안 함) | 분석 결정 | 22m |
+| 12 | **analyzer 측 4 건**: `Jet_jetId`/`Jet_puId` 재계산(08 §3.4, 변화 없음), `Flag_METFilters` 부재(Summer24 MC·2025 Data), `L1PreFiringWeight` Run 3 미적용, 2018A 초기 메뉴 vs `requireTriggerBranches2018_()` | tempTTHH | 22m, 22n |
+| 13 | **CPV 목록 per-era 분리**: 2016 경로명 2 개(2017/2018 dead), 2017B 추가 4 개, `Scouting*`(UL16 MC 에 없음) | 미착수 | 22m |
+| 14 | Sherpa variant·목표 통계는 **컨비너 답장 대기** | 대기 | 04 문서 §2 |
 
-실행 규약(09-16): lxplus 의 모든 단계는 `script/runlog.sh <step> -- <명령>` 으로 돌려 `script/runlogs/` 에 로그와 `LEDGER.tsv` 를 남긴다. 절차는 워크스페이스 `RUNBOOK_lxplus_2026-09-16.md`.
+실행 규약(09-16): lxplus 의 모든 단계는 `script/runlog.sh <step> -- <명령>` 으로 돌려 `script/runlogs/` 에 로그와 `LEDGER.tsv` 를 남기고,
+검증으로 볼 것은 [`10_validation_ledger.md`](10_validation_ledger.md) 에 한 행을 더한다. 절차는 워크스페이스 `RUNBOOK_lxplus_2026-09-16.md`.
 
 21. ~~probe + discover 실행~~ **DONE 2026-09-07** — 6 era 캠페인 문자열 확정(로그 커밋됨). 결과 03_run3_plan §4.2/§4.5:
     Summer24 v15 에 신호 `TTHH-HHto4B`·`TTZH-ZHto4B`·`TTZZ-ZZto4B`·`THW`·`TTZ-ZtoQQ` 가 **중앙에 있다**(→ Run 3 에 D17 확장 없음); `TT4b` 도 있다(`TT4B_…`, **09-10 수정** — 09-07 은 대소문자 패턴 미스로 '없음'이라 적었다, 03_run3_plan §4.6);
     **2022/2023 v15 는 부분 재생산**(70 개; 신호·ttbb·QCD-HT·ttH·tH·ttVV 없음) → D-R3-7: 첫 라운드는 2024+2025.
 22. ~~registry 작성~~ **DONE** — `script/samples_registry_run3.txt` MC 78(had 59 / lep 19) + DATA 11 *(09-11 현재 MC 85 = had 61 + lep 19 + alt 5 — 22h 참조)* (09-10: `TT4b` ← `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` 추가; `das_discover_run3.sh` 에 `TT4B*`/`TTBBBB*` 접두어 추가).
     `das_scan.sh` 는 Run 3 era 에서 이 registry 를 자동 선택하고 v15 MC 질의를 GT 로 고정한다(플레이버 재생산 제외).
-22a. **event/file 수 스캔** — `das_scan.sh --era 2025|2024 --nano v15 --workstream had`; 로그 커밋.
-22b. **`build_from_scan_log.py` Run 3 대응** — 플레이버 EXCLUDE 확장, prompt `-vN`/`_vN` 을 disjoint run 으로 전부 유지(03_run3_plan §6 항목 2).
+22a. ~~**event/file 수 스캔**~~ **DONE 2026-09-16**: `das_scan.sh --era 2024|2025 --nano v15 --workstream had`, lxplus `runlog.sh` 기록(`script/runlogs/run_das_scan_202?_had_*.log`), 로그 `script/das_ttHH_2024_v15_20260916_0859.log`·`das_ttHH_2025_v15_20260916_0900.log` 커밋(`a781cb3`). 65 키(MC 61 + DATA 4), EXACT 64, NOT_FOUND 1 = `TTWJetsToLNu`; DATA PD 4 × 8 dataset, DBS `-vN` 꼬리가 PD 마다 다름. 상세 `09_v15_migration_log.md` 17 절, `ttHH/03_run3_plan.md` §6 1.
+22b. ~~**`build_from_scan_log.py` Run 3 대응**~~ **DONE 2026-09-16 (a·b)**: `--data-variants {auto,canonical,all}`(Run 3 = all: 2024I `-v2`+`_v2-v1`, 2025C/F `-v1`+`-v2` 전부 독립 행; 고치기 전에는 `Run2025C-PromptReco-v1` 155M ev 가 alternate 로 밀렸다), Data 플레이버 `BTVNano`/`JMENano` 제외 + 표에 나열(고치기 전 Run 2 v15 `JetHT_Run2018A` canonical 이 `UL2018_BTVNanoAODv15-v1` 이었다), `_MiniAODv2_` 없는 v15 문자열 허용, `DEFAULT_EXCLUDE` 확장. 컨테이너 dry-run 만(산출물 미커밋; 원장 V20). **남은 것**: (c) `_meta` lumi·골든 JSON; Run 3 config 발행은 `TTWJetsToLNu` NOT_FOUND 가 풀려야 가능(표 4).
 22c. **결정**: ~~`TT4b` 대체 vs 사설 생산~~ (해소 09-10: 중앙 `TT4B`); `TTWJetsToLNu`(v15 는 `mg35x_` 플레이버만) 수용 여부; 13.6 TeV xsec 표(D-R3-6).
 22d. **MC 요청 (2026-09-08~10, 덱 `ttHH_latex/GenRequest_Sep2026`)** — Run 2: 부재 6 종의 MiniAODv2→NanoAODv15 중앙 생산(16 dataset, ≈125M) 요청 예정; Run 3: Sherpa FH `TTto4Q-4Jets-1NLO3LO` 상태(PRODUCTION 80.5M / AHADIC INVALID)·통계·권고 판 문의, Sherpa 4FS ttbb·Sherpa tt4b 는 비교용 저순위, `GenHFHadronMatcher` 출력의 중앙 NanoAOD 탑재 문의. 그룹 피드백(Aurore 09-10): Run 2 세트 동의, Run 2 Sherpa tt+jets(FH·inclusive) 는 저순위로 요청, 24+25 우선 동의.
 22e. **BTV 참고 (09-10)** — 재-NanoAODv15(Run 2, 2022/2023)는 Summer24 셋업이라 `Jet_btagUParTAK4B` 에 2024 UParTv2 WP 를 그대로 쓴다(CMS-talk 09-09) → 03_run3_plan §2 행 9.
@@ -378,11 +382,15 @@
 22h. **2025 MC 캠페인 없음 — DAS 확인 (09-11)**: `dataset status=* dataset=/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2025*/NANOAODSIM` 빈 결과. `--era 2025` 는 Summer24 유지(03_run3_plan §4.7). registry 수: MC 85 = had 61 + lep 19 + alt 5, DATA 11.
 22i. **MC 요청 기록 (09-14)** — 보낸 메일 본문과 "요청하지 않은 것과 그 이유" 를 `docs/ttHH/04_mc_request_2026-09.md` 에 남겼다. 답장·발송 기록은 그 문서 §5 에 append 한다. 초안에 있던 `GenHFHadronMatcher` 요청은 사용자 판단으로 뺐다(일부 샘플만 가져도 전 샘플을 직접 만들어야 하므로 이점 없음).
 22j. **2016 확장의 analyzer 쪽 비용 (09-14, 미착수)** — MC 요청은 네 era-half 로 넓혔지만 `tempTTHH` 에는 `data/samples_2017UL.json`·`samples_2018UL.json` 만 있다. 2016 을 실제로 쓰려면 xsec 표 2 개, 2016 루미(`LUMI_SOURCES.md` 는 2017–2018 만), golden JSON, 트리거, b-tag SF, JEC/JER 이 필요하다. 범위 산정 안 됨.
-22k. **Run 2 범위 = full Run 2 (09-11 밤, 사용자 결정)** — 2016 preVFP/postVFP 를 `das_inventory.sh` 로 점검(v15 2 + v9 2, 로그 커밋). 네 Run 2 v15 캠페인의 `NOT_FOUND` 집합이 **동일**(diff 0) — 같은 5 종이 빠져 있고 나머지는 다 있다. 요청 = 5 종 × 4 era-half = **28 datasets ≈162M**(2016 은 v9 기준 27.1M/27.1M). registry: ttHH 62 행 ERAS 4 era-half 로 확장(era 당 had 45), QCD-HT PRIMARY 를 PSWeights 이름으로 교체(네 캠페인 EXACT) → 2017/18 v15 의 QCD-HT NOT_FOUND 도 해소(27 → 20). 남은 것: 2016 MiniAODv2 부모 수, `TTTW` 전하 분할 KEY 2 개 + xsec, 데이터 PD 2016 행. `03_DECISIONS.md` D-2026-09-11-run2-scope-2016, `09_v15_migration_log.md` 16 절.
+22k. **Run 2 범위 = full Run 2 (09-11 밤, 사용자 결정)** — 2016 preVFP/postVFP 를 `das_inventory.sh` 로 점검(v15 2 + v9 2, 로그 커밋). 네 Run 2 v15 캠페인의 `NOT_FOUND` 집합이 **동일**(diff 0) — 같은 5 종이 빠져 있고 나머지는 다 있다. 요청 = 5 종 × 4 era-half = **28 datasets ≈162M**(2016 은 09-16 MiniAODv2 부모 기준 27.2M/27.1M; 09-11 의 v9 수치 27.1M/27.1M 을 대체). registry: ttHH 62 행 ERAS 4 era-half 로 확장(era 당 had 45), QCD-HT PRIMARY 를 PSWeights 이름으로 교체(네 캠페인 EXACT) → 2017/18 v15 의 QCD-HT NOT_FOUND 도 해소(27 → 20). 남은 것: ~~2016 MiniAODv2 부모 수~~(09-16 DONE: 두 캠페인 136 키 전부 EXACT, `script/das_inventory_ul16{pre,post}_miniaodv2_20260916_*.tsv`, 원장 V12), `TTTW` 전하 분할 KEY 2 개 + xsec, 데이터 PD 2016 행(v15 JetHT era 문자열 9 개는 `run_discover_ul16_jetht_v15_*.log` 로 확정, `inventory_manifest_run3_2016.txt` 에 반영). `03_DECISIONS.md` D-2026-09-11-run2-scope-2016, `09_v15_migration_log.md` 16·17 절.
+22l. **lxplus 실행 기록 배치 1 (09-16)**: 블록 [1]–[7]: `runlog.sh` 게이트 → UL16 MiniAODv2 inventory 2 → Run 3 had 스캔 2 → UL16 JetHT discovery → 35 인벤토리 스윕(failed 0) → 교차표 2, 커밋 `a781cb3`, 맥 pull. 결과 반영: `ttHH/04_mc_request_2026-09.md` §1(2016 열), 덱 v1.9, `09` 17 절, `08` §7, `10_validation_ledger.md` V11–V20, manifest 2016 Data 9 era 행, 브랜치 목록 10 개(신규 `branch_hadronic_2016_v15_{MC,Data}`, `_2024_v15_{MC,Data}`, `_2025_v15_Data`, `branch_CPV_Run2_Data_v15`; 수정 4: `btagWeight_*` 제거(MC 2), 2017 Data `HLT_QuadPFJet*` 제거, 머리 STATUS → checked), `check_branchlist.py`(`--era 2016|2024|2025`, Run 3 prefiring 요구 제외), `build_from_scan_log.py`(22b). **다음 lxplus 배치**: 2016 Data 9 era 스윕(두 패턴 라벨 인벤토리는 문서가 인용하므로 유지), `Run2016B-HIPM…-v1` vs `…_v2-v1` run 범위, 2018A 첫 파일 run 범위(22n). 명령은 RUNBOOK §6.
+22m. **브랜치 목록 점검 결과 (09-16, `08` §7.3)**: 08-17 의 v15 목록 4 개는 dead pattern 2 종(`btagWeight_*`: v15 에 없음; 2017 Data `HLT_QuadPFJet*`: 2017B–E 에 0 개, v9 도 같음)이 있었고 제거. 신규 6 개는 실제 스키마에서 dead 0. 남은 exit 3 은 전부 `Jet_jetId`/`Jet_puId`(analyzer 재계산, `08` §3.4). 열린 것: (a) **트리거 결정** 2016·Run 3 → `HLT_REQUIRED` 채우기(지금 빈 목록 = 검사 안 함); (b) **CPV 목록 per-era 분리**: 2016 경로명 `HLT_IsoTkMu*`/`HLT_L2DoubleMu*`(2017/2018 dead), 2017B 추가 `HLT_TkMu*`/`HLT_TrkMu*`/`HLT_DoubleIsoMu*`/`HLT_MET*`, MC v15 목록의 `Scouting*`(UL16 MC 에 없음); (c) `Flag_METFilters` 가 Summer24 MC·2025 PromptReco 에 없음(개별 `Flag_*` 는 있음) → prescan 프로필·analyzer 확인; (d) `branch_prescan_slim_2017.txt` 는 UL17 MC(v9·v15)에서 Run B calo 경로 3 개가 dead, 07-27 부터 그랬고 prescan 캠페인은 끝났으므로 기록만.
+22n. **2018A 초기 HLT 메뉴 (09-16 발견, 한 파일 측정)**: `/JetHT/Run2018A-UL2018_NanoAODv15-v2` 첫 파일(`inv_2018A_v15_Data.tsv` 의 `# source=`)에 analyzer 2018 필수 경로 `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94`·`HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` 가 **없고** 2017 임계값의 DeepCSV 판(`…380_SixPFJet32_DoublePFBTagDeepCSV_2p2`, `…430_SixPFJet40_PFBTagDeepCSV_1p5`)만 있다. B 는 둘 다, C·D 는 새 것만. `requireTriggerBranches2018_()` 이 FATAL 하는 조건이라 확인 필요: 그 파일의 run 범위(`dasgoclient -query "run file=<LFN>"`), v9 2018A 생산에서 어떻게 지나갔는지, analyzer 가 2018A 초기 run 에서 어느 경로를 써야 하는지(AN 의 2018 트리거 정의). `check_branchlist.py` `HLT_ERA_CONDITIONAL["2018"]` 에 두 경로를 넣어 정보로 출력한다.
+
 23. **event-level 항목의 "기억" 확정** — 03_run3_plan §2 의 jet veto map 키·MET filter 목록(ecalBadCalib
     보정 수치)·JEC/JER 태그·golden JSON 이름·PU 키를 twiki 원문으로 대조하고 상태 열 갱신. **값을 코드에
     넣기 전에 반드시.**
-24. **Run 3 브랜치 인벤토리 스윕** (08 Step 3b) → `branch_hadronic_<era>_v15_{MC,Data}.txt`; HLT 블록은 era 별.
+24. ~~**Run 3 브랜치 인벤토리 스윕**~~ **DONE 2026-09-16** (08 Step 3b, 35 인벤토리, 원장 V15) → `branch_hadronic_2024_v15_{MC,Data}.txt`, `branch_hadronic_2025_v15_Data.txt` 초안(dead 0; HLT 블록은 2024/2025 주석만 다르고 규칙은 같다, `08` §7.4). 22l·22m.
 25. **analyzer(tempTTHH) 작업 항목 발행** — Run 3 cleaning 5 (veto map, MET filter, jet ID 재계산,
     PUPPI, b-tagger) + off 2 (prefiring, HEM). NtupleForge 밖.
 

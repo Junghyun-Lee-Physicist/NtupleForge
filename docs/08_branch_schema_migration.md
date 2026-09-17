@@ -385,10 +385,10 @@ Jet_puIdDisc  Jet_area  Jet_pt  Jet_eta  Jet_btagDeepFlavB  Float_t
 below 50 GeV")는 목록에서 빠질 때의 이야기이고, 여기서는 **재계산을 하지 않을
 때** 같은 결과가 납니다.
 
-`branches/branch_hadronic_{2017,2018}_v15_{MC,Data}.txt` 4개는 이 인벤토리가
-나오기 **전에** 작성된 초안이라 UNVERIFIED 상태입니다. §2 절차를 ttHH 소비자
-목록(`--profile main`)으로 다시 돌려야 합니다.
-[`01_STATUS.md`](01_STATUS.md) OPEN 항목 참조.
+~~`branches/branch_hadronic_{2017,2018}_v15_{MC,Data}.txt` 4개는 이 인벤토리가
+나오기 **전에** 작성된 초안이라 UNVERIFIED 상태입니다.~~ **2026-09-16 에 실제 스키마로 점검 완료**
+(7.3 절): dead pattern 2 종(`btagWeight_*`, 2017 Data 의 `HLT_QuadPFJet*`)을 제거했고, 남은 exit 3 은 위의
+`Jet_jetId`/`Jet_puId` 재계산 항목 그대로다.
 
 ---
 
@@ -560,3 +560,114 @@ v15 에서 조용한 쓰레기 값을 냅니다 (3.4절). 즉 v15 를 기준 구
   불일치 0 — v9 와 v15 는 gen 정보를 **비트 단위로 동일하게** 저장합니다. 따라서 위
   결과는 허용오차에 기댄 것이 아닙니다.
 - **Data tier 미검증.** 위는 전부 MC 입니다.
+
+---
+
+## 7. 2026-09-16 전수 스윕 결과: UL16 · UL17/18 v15 Data · Run 3 (35 인벤토리) 와 브랜치 목록 점검
+
+이 절은 **결과와 결정**만 담는다. 무엇을 언제 실행했는지는 [`09_v15_migration_log.md`](09_v15_migration_log.md) 17 절,
+실행 원장은 [`10_validation_ledger.md`](10_validation_ledger.md). 숫자의 출처는 전부 `script/inventory/inv_*.tsv`(스윕 기록
+`script/runlogs/run_sweep_run3_2016_20260916_071717.log`) 와 `script/check_branchlist.py` 의 출력이다.
+
+### 7.1 인벤토리가 이제 덮는 범위
+
+`script/inventory/` 48 개 (2017 v9 13 + 2017UL v15 MC 1 + 이번 35). 스키마만 읽으므로 한 파일당 수 초, 35 개 582 초.
+
+| 그룹 | 인벤토리 | Events 브랜치 | HLT |
+|---|---|---:|---:|
+| Summer24 v15 MC | `TTto4Q`, `TTBBto4Q`, `TTHH-HHto4B` | 2007 (셋 다 동일) | 716 |
+| 2024 v15 Data (JetMET0, C..I, I `_v2`) + Muon0 C | 9 | 2236–2300 | 702–720 |
+| 2025 v15 Data (JetMET0 PromptReco B..G, C-v2, F-v2) + Muon0 C | 9 | 1932–1984 | 733–744 |
+| UL16 v15 MC (preVFP / postVFP, `TTToHadronic`) | 2 | 1741 / 1741 | 601 / 601 |
+| UL16 v15 Data (JetHT B-HIPM / F) | 2 | 1492 / 1564 | 498 / 534 |
+| UL17 v15 Data (JetHT B..F) | 5 | 1399 / 1716 / 1777 / 1819 / 1873 | 269 / 481 / 526 / 526 / 580 |
+| UL18 v15 Data (JetHT A..D), UL18 v15 MC | 4 + 1 | 1703 / 1778 / 1753 / 1772, 1889 | 610 / 685 / 642 / 657, 651 |
+
+UL17 v15 Data 의 HLT 수는 v9 와 era 별로 같다(B 269, D/E 526, F 580; C 만 481 vs 479). **HLT 집합은 버전이 아니라 run 범위가
+결정한다**는 3.2b 절이 v15 에서도 그대로다.
+
+### 7.2 `--profile main` 교차표 (48 인벤토리): 새 위험 없음
+
+`branch_presence_matrix.py --profile main --mc --partial-only`(`run_matrix_main_mc_20260916_072719.log`): 전부 존재 37, MC 전용 19,
+어디에도 없음 0, **PARTIAL 6**. 여섯 개는 모두 이미 알던 것이다.
+
+| PARTIAL | 있는 곳 | 없는 곳 | 뜻 |
+|---|---|---|---|
+| `fixedGridRhoFastjetAll`, `MET_pt`, `Jet_jetId`, `Jet_puId`, `Electron_mvaFall17V2Iso_WP90` | v9 12 개 전부 | v15 36 개 전부 (UL16·UL17·UL18·Run 3) | 3.1 절 rename 과 3.2 절 삭제. **UL16 과 UL18 v15 는 UL17 v15 와 같은 변화** |
+| `L1PreFiringWeight_Nom` | Run 2 27 개 전부 (v9·v15, Data 포함, 11 브랜치) | Run 3 21 개 전부 | Run 2 전용 보정. Run 3 목록에서는 keep 을 빼야 한다 |
+
+`Jet_*` 집합은 **UL18 v15 MC 와 Summer24 v15 MC 가 완전히 같다**(`comm` diff 0): `Jet_puIdDisc`, `Jet_btagDeepFlavB`, PNet(`Jet_btagPNetB` 등 6),
+UParT(`Jet_btagUParTAK4B` 등 14), `Jet_chMultiplicity`/`neMultiplicity`/`nConstituents`(UChar_t), `Jet_neHEF` 류 7 개 전부 양쪽에 있다.
+Summer24 MC 와 UL18 v15 MC 의 non-HLT/L1/Flag 차이는 작다: Summer24 에만 `DST_PFScouting_*` 17, `Dataset_Scouting*` 2, `MC_PFScouting`,
+`Electron_mvaIso_WPHZZ`, `Photon_hoe_PUcorr`, `Photon_pfRelIso03_*_quadratic`, `Pileup_pthatmax`; UL18 에만 `Electron_mvaIso_WPL`,
+`Electron_mvaNoIso_WPL`, `LowPtElectron_embeddedID`, `Photon_pfRelIso03_all/chg`, `Scouting*Output` 2.
+
+**`Flag_METFilters`(합성 플래그)는 Summer24 MC 와 2025 PromptReco Data 에 없다.** Run 2 v9·v15 전부와 2024 MINIv6NANOv15 Data 에는 있다.
+개별 `Flag_*` 는 어디에나 있으므로 `keep Flag_*` 로 충분하지만, prescan 프로필(`PRESCAN_REQUIRED`)과 analyzer 가 합성 플래그를 읽는다면
+Run 3 에서 조용히 0 이 된다(eventBuffer 기본값). analyzer 측 항목.
+
+### 7.3 브랜치 목록 점검 결과 (`check_branchlist.py`, 2026-09-16)
+
+08-17 에 만든 v15 목록 4 개는 인벤토리가 없어 UNVERIFIED 였다. 이번에 실제 스키마로 돌렸다. **exit 3 은 `Jet_jetId`·`Jet_puId` 부재(3.4 절,
+analyzer 측 재계산) 때문이고 목록 문제가 아니다.** 목록 문제는 exit 4(무엇에도 안 맞는 패턴 = job 마다 ROOT 오류 1 회)다.
+
+| 목록 | 인벤토리 | 고치기 전 | 고친 것 | 고친 뒤 |
+|---|---|---|---|---|
+| `branch_hadronic_2017_v15_MC` | UL17 v15 MC | exit 4: `btagWeight_*` dead | 줄 삭제(3.2 절: v15 에서 사라짐) | exit 3, dead 0, (B) 67/67 |
+| `branch_hadronic_2018_v15_MC` | UL18 v15 MC | exit 4: `btagWeight_*` dead | 같음 | exit 3, dead 0 |
+| `branch_hadronic_2017_v15_Data` | UL17 v15 Data B..F | exit 4 (B,C,D,E): **`HLT_QuadPFJet*` dead** (F 만 12 개 존재; v9 도 같음) | 줄 삭제(analyzer 의 quad-jet 경로는 `HLT_PFHT*` 아래) | exit 3, dead 0 (5 era 전부) |
+| `branch_hadronic_2018_v15_Data` | UL18 v15 Data A..D | exit 3 | (수정 없음) | exit 3, dead 0 |
+| **신규** `branch_hadronic_2024_v15_MC` | Summer24 MC 3 종 | 2018 MC 목록 그대로 쓰면 `btagWeight_*`, `L1PreFiringWeight_*` dead | 2018 목록에서 치환 생성: prefiring keep 제거, Run 3 HLT 주석, 카운트 | exit 3, dead 0, (B) 61/61 |
+| **신규** `branch_hadronic_2024_v15_Data` | 2024 Data 9 | (2018 Data 목록 dead 0) | 치환 생성 | exit 3, dead 0 (9 개 전부) |
+| **신규** `branch_hadronic_2025_v15_Data` | 2025 Data 9 | 같음 | 치환 생성 (`Flag_METFilters` 부재 주석) | exit 3, dead 0 |
+| **신규** `branch_hadronic_2016_v15_MC` | UL16 MC 2 | (2018 MC 목록: `btagWeight_*` dead 만) | 치환 생성, prefiring keep 유지(11 브랜치 존재) | exit 3, dead 0 |
+| **신규** `branch_hadronic_2016_v15_Data` | UL16 Data 2 | (dead 0) | 치환 생성 | exit 3, dead 0; B-HIPM 에 `HLT_AK8PFJet450` 없음(info) |
+| **신규** `branch_CPV_Run2_Data_v15` | Run 2 v15 Data 11 | v9 Data 목록 + v15 추가분 | `PFCand_*`, `nPFCand`, `FatJetPFCand_*`, `nFatJetPFCand`, `PVBS_*`, `nPVBS`, `nTauProd` drop 추가; `DST_*` 는 2017B 에 0 개라 넣지 않음 | exit 0 (2016 2 개), exit 4 (2017/2018: 공유 2016 경로명 2 개, 2017B 는 6 개) |
+| (기존) `branch_CPV_Run2_MC_v15` | UL16 v15 MC 2 | | | exit 4: **`Scouting*` 가 UL16 MC 에 없다** (UL17/18 에는 있음) → per-era 분리 근거 추가 |
+| (기존) `branch_prescan_slim_2017` | UL17 MC v9·v15 | | | exit 4: Run B calo 경로 3 개(`HLT_HT300PT30_..._TripeCSV_p07`, `..._BTagCSV_p080`, `..._p075`)가 MC 에 없다. 07-27 부터 그랬고(v9 도 같음) prescan 캠페인은 끝났으므로 기록만 |
+
+CPV Data 목록의 exit 4 는 MC v15 목록과 같은 **의도된** 상태다(`HLT_IsoTkMu*`, `HLT_L2DoubleMu*` 는 2016 경로명; 목록이 네 era 를 공유하므로
+지우면 2016 출력에서 조용히 빠진다). 이번 2016 인벤토리로 처음 정량화됐다: 2016 B-HIPM 5/3 개, F 6/3 개, 2017·2018 0. 2017B 는 추가로
+`HLT_TkMu*`, `HLT_TrkMu*`, `HLT_DoubleIsoMu*`, `HLT_MET*` 가 0 이라 6 개. 해법은 per-era 분리(01_STATUS 항목).
+
+`check_branchlist.py` 변경: `--era 2016|2024|2025` 추가. `HLT_REQUIRED` 는 **비어 있다**(트리거 결정이 없으므로; 빈 목록은 "검사 안 함"이지
+"안전" 이 아니다). 후보 경로는 `HLT_ERA_CONDITIONAL` 로 정보 출력. Run 3 era 에서는 `L1PreFiringWeight_Nom` 요구를 자동으로 뺀다.
+2018 의 `HLT_ERA_CONDITIONAL` 에 `..._DoublePFBTagDeepCSV_2p2`, `..._PFBTagDeepCSV_1p5` 를 넣었다(7.4 절).
+
+### 7.4 HLT: era 별 hadronic b-tag 경로 (인벤토리 실측)
+
+**2018 v15 Data 의 메뉴 진화(새 발견, 한 파일 측정).** `/JetHT/Run2018A-UL2018_NanoAODv15-v2` 의 첫 파일에는 `HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2`
+와 `HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5`(2017 임계값의 DeepCSV 판)만 있고 analyzer 가 요구하는 `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94`,
+`HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` 가 **없다**. Run B 파일에는 두 세트가 다 있고, C·D 에는 새 세트만 있다. analyzer 의
+`requireTriggerBranches2018_()` 은 이 네 경로 부재에 FATAL 하므로(check_branchlist.py 주석), 초기 2018A 파일에서 죽을 수 있다. 다만 한 파일의
+스키마이므로 그 파일의 run 범위를 확인해야 한다(`dasgoclient -query "run file=<LFN>"`, LFN 은 `inv_2018A_v15_Data.tsv` 머리의 `# source=`).
+v9 2018 ntuple 생산 때 어떻게 지나갔는지도 확인 대상.
+
+**Run 3 (2024 Data 9 era 전부 = Summer24 MC = 22 경로, 2025 Data 9 era 전부 = 21 경로).** `HLT_PFHT*` 아래 PNet 기반:
+
+| 2018 analyzer 경로 | 2024/2025 대응 후보 | 2024 | 2025 | Summer24 MC |
+|---|---|:-:|:-:|:-:|
+| `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94` | `HLT_PFHT400_SixPFJet32_PNet2BTagMean0p50` | o | o | o |
+| `HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` | `HLT_PFHT450_SixPFJet36_PNetBTag0p35` | o | o | o |
+| `HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5` | `..._PNet3BTag_2p0`, `..._PNet3BTag_4p3` | o | o | o |
+| (같은 항목) | `..._TriplePFBTagDeepJet_4p5` | o | **x** | o |
+| (신규) | `HLT_PFHT400_FivePFJet_120_120_60_30_30_PNet2BTag_4p3` / `_5p6` | o | o | o |
+| (신규) | `HLT_PFHT250/280_QuadPFJet25/30/35_PNet2BTagMean0p55/0p60`, `HLT_PFHT340_QuadPFJet70_50_40_40_PNet2BTagMean0p70` | o | o | o |
+| `HLT_PFHT1050`, `HLT_IsoMu27` | 같은 이름 (+ `HLT_IsoMu24`) | o | o | o |
+
+2024 는 C 부터 I(`_v2` 포함)까지 22 경로가 완전히 같고, 2025 는 B 부터 G 까지 21 경로가 같다. 즉 Run 3 목록의 HLT 블록은 2024/2025 별로
+나눌 필요가 없었다(파일은 관례대로 둘로 두되 규칙은 동일). **어느 경로로 트리거할지는 분석 결정**(`ttHH/03_run3_plan.md` §2), 아직 없다.
+
+**2016 v15 (B-HIPM, F Data 와 MC 두 half).** CSV six-jet: `HLT_PFHT450_SixJet40_BTagCSV_p056`, `HLT_PFHT400_SixJet30_DoubleBTagCSV_p056`;
+`HLT_PFHT900`(1050 없음), `HLT_PFJet450/500`; `HLT_AK8PFJet450/500` 은 B-HIPM 파일에 없고 F 부터; `HLT_Ele32_WPTight_Gsf` 는 2016 Data 에 없다(MC 에는 있음).
+`HLT_IsoMu24/27`, `HLT_PFMET120_PFMHT120_IDTight` 는 전부 있다.
+
+### 7.5 이 스윕이 정한 것과 남긴 것
+
+정한 것: ① v15 목록 4 개의 dead pattern 2 종 제거, ② 신규 목록 6 개(2016 MC/Data, 2024 MC/Data, 2025 Data, CPV Data v15) 가 실제 스키마에서
+dead 0, ③ Run 3 목록은 prefiring keep 없음, ④ `check_branchlist.py` 가 2016/2024/2025 를 받음.
+
+남긴 것 (01_STATUS 에 항목으로): ⓐ 2016 Data 9 era 행 스윕(manifest 는 갱신됨; 지금은 B-HIPM, F 두 파일만; 두 패턴 라벨 인벤토리는 이 절이 인용하므로 유지);
+ⓑ CPV 목록 per-era 분리(2016 경로명 2 개, 2017B 4 개, `Scouting*` 2016 MC); ⓒ 2018A 첫 파일의 run 범위와 analyzer 2018 트리거 요구의 관계;
+ⓓ `Flag_METFilters` 부재(Summer24 MC, 2025 Data)의 analyzer/prescan 영향; ⓔ 2016·Run 3 트리거 결정 → `HLT_REQUIRED` 채우기;
+ⓕ `Jet_jetId`/`Jet_puId` 재계산(3.4 절, 변화 없음); ⓖ Run 3 의 `Jet_puIdDisc` 는 존재하지만 PUPPI jet 에 PU ID 를 쓸지는 JME 권고 확인.
