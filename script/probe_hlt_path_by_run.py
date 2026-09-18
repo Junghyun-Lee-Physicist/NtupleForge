@@ -37,10 +37,16 @@ OUTPUT (stdout, one line per probed run, then a summary)
 
 EXIT  0 ok, 2 bad arguments / no runs, 3 dasgoclient failure, 4 ROOT failure
 Read-only: nothing is written except stdout. Wrap with script/runlog.sh.
-"""
-from __future__ import annotations
 
+PYTHON  Must parse on the el8 system Python 3.6 too (that is what `python3` is
+        inside cmssw-el8 BEFORE cmsenv), so that a missing cmsenv is reported
+        as "FATAL: PyROOT not importable ..." (exit 4) instead of a SyntaxError.
+        2026-09-18: batch 3 hit exactly that (a `from __future__ import
+        annotations` line, 3.7+ only, hid the real cause). No type annotations,
+        no f-strings, no walrus in this file.
+"""
 import argparse
+import os
 import subprocess
 import sys
 
@@ -49,8 +55,10 @@ XRD = "root://cms-xrd-global.cern.ch/"
 
 def das(query):
     try:
-        out = subprocess.run(["dasgoclient", "-query", query], capture_output=True,
-                             text=True, timeout=300)
+        # stdout/stderr=PIPE + universal_newlines instead of capture_output/text: those two
+        # keywords are 3.7+, and this must still run (and fail clearly) on the el8 system 3.6.
+        out = subprocess.run(["dasgoclient", "-query", query], stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, universal_newlines=True, timeout=300)
     except (OSError, subprocess.TimeoutExpired) as e:
         print("FATAL: dasgoclient failed for %r: %s" % (query, e), file=sys.stderr)
         sys.exit(3)
@@ -89,6 +97,22 @@ def main():
         print("FATAL: --paths is empty", file=sys.stderr)
         return 2
 
+    # Environment check BEFORE the first DAS query, so a missing cmsenv is the
+    # first and only message (2026-09-18 batch 3: the cause was hidden).
+    ROOT = None
+    if not args.dry_run:
+        try:
+            import ROOT as _R  # noqa: N811
+            _R.gROOT.SetBatch(True)
+            _R.gErrorIgnoreLevel = _R.kError
+            ROOT = _R
+        except ImportError:
+            print("FATAL: PyROOT not importable from %s (python %d.%d, CMSSW_BASE=%s)."
+                  " Run inside cmssw-el8 AFTER cmsenv."
+                  % (sys.executable, sys.version_info[0], sys.version_info[1],
+                     os.environ.get("CMSSW_BASE", "<unset>")), file=sys.stderr)
+            return 4
+
     runs = []
     for tok in das("run dataset=%s" % args.dataset):
         try:
@@ -105,17 +129,6 @@ def main():
              args.min_run if args.min_run is not None else "-",
              args.max_run if args.max_run is not None else "-"))
     print("# paths        : %s" % ", ".join(paths))
-
-    ROOT = None
-    if not args.dry_run:
-        try:
-            import ROOT as _R  # noqa: N811
-            _R.gROOT.SetBatch(True)
-            _R.gErrorIgnoreLevel = _R.kError
-            ROOT = _R
-        except ImportError:
-            print("FATAL: PyROOT not importable (run inside cmssw-el8 after cmsenv)", file=sys.stderr)
-            return 4
 
     file_cache = {}      # lfn -> (min_run, max_run, {path: 0/1})
     first_with = {p: None for p in paths}

@@ -33,7 +33,11 @@
 # "always copy to /tmp first" rule in docs/08 2절 Step 2 applies to EVENT LOOPS,
 # not to schema dumps.)
 #
-# Needs: a valid grid proxy, dasgoclient, ROOT.
+# Needs: a valid grid proxy, dasgoclient, ROOT (PyROOT importable from python3,
+# i.e. inside cmssw-el8 AFTER cmsenv). Both are checked up front; exit 2 = no
+# proxy, 4 = no PyROOT. 2026-09-18: a run without cmsenv produced 16 x
+# "FAIL ... could not read" with no visible cause, hence the check and the
+# "last stderr line" printed on every FAIL.
 # =============================================================================
 set -u
 
@@ -47,6 +51,14 @@ if ! voms-proxy-info -e >/dev/null 2>&1; then
     echo "ERROR: no valid grid proxy. Run:"
     echo "       voms-proxy-init -voms cms -rfc -valid 192:00"
     exit 2
+fi
+
+if ! python3 -c "import ROOT" >/dev/null 2>&1; then
+    echo "ERROR: PyROOT not importable from python3=$(command -v python3) ($(python3 --version 2>&1))."
+    echo "       CMSSW_BASE=${CMSSW_BASE:-<unset>}. Run inside cmssw-el8 AFTER cmsenv:"
+    echo "       cmssw-el8   (alone, wait for the Singularity> prompt)"
+    echo "       cd <CMSSW_X_Y_Z>/src/NtupleForge && cmsenv   (e.g. ~/CMSSW_14_2_1)"
+    exit 4
 fi
 
 if [ "$MANIFEST" = "-" ]; then
@@ -86,17 +98,20 @@ while read -r label pattern _rest; do
         n_fail=$((n_fail+1)); continue
     fi
 
+    err="$(mktemp)"
     if python3 "$REPO/script/dump_branch_inventory.py" \
-            "root://cms-xrd-global.cern.ch/$lfn" --label "$label" -o "$out" >/dev/null 2>&1; then
+            "root://cms-xrd-global.cern.ch/$lfn" --label "$label" -o "$out" >/dev/null 2>"$err"; then
         nb=$(awk -F'\t' '$1=="Events"' "$out" | wc -l)
         nh=$(awk -F'\t' '$1=="Events" && $2 ~ /^HLT_/' "$out" | wc -l)
         printf "  OK    %-22s Events=%-5s HLT=%-5s %s\n" "$label" "$nb" "$nh" "$ds"
         n_ok=$((n_ok+1))
     else
         printf "  FAIL  %-22s could not read %s\n" "$label" "$lfn"
+        printf "        last stderr line: %s\n" "$(tail -n 1 "$err" 2>/dev/null)"
         rm -f "$out"
         n_fail=$((n_fail+1))
     fi
+    rm -f "$err"
 done < "$SRC"
 
 echo "------------------------------------------------------------------------"

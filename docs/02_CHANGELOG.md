@@ -9,6 +9,20 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-18: batch 3 first run failed without cmsenv; the two tools now say so
+
+### Fixed
+- `script/probe_hlt_path_by_run.py`: parses on the el8 system Python 3.6 (removed `from __future__ import annotations`; `capture_output`/`text`
+  replaced by `PIPE`/`universal_newlines`), and the PyROOT check now runs before the first DAS query and names interpreter, version and
+  `CMSSW_BASE`. Cause: the 2026-09-18 batch-3 run had no cmsenv inside `cmssw-el8` (runlog headers `CMSSW_BASE : <unset>`, `root : none`) and the
+  script died with a SyntaxError at line 41 (`run_probe_2018A_sixjet_20260918_060358.log`, `..._2018B_..._060359.log`), hiding the real cause.
+- `script/sweep_inventories.sh`: pre-flight `python3 -c "import ROOT"` (exit 4 with the cmsenv instructions) and the last stderr line of
+  `dump_branch_inventory.py` printed on every FAIL. Same run: 16 x `FAIL ... could not read` with no visible reason
+  (`run_sweep_v9_2016_2018_20260918_060400.log`). The DAS half worked: all 16 rows of `script/inventory_manifest_v9_2016_2018.txt` resolved to real
+  LFNs, so the v9 patterns are verified as written; the inventories and diffs are still to be produced (workspace RUNBOOK 7, re-run version).
+- Workspace (not in this repo): `RUNBOOK_lxplus_2026-09-16.md` 0 (rule: `cmssw-el8` alone, container blocks start with an `import ROOT` check) and
+  7 (failure record, split blocks); `AI_LIMITS_AND_PROTOCOL.md` 5 failure 6.
+
 ## [Unreleased], 2026-09-17 (3): unified-forge plan, pinned dataset paths, TTWJetsToLNu proposal
 
 ### Added
