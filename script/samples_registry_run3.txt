@@ -103,9 +103,14 @@ MC   TTZToQQ                  TTZ-ZtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFXold-py
 #      and TTZ-ZtoQQ-TTtoLNu2Q-1Jets_...amcatnloFXFXold (SL-only, PRODUCTION). LO alternative kept as 'alt':
 MC   TTZToQQ_MLM              TTZ-ZtoQQ-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8                    2024,2025                              ttV_alt    ttHH,alt
 MC   TTWJetsToQQ              TTW-WtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFXold-pythia8             2022,2022EE,2023,2023BPix,2024,2025    ttV_had    ttHH,had
-MC   TTWJetsToLNu             TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8                    2024,2025                              ttV_lep    ttHH,had
-#    ^ Summer24 v15 has TTLNu-1Jets ONLY in the 'mg35x_' flavour (RunIII2024Summer24NanoAODv15-mg35x_150X...);
-#      the GT-anchored scan will say NOT_FOUND. Decide: accept the mg35x production or drop ttW->lnu.
+MC   TTWJetsToLNu             /TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-mg35x_150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM  2024,2025  ttV_lep    ttHH,had
+#    ^ PINNED full dataset path (das_scan.sh PINNED mode, 2026-09-17). Facts (script/runlogs/run_probe_ttlnu_mg35x_*.log,
+#      run_probe_ttlnu_search_*.log): the standard Summer24 campaign has NO ttW->lnu at all (only TTLNu-EWK, TTW-WtoQQ, TTWH/WW/WZ),
+#      no standard MiniAODv6 parent either; the 'mg35x_' sub-campaign (MadGraph 3.5.x LHE, TOP request
+#      TOP-RunIII2024Summer24wmLHEGS-00023) has 20,362,371 ev / 186 files, NANO step in CMSSW_15_0_13_patch2 = the same
+#      release as the standard TTW-WtoQQ; across Run 3 (2022/2023/2024) the v15 version of TTLNu-1Jets exists ONLY as mg35x.
+#      PROPOSED by the AI 2026-09-17 (user: "not important, either way"): accept it. Revert to the bare primary + NOT_FOUND
+#      if the user prefers to drop ttW->lnu from Run 3 (docs/01_STATUS.md row 4).
 MC   TTLL_MLL50               TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8                    2024,2025                              ttV_lep    ttHH,had
 MC   TTLL_MLL4to50            TTLL_Bin-MLL-4to50_TuneCP5_13p6TeV_amcatnlo-pythia8                 2024,2025                              ttV_lep    ttHH,had
 MC   TTNuNu                   TTNuNu_TuneCP5_13p6TeV_amcatnlo-pythia8                             2022,2022EE,2023,2023BPix,2024,2025    ttV_lep    ttHH,had

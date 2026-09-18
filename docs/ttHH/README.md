@@ -41,8 +41,9 @@ analyzer에서 수행합니다 — 이 디렉토리는 그 물리 배경과 은�
 - 이 workstream에서 발견된 PyROOT 함정들(`UChar_t`-as-bytes 등)은 공통 규칙
   [`../06_nanoaod_branch_access.md`](../06_nanoaod_branch_access.md)으로
   일반화되어 TopCPV 모듈에도 적용됩니다.
-- registry(`script/samples_registry.txt`)의 ttHH 행은 용도 태그를 갖습니다 (2026-09-11 기준):
-  `had` 48행(MC 45 + DATA 3) + `lep` 17행(MC 16 + DATA 1) + `alt` 1행(`TTZToBB`, v9 전용),
+- registry(`script/samples_registry.txt`)의 ttHH 행은 용도 태그를 갖습니다 (2026-09-17 기준):
+  `had` 49행(MC 46 + DATA 3; 09-17 `TTTWminus`/`TTTWplus` 추가, `TTTW` 는 alt 로) + `lep` 17행(MC 16 + DATA 1) + `alt` 2행(`TTZToBB`, `TTTW`, v9 전용),
+  DATA `JetHT`/`BTagCSV` 는 2016 두 half 포함(09-17);
   `SingleMuon` 은 `had,lep` 둘 다. **ntuple 생산은 `--workstream had`(hadronic) 먼저**,
   lep 는 다음 라운드 ([`03_run3_plan.md`](03_run3_plan.md) §5).
 - ttHH MC 행의 ERAS 는 2026-09-11 부터 **네 Run 2 era-half 전부**

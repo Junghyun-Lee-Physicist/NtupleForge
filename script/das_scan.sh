@@ -307,6 +307,24 @@ EOF
 scan_mc () {
     local key="$1" primary="$2"
     echo ""
+    if [[ "$primary" == /* ]]; then
+        # PINNED (2026-09-17): the registry PRIMARY is a full dataset path. Used
+        # when the only usable dataset lives outside the GT-anchored campaign,
+        # e.g. TTLNu-1Jets, which Summer24 has only in the 'mg35x_' sub-campaign
+        # (same release CMSSW_15_0_13_patch2 as the standard campaign; TOP PAG
+        # request). Queried as is: no campaign check, no relaxed fallback.
+        # RESULT mode PINNED tells build_from_scan_log.py to skip its flavour
+        # exclusion for this key. NOT_FOUND if DAS does not know the path.
+        echo "### MC ${key}  (PINNED dataset: ${primary})"
+        mapfile -t hits < <(dasgoclient -query "dataset status=* dataset=${primary}" 2>/dev/null)
+        if [[ ${#hits[@]} -eq 0 || -z "${hits[0]:-}" ]]; then
+            echo "RESULT|${key}|NOT_FOUND|0"
+            return
+        fi
+        das_summary "$key" "${hits[0]}"
+        echo "RESULT|${key}|PINNED|1"
+        return
+    fi
     echo "### MC ${key}  (primary: ${primary})"
     local camp="${MC_CAMPAIGN}${MC_GT:+-${MC_GT}}"
     local q1="/${primary}/${camp}*/NANOAODSIM"

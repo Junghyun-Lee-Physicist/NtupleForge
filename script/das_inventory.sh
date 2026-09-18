@@ -121,6 +121,14 @@ if registry:
         if len(f) >= 3 and f[0] == "MC":
             prims.append((f[1], f[2]))
     for key, prim in prims:
+        if prim.startswith("/"):
+            # PINNED full dataset path (das_scan.sh, 2026-09-17): report whether
+            # this campaign dump contains it; never NOT_FOUND (it may live in
+            # another sub-campaign on purpose).
+            hit = [r[0] for r in rows if r[0] == prim]
+            report.append("PINNED|%s|%s|in_dump=%d" % (key, prim, len(hit)))
+            need.update(hit)
+            continue
         exact = [r[0] for r in rows if r[1] == prim]
         ci    = [r[0] for r in rows if r[1].lower() == prim.lower() and r[1] != prim]
         if not keep_flav == "1":

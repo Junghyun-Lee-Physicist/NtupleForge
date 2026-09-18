@@ -4,7 +4,7 @@
 > **증거 파일이 어디 있는지**. 결과의 해석은 각 문서에 있고, 여기는 색인이다(한 사실은 한 곳에: 숫자는 증거 파일과
 > 그 문서를 가리키고 다시 적지 않는 것이 원칙이지만, 표를 읽을 수 있을 만큼의 요약값은 적는다).
 > **대상 독자**: "그거 검증됐나?" 를 묻는 사람. 답은 표의 한 행이어야 한다.
-> **상태**: 2026-09-16 작성, 09-17 V21–V25 추가. 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
+> **상태**: 2026-09-16 작성, 09-17 V21–V26 추가. 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
 > `script/runlogs/LEDGER.tsv` 의 실행이 이 표의 원자료다. **새 검증을 하면 행을 추가한다.**
 > **관련**: [`08_branch_schema_migration.md`](08_branch_schema_migration.md) (절차·결과), [`09_v15_migration_log.md`](09_v15_migration_log.md) (시간순 로그),
 > `script/runlogs/README.md` (실행 기록 규약).
@@ -47,6 +47,7 @@
 | V23 | 2026-09-17 | UL16 JetHT v15 브랜치 인벤토리, 9 era 파일 (B, B ver2, C, D, E, F HIPM, F, G, H) | 9 파일, 101 s | dumped 9 / skipped 33 / failed 0; Events 1492–1593, HLT 498–560 | `script/inventory/inv_2016{B,Bv2,C,D,E,FHIPM,F,G,H}_v15_Data.tsv`, `script/runlogs/run_sweep_ul16_data_eras_20260917_060650.log` | 08 §7.1·§7.4 |
 | V24 | 2026-09-17 | `branch_hadronic_2016_v15_Data.txt` × 9 era 인벤토리 (`--era 2016`) | 9 | dead 0 전부; exit 3 = `Jet_jetId`/`Jet_puId` 만 | `script/runlogs/run_check_2016_data_list_20260917_060836.log` | 08 §7.3 |
 | V25 | 2026-09-17 | `branch_CPV_Run2_Data_v15.txt` × 9 era 인벤토리 (`--profile cpv`) | 9 | exit 0 전부 (2016 에서는 공유 HLT 경로명이 살아 있음) | `script/runlogs/run_check_cpv_data_2016_20260917_060842.log` | 08 §7.3 |
+| V26 | 2026-09-17 | `build_from_scan_log.py` canonical 모드에서 `_vN` 처리 변형(UL16 v15 2016B ver2) 을 독립 행으로 | 합성 로그 1 (실제 dataset 이름·event 수) | `JetHT_Run2016B`(9,726,665) 와 `JetHT_Run2016B_v2`(133,752,091) 두 행, BTV/JME 제외 2 | 컨테이너 dry-run (산출물 미커밋; 코드 docstring 09-17 줄) | `ttHH/04` §4, D-2026-09-17-data-pd-2016 |
 
 TTHHGenCategoryTools(expanded ttbar id, D17 enriched NanoAOD) 의 Gate 1–5 는 그 저장소의 `docs/06_validation_results.md` 가 원장이다. 여기에는 옮기지 않는다.
 

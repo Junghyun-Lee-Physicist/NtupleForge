@@ -11,6 +11,78 @@
 
 ---
 
+## D-2026-09-17-single-forge: NtupleForge becomes the one orchestrator (post-processing, MiniAOD dictionary, MiniAOD -> NanoAOD with user branches); TTHHGenCategoryTools is absorbed if the structure stays intuitive
+**DECIDED (direction) · 2026-09-17 · user · plan PROPOSED: `11_unified_forge_plan.md`**
+
+- **Context.** Three repositories hold the pieces: NtupleForge (NanoAODTools post-processing, registry/DAS/CRAB glue, run records),
+  TTHHGenCategoryTools (CMSSW producer for the expanded ttbar id, sidecar dictionary, enriched NANO recipe, validation tools),
+  TopCPVGenCategorizer (standalone C++). The "glue" question of 2026-09-16 (STATUS row 15) was which submitter should run the enriched production.
+- **Decision (user, 2026-09-17).** No reason for two branches of tooling: NtupleForge should be a set of modules that (1) post-processes NanoAOD,
+  (2) pulls what is needed from MiniAOD into an event-keyed dictionary (json/root), (3) produces official NanoAOD from MiniAOD with CMSSW and adds
+  user-defined branches from CMSSW modules (GenHFHadronMatcher-based expanded id; later a CPV producer). Condition: if merging makes the
+  structure unintuitive, keep separate repositories. Acceptance = two checks: central NanoAOD vs our MiniAOD-derived NanoAOD equal (ratio 1) on one
+  dataset; dictionary path vs enriched path equal on `genTtbarIdExpanded`.
+- **Consequence for the glue.** Option (A): extend NtupleForge's submitter with `job_type: cmsrun` and run the existing TTHHGenCategoryTools
+  cfg through it (Phase 0, no repository merge yet). Repository merge (Phase 1, `git subtree`) is decided after Phase 0 has run once.
+  Rules that keep it intuitive and the phased plan: `11_unified_forge_plan.md` 3 and 5.
+
+## D-2026-09-17-ttwlnu-pinned: `TTWJetsToLNu` (Run 3) points at the `mg35x` dataset through a pinned full path
+**PROPOSED by the AI · 2026-09-17 · user said "not important, either way"; revert if the user prefers to drop it**
+
+- **Facts (`script/runlogs/run_probe_ttlnu_mg35x_20260917_070407.log`, `run_probe_ttlnu_search_20260917_073835.log`).** The standard Summer24
+  NanoAODv15 campaign has no ttW -> l nu sample under any name (only `TTLNu-EWK`, `TTW-WtoQQ-1Jets`, `TTWH/WW/WZ`); no standard MiniAODv6 parent either.
+  The `mg35x_` sub-campaign has `TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8` with 20,362,371 events / 186 files, NANO step in
+  CMSSW_15_0_13_patch2 (identical release to the standard `TTW-WtoQQ`), workflow `TOP-RunIII2024Summer24wmLHEGS-00023` (a TOP PAG request).
+  Across Run 3 (2022, 2022EE, 2023, 2023BPix, 2024) the v15 version of this primary exists only in `mg35x`.
+- **Proposal.** Accept it. Mechanism (implemented 2026-09-17, tested with a fake DAS): a registry PRIMARY that starts with `/` is a **pinned full
+  dataset path**; `das_scan.sh` queries it as is and reports `RESULT|key|PINNED|1`; `build_from_scan_log.py` skips its flavour exclusion for pinned
+  keys and lists them; `das_inventory.sh` reports `PINNED|key|path|in_dump=N` instead of NOT_FOUND. With this the Run 3 scan has NOT_FOUND 0 and
+  the builder may emit a Run 3 config.
+- **Alternative.** Drop ttW -> l nu from Run 3 (remove 2024/2025 from the row's ERAS): a small background in the hadronic channel (enters via a lost lepton).
+
+## D-2026-09-17-tttw-split: tttW stays in the hadronic list as two charge-split keys for v15
+**DECIDED · 2026-09-17 · user decision · registry `script/samples_registry.txt`**
+
+- **Context.** The v9 sample `TTTW_TuneCP5_13TeV-madgraph-pythia8` exists in no NanoAODv15 campaign; v15 has
+  `TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8` and `TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8` (names in all four
+  Run 2 v15 campaigns, 2026-09-11 inventory; their DAS status and event counts read "-" there and must be checked).
+- **Decision (user).** tttW was always part of the hadronic background list, so keep it: two keys `TTTWminus` / `TTTWplus`
+  (`ttVV`, `ttHH,had`), one xsec entry each in the analyzer tables; the old `TTTW` key stays as `ttVV_v9` / `alt` for the v9 campaign.
+- **Left.** xsec for the two charge states (XSDB / GenXSecAnalyzer; sum = the old inclusive value); DAS status check (RUNBOOK 7).
+
+## D-2026-09-17-data-pd-2016: 2016 uses the same data PDs as 2017/2018
+**DECIDED · 2026-09-17 · user decision · registry `script/samples_registry.txt`, `ttHH/04_mc_request_2026-09.md` 4**
+
+- **Decision (user).** `JetHT` (both 2016 halves) and `BTagCSV` (both halves, as for 2017), no run-era-split keys: `das_scan.sh`
+  finds the per-era datasets with its relaxed data query, and `build_from_scan_log.py` keeps the Run2016B ver1 / ver2 pair as two
+  rows (the `_v2` processing token; fixed 2026-09-17, synthetic-log test). The nine UL16 JetHT v15 datasets are verified;
+  `BTagCSV` UL16 v15 is not yet looked up (RUNBOOK 7).
+
+## D-2026-09-17-ul18-v9-parked: the 2018UL NanoAODv9 full production is parked, not completed
+**DECIDED · 2026-09-17 · user decision**
+
+- **Context.** 85 tasks / 7,466 jobs submitted 2026-07-27; some tasks incomplete (`WJetsToLNu_HT200To400_ext1` 461/780 failed);
+  never re-checked after July. D-R3-2 made v15 the only production version.
+- **Decision (user).** Move to v15 without finishing v9. Keep the v9 branch lists (`branch_keep_all.txt`, prescan slim lists) and the v9
+  dataset configs (`crabConfig/config_ttHH2017UL.yaml`, `config_ttHH2018UL.yaml`) as records; do not delete or "complete" them.
+- **Requirement stated with it.** The v9 vs v15 differences (types, branch names, removed branches) are important and must stay
+  documented: `08_branch_schema_migration.md` 3 (2017UL MC, 127 removed / 370 added / 86 retyped, `script/inventory/diff_v9_v15_2017UL_MC.txt`)
+  plus the per-era 2017 Data inventories. Gap: no v9 inventories for 2016 and 2018 exist, so the diff is measured on 2017 only
+  (2016/2018 v15 were shown to have the same main-profile changes, 08 7.2, but not a full diff). Proposed: sweep 2016 and 2018 v9 files
+  (one MC, one Data per era) and write the diffs next to the 2017 one (RUNBOOK 7).
+
+## D-2026-09-17-expanded-id-column-name: the expanded ttbar id branch is called `genTtbarIdExpanded`
+**DECIDED (naming rule) · 2026-09-17 · user proposal, AI concurred · implementation open · detail TTHHGenCategoryTools D17**
+
+- **Context.** The enriched producer writes `expandedGenTtbarId`; the sidecar TTree and the analyzer contract use `Expanded_genTtbarId`.
+  NanoAOD's own branch is `genTtbarId` (scalar, no collection prefix, present in Run 2 v9/v15 and Summer24 v15).
+- **Decision.** One name everywhere: **`genTtbarIdExpanded`**. It shares its root with the official `genTtbarId`, sorts next to it, and
+  says what it is (the same id, expanded). The other branches the producer adds follow the same rule (prefix `genTtbarId`, suffix = what
+  it is); their exact current names are listed in TTHHGenCategoryTools `docs/11_enriched_nanoaod.md`.
+- **Implementation (open, TTHHGenCategoryTools).** producer instance name and NanoAOD table label; sidecar column (`Expanded_genTtbarId` in the
+  existing 2017 `ttnb_*.root` files: rename on re-production or a loader alias, decide there); analyzer loader; NtupleForge branch lists
+  (`keep genTtbarIdExpanded` replaces the placeholder `keep Expanded_genTtbarId` note in the DELIBERATELY NOT KEPT sections).
+
 ## D-2026-09-17-run2-v15-two-tracks: the five missing Run 2 samples are produced privately (enriched) in parallel with the central request, not after it
 **DECIDED · 2026-09-17 · user decision · detail: TTHHGenCategoryTools `docs/04_decisions.md` D17, `docs/11_enriched_nanoaod.md`**
 
@@ -178,7 +250,7 @@
   maps to `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` (Summer24 NanoAODv15, 9.9M).
   A Sherpa tt+4b sample, if ever produced, is a generator-comparison sample, not
   a replacement.
-- **D-R3-9 (2026-09-11, proposed — confirm) — ttH(bb) in Run 3 = the three
+- **D-R3-9 (2026-09-11 proposed; DECIDED 2026-09-17, user) — ttH(bb) in Run 3 = the three
   top-decay-split samples.** `TTH-Hto2B-TTto4Q / -TTtoLNu2Q / -TTto2L2Nu_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8`
   (Summer24 NanoAODv15, all VALID, 29.62M / 29.22M / 29.57M events, DAS
   2026-09-11) enter the registry as `ttHTobb_had / _semilep / _dilep`

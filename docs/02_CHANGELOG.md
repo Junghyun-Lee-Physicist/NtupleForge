@@ -9,6 +9,47 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-17 (3): unified-forge plan, pinned dataset paths, TTWJetsToLNu proposal
+
+### Added
+- `docs/11_unified_forge_plan.md`: the user's direction (one tool for post-processing, MiniAOD dictionary, MiniAOD -> NanoAOD with user branches;
+  absorb TTHHGenCategoryTools if it stays intuitive) turned into an inventory of existing pieces, a target layout, five rules, the two acceptance
+  checks the user defined, phases 0 to 2 and risks. Recorded as D-2026-09-17-single-forge; glue = (A) `job_type: cmsrun`.
+- Pinned dataset paths: a registry PRIMARY starting with `/` is queried as is. `das_scan.sh` (RESULT mode `PINNED`), `das_inventory.sh`
+  (`PINNED|key|path|in_dump=N`, never NOT_FOUND), `build_from_scan_log.py` (flavour exclusion skipped for pinned keys, NOTE in the review table).
+  Tested end to end with a fake `dasgoclient` (scan log -> review table); the real lxplus scan is the next check (RUNBOOK 7).
+
+### Changed
+- `script/samples_registry_run3.txt`: `TTWJetsToLNu` PRIMARY = the pinned `mg35x` dataset path with the DAS facts in the comment
+  (D-2026-09-17-ttwlnu-pinned, PROPOSED by the AI; the user may revert to dropping ttW -> l nu from Run 3).
+- `docs/01_STATUS.md` rows 4, 15, new 17, item 22q; `docs/README.md` index; `00_START_HERE.md` 4 (glue row); TTHHGenCategoryTools `04_decisions.md` D18.
+
+## [Unreleased], 2026-09-17 (2): decision batch (tttW split, 2016 data PDs, v9 parked, column name, D-R3-9), builder 2016B fix, v9 manifest
+
+Decisions are the user's (chat, 2026-09-17), recorded in `03_DECISIONS.md` D-2026-09-17-tttw-split / -data-pd-2016 / -ul18-v9-parked /
+-expanded-id-column-name and the D-R3-9 status flip.
+
+### Changed
+- `script/samples_registry.txt`: `TTTWminus` / `TTTWplus` (`TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8`, `TTTWplus-DR1_...`, `ttVV`, `had`, all four
+  era-halves) added; `TTTW` moved to `ttVV_v9` / `alt` (v9 campaign only). `JetHT` ERAS now include both 2016 halves, `BTagCSV` too (UL16 v15 BTagCSV
+  not yet looked up). MC rows 136 -> 138, `had` per era 45 -> 46.
+- `script/build_from_scan_log.py`: in canonical (Run 2) mode a `<RunEra>-<proc>_vN-vM` variant becomes its own row `<PD>_<RunEra>_vN` instead of an
+  alternate; without this the UL16 v15 `Run2016B-HIPM_UL2016_NanoAODv15_v2-v1` (ver2, 133.8M events) would have been dropped from a 2016 config.
+  Tested on a synthetic 2016preVFP log built from the real dataset names (ledger V26).
+- `docs/01_STATUS.md`: rows 4, 5, 6, 9, 10, 11, 15 updated, row 16 (v9 parked, per-era v9 inventories) added, 22p (decision batch and the
+  enriched-glue explanation). `docs/ttHH/03_run3_plan.md` 6.3: 13.6 TeV ttbar split cross sections supplied by the user from a "Table 5" (source
+  document not yet identified; not entered into any table until it is). `docs/ttHH/README.md` counts. `00_START_HERE.md` 4 rows.
+- TTHHGenCategoryTools docs (04 D17 -> DECIDED with column name `genTtbarIdExpanded`, 11 open-decision paragraph, 03 changelog).
+
+### Added
+- `script/inventory_manifest_v9_2016_2018.txt`: 16 rows (UL16 v9 MC both halves, UL18 v9 MC, JetHT v9 per era 2016 B1/B2/C..H and 2018 A..D) so the
+  v9 -> v15 diff exists per era, not only for 2017UL (requirement stated with D-2026-09-17-ul18-v9-parked). Run and diff commands: RUNBOOK 7.
+
+### Not yet decided
+- `TTWJetsToLNu` for Run 3 (standard Summer24 v15 has none; `mg35x` sub-campaign has 20,362,371 events with an mg35x MiniAODv6 parent): the user is
+  re-checking DAS. Enriched production glue (`job_type: cmsrun` in NtupleForge vs `TtbarIdExtender/crab/`): explanation in STATUS 22p, recommendation
+  there. Run 3 / 2016 trigger paths: no analysis decision yet; production is unaffected.
+
 ## [Unreleased], 2026-09-17: second recorded lxplus batch folded in (UL16 JetHT eras, 2016B ver1/ver2, 2018A run range)
 
 Source: `script/runlogs/LEDGER.tsv` rows of 2026-09-17 (lxplus commit `15f377b`), read from the repository. `09_v15_migration_log.md` 18, `10_validation_ledger.md` V21 to V25.

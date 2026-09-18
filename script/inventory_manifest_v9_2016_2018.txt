@@ -1,0 +1,48 @@
+# =============================================================================
+# inventory_manifest_v9_2016_2018.txt -- NanoAODv9 schema inventories for the
+# eras that have none yet (2016 both halves, 2018), so the v9 -> v15 diff is
+# measured per era and not only on 2017UL (docs/08 section 3,
+# script/inventory/diff_v9_v15_2017UL_MC.txt).
+#
+#   /bin/bash script/sweep_inventories.sh script/inventory_manifest_v9_2016_2018.txt
+#
+# WHY (2026-09-17, D-2026-09-17-ul18-v9-parked): the 2018UL v9 production is
+# parked and the analysis moves to v15; the user asked that the v9 <-> v15
+# type and name differences stay documented. 2017 has the full diff; 2016 and
+# 2018 were only shown to share the main-profile changes (docs/08 7.2). These
+# rows close that gap: one MC file per half/year, one Data (JetHT) file per era.
+#
+# PROVENANCE OF THE NAMES
+#   UL16 v9 MC   campaign tags of script/das_inventory_ul16{pre,post}_v9_20260911_*.tsv
+#                (RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11*,
+#                 RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17*).
+#   UL18 v9 MC   script/das_ttHH_2018UL_v9_*.log: RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1
+#                (the JMENano / BPH flavours share the prefix; the literal '-106X' below excludes them).
+#   UL18 v9 Data script/das_ttHH_2018UL_v9_*.log: /JetHT/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2, B/C -v1;
+#                the '_GT36-v1' re-processings are excluded by the literal 'NanoAODv9-v'.
+#   UL16 v9 Data ** PATTERNS ** built from the UL v9 naming used by the CPV registry keys
+#                (Run2016B-ver1_HIPM / ver2_HIPM, C..F -HIPM, F..H plain); the sweep prints the
+#                dataset it resolved, MISS means the pattern is wrong -> fix the row, re-run.
+# =============================================================================
+
+# ---- v9 MC, one TTToHadronic file per half / year ------------------------------
+2016preVFP_v9_MC       /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v*/NANOAODSIM
+2016postVFP_v9_MC      /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v*/NANOAODSIM
+2018UL_v9_MC           /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v*/NANOAODSIM
+
+# ---- UL16 v9 Data (JetHT), per run era; B has ver1 / ver2 ------------------------
+2016B1_v9_Data         /JetHT/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v*/NANOAOD
+2016B2_v9_Data         /JetHT/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v*/NANOAOD
+2016C_v9_Data          /JetHT/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v*/NANOAOD
+2016D_v9_Data          /JetHT/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v*/NANOAOD
+2016E_v9_Data          /JetHT/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v*/NANOAOD
+2016FHIPM_v9_Data      /JetHT/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v*/NANOAOD
+2016F_v9_Data          /JetHT/Run2016F-UL2016_MiniAODv2_NanoAODv9-v*/NANOAOD
+2016G_v9_Data          /JetHT/Run2016G-UL2016_MiniAODv2_NanoAODv9-v*/NANOAOD
+2016H_v9_Data          /JetHT/Run2016H-UL2016_MiniAODv2_NanoAODv9-v*/NANOAOD
+
+# ---- UL18 v9 Data (JetHT), per run era ----------------------------------------------
+2018A_v9_Data          /JetHT/Run2018A-UL2018_MiniAODv2_NanoAODv9-v*/NANOAOD
+2018B_v9_Data          /JetHT/Run2018B-UL2018_MiniAODv2_NanoAODv9-v*/NANOAOD
+2018C_v9_Data          /JetHT/Run2018C-UL2018_MiniAODv2_NanoAODv9-v*/NANOAOD
+2018D_v9_Data          /JetHT/Run2018D-UL2018_MiniAODv2_NanoAODv9-v*/NANOAOD

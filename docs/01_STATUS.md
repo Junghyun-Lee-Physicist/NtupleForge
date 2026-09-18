@@ -2,7 +2,7 @@
 
 > **Purpose:** the single place to answer "where are we right now?" for any
 > contributor (human or AI) joining cold. **Audience:** all. **Updated:**
-> 2026-09-17 (second recorded lxplus batch folded in: 22l, 22n, table row 3). Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
+> 2026-09-17 (batch 2 folded in; decision batch 22p: tttW split, 2016 PDs, v9 parked, column name, D-R3-9). Keep this current; details/why live in `03_DECISIONS.md` and `02_CHANGELOG.md`.
 
 ## Read this first (repo-level facts)
 
@@ -352,18 +352,20 @@
 | 1 | **MC 요청 메일 발송**, 답장 오면 기록 | 사용자 | [`ttHH/04_mc_request_2026-09.md`](ttHH/04_mc_request_2026-09.md) §5 |
 | 2 | **변경분 커밋**(09-16 저녁 배치): 브랜치 목록 10 개(신규 6 + 수정 4), `check_branchlist.py`, `build_from_scan_log.py`, manifest, 문서 8 개 + 신규 `10_validation_ledger.md`; TTHHGenCategoryTools 4 파일(오전분); 워크스페이스 문서(git 밖) | 사용자 (맥) | 22l |
 | 3 | ~~lxplus 배치 2 (RUNBOOK §6)~~ **DONE 09-17** (`15f377b`). **lxplus 배치 3** (RUNBOOK §7): 2018A 의 `…_2p94`/`…_1p59` 경로가 메뉴에 들어온 run 을 파일 몇 개로 bracket(첫 파일은 316058–316719 에 없음), 2018B 파일의 run 범위 | lxplus | 22n |
-| 4 | **`TTWJetsToLNu` (Run 3)**: `mg35x_` 플레이버를 PRIMARY 로 받아들일지, ERAS 에서 2024/2025 를 뺄지. 이것이 남는 동안 `build_from_scan_log.py` 는 Run 3 config 를 내지 않는다 | 미결 | 22b |
-| 5 | **`TTTW` 분할**: v15 는 `TTTWminus/plus-DR1` 2 종. KEY 2 개 + xsec 2 개 필요. 중앙 요청 대상 아님 | 미결 | 22k, registry 주석 |
-| 6 | **데이터 PD 2016 행**: `JetHT` 9 dataset 이름과 B ver1/ver2 run 범위가 확정됐으니(`ttHH/04` §4) registry 행을 쓰면 된다; `BTagCSV` 2016 은 discovery 부터 | 미결 | 22k |
+| 4 | **`TTWJetsToLNu` (Run 3)**: 표준 캠페인에는 어떤 이름으로도 없음(사용자 DAS 확인 09-17). **AI 제안: mg35x dataset 을 PINNED 전체 경로로 수용**(registry 반영, `das_scan`·builder·inventory 에 PINNED 모드 구현·fake-DAS 검증). 사용자가 반대하면 ERAS 에서 2024/2025 제거로 되돌림 | 사용자 veto 가능 | D-2026-09-17-ttwlnu-pinned |
+| 5 | ~~`TTTW` 분할~~ **DECIDED 09-17 (사용자)**: registry 에 `TTTWminus`/`TTTWplus` 두 키(`had`), 옛 `TTTW` 는 `ttVV_v9`/`alt`. 남은 것: xsec 2 개, v15 dataset 의 DAS status 확인(09-11 inventory 에 '-') | xsec: 미결 | 22p, D-2026-09-17-tttw-split |
+| 6 | ~~데이터 PD 2016 행~~ **DECIDED 09-17 (사용자, 17/18 과 동일)**: `JetHT`·`BTagCSV` ERAS 에 2016 두 half 추가. `BTagCSV` UL16 v15 는 DAS 미확인(RUNBOOK §7). `build_from_scan_log.py` 가 2016B ver1/ver2 를 두 행으로 유지(09-17 수정) | lxplus (BTagCSV discovery) | 22p, D-2026-09-17-data-pd-2016 |
 | 7 | **xsec 표**: 13.6 TeV(D-R3-6) + 새 키 `ttHTobb_had/_semilep/_dilep`(D-R3-9) + `alt` 키; Run 2 는 `TTZToQQ` 항목을 새로 쓰면서 **861 fb vs 841 fb 정의 확정**(`00_START_HERE.md` §4 의 기존 열린 항목) | 미결 | 22g(a), D-2026-09-11-ttz |
 | 8 | **2016 확장의 analyzer 비용 산정**: `samples_2016*.json` 2 개, 2016 루미, golden JSON, 트리거, b-tag SF, JEC/JER | 미착수 | 22j |
-| 9 | **D-R3-9 확인**: ttH(bb) 를 top-decay-split 3 종으로 (현재 PROPOSED) | 사용자 | 22g(b) |
-| 10 | **FxFx `TTto4Q-2Jets` 로 생성기 비교를 먼저 시작할지** 결정 | 미결 | 22g(c) |
-| 11 | **트리거 결정 (2016, Run 3)** → `check_branchlist.py` `HLT_REQUIRED["2016"|"2024"|"2025"]` 채우기 (지금 비어 있음 = 검사 안 함) | 분석 결정 | 22m |
+| 9 | ~~D-R3-9 확인~~ **DECIDED 09-17 (사용자)**: ttH(bb) = top-decay-split 3 종. 사용자 제공 표(Table 5, 출처 미확인)의 13.6 TeV ttbar 분할 xsec 참고값은 `ttHH/03` §6 3 | 끝 | 22g(b) |
+| 10 | **FxFx `TTto4Q-2Jets` 생성기 비교**: 지금 결정 불필요. `alt` 행은 `had` 생산에서 자동 제외되며, tt+jets 모델링 불확도 연구를 시작할 때 `alt` 를 workstream 에 넣어 ntuple 을 만든다 | 보류 | 22g(c) |
+| 11 | **트리거 결정 (2016, Run 3)**: 사용자 09-17 "Run 3 는 아직 정한 바 없음". 생산에는 영향 없음(wildcard 가 HLT 계열 전부 보존, 용량 문제 아님). analyzer 확장 때 `HLT_REQUIRED` 채움 | 보류 | 22m |
 | 12 | **analyzer 측 4 건**: `Jet_jetId`/`Jet_puId` 재계산(08 §3.4, 변화 없음), `Flag_METFilters` 부재(Summer24 MC·2025 Data), `L1PreFiringWeight` Run 3 미적용, 2018A 초기 메뉴 vs `requireTriggerBranches2018_()` | tempTTHH | 22m, 22n |
 | 13 | **CPV 목록 per-era 분리**: 2016 경로명 2 개(2017/2018 dead), 2017B 추가 4 개, `Scouting*`(UL16 MC 에 없음) | 미착수 | 22m |
 | 14 | Sherpa variant·목표 통계는 **컨비너 답장 대기** | 대기 | 04 문서 §2 |
-| 15 | **enriched 생산 착수 (중앙 요청과 병행, 사용자 결정 09-17)**: 글루(`job_type: cmsrun` vs `TtbarIdExtender/crab/`)와 컬럼 이름(`expandedGenTtbarId` vs `Expanded_genTtbarId`) 결정 → 2017 부터 제출, 2018·2016 은 중앙 cmsDriver 원문 이식 뒤 | 사용자 결정 → lxplus | 22o, D-2026-09-17-run2-v15-two-tracks |
+| 16 | **2018UL v9 full 생산은 보류(완료 처리 안 함), v15 로 이동 (DECIDED 09-17)**. v9 목록·config 는 기록으로 유지. v9↔v15 차이 기록 보강: 2016·2018 v9 인벤토리(MC 1 + Data era 별 1)를 스윕해 `diff_v9_v15_*` 를 2017 외에도 만든다 | lxplus | 22p, D-2026-09-17-ul18-v9-parked |
+| 17 | **통합 계획 검토** (`11_unified_forge_plan.md`): Phase 0 착수 승인, Phase 1(저장소 병합) 은 Phase 0 뒤, CPV MiniAOD producer 범위, 출력 사이트 | 사용자 | 22q, D-2026-09-17-single-forge |
+| 15 | **enriched 생산 착수 = Phase 0 (`11_unified_forge_plan.md` §5)**: `crab/submit_crab.py` 에 `job_type: cmsrun` → TTHHGenCategoryTools 의 2017 enriched cfg 제출 → §4 (i) 검증 → 2018·2016 레시피. 글루는 **(A)** 로 확정(사용자 방향 D-2026-09-17-single-forge). 컬럼 이름 `genTtbarIdExpanded` | 사용자 착수 승인 | 22o, 22q |
 
 실행 규약(09-16): lxplus 의 모든 단계는 `script/runlog.sh <step> -- <명령>` 으로 돌려 `script/runlogs/` 에 로그와 `LEDGER.tsv` 를 남기고,
 검증으로 볼 것은 [`10_validation_ledger.md`](10_validation_ledger.md) 에 한 행을 더한다. 절차는 워크스페이스 `RUNBOOK_lxplus_2026-09-16.md`.
@@ -389,6 +391,8 @@
 22m. **브랜치 목록 점검 결과 (09-16, `08` §7.3)**: 08-17 의 v15 목록 4 개는 dead pattern 2 종(`btagWeight_*`: v15 에 없음; 2017 Data `HLT_QuadPFJet*`: 2017B–E 에 0 개, v9 도 같음)이 있었고 제거. 신규 6 개는 실제 스키마에서 dead 0. 남은 exit 3 은 전부 `Jet_jetId`/`Jet_puId`(analyzer 재계산, `08` §3.4). 열린 것: (a) **트리거 결정** 2016·Run 3 → `HLT_REQUIRED` 채우기(지금 빈 목록 = 검사 안 함); (b) **CPV 목록 per-era 분리**: 2016 경로명 `HLT_IsoTkMu*`/`HLT_L2DoubleMu*`(2017/2018 dead), 2017B 추가 `HLT_TkMu*`/`HLT_TrkMu*`/`HLT_DoubleIsoMu*`/`HLT_MET*`, MC v15 목록의 `Scouting*`(UL16 MC 에 없음); (c) `Flag_METFilters` 가 Summer24 MC·2025 PromptReco 에 없음(개별 `Flag_*` 는 있음) → prescan 프로필·analyzer 확인; (d) `branch_prescan_slim_2017.txt` 는 UL17 MC(v9·v15)에서 Run B calo 경로 3 개가 dead, 07-27 부터 그랬고 prescan 캠페인은 끝났으므로 기록만.
 22n. **2018A 초기 HLT 메뉴 (09-16 발견, 한 파일 측정)**: `/JetHT/Run2018A-UL2018_NanoAODv15-v2` 첫 파일(`inv_2018A_v15_Data.tsv` 의 `# source=`)에 analyzer 2018 필수 경로 `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94`·`HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` 가 **없고** 2017 임계값의 DeepCSV 판(`…380_SixPFJet32_DoublePFBTagDeepCSV_2p2`, `…430_SixPFJet40_PFBTagDeepCSV_1p5`)만 있다. B 는 둘 다, C·D 는 새 것만. `requireTriggerBranches2018_()` 이 FATAL 하는 조건이라 확인 필요: 그 파일의 run 범위(`dasgoclient -query "run file=<LFN>"`), v9 2018A 생산에서 어떻게 지나갔는지, analyzer 가 2018A 초기 run 에서 어느 경로를 써야 하는지(AN 의 2018 트리거 정의). `check_branchlist.py` `HLT_ERA_CONDITIONAL["2018"]` 에 두 경로를 넣어 정보로 출력한다. **09-17 측정**: 그 파일의 run 범위는 316058–316719, dataset 은 315257–316995(`run_runs_2018A_firstfile_20260917_060634.log`). 즉 두 경로는 적어도 run 316719 까지 메뉴에 없었다. 어느 run 부터 있는지(2018A 후반 또는 2018B)는 파일 몇 개를 run 별로 골라 스키마를 보면 bracket 된다(RUNBOOK §7). 그 뒤 analyzer 의 `requireTriggerBranches2018_()` 처리와 AN 의 2018 트리거 정의를 맞춘다.
 22o. **Run 2 v15 두 갈래 (09-17, 사용자 결정)**: 부재 5 종은 중앙 요청 답장을 기다리는 동안 enriched 사설 생산(TTHHGenCategoryTools D17)을 **병행**한다. 이전 문서들의 "거절 시 대체" 문구는 전부 병행으로 고쳤다(START_HERE §4 ②, `ttHH/04` §4, TTHHGenCategoryTools D17·11·01·03). 착수에 필요한 결정 두 개(글루, 컬럼 이름)는 표 15. 2016 MiniAODv2 입력은 873 + 864 파일, 54.3M ev, 4.2 TB(09-16 inventory). `03_DECISIONS.md` D-2026-09-17-run2-v15-two-tracks.
+22p. **결정 묶음 (09-17, 사용자)**: ① tttW 두 키(D-2026-09-17-tttw-split, registry 수정: MC 138 행, era 당 had 46); ② 2016 데이터 PD = 17/18 과 동일(D-2026-09-17-data-pd-2016; `build_from_scan_log.py` 가 `_vN` 변형을 별도 행으로, 합성 로그로 검증); ③ 2018UL v9 보류(D-2026-09-17-ul18-v9-parked); ④ 컬럼 이름 `genTtbarIdExpanded`(D-2026-09-17-expanded-id-column-name); ⑤ D-R3-9 DECIDED; ⑥ FxFx 비교는 보류(결정 불필요), 트리거는 미정(생산 무관). `TTWJetsToLNu` 는 사용자가 DAS 를 더 찾아본 뒤. **enriched 글루 설명(표 15)**: enriched 생산 = MiniAODv2 파일마다 cmsRun(중앙 NANO 설정 + 우리 producer)을 CRAB 으로 4,929 파일에 돌리는 일. 제출 도구가 둘 있다. (A) NtupleForge 의 CRAB 제출기(YAML config + registry + das_scan + preflight + submit/status)는 지금 NanoAODTools 후처리 job 만 알므로 `job_type: cmsrun` 을 새로 가르쳐야 한다(코드 작업, 검증 필요; 대신 Run 3 sidecar 등 앞으로의 cmsRun 생산도 같은 관리 체계). (B) `TTHHGenCategoryTools/TtbarIdExtender/crab/` 은 이미 MiniAOD 위에서 cmsRun 을 CRAB 으로 돌려 본 스크립트라 pset 만 바꾸면 바로 돌지만 registry·preflight·runlog 와 따로 놀아 장부가 둘로 갈린다. 권고: 2017 첫 제출은 (B)로 빨리 시작하고, (A)는 2018·2016·Run 3 sidecar 전에 만든다.
+22q. **통합 방향 (09-17, 사용자)**: NtupleForge 를 후처리 + MiniAOD 사전 + MiniAOD→NanoAOD(+사용자 branch) 를 다 하는 모듈 집합체로; 구조가 비직관적이면 분리 유지. 계획 문서 `11_unified_forge_plan.md`(조각 표, 목표 구조, 규칙 5 개, 완료 판정 2 검증, Phase 0–2). 글루는 (A). `TTWJetsToLNu` 는 PINNED 경로 제안(표 4). `das_scan.sh`/`das_inventory.sh`/`build_from_scan_log.py` 에 PINNED 모드 추가(fake DAS 로 검증; 실제 lxplus 스캔에서 재확인 필요, RUNBOOK §7 [2b]).
 
 23. **event-level 항목의 "기억" 확정** — 03_run3_plan §2 의 jet veto map 키·MET filter 목록(ecalBadCalib
     보정 수치)·JEC/JER 태그·golden JSON 이름·PU 키를 twiki 원문으로 대조하고 상태 열 갱신. **값을 코드에

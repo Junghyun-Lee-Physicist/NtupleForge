@@ -12,7 +12,9 @@ Created 2026-08-17 for the v9 || v15 parallel campaign.
 2026-09-16: Run 3 Data variants kept as separate rows (--data-variants, default
 'auto' = all for Run 3 eras); Data flavour re-productions (BTVNano, JMENano)
 excluded and listed; canonical match tolerates the v15 Data string without
-'_MiniAODv2_'. Tested on das_ttHH_2024/2025_v15_20260916_*.log and on
+'_MiniAODv2_'. 2026-09-17: in canonical (Run 2) mode a '<RunEra>-<proc>_vN-vM'
+variant becomes its own row '<PD>_<RunEra>_vN' (UL16 v15 Run2016B ver1/ver2);
+RESULT mode PINNED (registry PRIMARY = full dataset path) bypasses DEFAULT_EXCLUDE. Tested on das_ttHH_2024/2025_v15_20260916_*.log and on
 das_ttHH_2018UL_v15_20260903_1016.log (review tables only; config emission
 dry-run on a NOT_FOUND-free copy of the 2024 log).
 
@@ -116,6 +118,20 @@ def parse_log(path, data_proc_override=None, data_variants="auto"):
     meta, files, notfound, dup = {}, {}, [], []
     mc, data_raw = OrderedDict(), OrderedDict()
 
+    # Keys whose registry PRIMARY is a pinned full dataset path (das_scan.sh
+    # RESULT mode PINNED, 2026-09-17): their DS line may sit in a flavour
+    # sub-campaign on purpose, so DEFAULT_EXCLUDE must not drop it. RESULT
+    # comes after the DS line in the log, hence this pre-pass.
+    pinned = set()
+    with open(path, encoding="utf-8", errors="replace") as fh:
+        for line in fh:
+            if line.startswith("RESULT|"):
+                parts = line.rstrip("\n").split("|")
+                if len(parts) >= 3 and parts[2] == "PINNED":
+                    pinned.add(parts[1])
+    if pinned:
+        meta["_pinned"] = sorted(pinned)
+
     with open(path, encoding="utf-8", errors="replace") as fh:
         for line in fh:
             line = line.rstrip("\n")
@@ -156,7 +172,7 @@ def parse_log(path, data_proc_override=None, data_variants="auto"):
             camp, tier = fields[2], fields[3]
 
             if tier.endswith("SIM"):                      # NANOAODSIM -> MC
-                if any(x in camp for x in DEFAULT_EXCLUDE):
+                if key not in pinned and any(x in camp for x in DEFAULT_EXCLUDE):
                     continue
                 m = re.search(r"_(ext\d+)", camp)
                 outkey = "%s_%s" % (key, m.group(1)) if m else key
@@ -221,9 +237,25 @@ def _split_data_variants(data_raw, data_proc, keep_all=False):
         procs.append(data_proc.replace("_MiniAODv2_", "_"))
     proc_re = "|".join(re.escape(x) for x in procs)
     for key, variants in data_raw.items():
+        # '<RunEra>-<proc>_vN-vM' is a SEPARATE run range, not a re-processing
+        # of the same runs: UL16 v15 JetHT has Run2016B-HIPM_UL2016_NanoAODv15-v1
+        # (= v9 ver1, runs 272760-273017) and ..._NanoAODv15_v2-v1 (= ver2, runs
+        # 273150-275376; measured 2026-09-17). Demoting the '_v2' one to an
+        # alternate would silently drop 133.8M events, so it gets its own row,
+        # keyed '<PD>_<RunEra>_vN'. Only the plain '-vM' forms compete for the
+        # canonical slot below.
+        extra_rows = []
+        competing = []
+        for tup in variants:
+            m2 = re.match(r"^Run\d{4}[A-Z]?-(?:" + proc_re + r")_v(\d+)-v\d+$", tup[4]) \
+                if proc_re else None
+            if m2:
+                extra_rows.append(("%s_v%s" % (key, m2.group(1)), tup))
+            else:
+                competing.append(tup)
         plain, alts = None, []
         best_v = -1
-        for tup in variants:
+        for tup in competing:
             camp = tup[4]
             m = re.match(r"^Run\d{4}[A-Z]?-(?:" + proc_re + r")-v(\d+)$", camp) \
                 if proc_re else None
@@ -233,10 +265,13 @@ def _split_data_variants(data_raw, data_proc, keep_all=False):
                 plain, best_v = tup, int(m.group(1))
             else:
                 alts.append(tup)
-        if plain is None:                    # no exact match -- do not guess
-            variants_sorted = sorted(variants, key=lambda t: t[4])
+        if plain is None and competing:      # no exact match -- do not guess
+            variants_sorted = sorted(competing, key=lambda t: t[4])
             plain, alts = variants_sorted[0], variants_sorted[1:]
-        out[key] = {"plain": plain, "alt": alts}
+        if plain is not None:
+            out[key] = {"plain": plain, "alt": alts}
+        for k2, tup in sorted(extra_rows, key=lambda x: x[0]):
+            out[k2] = {"plain": tup, "alt": []}
     return out
 
 
@@ -293,8 +328,11 @@ def write_table(out_md, out_tsv, meta, mc, data, files, notfound, dup, prov):
     tot_f = sum(v[2] for v in mc.values() if v[2])
     tot_tb = sum(float(v[3]) for v in mc.values() if v[3] not in ("NA", ""))
 
-    L += ["## MC (%d)" % len(mc), "",
-          "| key | nevents | nfiles | TB | dataset |",
+    L += ["## MC (%d)" % len(mc), ""]
+    if meta.get("_pinned"):
+        L += ["NOTE: PINNED (registry PRIMARY is a full dataset path; flavour exclusion skipped): "
+              + ", ".join("`%s`" % k for k in meta["_pinned"]), ""]
+    L += ["| key | nevents | nfiles | TB | dataset |",
           "|---|---:|---:|---:|---|"]
     for k, (ds, nev, nf, sz) in mc.items():
         L.append("| `%s` | %s | %s | %s | `%s` |" %

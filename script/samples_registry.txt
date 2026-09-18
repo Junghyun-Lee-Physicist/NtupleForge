@@ -165,12 +165,16 @@ MC   TTZZTo4b                                                                TTZ
 MC   TTWW                                                                    TTWW_TuneCP5_13TeV-madgraph-pythia8                                             2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV       ttHH,had
 MC   TTWH                                                                    TTWH_TuneCP5_13TeV-madgraph-pythia8                                             2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV       ttHH,had
 MC   TTWZ                                                                    TTWZ_TuneCP5_13TeV-madgraph-pythia8                                             2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV       ttHH,had
-#  TTTW: the PRIMARY below is the NanoAODv9 name and exists in NO NanoAODv15 campaign (all four Run 2 era-halves,
-#  inventory 2026-09-11). v15 carries the process split by charge under a different generator/scheme:
-#  TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8 and TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8 (both present in all
-#  four). Not fixed here because one KEY cannot hold two datasets: it needs KEYs TTTWminus/TTTWplus and one xsec
-#  entry each (~half of the old one). OPEN -- no central request is involved, the samples exist.
-MC   TTTW                                                                    TTTW_TuneCP5_13TeV-madgraph-pythia8                                             2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV       ttHH,had
+#  TTTW (tttW): the v9 sample TTTW_TuneCP5_13TeV-madgraph-pythia8 exists in NO NanoAODv15 campaign (inventory
+#  2026-09-11, all four era-halves). v15 carries the process split by W charge, amc@NLO with diagram removal:
+#  TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8 and TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8 (names present in all
+#  four v15 campaigns; their DAS status/nevents were '-' in the 09-11 inventory -> check before production).
+#  DECIDED 2026-09-17 (user): keep tttW in the hadronic background list as TWO keys, one xsec entry each
+#  (sigma(tttW-) + sigma(tttW+) = the old inclusive one). The old key stays for the v9 campaign only (alt).
+MC   TTTWminus                                                               TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8                                    2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV       ttHH,had
+MC   TTTWplus                                                                TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8                                     2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV       ttHH,had
+MC   TTTW                                                                    TTTW_TuneCP5_13TeV-madgraph-pythia8                                             2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV_v9    ttHH,alt
+#    ^ v9 ONLY (Run 2 v9 analysis sample). Replaced by the two charge-split keys above for v15 (D-2026-09-17-tttw-split).
 MC   TTTT                                                                    TTTT_TuneCP5_13TeV-amcatnlo-pythia8                                             2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV       ttHH,had
 MC   TT4b                                                                    TT4b_TuneCP5_13TeV_madgraph_pythia8                                             2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV       ttHH,had
 
@@ -216,8 +220,13 @@ MC   DYJetsToLL_M50_HT1200to2500                                             DYJ
 MC   DYJetsToLL_M50_HT2500toInf                                              DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8        2016postVFPUL,2016preVFPUL,2017UL,2018UL  dy_ll      ttHH,lep
 
 # ===== ttHH / data =====
-DATA JetHT                                                                   JetHT                                                                           2017UL,2018UL                             data       ttHH,had
-DATA BTagCSV                                                                 BTagCSV                                                                         2017UL                                    data       ttHH,had
+#  2016 added 2026-09-17 (user decision D-2026-09-17-data-pd-2016: same PDs as 2017/2018). JetHT UL16 NanoAODv15:
+#  9 datasets verified (Run2016B-HIPM...-v1 = ver1 runs 272760-273017, ..._v2-v1 = ver2 runs 273150-275376, C..F HIPM;
+#  F, G, H postVFP; docs/ttHH/04_mc_request_2026-09.md section 4). das_scan.sh finds them with the relaxed data query;
+#  build_from_scan_log.py keeps the B ver1/ver2 pair as two rows (the '_v2' processing token, 2026-09-17).
+#  BTagCSV UL16 NanoAODv15: NOT yet discovered on DAS (RUNBOOK section 7) -- the era is listed so the scan reports it.
+DATA JetHT                                                                   JetHT                                                                           2016postVFPUL,2016preVFPUL,2017UL,2018UL  data       ttHH,had
+DATA BTagCSV                                                                 BTagCSV                                                                         2016postVFPUL,2016preVFPUL,2017UL         data       ttHH,had
 DATA SingleMuon                                                              SingleMuon                                                                      2016postVFPUL,2016preVFPUL,2017UL,2018UL  data       ttHH,CPV,had,lep
 
 # ===== CPV / cpv_mc =====

@@ -46,6 +46,9 @@ setup과 실행 커맨드만 다루고, 그보다 깊은 내용은 전부 여기
   고 말하는 모든 것의 색인(날짜, 규모, 결과, **증거 파일 경로**). 2026-09-16 부터
   lxplus 실행은 `script/runlog.sh` 가 남기는 `script/runlogs/` 로그와
   `LEDGER.tsv` 가 원자료이고, 이 표는 그 위의 사람용 색인입니다.
+- **[11_unified_forge_plan.md](11_unified_forge_plan.md)**: 통합 계획(2026-09-17). NtupleForge 를
+  후처리 + MiniAOD 사전 + MiniAOD → NanoAOD(+사용자 branch) 의 단일 도구로 만드는 방향(사용자 결정)의
+  조각 표, 목표 구조, 비직관화를 막는 규칙, 완료 판정 2 검증, Phase 0–2.
 
 **모듈별 (subdirectory, 각자 지역 번호와 지역 README 보유):**
 
