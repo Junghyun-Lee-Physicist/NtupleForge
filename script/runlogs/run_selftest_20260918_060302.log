@@ -1,0 +1,22 @@
+=== RUNLOG ================================================================
+step        : selftest
+start_utc   : 2026-09-18T06:03:03Z
+host        : lxplus988   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 1b576b9   modified_tracked_files: 1
+cmd         : /bin/bash -c echo\ runlog\ ok\;\ dasgoclient\ --version\ \|\ head\ -1 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-18 08:03:03.313499614 +0200 CEST m=+0.001974136
+proxy_left_s: 43190
+===========================================================================
+runlog ok
+Build: git=v02.04.54 go=go1.26.6 date=2026-09-18 08:03:03.473851079 +0200 CEST m=+0.000624220
+===========================================================================
+end_utc     : 2026-09-18T06:03:03Z
+wall_s      : 0
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_selftest_20260918_060302.log
+=== END ===================================================================

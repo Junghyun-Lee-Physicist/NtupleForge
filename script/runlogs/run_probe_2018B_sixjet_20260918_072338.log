@@ -1,0 +1,37 @@
+=== RUNLOG ================================================================
+step        : probe_2018B_sixjet
+start_utc   : 2026-09-18T07:23:39Z
+host        : lxplus988   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 1b576b9   modified_tracked_files: 1
+cmd         : python3 script/probe_hlt_path_by_run.py --dataset /JetHT/Run2018B-UL2018_NanoAODv15-v2/NANOAOD --paths HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94\,HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59\,HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2\,HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5 --every 8 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-18 09:23:39.164136745 +0200 CEST m=+0.000584581
+proxy_left_s: 38354
+===========================================================================
+# dataset      : /JetHT/Run2018B-UL2018_NanoAODv15-v2/NANOAOD
+# runs in DAS  : 61 (317080..319310); probing 9 run(s), every 8, window -..-
+# paths        : HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94, HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59, HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2, HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5
+RUN|317080|/store/data/Run2018B/JetHT/NANOAOD/UL2018_NanoAODv15-v2/2520000/45efdf55-963e-46be-9078-7368216a8adf.root|317080-317696|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94=1 HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59=1 HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2=1 HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5=1
+RUN|317291|/store/data/Run2018B/JetHT/NANOAOD/UL2018_NanoAODv15-v2/2520000/02350e3f-ab3f-41c8-b587-5be71da709ff.root|317182-318877|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94=1 HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59=1 HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2=1 HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5=1
+RUN|317339|/store/data/Run2018B/JetHT/NANOAOD/UL2018_NanoAODv15-v2/2520000/02350e3f-ab3f-41c8-b587-5be71da709ff.root|317182-318877|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94=1 HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59=1 HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2=1 HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5=1
+RUN|317438|/store/data/Run2018B/JetHT/NANOAOD/UL2018_NanoAODv15-v2/2520000/06383440-7ce0-4a67-abf1-35c7551c1522.root|317182-317661|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94=1 HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59=1 HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2=1 HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5=1
+RUN|317488|/store/data/Run2018B/JetHT/NANOAOD/UL2018_NanoAODv15-v2/2520000/046a6918-ec02-40d4-a853-3401f2ab02c2.root|317087-317661|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94=1 HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59=1 HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2=1 HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5=1
+RUN|317640|/store/data/Run2018B/JetHT/NANOAOD/UL2018_NanoAODv15-v2/2520000/02350e3f-ab3f-41c8-b587-5be71da709ff.root|317182-318877|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94=1 HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59=1 HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2=1 HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5=1
+RUN|317696|/store/data/Run2018B/JetHT/NANOAOD/UL2018_NanoAODv15-v2/2520000/02350e3f-ab3f-41c8-b587-5be71da709ff.root|317182-318877|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94=1 HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59=1 HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2=1 HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5=1
+RUN|318876|/store/data/Run2018B/JetHT/NANOAOD/UL2018_NanoAODv15-v2/2520000/0d99de43-69d9-4d1c-95bf-be6c468241fc.root|317087-318876|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94=1 HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59=1 HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2=1 HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5=1
+RUN|319310|/store/data/Run2018B/JetHT/NANOAOD/UL2018_NanoAODv15-v2/2520000/7f40a2a2-5d16-48a7-89b2-67469a2923f9.root|317087-319310|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94=1 HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59=1 HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2=1 HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5=1
+# files opened : 6
+SUMMARY|HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94|first_file_with=317080|last_file_without=-
+SUMMARY|HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59|first_file_with=317080|last_file_without=-
+SUMMARY|HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2|first_file_with=317080|last_file_without=-
+SUMMARY|HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5|first_file_with=317080|last_file_without=-
+===========================================================================
+end_utc     : 2026-09-18T07:25:30Z
+wall_s      : 111
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_probe_2018B_sixjet_20260918_072338.log
+=== END ===================================================================

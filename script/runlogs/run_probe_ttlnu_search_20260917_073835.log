@@ -1,0 +1,68 @@
+=== RUNLOG ================================================================
+step        : probe_ttlnu_search
+start_utc   : 2026-09-17T07:38:36Z
+host        : lxplus982   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 5f27389   modified_tracked_files: 1
+cmd         : /bin/bash -c $'\necho "## 1. standard-campaign ttW leptonic under ANY primary name";\ndasgoclient -query "dataset status=* dataset=/TTLNu*/RunIII2024Summer24NanoAODv15-150X*/NANOAODSIM";\ndasgoclient -query "dataset status=* dataset=/TTW*/RunIII2024Summer24NanoAODv15-150X*/NANOAODSIM";\necho "## 2. standard MiniAODv6 parent exists? (then only the NANO step is missing)";\ndasgoclient -query "dataset status=* dataset=/TTLNu-1Jets*/RunIII2024Summer24MiniAODv6-150X*/MINIAODSIM";\necho "## 3. the mg35x one: release and config (compare with a standard sample)";\nD=/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-mg35x_150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM;\ndasgoclient -query "release dataset=$D"; dasgoclient -query "config dataset=$D";\ndasgoclient -query "release dataset=/TTW-WtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFXold-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM";\necho "## 4. where else does this primary exist (2022/2023 names)";\ndasgoclient -query "dataset status=* dataset=/TTLNu-1Jets*/*/NANOAODSIM"' 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-17 09:38:36.039984337 +0200 CEST m=+0.000786320
+proxy_left_s: 37665
+===========================================================================
+## 1. standard-campaign ttW leptonic under ANY primary name
+/TTLNu-EWK_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+/TTW-WtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFXold-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+/TTWH_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+/TTWW_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+## 2. standard MiniAODv6 parent exists? (then only the NANO step is missing)
+## 3. the mg35x one: release and config (compare with a standard sample)
+CMSSW_15_0_13_patch2
+cmsunified_task_TOP-RunIII2024Summer24wmLHEGS-00023__v1_T_250916_204801_4230
+CMSSW_15_0_13_patch2
+## 4. where else does this primary exist (2022/2023 names)
+/TTLNu-1Jets_TuneCP5CR1_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-mg35x_130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5CR1_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-mg35x_130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5CR1_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-mg35x_130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5CR1_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-mg35x_130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5CR2_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-mg35x_130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5CR2_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-mg35x_130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5CR2_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-mg35x_130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5CR2_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-mg35x_130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5Down_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-mg35x_130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5Down_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-mg35x_130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5Down_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-mg35x_130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5Down_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-mg35x_130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5Up_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-mg35x_130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5Up_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-mg35x_130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5Up_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-mg35x_130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5Up_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-mg35x_130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v4/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-mg35x_130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv13-133X_mcRun3_2022_realistic_postEE_ForNanov13_v1-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv13-mg35x_133X_mcRun3_2022_realistic_postEE_ForNanov13_v1-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv15-mg35x_150X_mcRun3_2022_realistic_postEE_v1-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-mg35x_130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv13-133X_mcRun3_2022_realistic_ForNanov13_v1-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv13-mg35x_133X_mcRun3_2022_realistic_ForNanov13_v1-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv15-mg35x_150X_mcRun3_2022_realistic_v1-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-mg35x_130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv13-mg35x_133X_mcRun3_2023_realistic_postBPix_ForNanov13_v2-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv15-mg35x_150X_mcRun3_2023_realistic_postBPix_v1-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-mg35x_130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv13-mg35x_133X_mcRun3_2023_realistic_ForNanov13_v1-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv15-mg35x_150X_mcRun3_2023_realistic_v1-v1/NANOAODSIM
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-mg35x_150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+===========================================================================
+end_utc     : 2026-09-17T07:38:38Z
+wall_s      : 2
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_probe_ttlnu_search_20260917_073835.log
+=== END ===================================================================

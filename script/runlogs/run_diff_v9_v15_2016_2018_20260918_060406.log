@@ -1,0 +1,36 @@
+=== RUNLOG ================================================================
+step        : diff_v9_v15_2016_2018
+start_utc   : 2026-09-18T06:04:06Z
+host        : lxplus988   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 1b576b9   modified_tracked_files: 1
+cmd         : /bin/bash -c cd\ script/inventory\;\ for\ p\ in\ \"2016preVFP_v9_MC\ 2016preVFP_v15_MC\"\ \"2016postVFP_v9_MC\ 2016postVFP_v15_MC\"\ \"2018UL_v9_MC\ 2018UL_v15_MC\"\ \"2016B1_v9_Data\ 2016B_v15_Data\"\ \"2016B2_v9_Data\ 2016Bv2_v15_Data\"\ \"2016C_v9_Data\ 2016C_v15_Data\"\ \"2016D_v9_Data\ 2016D_v15_Data\"\ \"2016E_v9_Data\ 2016E_v15_Data\"\ \"2016FHIPM_v9_Data\ 2016FHIPM_v15_Data\"\ \"2016F_v9_Data\ 2016F_v15_Data\"\ \"2016G_v9_Data\ 2016G_v15_Data\"\ \"2016H_v9_Data\ 2016H_v15_Data\"\ \"2018A_v9_Data\ 2018A_v15_Data\"\ \"2018B_v9_Data\ 2018B_v15_Data\"\ \"2018C_v9_Data\ 2018C_v15_Data\"\ \"2018D_v9_Data\ 2018D_v15_Data\"\;\ do\ set\ --\ \$p\;\ \[\ -f\ inv_\$1.tsv\ \]\ \|\|\ \{\ echo\ \"SKIP\ \$1\ \(no\ inventory\)\"\;\ continue\;\ \}\;\ python3\ ../dump_branch_inventory.py\ --diff\ inv_\$1.tsv\ inv_\$2.tsv\ \>\ diff_v9_v15_\$\{2%_v15_\*\}_\$\{2##\*_v15_\}.txt\;\ echo\ \"\$1\ -\>\ \$2\ :\ exit\ \$\?\ :\ \$\(grep\ -m1\ \"\^##\ Summary\"\ diff_v9_v15_\$\{2%_v15_\*\}_\$\{2##\*_v15_\}.txt\)\"\;\ done 
+CMSSW_BASE  : <unset>
+root        : none
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-18 08:04:06.512656955 +0200 CEST m=+0.000738647
+proxy_left_s: 43127
+===========================================================================
+SKIP 2016preVFP_v9_MC (no inventory)
+SKIP 2016postVFP_v9_MC (no inventory)
+SKIP 2018UL_v9_MC (no inventory)
+SKIP 2016B1_v9_Data (no inventory)
+SKIP 2016B2_v9_Data (no inventory)
+SKIP 2016C_v9_Data (no inventory)
+SKIP 2016D_v9_Data (no inventory)
+SKIP 2016E_v9_Data (no inventory)
+SKIP 2016FHIPM_v9_Data (no inventory)
+SKIP 2016F_v9_Data (no inventory)
+SKIP 2016G_v9_Data (no inventory)
+SKIP 2016H_v9_Data (no inventory)
+SKIP 2018A_v9_Data (no inventory)
+SKIP 2018B_v9_Data (no inventory)
+SKIP 2018C_v9_Data (no inventory)
+SKIP 2018D_v9_Data (no inventory)
+===========================================================================
+end_utc     : 2026-09-18T06:04:06Z
+wall_s      : 0
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_diff_v9_v15_2016_2018_20260918_060406.log
+=== END ===================================================================

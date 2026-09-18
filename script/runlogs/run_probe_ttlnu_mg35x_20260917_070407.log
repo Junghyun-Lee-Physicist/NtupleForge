@@ -1,0 +1,24 @@
+=== RUNLOG ================================================================
+step        : probe_ttlnu_mg35x
+start_utc   : 2026-09-17T07:04:08Z
+host        : lxplus982   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 5f27389   modified_tracked_files: 0
+cmd         : /bin/bash -c for\ d\ in\ \$\(dasgoclient\ -query\ \"dataset\ status=\*\ dataset=/TTLNu-1Jets\*/RunIII2024Summer24NanoAODv15\*/NANOAODSIM\"\)\;\ do\ echo\ \"==\ \$d\"\;\ dasgoclient\ -query\ \"summary\ dataset=\$d\"\;\ echo\ \"parent:\"\;\ dasgoclient\ -query\ \"parent\ dataset=\$d\"\;\ done 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-17 09:04:07.974647851 +0200 CEST m=+0.008204097
+proxy_left_s: 39733
+===========================================================================
+== /TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-mg35x_150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+[{"file_size":85826569083,"max_ldate":1769137486,"median_cdate":1769088862.5,"median_ldate":1769088862.5,"nblocks":69,"nevents":20362371,"nfiles":186,"nlumis":19629,"num_block":69,"num_event":20362371,"num_file":186,"num_lumi":19629}]
+parent:
+/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24MiniAODv6-mg35x_150X_mcRun3_2024_realistic_v2-v2/MINIAODSIM
+===========================================================================
+end_utc     : 2026-09-17T07:04:09Z
+wall_s      : 1
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_probe_ttlnu_mg35x_20260917_070407.log
+=== END ===================================================================
