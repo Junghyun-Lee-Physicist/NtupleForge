@@ -1,0 +1,53 @@
+=== RUNLOG ================================================================
+step        : diff_v9_v15_2016_2018
+start_utc   : 2026-09-19T07:42:59Z
+host        : lxplus990   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 6c0b5d4   modified_tracked_files: 1
+cmd         : /bin/bash -c cd\ script/inventory\;\ for\ p\ in\ \"2016preVFP_v9_MC\ 2016preVFP_v15_MC\"\ \"2016postVFP_v9_MC\ 2016postVFP_v15_MC\"\ \"2018UL_v9_MC\ 2018UL_v15_MC\"\ \"2016B1_v9_Data\ 2016B_v15_Data\"\ \"2016B2_v9_Data\ 2016Bv2_v15_Data\"\ \"2016C_v9_Data\ 2016C_v15_Data\"\ \"2016D_v9_Data\ 2016D_v15_Data\"\ \"2016E_v9_Data\ 2016E_v15_Data\"\ \"2016FHIPM_v9_Data\ 2016FHIPM_v15_Data\"\ \"2016F_v9_Data\ 2016F_v15_Data\"\ \"2016G_v9_Data\ 2016G_v15_Data\"\ \"2016H_v9_Data\ 2016H_v15_Data\"\ \"2018A_v9_Data\ 2018A_v15_Data\"\ \"2018B_v9_Data\ 2018B_v15_Data\"\ \"2018C_v9_Data\ 2018C_v15_Data\"\ \"2018D_v9_Data\ 2018D_v15_Data\"\;\ do\ set\ --\ \$p\;\ \[\ -f\ inv_\$1.tsv\ \]\ \|\|\ \{\ echo\ \"SKIP\ \$1\ \(no\ inventory\)\"\;\ continue\;\ \}\;\ python3\ ../dump_branch_inventory.py\ --diff\ inv_\$1.tsv\ inv_\$2.tsv\ \>\ diff_v9_v15_\$\{2%_v15_\*\}_\$\{2##\*_v15_\}.txt\;\ echo\ \"\$1\ -\>\ \$2\ :\ exit\ \$\?\ :\ \$\(grep\ -m1\ \"\^##\ Summary\"\ diff_v9_v15_\$\{2%_v15_\*\}_\$\{2##\*_v15_\}.txt\)\"\;\ done 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Neither X509_USER_PROXY or X509_USER_KEY/X509_USER_CERT are set
+none
+proxy_left_s: none
+===========================================================================
+2016preVFP_v9_MC -> 2016preVFP_v15_MC : exit 4 : ## Summary: 127 removed, 370 added, 86 retyped
+2016postVFP_v9_MC -> 2016postVFP_v15_MC : exit 4 : ## Summary: 127 removed, 370 added, 86 retyped
+2018UL_v9_MC -> 2018UL_v15_MC : exit 4 : ## Summary: 129 removed, 396 added, 86 retyped
+2016B1_v9_Data -> 2016B_v15_Data : exit 4 : ## Summary: 121 removed, 328 added, 58 retyped
+2016B2_v9_Data -> 2016Bv2_v15_Data : exit 4 : ## Summary: 124 removed, 334 added, 58 retyped
+2016C_v9_Data -> 2016C_v15_Data : exit 4 : ## Summary: 129 removed, 331 added, 58 retyped
+2016D_v9_Data -> 2016D_v15_Data : exit 4 : ## Summary: 121 removed, 331 added, 58 retyped
+2016E_v9_Data -> 2016E_v15_Data : exit 4 : ## Summary: 121 removed, 331 added, 58 retyped
+2016FHIPM_v9_Data -> 2016FHIPM_v15_Data : exit 4 : ## Summary: 121 removed, 360 added, 58 retyped
+2016F_v9_Data -> 2016F_v15_Data : exit 4 : ## Summary: 121 removed, 331 added, 58 retyped
+2016G_v9_Data -> 2016G_v15_Data : exit 4 : ## Summary: 127 removed, 331 added, 58 retyped
+2016H_v9_Data -> 2016H_v15_Data : exit 4 : ## Summary: 121 removed, 332 added, 58 retyped
+2018A_v9_Data -> 2018A_v15_Data : exit 4 : ## Summary: 378 removed, 333 added, 58 retyped
+2018B_v9_Data -> 2018B_v15_Data : exit 4 : ## Summary: 121 removed, 333 added, 58 retyped
+2018C_v9_Data -> 2018C_v15_Data : exit 4 : ## Summary: 121 removed, 333 added, 58 retyped
+2018D_v9_Data -> 2018D_v15_Data : exit 4 : ## Summary: 121 removed, 333 added, 58 retyped
+===========================================================================
+end_utc     : 2026-09-19T07:43:05Z
+wall_s      : 5
+EXIT        : 0
+outputs (modified during the run, under script/ and branches/):
+       23647  script/inventory/diff_v9_v15_2016B_Data.txt
+       24061  script/inventory/diff_v9_v15_2016Bv2_Data.txt
+       24176  script/inventory/diff_v9_v15_2016C_Data.txt
+       23827  script/inventory/diff_v9_v15_2016D_Data.txt
+       23827  script/inventory/diff_v9_v15_2016E_Data.txt
+       25395  script/inventory/diff_v9_v15_2016FHIPM_Data.txt
+       23827  script/inventory/diff_v9_v15_2016F_Data.txt
+       24176  script/inventory/diff_v9_v15_2016G_Data.txt
+       23869  script/inventory/diff_v9_v15_2016H_Data.txt
+       27056  script/inventory/diff_v9_v15_2016postVFP_MC.txt
+       27054  script/inventory/diff_v9_v15_2016preVFP_MC.txt
+       35902  script/inventory/diff_v9_v15_2018A_Data.txt
+       23948  script/inventory/diff_v9_v15_2018B_Data.txt
+       23948  script/inventory/diff_v9_v15_2018C_Data.txt
+       23948  script/inventory/diff_v9_v15_2018D_Data.txt
+       28354  script/inventory/diff_v9_v15_2018UL_MC.txt
+log         : script/runlogs/run_diff_v9_v15_2016_2018_20260919_074258.log
+=== END ===================================================================

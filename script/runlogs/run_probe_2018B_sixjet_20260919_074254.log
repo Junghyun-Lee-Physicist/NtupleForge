@@ -1,0 +1,22 @@
+=== RUNLOG ================================================================
+step        : probe_2018B_sixjet
+start_utc   : 2026-09-19T07:42:55Z
+host        : lxplus990   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 6c0b5d4   modified_tracked_files: 1
+cmd         : python3 script/probe_hlt_path_by_run.py --dataset /JetHT/Run2018B-UL2018_NanoAODv15-v2/NANOAOD --paths HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94\,HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59\,HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2\,HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5 --every 8 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Neither X509_USER_PROXY or X509_USER_KEY/X509_USER_CERT are set
+none
+proxy_left_s: none
+===========================================================================
+FATAL: dasgoclient rc=15 for 'run dataset=/JetHT/Run2018B-UL2018_NanoAODv15-v2/NANOAOD': 
+===========================================================================
+end_utc     : 2026-09-19T07:42:57Z
+wall_s      : 2
+EXIT        : 3
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_probe_2018B_sixjet_20260919_074254.log
+=== END ===================================================================
