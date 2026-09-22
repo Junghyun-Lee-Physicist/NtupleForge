@@ -1,0 +1,23 @@
+=== RUNLOG ================================================================
+step        : probe_tttw_v15_status_apv
+start_utc   : 2026-09-22T06:18:21Z
+host        : lxplus956   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 009991d   modified_tracked_files: 0
+cmd         : /bin/bash script/das_status.sh /TTTW\*-DR1\*/RunIISummer20UL16NanoAODAPVv15-150X\*/NANOAODSIM 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-22 08:18:21.378553856 +0200 CEST m=+0.006121387
+proxy_left_s: 41847
+===========================================================================
+dataset	status	nevents	nfiles
+/TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1-v1/NANOAODSIM	VALID	1630000	4
+/TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1-v1/NANOAODSIM	VALID	1700000	5
+===========================================================================
+end_utc     : 2026-09-22T06:18:22Z
+wall_s      : 1
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_probe_tttw_v15_status_apv_20260922_061821.log
+=== END ===================================================================
