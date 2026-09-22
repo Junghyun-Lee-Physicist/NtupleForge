@@ -97,10 +97,11 @@
   `TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8` and `TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8` (names in all four
   Run 2 v15 campaigns, 2026-09-11 inventory; their DAS status and event counts read "-" there, which only meant that the inventory ran no
   details query for them). 2026-09-18 summary query (`run_probe_tttw_v15_20260918_060303.log`): all eight datasets exist as `..._v1-v1` with
-  1,630,000-3,597,000 events (per era in the registry comment); the DBS status field is still unread.
+  1,630,000-3,597,000 events (per era in the registry comment). 2026-09-22 (`run_probe_tttw_v15_status_20260922_055553.log`): six of the
+  eight are VALID (UL16 postVFP, UL17, UL18, both charges); the two UL16APV datasets were missed by the query pattern and are still unread.
 - **Decision (user).** tttW was always part of the hadronic background list, so keep it: two keys `TTTWminus` / `TTTWplus`
   (`ttVV`, `ttHH,had`), one xsec entry each in the analyzer tables; the old `TTTW` key stays as `ttVV_v9` / `alt` for the v9 campaign.
-- **Left.** xsec for the two charge states (XSDB / GenXSecAnalyzer; sum = the old inclusive value); DBS status (VALID / PRODUCTION) one-liner (RUNBOOK 8).
+- **Left.** xsec for the two charge states (XSDB / GenXSecAnalyzer; sum = the old inclusive value); DBS status of the two UL16APV datasets (RUNBOOK 9).
 
 ## D-2026-09-17-data-pd-2016: 2016 uses the same data PDs as 2017/2018
 **DECIDED · 2026-09-17 · user decision · registry `script/samples_registry.txt`, `ttHH/04_mc_request_2026-09.md` 4**

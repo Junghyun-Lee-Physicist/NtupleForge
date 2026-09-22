@@ -9,6 +9,20 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-22: batch 4 folded in (TTTW+/- VALID, 2025 rescan with PINNED); 2025 config drafts
+
+### Added
+- `script/config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`, `script/review_das_ttHH_2025_v15_20260922_0755.{md,tsv}` from the 09-22
+  rescan `script/das_ttHH_2025_v15_20260922_0755.log` (EXACT 64 + PINNED 1, NOT_FOUND 0). The 2025 MC draft lists the same 61 datasets as the 2024
+  MC draft (no 2025 MC campaign; Summer24 serves both), so only the Data draft is a submission candidate: 32 rows = JetMET0/1 + Muon0/1 x
+  PromptReco B-G (C and F as `-v1` + `-v2`), 6,607,369,332 events, 18,494 files, job-count guard OK.
+
+### Changed
+- TTTW+/- NanoAODv15: six of eight datasets read as VALID with `script/das_status.sh` (`run_probe_tttw_v15_status_20260922_055553.log`); the two
+  UL16APV datasets were missed because the RUNBOOK 8 pattern lacked the `APV` token (AI slip; corrected in RUNBOOK 9). Registry comment,
+  D-2026-09-17-tttw-split, STATUS row 5 / 18 / new 22s, `09` 20, ledger V35-V36 (ledger rows re-sorted ascending), `ttHH/03` 6 1, workspace
+  `00_START_HERE.md`, RUNBOOK 8 done / 9 next.
+
 ## [Unreleased], 2026-09-19 (2): 2018 trigger periods from AN2019_094 cross-checked against the inventories; "A -> B boundary" corrected to run 317509
 
 ### Changed

@@ -608,3 +608,17 @@ RUNBOOK §7. lxplus988, HEAD `1b576b9`, 커밋 `3c71cab`(09-19 맥 pull). 세 �
 2024 스캔 로그로 처음 낸 Run 3 config 초안 2 개(MC·Data 분리, `build_from_scan_log.py --data-branch-file`, 09-19)는 `script/config_das_ttHH_2024_v15_20260918_0803_{MC,Data}.yaml.draft`
 와 review 표 `script/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`; 제출 전 사용자 검토(`ttHH/03_run3_plan.md` §6 4).
 남은 lxplus 항목은 TTTW± 8 dataset 의 DBS status 한 줄(RUNBOOK §8).
+
+## 20. 2026-09-22: lxplus 배치 4 (TTTW± DBS status, 2025 had 재스캔 with PINNED)
+
+RUNBOOK §8. lxplus956, HEAD `d81f2ad` → 커밋 `1a9f20d`. 컨테이너 없음, 두 단계 전부 EXIT 0.
+
+| step | 결과 | 산출물 |
+|---|---|---|
+| `probe_tttw_v15_status` (3 s, `das_status.sh` 첫 실제 사용) | 6 dataset 전부 **VALID**, nevents 09-18 과 동일(TTTWminus UL16 1,700,000 / UL17 3,291,000 / UL18 3,485,000; TTTWplus 1,700,000 / 3,389,000 / 3,597,000). **UL16APV 2 개는 안 나왔다**: RUNBOOK §8 의 패턴 `RunIISummer20UL1*NanoAODv15-150X*` 가 `NanoAODAPVv15` 를 못 잡는다(09-18 의 `NanoAOD*v15` 에서 `*` 하나를 빠뜨림; AI 실수, §9 에 한 줄로 보정) | `run_probe_tttw_v15_status_20260922_055553.log` |
+| `das_scan_2025_had_pinned` (84 s) | MC 61 + DATA 4 → RESULT 65 = EXACT 64 + PINNED 1, NOT_FOUND 0 | `das_ttHH_2025_v15_20260922_0755.log`, `run_das_scan_2025_had_pinned_20260922_055557.log` |
+
+그 로그로 2025 config 초안 2 개를 냈다(`build_from_scan_log.py --data-branch-file`, 09-22): `config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`,
+review `review_das_ttHH_2025_v15_20260922_0755.{md,tsv}`. **MC 초안의 61 dataset 은 2024 MC 초안과 byte 단위로 같다**(머리·jobID 만 다름): 2025 MC 캠페인이
+없어 Summer24 를 같이 쓰기 때문이며, 따라서 MC ntuple 은 한 번만 만들고 2025 는 Data 초안만 제출 대상이다(`ttHH/03` §6 1, STATUS 표 18). Data 32 행 =
+JetMET0/1 + Muon0/1 × PromptReco B~G(C·F 는 `-v1`+`-v2`), 6,607,369,332 ev, 18,494 files, 최대 1,166 files(guard OK). 원장 V35–V36.

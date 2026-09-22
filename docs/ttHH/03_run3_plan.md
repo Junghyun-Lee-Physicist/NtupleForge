@@ -269,7 +269,10 @@ Summer24 상세 316 행 중 VALID 269 / PRODUCTION 21 / INVALID 26 — INVALID �
    `branch_hadronic_2024_v15_MC.txt`), `..._Data.yaml.draft`(Data 32 = JetMET0/1 + Muon0/1 × 8, 7,811 files, `ttHH2024_v15_had_Data_v1`,
    `branch_hadronic_2024_v15_Data.txt`), review 표 `script/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`(CRAB 10,000-job guard OK, 최대 2,532 files).
    **검토 뒤 사용자가 `crabConfig/` 로 복사**(도구는 덮어쓰지 않는다): Muon0/1 을 had 생산에 넣을지(registry 태그 `had,lep`), `units_per_job`, 출력 사이트, `TTWJetsToLNu`.
-   2025 는 같은 명령을 `script/das_ttHH_2025_v15_20260916_0900.log` 에 돌리면 되지만 그 로그에는 NOT_FOUND 1(`TTWJetsToLNu`, PINNED 도입 전)이 있어 재스캔이 먼저다.
+   ~~2025 는 재스캔이 먼저다.~~ **09-22 재스캔 완료**(`script/das_ttHH_2025_v15_20260922_0755.log`: EXACT 64 + PINNED 1, NOT_FOUND 0) → 2025 초안 2 개
+   `script/config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`, review `script/review_das_ttHH_2025_v15_20260922_0755.{md,tsv}`. **2025 MC 초안의 61 dataset 은
+   2024 MC 초안과 완전히 같다**(2025 MC 캠페인 없음, Summer24 공용; §1) → MC ntuple 은 한 번만 만들고 2025 는 Data 초안(`ttHH2025_v15_had_Data_v1`,
+   `branch_hadronic_2025_v15_Data.txt`; JetMET0/1 + Muon0/1 × PromptReco B~G, C·F 는 `-v1`+`-v2`, 6,607,369,332 ev, 18,494 files, guard OK)만 제출 대상이다.
 2. **`build_from_scan_log.py` 의 Run 3 대응** — (a)·(b) **끝남 (2026-09-16)**: `--data-variants {auto,canonical,all}` 추가, `auto` 는 Run 3 era
    (`RUN3_ERAS`)에서 `all` = (PD, era) 당 하나만 남기는 규칙을 끄고 모든 DBS 변형을 `<PD>_<processed string>` 키의 독립 행으로 둔다(2024I 의 `-v2` + `_v2-v1`,
    2025C/F 의 `-v1` + `-v2` 전부 유지; 고치기 전에는 `Run2025C-PromptReco-v1` 155M ev 가 alternate 로 밀렸다). Data 플레이버 `BTVNano`/`JMENano` 는
