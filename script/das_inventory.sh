@@ -24,7 +24,8 @@
 #  Options
 #    --tier TIER        data tier (default NANOAODSIM)
 #    --tag TAG          short tag for the output file name (default: derived from campaign)
-#    --out FILE         TSV path (default script/das_inventory_<tag>_<YYYYmmdd_HHMM>.tsv)
+#    --out FILE         TSV path (default script/das/inventory_dumps/das_inventory_<tag>_<YYYYmmdd_HHMM>.tsv;
+#                       2026-09-22 layout: campaign dumps live under script/das/inventory_dumps/)
 #    --registry FILE    samples_registry(_run3).txt: every MC PRIMARY is looked up
 #                       case-insensitively -> EXACT / CASE_ONLY / NOT_FOUND report
 #    --grep TOKENS      comma-separated substrings, matched case-insensitively
@@ -75,7 +76,8 @@ case "$DETAILS" in matching|all|none) ;; *) echo "--details must be matching|all
 
 STAMP=$(date +%Y%m%d_%H%M)
 [[ -n "$TAG" ]] || TAG=$(echo "$CAMPAIGN" | sed 's/[^A-Za-z0-9]/_/g; s/__*/_/g; s/_$//' | cut -c1-40)
-[[ -n "$OUT" ]] || OUT="${SCRIPT_DIR}/das_inventory_${TAG}_${STAMP}.tsv"
+[[ -n "$OUT" ]] || OUT="${SCRIPT_DIR}/das/inventory_dumps/das_inventory_${TAG}_${STAMP}.tsv"
+mkdir -p "$(dirname "$OUT")"
 NAMES="${OUT}.names.txt" ; MATCH="${OUT}.match.txt"
 
 echo "### das_inventory.sh  $(date '+%Y-%m-%d %H:%M %Z')"

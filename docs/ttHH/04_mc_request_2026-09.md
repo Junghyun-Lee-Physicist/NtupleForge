@@ -30,7 +30,7 @@ NanoAODv9 에는 있고 NanoAODv15 에는 없다. MiniAODv2 부모는 DAS 에 �
 | **era-half 당 7 dataset** | **27.2M** | **27.1M** | **54.2M** | **54.1M** |
 
 네 열 모두 **MiniAODv2 부모의 event 수**다(2017/2018: DAS 2026-09-07, 2016: DAS 2026-09-16
-`script/das_inventory_ul16pre_miniaodv2_20260916_0856.tsv` · `script/das_inventory_ul16post_miniaodv2_20260916_0857.tsv`,
+`script/das/inventory_dumps/das_inventory_ul16pre_miniaodv2_20260916_0856.tsv` · `script/das/inventory_dumps/das_inventory_ul16post_miniaodv2_20260916_0857.tsv`,
 실행 기록 `script/runlogs/run_ul16pre_miniaodv2_20260916_065618.log` · `run_ul16post_miniaodv2_20260916_065754.log`).
 2016 부모는 모두 VALID 이고, 정확한 값은 preVFP `TTHHTo4b` 4,950,000 · `TT4b` 4,801,000 · `TTZHTo4b` 2,496,000 + ext1 2,500,000 ·
 `TTZZTo4b` 2,500,000 + ext1 2,500,000 · `THW` 7,498,000 (합 27,245,000), postVFP `TTHHTo4b` 4,798,000 · `TT4b` 4,848,000 ·

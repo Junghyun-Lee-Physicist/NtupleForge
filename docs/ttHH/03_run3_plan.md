@@ -95,7 +95,7 @@
 
 ### 4.2 캠페인 문자열과 GT
 
-근거: `das_scan.sh --probe --nano v15` 6 era (2026-09-07, `script/das_probe_<era>_v15.log`) — 아래 표의 문자열은 전부 DAS 가 돌려준 것이다. 배경 문서: PdmVRun3Analysis twiki r223, PPD "Run3 2025 Summary Table"(2026-01-20; GT·릴리스), 참조 분석(Hγγ, 2024)의 목록.
+근거: `das_scan.sh --probe --nano v15` 6 era (2026-09-07, `script/das/das_probe_<era>_v15.log`) — 아래 표의 문자열은 전부 DAS 가 돌려준 것이다. 배경 문서: PdmVRun3Analysis twiki r223, PPD "Run3 2025 Summary Table"(2026-01-20; GT·릴리스), 참조 분석(Hγγ, 2024)의 목록.
 
 | era | MC 캠페인 (DAS, `--probe` 실측) | Data (DAS, 실측) | 비고 |
 |---|---|---|---|
@@ -115,18 +115,18 @@
 ```bash
 cd ~/CMSSW_14_2_1/src/NtupleForge && voms-proxy-init --voms cms --valid 72:00
 # (0) 캠페인 문자열: 2025·2024 먼저 (기본 대상), 그 다음 2022/2023. MC 두 줄에 HIT|, DATA 는 CAMP| 에서 proc 문자열을 읽어 era 표를 고친다
-for E in 2025 2024 2023 2023BPix 2022 2022EE; do bash script/das_scan.sh --era $E --nano v15 --probe | tee script/das_probe_${E}_v15.log; done
+for E in 2025 2024 2023 2023BPix 2022 2022EE; do bash script/das_scan.sh --era $E --nano v15 --probe | tee script/das/das_probe_${E}_v15.log; done
 # (1) family 별 wildcard 로 존재하는 primary 를 전부 나열 (이름 확정의 유일한 출처). 2025 의 MC 는 Summer24 라 2024 와 같다 -> --data-only
-bash script/das_discover_run3.sh --era 2024 --nano v15 --out script/das_discover_2024_v15_$(date +%Y%m%d_%H%M).log
-bash script/das_discover_run3.sh --era 2025 --nano v15 --data-only --out script/das_discover_2025_v15_$(date +%Y%m%d_%H%M).log
+bash script/das_discover_run3.sh --era 2024 --nano v15 --out script/das/das_discover_2024_v15_$(date +%Y%m%d_%H%M).log
+bash script/das_discover_run3.sh --era 2025 --nano v15 --data-only --out script/das/das_discover_2025_v15_$(date +%Y%m%d_%H%M).log
 for E in 2023 2023BPix 2022 2022EE; do bash script/das_discover_run3.sh --era $E --nano v15 --out script/das_discover_${E}_v15_$(date +%Y%m%d_%H%M).log; done
 # (2) HIT| 줄에서 samples_registry_run3.txt 작성 -- 2026-09-07 완료 (MC 77, DATA 11)
 # (3) event/file 수: hadronic 먼저, 2025 (= Summer24 MC + Run2025 data) 부터. Run 3 era 는 registry 를 자동 선택한다.
-bash script/das_scan.sh --era 2025 --nano v15 --workstream had --out script/das_ttHH_2025_v15_$(date +%Y%m%d_%H%M).log
-bash script/das_scan.sh --era 2024 --nano v15 --workstream had --out script/das_ttHH_2024_v15_$(date +%Y%m%d_%H%M).log
+bash script/das_scan.sh --era 2025 --nano v15 --workstream had --out script/das/das_ttHH_2025_v15_$(date +%Y%m%d_%H%M).log
+bash script/das_scan.sh --era 2024 --nano v15 --workstream had --out script/das/das_ttHH_2024_v15_$(date +%Y%m%d_%H%M).log
 ```
 
-(0)·(1) 은 2026-09-07 에 돌렸고 로그는 커밋되어 있다(`script/das_probe_*_v15.log`, `script/das_discover_*_v15_20260907_*.log`).
+(0)·(1) 은 2026-09-07 에 돌렸고 로그는 커밋되어 있다(`script/das/das_probe_*_v15.log`, `script/das_discover_*_v15_20260907_*.log`).
 
 `das_discover_run3.sh` 는 family 당 wildcard 몇 개를 던져 `HIT|MC|<family>|<had|lep>|<dataset>` 를 찍는다 — 플레이버 재생산(JMENano/BTVNano)도 같이 나오므로 registry 에 옮길 때 뺀다. DATA 는 PD 별로 모든 캠페인(`CAMP|`)을 먼저 찍어 proc 문자열을 눈으로 확인하게 했다.
 
@@ -141,7 +141,7 @@ bash script/das_scan.sh --era 2024 --nano v15 --workstream had --out script/das_
 /bin/bash script/das_inventory.sh --campaign 'RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1*' --tag ul18_v15 \
     --registry script/samples_registry.txt --grep tt4b,tthh,ttzh,ttzz,ttztobb,thw,sherpa
 ```
-출력: `script/das_inventory_<tag>_<stamp>.tsv`(전 dataset; 상세는 기본적으로 registry/grep 에 걸린 것만, `--details all` 로 전부), `.names.txt`, `.match.txt`(`EXACT|` / **`CASE_ONLY|`**(대소문자만 다른 이름이 있다) / `NOT_FOUND|…|hint:` / `GREP|`). `CASE_ONLY` 가 한 줄이라도 나오면 registry 의 PRIMARY 를 그 이름으로 고친다. 로그 3 개를 커밋한다(비밀 없음).
+출력: `script/das/inventory_dumps/das_inventory_<tag>_<stamp>.tsv`(전 dataset; 상세는 기본적으로 registry/grep 에 걸린 것만, `--details all` 로 전부), `.names.txt`, `.match.txt`(`EXACT|` / **`CASE_ONLY|`**(대소문자만 다른 이름이 있다) / `NOT_FOUND|…|hint:` / `GREP|`). `CASE_ONLY` 가 한 줄이라도 나오면 registry 의 PRIMARY 를 그 이름으로 고친다. 로그 3 개를 커밋한다(비밀 없음).
 
 ### 4.4 Run 3 에서 특히 확인할 것
 
@@ -196,7 +196,7 @@ Aurore 가 전달한 Gabriel 의 1 년 전 발표(2024 Run 3 tt(SL)HH4b 시작 �
 
 ### 4.7 Inventory 결과 (2026-09-11, `das_inventory.sh`, 세 캠페인 전수)
 
-`script/das_inventory_{summer24_v15_20260911_0427,ul17_v15_20260911_0433,ul18_v15_20260911_0435}.tsv` (+`.names.txt`, `.match.txt`; 커밋됨).
+`script/das/inventory_dumps/das_inventory_{summer24_v15_20260911_0427,ul17_v15_20260911_0433,ul18_v15_20260911_0435}.tsv` (+`.names.txt`, `.match.txt`; 커밋됨).
 
 **대소문자 점검 — 끝.** 세 캠페인 모두 `CASE_ONLY` **0 건**. 09-07 의 결론은 그대로이고, 대소문자로 놓친 것은 `TT4B` 하나였다(지금은 `EXACT`).
 - Summer24 v15 (pattern `…realistic_v2*`, dataset 16,655 개): registry 78 행 중 **77 EXACT**, `NOT_FOUND` 1 = `TTWJetsToLNu`(`TTLNu-1Jets`, `mg35x_` 플레이버만 — 알던 것).
@@ -257,20 +257,20 @@ Summer24 상세 316 행 중 VALID 269 / PRODUCTION 21 / INVALID 26 — INVALID �
 ## 6. 다음 행동
 
 1. ~~**event/file 수 스캔**~~ **끝남 (2026-09-16, lxplus, `runlog.sh` 기록).** `das_scan.sh --era 2024|2025 --nano v15 --workstream had` →
-   `script/das_ttHH_2024_v15_20260916_0859.log`, `script/das_ttHH_2025_v15_20260916_0900.log`(실행 기록 `script/runlogs/run_das_scan_2024_had_*.log`,
+   `script/das/das_ttHH_2024_v15_20260916_0859.log`, `script/das/das_ttHH_2025_v15_20260916_0900.log`(실행 기록 `script/runlogs/run_das_scan_2024_had_*.log`,
    `run_das_scan_2025_had_*.log`, EXIT 0). 선택 65 = MC 61 + DATA 4, RESULT EXACT 64, NOT_FOUND 1 = `TTWJetsToLNu`(예상대로, `mg35x_` 플레이버만).
    MC 60 dataset 은 키당 정확히 1 개(ext·복수 버전 없음). DATA 는 PD 4 개 × 8 dataset: 2024 `Run2024C..I-MINIv6NANOv15-v1|v2` + `Run2024I-MINIv6NANOv15_v2-v1|v2`,
    2025 `Run2025B..G-PromptReco-v1` + `Run2025C/F-PromptReco-v2`. **DBS `-vN` 꼬리는 PD 마다 다르다**(2024F/G: JetMET0 `-v2`, Muon0 `-v1`; 2024I: JetMET0
    `-v2`, JetMET1 `-v1`) → DATA 행 이름은 반드시 스캔 로그에서 가져온다. 2024 JetMET0 합계 1,210,265,110 ev, 2025 JetMET0 합계 1,190,559,370 ev.
    ~~**남은 결정**: `TTWJetsToLNu` 를 (a) `mg35x_` 플레이버 dataset 을 PRIMARY 로 받아들이거나 (b) ERAS 에서 2024/2025 를 빼거나.~~ **09-17 AI 제안 (a) 를 PINNED
-   전체 경로로 구현, 09-18 실제 스캔으로 확인**(`script/das_ttHH_2024_v15_20260918_0803.log`: EXACT 64 + PINNED 1, NOT_FOUND 0; D-2026-09-17-ttwlnu-pinned 는
+   전체 경로로 구현, 09-18 실제 스캔으로 확인**(`script/das/das_ttHH_2024_v15_20260918_0803.log`: EXACT 64 + PINNED 1, NOT_FOUND 0; D-2026-09-17-ttwlnu-pinned 는
    사용자 veto 전까지 PROPOSED). 그 로그로 **첫 2024 config 초안 2 개**를 냈다(09-19, `build_from_scan_log.py --data-branch-file` 로 MC/Data 분리):
-   `script/config_das_ttHH_2024_v15_20260918_0803_MC.yaml.draft`(MC 61 dataset, 19,322 files, 13.95 TB, jobID `ttHH2024_v15_had_MC_v1`,
+   `script/drafts/config_das_ttHH_2024_v15_20260918_0803_MC.yaml.draft`(MC 61 dataset, 19,322 files, 13.95 TB, jobID `ttHH2024_v15_had_MC_v1`,
    `branch_hadronic_2024_v15_MC.txt`), `..._Data.yaml.draft`(Data 32 = JetMET0/1 + Muon0/1 × 8, 7,811 files, `ttHH2024_v15_had_Data_v1`,
-   `branch_hadronic_2024_v15_Data.txt`), review 표 `script/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`(CRAB 10,000-job guard OK, 최대 2,532 files).
+   `branch_hadronic_2024_v15_Data.txt`), review 표 `script/drafts/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`(CRAB 10,000-job guard OK, 최대 2,532 files).
    **검토 뒤 사용자가 `crabConfig/` 로 복사**(도구는 덮어쓰지 않는다): Muon0/1 을 had 생산에 넣을지(registry 태그 `had,lep`), `units_per_job`, 출력 사이트, `TTWJetsToLNu`.
-   ~~2025 는 재스캔이 먼저다.~~ **09-22 재스캔 완료**(`script/das_ttHH_2025_v15_20260922_0755.log`: EXACT 64 + PINNED 1, NOT_FOUND 0) → 2025 초안 2 개
-   `script/config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`, review `script/review_das_ttHH_2025_v15_20260922_0755.{md,tsv}`. **2025 MC 초안의 61 dataset 은
+   ~~2025 는 재스캔이 먼저다.~~ **09-22 재스캔 완료**(`script/das/das_ttHH_2025_v15_20260922_0755.log`: EXACT 64 + PINNED 1, NOT_FOUND 0) → 2025 초안 2 개
+   `script/drafts/config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`, review `script/drafts/review_das_ttHH_2025_v15_20260922_0755.{md,tsv}`. **2025 MC 초안의 61 dataset 은
    2024 MC 초안과 완전히 같다**(2025 MC 캠페인 없음, Summer24 공용; §1) → MC ntuple 은 한 번만 만들고 2025 는 Data 초안(`ttHH2025_v15_had_Data_v1`,
    `branch_hadronic_2025_v15_Data.txt`; JetMET0/1 + Muon0/1 × PromptReco B~G, C·F 는 `-v1`+`-v2`, 6,607,369,332 ev, 18,494 files, guard OK)만 제출 대상이다.
    **09-22 사용자 결정**: `TTWJetsToLNu` 는 뺀다(registry 행 주석) → 2024 를 재스캔해 60 MC + 4 DATA 로 config 를 다시 낸다; **2024 는 2018UL v15 와 함께 첫 생산**,

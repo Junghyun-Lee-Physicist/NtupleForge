@@ -30,14 +30,14 @@
 #    bash script/das_scan.sh --era 2018UL --probe
 #
 #    # (1) FULL SCAN -- enumerate every registry sample for one (era, version)
-#    bash script/das_scan.sh --era 2017UL --nano v9  --out script/das_2017UL_v9_$(date +%Y%m%d_%H%M).log
-#    bash script/das_scan.sh --era 2018UL --nano v9  --out script/das_2018UL_v9_$(date +%Y%m%d_%H%M).log
-#    bash script/das_scan.sh --era 2017UL --nano v15 --out script/das_2017UL_v15_$(date +%Y%m%d_%H%M).log
-#    bash script/das_scan.sh --era 2018UL --nano v15 --out script/das_2018UL_v15_$(date +%Y%m%d_%H%M).log
+#    bash script/das_scan.sh --era 2017UL --nano v9  --out script/das/das_ttHH_2017UL_v9_$(date +%Y%m%d_%H%M).log
+#    bash script/das_scan.sh --era 2018UL --nano v9  --out script/das/das_ttHH_2018UL_v9_$(date +%Y%m%d_%H%M).log
+#    bash script/das_scan.sh --era 2017UL --nano v15 --out script/das/das_ttHH_2017UL_v15_$(date +%Y%m%d_%H%M).log
+#    bash script/das_scan.sh --era 2018UL --nano v15 --out script/das/das_ttHH_2018UL_v15_$(date +%Y%m%d_%H%M).log
 #    # Run 3: probe first (13p6TeV primaries, JetMET/Muon PDs), then scan with the Run 3 registry
 #    bash script/das_scan.sh --era 2022 --nano v15 --probe
 #    bash script/das_scan.sh --era 2022 --nano v15 --registry script/samples_registry_run3.txt --workstream had \
-#         --out script/das_ttHH_2022_v15_$(date +%Y%m%d_%H%M).log
+#         --out script/das/das_ttHH_2022_v15_$(date +%Y%m%d_%H%M).log
 #
 #    # (2) one example file per dataset, for the branch-inventory step
 #    bash script/das_scan.sh --era 2018UL --nano v9 --sample-file --only TTbar_SemiLep,JetHT
@@ -101,7 +101,7 @@
 #
 #  PROVENANCE: commit the log. It is the sole input of build_from_scan_log.py
 #  and contains no credentials (unlike CRAB submission transcripts -- see
-#  docs/05_troubleshooting.md A17). .gitignore already carves out script/das_*.log.
+#  docs/05_troubleshooting.md A17). scan logs are committed under script/das/ (2026-09-22 layout).
 # =============================================================================
 
 set -u
@@ -151,7 +151,7 @@ era_table () {
     #     PdmVRun3Analysis twiki r223 and the PPD "Run3 2025 Summary Table"
     #     (20 Jan 2026), plus one reference analysis' dataset list.
     #     ALL SIX ROWS VERIFIED by --probe --nano v15 on 2026-09-07 (HIT| lines
-    #     for TTto4Q/TTtoLNu2Q and JetMET(0)/Muon(0); logs script/das_probe_*_v15.log):
+    #     for TTto4Q/TTtoLNu2Q and JetMET(0)/Muon(0); logs script/das/das_probe_*_v15.log):
     #       2022    MC Run3Summer22NanoAODv15-150X_mcRun3_2022_realistic_v1-v2        data Run2022C..G-NanoAODv15-v1
     #       2022EE  MC Run3Summer22EENanoAODv15-150X_mcRun3_2022_realistic_postEE_v1-v2
     #       2023    MC Run3Summer23NanoAODv15-150X_mcRun3_2023_realistic_v1-v2        data Run2023B..D-NanoAODv15[_vN]-v1

@@ -79,7 +79,7 @@
 - `crabConfig/config_ttHH2017UL.yaml` (91 datasets, UL17 NanoAODv9). Stable.
 - **2018UL campaign — DAS scan DONE, config generated (2026-07-26):**
   `script/das_ul18_scan.sh` was run on lxplus (log:
-  `script/das_ul18_scan_20260726_1657.log`) — all **61 MC primary datasets**
+  `script/das/das_ul18_scan_20260726_1657.log`) — all **61 MC primary datasets**
   (= 61 queries; expanding `ext1`/`ext2`/`ext3` variants gives the **77 MC
   entries** below) found EXACT, no relaxed fallback needed.
   `script/build_ul18_from_log.py` generated
@@ -111,7 +111,7 @@
     regression. Re-check before declaring the campaign done.
   - This production did **not** wait for the ttHH categorization work: the
     analyzer resolves `Expanded_genTtbarId` at runtime from patch files, so the
-    two campaigns are independent (workspace `RUNBOOK_UL18_to_controlplots.md`
+    two campaigns are independent (workspace `archive_2026/RUNBOOK_UL18_to_controlplots.md`
     §0).
   - Post-production check (**not yet run**): prescan `genEventCount_runs` vs the
     DAS `nevents` already stored in `samples_2018UL.json`.
@@ -151,13 +151,13 @@
   productions (incl. `ttHH2017UL_fullNano_v20`) exist on Tier-3 under the old
   name. Drop the legacy prefix only after all campaigns are reproduced. Multi-year goals
   (incl. Run3) live in the workspace-level
-  `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §2.3.
+  `archive_2026/00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §2.3.
 - **DEFERRED (2026-07-27, user decision) — `modules/expandedTtbarIdInjector.py`:**
   the long-term goal is that **NtupleForge**, not the analyzer, owns
   `Expanded_genTtbarId` — baked into `forgedNtuple.root` as a branch (patch
   lookup + genTtbarId self-check + FATAL-on-mismatch). Design is complete
   (5-stage plan, D-A…D-H in the workspace-level
-  `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §4) but **no code has
+  `archive_2026/00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` §4) but **no code has
   been written and none will be in this round.**
   - **Why deferred:** the immediate objective is the fastest path to UL18
     control plots. Writing the module means new-module validation *plus a full
@@ -373,7 +373,7 @@
 | 17 | **통합 계획 검토** (`11_unified_forge_plan.md`): Phase 0 착수 승인, Phase 1(저장소 병합) 은 Phase 0 뒤, CPV MiniAOD producer 범위, 출력 사이트 | 사용자 | 22q, D-2026-09-17-single-forge |
 | 19 | **생산 순서 (DECIDED 09-22, 사용자)**: **2018UL v15 + 2024 먼저**, 2025 Data·2016·2017 은 그 뒤 확장; analyzer 전 연도 일반화는 별도 후속 작업. 2018UL v15 config 는 부재 5 종 없이 발행(`--allow-notfound`), 5 종은 중앙 요청·enriched 결과가 오면 후속 config | 끝 | 22t, D-2026-09-22-production-order |
 | 18 | **제출 배치 (RUNBOOK §10)**: 2024 재스캔(`TTWJetsToLNu` 제외) + 2018UL v15 스캔 → 초안 4 개 → `crabConfig/config_ttHH{2018UL,2024}_v15_had_{MC,Data}.yaml` → 컨테이너에서 era·tier 별 500 event 로컬 점검 4 → preflight 4 → 파일럿(2024 MC `ZZ` + Data `JetMET0_Run2024H`) → 파일럿 확인 뒤 전체 4 config 제출 → `--report` 요약을 저장소에 | 사용자 (lxplus) | 22t |
-| 18a | ~~**Run 3 첫 config 초안 검토 (2024 had)**~~ 09-22 검토 끝: `script/config_das_ttHH_2024_v15_20260918_0803_{MC,Data}.yaml.draft`(MC 61 = 19,322 files 13.95 TB, Data 32 = 7,811 files; jobID `ttHH2024_v15_had_{MC,Data}_v1`, 브랜치 목록 `branch_hadronic_2024_v15_{MC,Data}.txt`). 검토 항목: Muon0/1 포함 여부(registry `had,lep`), `units_per_job`, 출력 사이트, `TTWJetsToLNu` mg35x 수용(표 4). 통과하면 `crabConfig/` 로 복사 후 preflight. **2025 초안도 나왔다(09-22)**: `script/config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`. 2025 MC 초안의 dataset 61 개는 2024 MC 초안과 **완전히 같다**(2025 MC 캠페인이 없어 Summer24 를 같이 씀) → MC 는 한 번만 생산하고 2025 는 **Data 초안만** 제출 대상(Data 32 행 = JetMET0/1 + Muon0/1 × PromptReco B~G, C·F 는 `-v1`+`-v2`, 6,607,369,332 ev, 18,494 files). 검토 항목은 2024 와 같다 | 사용자 | 22r, 22s, ttHH/03 §6 1 |
+| 18a | ~~**Run 3 첫 config 초안 검토 (2024 had)**~~ 09-22 검토 끝: `script/drafts/config_das_ttHH_2024_v15_20260918_0803_{MC,Data}.yaml.draft`(MC 61 = 19,322 files 13.95 TB, Data 32 = 7,811 files; jobID `ttHH2024_v15_had_{MC,Data}_v1`, 브랜치 목록 `branch_hadronic_2024_v15_{MC,Data}.txt`). 검토 항목: Muon0/1 포함 여부(registry `had,lep`), `units_per_job`, 출력 사이트, `TTWJetsToLNu` mg35x 수용(표 4). 통과하면 `crabConfig/` 로 복사 후 preflight. **2025 초안도 나왔다(09-22)**: `script/drafts/config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`. 2025 MC 초안의 dataset 61 개는 2024 MC 초안과 **완전히 같다**(2025 MC 캠페인이 없어 Summer24 를 같이 씀) → MC 는 한 번만 생산하고 2025 는 **Data 초안만** 제출 대상(Data 32 행 = JetMET0/1 + Muon0/1 × PromptReco B~G, C·F 는 `-v1`+`-v2`, 6,607,369,332 ev, 18,494 files). 검토 항목은 2024 와 같다 | 사용자 | 22r, 22s, ttHH/03 §6 1 |
 | 15 | **enriched 생산 착수 = Phase 0 (`11_unified_forge_plan.md` §5)**: `crab/submit_crab.py` 에 `job_type: cmsrun` → TTHHGenCategoryTools 의 2017 enriched cfg 제출 → §4 (i) 검증 → 2018·2016 레시피. 글루는 **(A)** 로 확정(사용자 방향 D-2026-09-17-single-forge). 컬럼 이름 `genTtbarIdExpanded` | 사용자 착수 승인 | 22o, 22q |
 
 실행 규약(09-16): lxplus 의 모든 단계는 `script/runlog.sh <step> -- <명령>` 으로 돌려 `script/runlogs/` 에 로그와 `LEDGER.tsv` 를 남기고,
@@ -384,7 +384,7 @@
     **2022/2023 v15 는 부분 재생산**(70 개; 신호·ttbb·QCD-HT·ttH·tH·ttVV 없음) → D-R3-7: 첫 라운드는 2024+2025.
 22. ~~registry 작성~~ **DONE** — `script/samples_registry_run3.txt` MC 78(had 59 / lep 19) + DATA 11 *(09-11 현재 MC 85 = had 61 + lep 19 + alt 5 — 22h 참조)* (09-10: `TT4b` ← `TT4B_TuneCP5_13p6TeV_madgraph-pythia8` 추가; `das_discover_run3.sh` 에 `TT4B*`/`TTBBBB*` 접두어 추가).
     `das_scan.sh` 는 Run 3 era 에서 이 registry 를 자동 선택하고 v15 MC 질의를 GT 로 고정한다(플레이버 재생산 제외).
-22a. ~~**event/file 수 스캔**~~ **DONE 2026-09-16**: `das_scan.sh --era 2024|2025 --nano v15 --workstream had`, lxplus `runlog.sh` 기록(`script/runlogs/run_das_scan_202?_had_*.log`), 로그 `script/das_ttHH_2024_v15_20260916_0859.log`·`das_ttHH_2025_v15_20260916_0900.log` 커밋(`a781cb3`). 65 키(MC 61 + DATA 4), EXACT 64, NOT_FOUND 1 = `TTWJetsToLNu`; DATA PD 4 × 8 dataset, DBS `-vN` 꼬리가 PD 마다 다름. 상세 `09_v15_migration_log.md` 17 절, `ttHH/03_run3_plan.md` §6 1.
+22a. ~~**event/file 수 스캔**~~ **DONE 2026-09-16**: `das_scan.sh --era 2024|2025 --nano v15 --workstream had`, lxplus `runlog.sh` 기록(`script/runlogs/run_das_scan_202?_had_*.log`), 로그 `script/das/das_ttHH_2024_v15_20260916_0859.log`·`das_ttHH_2025_v15_20260916_0900.log` 커밋(`a781cb3`). 65 키(MC 61 + DATA 4), EXACT 64, NOT_FOUND 1 = `TTWJetsToLNu`; DATA PD 4 × 8 dataset, DBS `-vN` 꼬리가 PD 마다 다름. 상세 `09_v15_migration_log.md` 17 절, `ttHH/03_run3_plan.md` §6 1.
 22b. ~~**`build_from_scan_log.py` Run 3 대응**~~ **DONE 2026-09-16 (a·b)**: `--data-variants {auto,canonical,all}`(Run 3 = all: 2024I `-v2`+`_v2-v1`, 2025C/F `-v1`+`-v2` 전부 독립 행; 고치기 전에는 `Run2025C-PromptReco-v1` 155M ev 가 alternate 로 밀렸다), Data 플레이버 `BTVNano`/`JMENano` 제외 + 표에 나열(고치기 전 Run 2 v15 `JetHT_Run2018A` canonical 이 `UL2018_BTVNanoAODv15-v1` 이었다), `_MiniAODv2_` 없는 v15 문자열 허용, `DEFAULT_EXCLUDE` 확장. 컨테이너 dry-run 만(산출물 미커밋; 원장 V20). **남은 것**: (c) `_meta` lumi·골든 JSON; Run 3 config 발행은 `TTWJetsToLNu` NOT_FOUND 가 풀려야 가능(표 4).
 22c. **결정**: ~~`TT4b` 대체 vs 사설 생산~~ (해소 09-10: 중앙 `TT4B`); `TTWJetsToLNu`(v15 는 `mg35x_` 플레이버만) 수용 여부; 13.6 TeV xsec 표(D-R3-6).
 22d. **MC 요청 (2026-09-08~10, 덱 `ttHH_latex/GenRequest_Sep2026`)** — Run 2: 부재 6 종의 MiniAODv2→NanoAODv15 중앙 생산(16 dataset, ≈125M) 요청 예정; Run 3: Sherpa FH `TTto4Q-4Jets-1NLO3LO` 상태(PRODUCTION 80.5M / AHADIC INVALID)·통계·권고 판 문의, Sherpa 4FS ttbb·Sherpa tt4b 는 비교용 저순위, `GenHFHadronMatcher` 출력의 중앙 NanoAOD 탑재 문의. 그룹 피드백(Aurore 09-10): Run 2 세트 동의, Run 2 Sherpa tt+jets(FH·inclusive) 는 저순위로 요청, 24+25 우선 동의.
@@ -394,7 +394,7 @@
 22h. **2025 MC 캠페인 없음 — DAS 확인 (09-11)**: `dataset status=* dataset=/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2025*/NANOAODSIM` 빈 결과. `--era 2025` 는 Summer24 유지(03_run3_plan §4.7). registry 수: MC 85 = had 61 + lep 19 + alt 5, DATA 11.
 22i. **MC 요청 기록 (09-14)** — 보낸 메일 본문과 "요청하지 않은 것과 그 이유" 를 `docs/ttHH/04_mc_request_2026-09.md` 에 남겼다. 답장·발송 기록은 그 문서 §5 에 append 한다. 초안에 있던 `GenHFHadronMatcher` 요청은 사용자 판단으로 뺐다(일부 샘플만 가져도 전 샘플을 직접 만들어야 하므로 이점 없음).
 22j. **2016 확장의 analyzer 쪽 비용 (09-14, 미착수)** — MC 요청은 네 era-half 로 넓혔지만 `tempTTHH` 에는 `data/samples_2017UL.json`·`samples_2018UL.json` 만 있다. 2016 을 실제로 쓰려면 xsec 표 2 개, 2016 루미(`LUMI_SOURCES.md` 는 2017–2018 만), golden JSON, 트리거, b-tag SF, JEC/JER 이 필요하다. 범위 산정 안 됨.
-22k. **Run 2 범위 = full Run 2 (09-11 밤, 사용자 결정)** — 2016 preVFP/postVFP 를 `das_inventory.sh` 로 점검(v15 2 + v9 2, 로그 커밋). 네 Run 2 v15 캠페인의 `NOT_FOUND` 집합이 **동일**(diff 0) — 같은 5 종이 빠져 있고 나머지는 다 있다. 요청 = 5 종 × 4 era-half = **28 datasets ≈162M**(2016 은 09-16 MiniAODv2 부모 기준 27.2M/27.1M; 09-11 의 v9 수치 27.1M/27.1M 을 대체). registry: ttHH 62 행 ERAS 4 era-half 로 확장(era 당 had 45), QCD-HT PRIMARY 를 PSWeights 이름으로 교체(네 캠페인 EXACT) → 2017/18 v15 의 QCD-HT NOT_FOUND 도 해소(27 → 20). 남은 것: ~~2016 MiniAODv2 부모 수~~(09-16 DONE: 두 캠페인 136 키 전부 EXACT, `script/das_inventory_ul16{pre,post}_miniaodv2_20260916_*.tsv`, 원장 V12), `TTTW` 전하 분할 KEY 2 개 + xsec, 데이터 PD 2016 행(v15 JetHT era 문자열 9 개는 `run_discover_ul16_jetht_v15_*.log` 로 확정, `inventory_manifest_run3_2016.txt` 에 반영). `03_DECISIONS.md` D-2026-09-11-run2-scope-2016, `09_v15_migration_log.md` 16·17 절.
+22k. **Run 2 범위 = full Run 2 (09-11 밤, 사용자 결정)** — 2016 preVFP/postVFP 를 `das_inventory.sh` 로 점검(v15 2 + v9 2, 로그 커밋). 네 Run 2 v15 캠페인의 `NOT_FOUND` 집합이 **동일**(diff 0) — 같은 5 종이 빠져 있고 나머지는 다 있다. 요청 = 5 종 × 4 era-half = **28 datasets ≈162M**(2016 은 09-16 MiniAODv2 부모 기준 27.2M/27.1M; 09-11 의 v9 수치 27.1M/27.1M 을 대체). registry: ttHH 62 행 ERAS 4 era-half 로 확장(era 당 had 45), QCD-HT PRIMARY 를 PSWeights 이름으로 교체(네 캠페인 EXACT) → 2017/18 v15 의 QCD-HT NOT_FOUND 도 해소(27 → 20). 남은 것: ~~2016 MiniAODv2 부모 수~~(09-16 DONE: 두 캠페인 136 키 전부 EXACT, `script/das/inventory_dumps/das_inventory_ul16{pre,post}_miniaodv2_20260916_*.tsv`, 원장 V12), `TTTW` 전하 분할 KEY 2 개 + xsec, 데이터 PD 2016 행(v15 JetHT era 문자열 9 개는 `run_discover_ul16_jetht_v15_*.log` 로 확정, `inventory_manifest_run3_2016.txt` 에 반영). `03_DECISIONS.md` D-2026-09-11-run2-scope-2016, `09_v15_migration_log.md` 16·17 절.
 22l. **lxplus 실행 기록 배치 1 (09-16)**: 블록 [1]–[7]: `runlog.sh` 게이트 → UL16 MiniAODv2 inventory 2 → Run 3 had 스캔 2 → UL16 JetHT discovery → 35 인벤토리 스윕(failed 0) → 교차표 2, 커밋 `a781cb3`, 맥 pull. 결과 반영: `ttHH/04_mc_request_2026-09.md` §1(2016 열), 덱 v1.9, `09` 17 절, `08` §7, `10_validation_ledger.md` V11–V20, manifest 2016 Data 9 era 행, 브랜치 목록 10 개(신규 `branch_hadronic_2016_v15_{MC,Data}`, `_2024_v15_{MC,Data}`, `_2025_v15_Data`, `branch_CPV_Run2_Data_v15`; 수정 4: `btagWeight_*` 제거(MC 2), 2017 Data `HLT_QuadPFJet*` 제거, 머리 STATUS → checked), `check_branchlist.py`(`--era 2016|2024|2025`, Run 3 prefiring 요구 제외), `build_from_scan_log.py`(22b). **다음 lxplus 배치**: 2016 Data 9 era 스윕(두 패턴 라벨 인벤토리는 문서가 인용하므로 유지), `Run2016B-HIPM…-v1` vs `…_v2-v1` run 범위, 2018A 첫 파일 run 범위(22n). 명령은 RUNBOOK §6.
 22l-2. **배치 2 (09-17, lxplus982, git `8690132`, 커밋 `15f377b`)**: selftest → `runs_ul16B_v15`(2016B `-v1` = ver1 run 272760–273017 / 9,726,665 ev / 11 file; `_v2-v1` = ver2 run 273150–275376 / 133,752,091 ev / 145 file) → `runs_2018A_firstfile`(파일 run 316058–316719, dataset 315257–316995) → `sweep_ul16_data_eras`(9 새 인벤토리, dumped 9 / skipped 33 / failed 0, 101 s) → `check_2016_data_list`(9 era 전부 exit 3 = `Jet_jetId`/`Jet_puId` 만, dead 0) → `check_cpv_data_2016`(9 era 전부 exit 0). 전부 EXIT 0. 반영: manifest 머리(B 두 dataset 의 run·event), `ttHH/04` §4, 2016 목록·CPV Data 목록 머리, 원장 V21–V25, `08` §7.4·§7.5, `09` 18 절. 2016 의 six-jet CSV 경로 4 개는 9 era 파일 전부에 있고, `HLT_AK8PFJet450/500` 만 B ver1 에 없다.
 22m. **브랜치 목록 점검 결과 (09-16, `08` §7.3)**: 08-17 의 v15 목록 4 개는 dead pattern 2 종(`btagWeight_*`: v15 에 없음; 2017 Data `HLT_QuadPFJet*`: 2017B–E 에 0 개, v9 도 같음)이 있었고 제거. 신규 6 개는 실제 스키마에서 dead 0. 남은 exit 3 은 전부 `Jet_jetId`/`Jet_puId`(analyzer 재계산, `08` §3.4). 열린 것: (a) **트리거 결정** 2016·Run 3 → `HLT_REQUIRED` 채우기(지금 빈 목록 = 검사 안 함); (b) **CPV 목록 per-era 분리**: 2016 경로명 `HLT_IsoTkMu*`/`HLT_L2DoubleMu*`(2017/2018 dead), 2017B 추가 `HLT_TkMu*`/`HLT_TrkMu*`/`HLT_DoubleIsoMu*`/`HLT_MET*`, MC v15 목록의 `Scouting*`(UL16 MC 에 없음); (c) `Flag_METFilters` 가 Summer24 MC·2025 PromptReco 에 없음(개별 `Flag_*` 는 있음) → prescan 프로필·analyzer 확인; (d) `branch_prescan_slim_2017.txt` 는 UL17 MC(v9·v15)에서 Run B calo 경로 3 개가 dead, 07-27 부터 그랬고 prescan 캠페인은 끝났으므로 기록만.
@@ -406,6 +406,7 @@
 
 22s. **배치 4 (09-22, lxplus956, 커밋 `1a9f20d` + §9 보정 `6e276c1`; `09` 20 절)**: `das_status.sh` 로 TTTW± v15 status **8/8 VALID**(첫 패턴이 UL16APV 2 개를 놓쳐 두 번에 나눠 읽음); 2025 had 재스캔 EXACT 64 + PINNED 1, NOT_FOUND 0, MC 61 + DATA 4 → 2025 config 초안 2 개(MC 는 2024 와 동일 dataset, Data 32 행). 원장 V35–V36.
 22t. **결정 묶음 (09-22, 사용자)**: ① `TTWJetsToLNu` 는 뺀다(registry 행 주석, D-2026-09-17-ttwlnu-pinned DEPRECATED); ② **2018UL v15 + 2024 먼저 생산**, 나머지 연도는 확장(D-2026-09-22-production-order); ③ analyzer 의 전 연도 일반화는 후속; ④ 트리거는 analyzer 몫(표 12 유지). config 검토 항목 정리: Muon0/1 은 v9 config 의 SingleMuon 과 같은 역할(trigger SF 기준 표본)이라 결정 아님; `units_per_job` 1 은 guard OK(최대 2,532 파일); 사이트 `T3_KR_KNU`. 도구: `build_from_scan_log.py --allow-notfound`(부재 5 종을 주석 블록으로 두고 config 발행; 다른 NOT_FOUND 는 여전히 거부, 합성 로그로 검증), `script/localcheck_summary.py`(로컬 500 event 점검 요약); config 의 `jobID` 는 `campaign_<tag>`(CRAB workArea, gitignore 대상), `output_base` 는 `<tag>`. 제출 절차는 README 의 UL18 재현 순서를 따르고 명령은 RUNBOOK §10.
+22u. **정리 (09-22, 사용자 요청 "쓸데없는 로그·문서 정리")**: `script/` 의 산출물 64 개를 `script/das/`(스캔·probe·discover 로그), `script/das/inventory_dumps/`(전수 덤프 30), `script/drafts/`(review·config 초안 8) 로, 루트 느슨한 파일 5 개는 삭제 1(`smoke.log`)·이동 4; smoke 산출물 3 개 삭제. 워크스페이스 루트는 문서 4 개만 남기고 6 개를 `archive_2026/`, 발표 자료 3 개를 `Materials/slides/` 로. 문서·도구의 경로 전부 치환(CHANGELOG 09-22 (3), `script/README.md`). 번호 문서 12 개(`docs/`)는 기록 체계라 그대로.
 23. **event-level 항목의 "기억" 확정** — 03_run3_plan §2 의 jet veto map 키·MET filter 목록(ecalBadCalib
     보정 수치)·JEC/JER 태그·golden JSON 이름·PU 키를 twiki 원문으로 대조하고 상태 열 갱신. **값을 코드에
     넣기 전에 반드시.**

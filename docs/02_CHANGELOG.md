@@ -9,6 +9,25 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-22 (3): `script/` and repo root tidied into directories; paths rewritten everywhere
+
+### Changed
+- `script/` kept flat 95 files; now 30 (23 tools, 2 registries, 3 manifests, `validate_v9.json`, this `README.md`). Records moved, not
+  deleted: 26 DAS scan / probe / discover logs + the v9-vs-v15 compare table + `missing_in_v15_2017UL.tex` -> `script/das/`; 30
+  full-campaign dumps (`das_inventory_*.tsv` + `.match.txt` + `.names.txt`) -> `script/das/inventory_dumps/`; 8 review tables and config
+  drafts -> `script/drafts/`; the three Sherpa DAS listings from the repo root -> `script/das/sherpa/`; `validate_v9.json` from the root ->
+  `script/`. Deleted (parked in the workspace `_to_delete/cleanup_20260922/` for the user to remove): the 3 `das_inventory_smoke_*`
+  artifacts and the empty `smoke.log`. `script/README.md` documents the layout.
+- Tool defaults follow the layout: `das_inventory.sh` writes to `script/das/inventory_dumps/`, `build_from_scan_log.py` to `script/drafts/`
+  (was: next to the log); header examples of `das_scan.sh`, `das_discover_run3.sh`, `das_ul18_scan.sh`, `scan_diff_latex.py`,
+  `build_ul18_from_log.py` (its provenance literal too) and the `.gitignore` comment updated. `build_ul18_from_log.py` already searched
+  `script/` recursively, so it still finds the moved UL18 log.
+- Every `script/<record>` path in `docs/` (incl. older CHANGELOG entries, rewritten mechanically so that each cited file can still be
+  opened), `README.md` and the workspace documents now points at the new location; bare file names without a directory were left as they
+  were. Workspace root: `RUNBOOK_UL18_*.md`, `WORKBOOK_local_test_partial_CRAB.md`, `HANDOFF_vs_LOCAL_diff_report.md`,
+  `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md`, `patch_compare_2026-08-31.py` -> `archive_2026/`; three slide files ->
+  `Materials/slides/`; four documents stay at the root (`00_START_HERE.md` 1 lists them).
+
 ## [Unreleased], 2026-09-22 (2): user decisions (drop TTWJetsToLNu; 2018UL v15 + 2024 first); builder --allow-notfound; submission batch prepared
 
 ### Added
@@ -33,8 +52,8 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased], 2026-09-22: batch 4 folded in (TTTW+/- VALID, 2025 rescan with PINNED); 2025 config drafts
 
 ### Added
-- `script/config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`, `script/review_das_ttHH_2025_v15_20260922_0755.{md,tsv}` from the 09-22
-  rescan `script/das_ttHH_2025_v15_20260922_0755.log` (EXACT 64 + PINNED 1, NOT_FOUND 0). The 2025 MC draft lists the same 61 datasets as the 2024
+- `script/drafts/config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`, `script/drafts/review_das_ttHH_2025_v15_20260922_0755.{md,tsv}` from the 09-22
+  rescan `script/das/das_ttHH_2025_v15_20260922_0755.log` (EXACT 64 + PINNED 1, NOT_FOUND 0). The 2025 MC draft lists the same 61 datasets as the 2024
   MC draft (no 2025 MC campaign; Summer24 serves both), so only the Data draft is a submission candidate: 32 rows = JetMET0/1 + Muon0/1 x
   PromptReco B-G (C and F as `-v1` + `-v2`), 6,607,369,332 events, 18,494 files, job-count guard OK.
 
@@ -68,7 +87,7 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   `common.branch_file` and the v15 MC and Data lists differ, so the CPV convention (two configs) is the only way to give each tier its list. The
   single-config path is unchanged apart from a header warning when it mixes MC and Data. Tested: 2024 log -> MC 61 / Data 32 keys, both YAML-parse,
   byte-identical on re-run.
-- `script/config_das_ttHH_2024_v15_20260918_0803_{MC,Data}.yaml.draft`, `script/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`: the first Run 3
+- `script/drafts/config_das_ttHH_2024_v15_20260918_0803_{MC,Data}.yaml.draft`, `script/drafts/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`: the first Run 3
   config drafts (jobID `ttHH2024_v15_had_{MC,Data}_v1`; MC 61 datasets, 19,322 files, 13.95 TB; Data 32 = JetMET0/1 + Muon0/1 x 8 processing rows,
   7,811 files; job-count guard OK, largest 2,532 files). Drafts only: the user reviews and copies to `crabConfig/` (STATUS row 18).
 
@@ -302,7 +321,7 @@ Results and decisions: `08_branch_schema_migration.md` 7. Index: `10_validation_
 ## [Unreleased] — 2026-09-11 (night): Run 2 request = all four era-halves; QCD-HT primary fixed for v15
 
 ### Added
-- `script/das_inventory_ul16{pre,post}_{v15,v9}_20260911_*.tsv` (+ `.names.txt`, `.match.txt`) — UL16 preVFP/postVFP,
+- `script/das/inventory_dumps/das_inventory_ul16{pre,post}_{v15,v9}_20260911_*.tsv` (+ `.names.txt`, `.match.txt`) — UL16 preVFP/postVFP,
   NanoAODv15 and v9. v15: 109 EXACT / 27 NOT_FOUND each; v9: 129 / 7. The four Run 2 v15 NOT_FOUND key sets
   (16pre, 16post, UL17, UL18) are **identical**.
 
@@ -340,13 +359,13 @@ Results and decisions: `08_branch_schema_migration.md` 7. Index: `10_validation_
 ### Notes
 - `dasgoclient -query "dataset status=* dataset=/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2025*/NANOAODSIM"`
   returns nothing: no 2025 MC campaign on DAS (PPD statement confirmed); `--era 2025` keeps scanning Summer24.
-- New inventory output on lxplus, to be committed: `script/das_inventory_tth_split_20260911_0857.tsv`
+- New inventory output on lxplus, to be committed: `script/das/inventory_dumps/das_inventory_tth_split_20260911_0857.tsv`
   (+ `.names.txt`, `.match.txt`; 16,658 datasets listed).
 
 ## [Unreleased] — 2026-09-11 (later): inventory results, `alt` registry rows
 
 ### Added
-- **Inventory logs** `script/das_inventory_{summer24_v15_20260911_0427,ul17_v15_20260911_0433,ul18_v15_20260911_0435}.tsv`
+- **Inventory logs** `script/das/inventory_dumps/das_inventory_{summer24_v15_20260911_0427,ul17_v15_20260911_0433,ul18_v15_20260911_0435}.tsv`
   (+ `.names.txt`, `.match.txt`), run on lxplus. Result: `CASE_ONLY` 0 in all three campaigns —
   the 2026-09-07 conclusions stand; `TT4B` was the only case miss. Numbers in `03_run3_plan.md` §4.7.
 - **Registry `alt` rows** (WORKSTREAM `ttHH,alt`, excluded by `--workstream had`):
@@ -461,7 +480,7 @@ No physics logic changed; nothing was submitted or produced.
   spellings are caught.
 
 ### Same day, third pass — probe + discovery run on lxplus; Run 3 registry written
-- Logs committed: `script/das_probe_{2022,2022EE,2023,2023BPix,2024,2025}_v15.log`,
+- Logs committed: `script/das/das_probe_{2022,2022EE,2023,2023BPix,2024,2025}_v15.log`,
   `script/das_discover_<era>_v15_20260907_*.log`. All six era rows of `das_scan.sh` are
   now DAS-verified (MC campaign + GT, data processing strings; `03_run3_plan.md` §4.2).
 - **Findings** (§4.5): Summer24 NanoAODv15 carries the whole hadronic set centrally —
@@ -724,7 +743,7 @@ config edit had landed on the wrong file. No physics logic changed.
    rotating** and no grid credential is exposed. `.gitignore` now blocks
    `submit_*.log`, `crab_status_*.log`, `localcheck_*/`, `local_test_*.log` with
    the reason inline, and keeps the deliberate carve-out for
-   `script/das_ul18_scan_*.log` (DAS output, no secrets, and the documented input
+   `script/das/das_ul18_scan_*.log` (DAS output, no secrets, and the documented input
    of `build_ul18_from_log.py`). History rewrite is **deliberately not done** —
    recipe and rationale in `05_troubleshooting.md` **A17** and
    `03_DECISIONS.md` **D-2026-08-17-no-logs-in-git**.
@@ -756,7 +775,7 @@ config edit had landed on the wrong file. No physics logic changed.
 
 ### Also confirmed (no action)
 
-- `script/das_ul18_scan_20260726_1657.log` **is** tracked (432 lines, 33 KB), so
+- `script/das/das_ul18_scan_20260726_1657.log` **is** tracked (432 lines, 33 KB), so
   the UL18 configs' provenance is reproducible from this checkout. An earlier
   reading that it was missing came from a copy step that skipped it.
 - The `2026-07-27 (4)` slot is genuinely absent from this log; (3) is followed by
@@ -969,8 +988,8 @@ documented command against the actual CLI of the scripts it invokes.
   the 2026-07-27 local run. `config_ttHH2018UL_prescan.yaml` and the two
   `branch_prescan_slim_*.txt` files are kept — they remain the cheapest way to
   re-test a new era or a new NanoAOD version.
-- New runbook: workspace `RUNBOOK_UL18_to_controlplots.md`
-  (`RUNBOOK_UL18_step1.md` marked SUPERSEDED).
+- New runbook: workspace `archive_2026/RUNBOOK_UL18_to_controlplots.md`
+  (`archive_2026/RUNBOOK_UL18_step1.md` marked SUPERSEDED).
 
 ### Added (runbook §2, Phase 1-0)
 - **Pre-submission local multi-sample check** for the full production, added on
@@ -1064,7 +1083,7 @@ documented command against the actual CLI of the scripts it invokes.
 - `build_ul18_from_log.py` and the artefacts it stamps (`config_ttHH2018UL*.yaml`
   header, `samples_2018UL.json._meta.source_log`) referenced a **nonexistent**
   `script/logs/das_ul18_scan_2026-07-26.log`; corrected to the real
-  `script/das_ul18_scan_20260726_1657.log` and regenerated (contents otherwise
+  `script/das/das_ul18_scan_20260726_1657.log` and regenerated (contents otherwise
   byte-identical).
 - `docs/07_DeveloperGuideline.md`, `docs/05_troubleshooting.md` and `README.md`
   still stated that both Rule-6 sites use `slimmedNtuple.root`; updated to
@@ -1152,7 +1171,7 @@ documented command against the actual CLI of the scripts it invokes.
 
 ## [Unreleased] — 2026-07-26 (4): BTagCSV-2018 absence CONFIRMED (forensic scan run)
 
-### Verified (lxplus run, log `script/das_ul18_scan_20260726_1657.log`)
+### Verified (lxplus run, log `script/das/das_ul18_scan_20260726_1657.log`)
 - **BTagCSV does not exist in 2018 — settled, not a naming issue.** The v2
   forensic queries returned **0 hits** for `/BTagCSV/Run2018*/*` under **any
   tier** and **any dataset status** (`status=*`, i.e. INVALID/DEPRECATED
@@ -1199,7 +1218,7 @@ documented command against the actual CLI of the scripts it invokes.
 ### Added
 - **`crabConfig/config_ttHH2018UL.yaml`** — 85 datasets (77 MC + 8 Data), generated
   by the new **`script/build_ul18_from_log.py`** from
-  **`script/das_ul18_scan_20260726_1657.log`** (lxplus run, transcribed DS/RESULT
+  **`script/das/das_ul18_scan_20260726_1657.log`** (lxplus run, transcribed DS/RESULT
   lines). Selection rules recorded in the script header: standard campaign only
   (JMENano/PUFor*/FSUL18/BPH excluded); ext1/ext2 = separate keys (new vs UL17:
   `TTWW_ext1`); Data = non-GT36 with GT36 twins as comments (**OPEN**: confirm

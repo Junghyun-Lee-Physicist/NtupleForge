@@ -449,7 +449,7 @@ v15 에서 스키마까지 통과했다 — 14 절.
 D(2018UL·Run3).
 
 > 2026-08-31 판의 이 절에 있던 "`Expanded_genTtbarId` 의 ntuple forge 단계 통합" 은 **범위가 바뀌었다**.
-> 그 문구는 최상위 `00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` 의 patch-파일 주입 계획(DEFERRED)을
+> 그 문구는 최상위 `archive_2026/00_CONTEXT_ExpandedTtbarId_NtupleForge_Migration.md` 의 patch-파일 주입 계획(DEFERRED)을
 > 가리켰는데, 중앙 v15 가 없는 6 샘플은 이제 NanoAOD 안에 컬럼이 **직접** 들어가므로 그 주입이 필요 없다.
 > 주입 계획은 sidecar 로 남는 ttbar 3 종에만 해당한다.
 
@@ -602,11 +602,11 @@ RUNBOOK §7. lxplus988, HEAD `1b576b9`, 커밋 `3c71cab`(09-19 맥 pull). 세 �
 | `diff_v9_v15_2016_2018` (3 s) | 16 쌍 전부 exit 4(차이 있음). MC 2016 두 half 127/370/86 = 2017 과 동일, 2018 129/396/86; Data 12 era 121–129 / 328–360 / 58, 2018A 378/333/58 | `diff_v9_v15_{2016preVFP,2016postVFP,2018UL}_MC.txt`, `diff_v9_v15_{2016B,2016Bv2,...,2018D}_Data.txt`, `run_diff_v9_v15_2016_2018_20260918_072642.log` |
 | `probe_tttw_v15` (2 s) | TTTWminus/plus v15 8 dataset(`..._v1-v1`) 의 summary: 1.63M–3.60M ev(표는 registry 주석) | `run_probe_tttw_v15_20260918_060303.log` |
 | `discover_ul16_btagcsv_v15` (1 s) | BTagCSV UL16 v15 9 dataset, JetHT 와 같은 era 구조 | `run_discover_ul16_btagcsv_v15_20260918_060305.log` |
-| `das_scan_2024_had_pinned` (30 s) | MC 61 + DATA 4 → RESULT 65 = EXACT 64 + **PINNED 1**(`TTWJetsToLNu`), NOT_FOUND 0 | `script/das_ttHH_2024_v15_20260918_0803.log`, `run_das_scan_2024_had_pinned_20260918_060306.log` |
+| `das_scan_2024_had_pinned` (30 s) | MC 61 + DATA 4 → RESULT 65 = EXACT 64 + **PINNED 1**(`TTWJetsToLNu`), NOT_FOUND 0 | `script/das/das_ttHH_2024_v15_20260918_0803.log`, `run_das_scan_2024_had_pinned_20260918_060306.log` |
 
 **해석은 `08_branch_schema_migration.md` §3.5(era 별 diff)·§7.4(2018 메뉴 전환: 2018A 전체에 새 쌍 없음, 진입 run 317509 는 AN2019_094 대조로)** 에, 검증 행은 `10_validation_ledger.md` V27–V33 에 있다.
-2024 스캔 로그로 처음 낸 Run 3 config 초안 2 개(MC·Data 분리, `build_from_scan_log.py --data-branch-file`, 09-19)는 `script/config_das_ttHH_2024_v15_20260918_0803_{MC,Data}.yaml.draft`
-와 review 표 `script/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`; 제출 전 사용자 검토(`ttHH/03_run3_plan.md` §6 4).
+2024 스캔 로그로 처음 낸 Run 3 config 초안 2 개(MC·Data 분리, `build_from_scan_log.py --data-branch-file`, 09-19)는 `script/drafts/config_das_ttHH_2024_v15_20260918_0803_{MC,Data}.yaml.draft`
+와 review 표 `script/drafts/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`; 제출 전 사용자 검토(`ttHH/03_run3_plan.md` §6 4).
 남은 lxplus 항목은 TTTW± 8 dataset 의 DBS status 한 줄(RUNBOOK §8).
 
 ## 20. 2026-09-22: lxplus 배치 4 (TTTW± DBS status, 2025 had 재스캔 with PINNED)

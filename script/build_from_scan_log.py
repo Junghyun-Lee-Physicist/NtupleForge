@@ -27,7 +27,7 @@ generator, so every ambiguity is reported rather than resolved.
 USAGE
 
     # 1. always start here: human-readable table + machine TSV
-    python3 script/build_from_scan_log.py script/das_2018UL_v15_<stamp>.log
+    python3 script/build_from_scan_log.py script/das/das_ttHH_2018UL_v15_<stamp>.log
 
     # 2. once the table looks right, emit the NtupleForge config
     python3 script/build_from_scan_log.py <log> --emit-config \
@@ -51,10 +51,10 @@ USAGE
     python3 script/build_from_scan_log.py <log> --emit-topcpv-datasets
 
     # 4. THE POINT OF THE WHOLE EXERCISE: diff two scans
-    python3 script/build_from_scan_log.py script/das_2018UL_v9_<s>.log \
-        --compare script/das_2018UL_v15_<s>.log
+    python3 script/build_from_scan_log.py script/das/das_ttHH_2018UL_v9_<s>.log \
+        --compare script/das/das_ttHH_2018UL_v15_<s>.log
 
-OUTPUTS land next to the log unless --outdir is given. Nothing is written to
+OUTPUTS land in script/drafts/ (review tables, config drafts; 2026-09-22 layout) unless --outdir is given. Nothing is written to
 crabConfig/ automatically -- the emitted config gets a .draft suffix and you
 copy it in after review. That is deliberate: an auto-overwritten config is how
 config_CPV2017UL_MC.yaml lost 60 datasets on 2026-07-26.
@@ -724,7 +724,7 @@ def main():
     ap.add_argument("log", help="das_scan.sh log file")
     ap.add_argument("--compare", metavar="LOG_B",
                     help="diff this log (A) against LOG_B and stop")
-    ap.add_argument("--outdir", help="output directory (default: next to the log)")
+    ap.add_argument("--outdir", help="output directory (default: script/drafts/ next to this script)")
     ap.add_argument("--registry", help="samples_registry.txt (default: next to this script)")
     ap.add_argument("--emit-config", action="store_true", help="emit a draft crabConfig YAML")
     ap.add_argument("--emit-xsec-json", action="store_true", help="emit a tempTTHH samples_*.json")
@@ -764,7 +764,7 @@ def main():
 
     if not os.path.isfile(args.log):
         sys.exit("FATAL: cannot read log '%s'" % args.log)
-    outdir = args.outdir or os.path.dirname(os.path.abspath(args.log))
+    outdir = args.outdir or os.path.join(os.path.dirname(os.path.abspath(__file__)), "drafts")
     os.makedirs(outdir, exist_ok=True)
     stem = os.path.splitext(os.path.basename(args.log))[0]
 

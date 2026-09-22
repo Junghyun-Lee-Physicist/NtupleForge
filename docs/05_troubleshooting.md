@@ -646,7 +646,7 @@ bloat the repo and make diffs useless.
 **Fix (done 2026-08-17).** `.gitignore` now blocks `submit_*.log`,
 `submit_*_20*.log`, `crab_status_*.log`, `crab_status_*_20*.log`,
 `localcheck_*/`, `local_test_*.log`, `preflight_*.log`, with an inline comment
-stating why, and an explicit carve-out for `script/das_ul18_scan_*.log` (DAS
+stating why, and an explicit carve-out for `script/das/das_ul18_scan_*.log` (DAS
 query output, no credentials, and the documented input of
 `script/build_ul18_from_log.py`). Policy: `03_DECISIONS.md`
 **D-2026-08-17-no-logs-in-git**.

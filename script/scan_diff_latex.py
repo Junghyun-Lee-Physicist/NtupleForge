@@ -37,11 +37,11 @@ is 2.61 % short of its MiniAOD parent (docs/09 5).
 USAGE
 -----
     python3 script/scan_diff_latex.py \
-        --a script/das_ttHH_2017UL_v9_<stamp>.log \
-        --b script/das_ttHH_2017UL_v15_<stamp>.log \
+        --a script/das/das_ttHH_2017UL_v9_<stamp>.log \
+        --b script/das/das_ttHH_2017UL_v15_<stamp>.log \
         --label-a v9 --label-b v15 \
         --registry script/samples_registry.txt \
-        --tex script/missing_in_v15_2017UL.tex
+        --tex script/das/missing_in_v15_2017UL.tex
 
 EXIT
 ----

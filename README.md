@@ -155,17 +155,17 @@ task 이름과 `outLFNDirBase` 미리보기 · 제출을 스킵시킬 기존 CRA
 
 ### 📅 UL18 캠페인 재현 순서 (2026-07-27 실행 기록)
 
-전 저장소를 아우르는 순서는 워크스페이스 **`RUNBOOK_UL18_to_controlplots.md`**
+전 저장소를 아우르는 순서는 워크스페이스 **`archive_2026/RUNBOOK_UL18_to_controlplots.md`**
 에 있습니다. 아래는 **이 저장소에서 실제로 실행한 명령**만 순서대로 옮긴 것입니다.
 
 ```bash
 # ── (0) 샘플 탐색: UL17 기준으로 UL18 등가 dataset 을 DAS 에서 찾는다 (lxplus)
-bash script/das_ul18_scan.sh 2>&1 | tee script/das_ul18_scan_$(date +%Y%m%d_%H%M).log
+bash script/das_ul18_scan.sh 2>&1 | tee script/das/das_ul18_scan_$(date +%Y%m%d_%H%M).log
 #   -> 이 로그가 아래 생성기의 INPUT 이자 provenance 이므로 저장소에 커밋합니다.
 #      (v2 는 NOT_FOUND 항목에 대해 전 tier·전 status 광역 조회 + PD 인벤토리 diff 까지 수행)
 
 # ── (1) 로그에서 config + xsec DB 생성 (멱등: 같은 로그면 같은 결과)
-python3 script/build_ul18_from_log.py            # 최신 script/das_ul18_scan_*.log 자동 선택
+python3 script/build_ul18_from_log.py            # 최신 script/das/das_ul18_scan_*.log 자동 선택
 #   생성물: crabConfig/config_ttHH2018UL.yaml          (85 datasets = 77 MC + 8 Data)
 #           crabConfig/config_ttHH2018UL_prescan.yaml  (81 = 77 MC + JetHT only, slim)
 #           ../tempTTHH/data/samples_2018UL.json       (nevents/nfiles + 2017 xsec 재사용)
@@ -178,7 +178,7 @@ python3 ../script/run_postproc.py "root://cms-xrd-global.cern.ch/${F}" \
 cd ..
 #   확인: exit 0, ROOT "Error in <" 0줄, Events 1000+ branches(keep *), MC 는
 #         Runs.genEventSumw / genWeight / genTtbarId 존재. 4개 샘플 판정 스크립트는
-#         RUNBOOK_UL18_to_controlplots.md sec.2 참조.
+#         archive_2026/RUNBOOK_UL18_to_controlplots.md sec.2 참조.
 
 # ── (3) preflight → 본제출 (full passthrough)
 python3 crab/submit_crab.py -c crabConfig/config_ttHH2018UL.yaml --preflight --check-das

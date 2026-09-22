@@ -13,7 +13,7 @@
 #
 #  USAGE (lxplus HOST or container, valid proxy; dasgoclient from cvmfs)
 #    bash script/das_discover_run3.sh --era 2022 --nano v15 \
-#         --out script/das_discover_2022_v15_$(date +%Y%m%d_%H%M).log
+#         --out script/das/das_discover_2022_v15_$(date +%Y%m%d_%H%M).log
 #    bash script/das_discover_run3.sh --era 2023BPix --nano v15 --mc-only
 #    bash script/das_discover_run3.sh --era 2024 --nano v15 --data-only
 #

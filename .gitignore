@@ -33,7 +33,7 @@ preflight_*.log
 # so there is nothing to rotate -- but see docs/05_troubleshooting.md A17 and
 # docs/03_DECISIONS.md D-2026-08-17-no-logs-in-git before adding any .log.
 #
-# NB: script/das_ul18_scan_*.log is deliberately NOT ignored -- it is the INPUT
+# NB: script/das/das_ul18_scan_*.log is deliberately NOT ignored -- it is the INPUT
 # that script/build_ul18_from_log.py parses, i.e. provenance for the generated
 # UL18 configs, and it contains only DAS query output (no credentials).
 # Only outputs are ignored here.

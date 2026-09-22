@@ -103,7 +103,7 @@
 - **Proposal.** Accept it. Mechanism (implemented 2026-09-17, tested with a fake DAS): a registry PRIMARY that starts with `/` is a **pinned full
   dataset path**; `das_scan.sh` queries it as is and reports `RESULT|key|PINNED|1`; `build_from_scan_log.py` skips its flavour exclusion for pinned
   keys and lists them; `das_inventory.sh` reports `PINNED|key|path|in_dump=N` instead of NOT_FOUND. With this the Run 3 scan has NOT_FOUND 0 and
-  the builder may emit a Run 3 config. **Confirmed on the real DAS 2026-09-18** (`script/das_ttHH_2024_v15_20260918_0803.log`: 64 EXACT + 1 PINNED,
+  the builder may emit a Run 3 config. **Confirmed on the real DAS 2026-09-18** (`script/das/das_ttHH_2024_v15_20260918_0803.log`: 64 EXACT + 1 PINNED,
   NOT_FOUND 0; ledger V33); the first 2024 config drafts were emitted from that log (STATUS row 18). Still PROPOSED until the user accepts or vetoes.
 - **Alternative.** Drop ttW -> l nu from Run 3 (remove 2024/2025 from the row's ERAS): a small background in the hadronic channel (enters via a lost lepton).
 
@@ -177,7 +177,7 @@
      (D17 정정 문단);
   4. resources: 28 tasks, about 36,000 core-h and 0.47 TB output (event-proportional estimate from the 2017/2018 measurement); the
      2016 MiniAODv2 inputs are now known: preVFP 873 files / 27,245,000 ev / 2.10 TB, postVFP 864 files / 27,098,000 ev / 2.12 TB
-     (`script/das_inventory_ul16{pre,post}_miniaodv2_20260916_*.tsv`), so 2017+2018+2016 = 4,929 files / 162,666,000 ev.
+     (`script/das/inventory_dumps/das_inventory_ul16{pre,post}_miniaodv2_20260916_*.tsv`), so 2017+2018+2016 = 4,929 files / 162,666,000 ev.
 - **Alternatives.** (a) wait for the answer (the previous plan): no CPU spent twice, but no v15 ntuples for these five until then and no
   cross-check. (b) enriched only, withdraw the request: loses the central provenance the analysis review will prefer. Rejected by the user in
   favour of both.
@@ -198,7 +198,7 @@
   in 2016 v15 as well (6.28M / 5.40M), so D-2026-09-11-ttz-hadronic-from-ttzqq holds for 2016 unchanged.
 - **Decision.** (a) The central request is the five samples in **all four era-halves — 28 datasets, ≈162M events**
   (2016: 7 datasets per half; 27.2M preVFP and 27.1M postVFP as MiniAODv2 parent counts, queried 2026-09-16 with
-  `das_inventory.sh --tier MINIAODSIM`, `script/das_inventory_ul16{pre,post}_miniaodv2_20260916_*.tsv`; the
+  `das_inventory.sh --tier MINIAODSIM`, `script/das/inventory_dumps/das_inventory_ul16{pre,post}_miniaodv2_20260916_*.tsv`; the
   2026-09-11 text here said 27.1M / 27.1M from NanoAODv9, superseded).
   (b) All 62 ttHH rows of `samples_registry.txt` now carry
   `2016postVFPUL,2016preVFPUL,2017UL,2018UL`; each era selects 45 `had` MC rows.
@@ -620,7 +620,7 @@ boson-less μμ. Real-file check pending on lxplus (audit §2b Draw one-liners).
   2. **Not by default: any other bulk run log** (local `-N` test output, condor
      job logs, hadd transcripts). They are large, regenerable, and reviewing a
      diff against them is meaningless.
-- **The one deliberate exception.** `script/das_ul18_scan_*.log` **is** tracked.
+- **The one deliberate exception.** `script/das/das_ul18_scan_*.log` **is** tracked.
   It is not a run log but the *input* that `script/build_ul18_from_log.py`
   parses — the provenance for the generated UL18 configs — and it contains only
   `dasgoclient` query output, no credentials. `.gitignore` says so inline so
