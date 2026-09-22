@@ -168,7 +168,11 @@ MC   TTWZ                                                                    TTW
 #  TTTW (tttW): the v9 sample TTTW_TuneCP5_13TeV-madgraph-pythia8 exists in NO NanoAODv15 campaign (inventory
 #  2026-09-11, all four era-halves). v15 carries the process split by W charge, amc@NLO with diagram removal:
 #  TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8 and TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8 (names present in all
-#  four v15 campaigns; their DAS status/nevents were '-' in the 09-11 inventory -> check before production).
+#  four v15 campaigns; '-' in the 09-11 inventory only meant "no details query for this key").
+#  DAS summary 2026-09-18 (run_probe_tttw_v15_20260918_060303.log; all eight are ..._v1-v1):
+#    TTTWminus  UL16APV 1,630,000 ev / 4 files   UL16 1,700,000 / 5   UL17 3,291,000 / 8   UL18 3,485,000 / 9
+#    TTTWplus   UL16APV 1,700,000 ev / 5 files   UL16 1,700,000 / 4   UL17 3,389,000 / 8   UL18 3,597,000 / 7
+#  The summary query carries no DBS status; VALID vs PRODUCTION is still to be read (RUNBOOK section 8).
 #  DECIDED 2026-09-17 (user): keep tttW in the hadronic background list as TWO keys, one xsec entry each
 #  (sigma(tttW-) + sigma(tttW+) = the old inclusive one). The old key stays for the v9 campaign only (alt).
 MC   TTTWminus                                                               TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8                                    2016postVFPUL,2016preVFPUL,2017UL,2018UL  ttVV       ttHH,had
@@ -224,7 +228,9 @@ MC   DYJetsToLL_M50_HT2500toInf                                              DYJ
 #  9 datasets verified (Run2016B-HIPM...-v1 = ver1 runs 272760-273017, ..._v2-v1 = ver2 runs 273150-275376, C..F HIPM;
 #  F, G, H postVFP; docs/ttHH/04_mc_request_2026-09.md section 4). das_scan.sh finds them with the relaxed data query;
 #  build_from_scan_log.py keeps the B ver1/ver2 pair as two rows (the '_v2' processing token, 2026-09-17).
-#  BTagCSV UL16 NanoAODv15: NOT yet discovered on DAS (RUNBOOK section 7) -- the era is listed so the scan reports it.
+#  BTagCSV UL16 NanoAODv15: 9 datasets on DAS 2026-09-18 (run_discover_ul16_btagcsv_v15_20260918_060305.log), the same
+#  era structure as JetHT: Run2016B-HIPM_UL2016_NanoAODv15-v1, Run2016B-HIPM_UL2016_NanoAODv15_v2-v1, C/D/E/F-HIPM -v1,
+#  F/G/H (postVFP) -v1.
 DATA JetHT                                                                   JetHT                                                                           2016postVFPUL,2016preVFPUL,2017UL,2018UL  data       ttHH,had
 DATA BTagCSV                                                                 BTagCSV                                                                         2016postVFPUL,2016preVFPUL,2017UL         data       ttHH,had
 DATA SingleMuon                                                              SingleMuon                                                                      2016postVFPUL,2016preVFPUL,2017UL,2018UL  data       ttHH,CPV,had,lep

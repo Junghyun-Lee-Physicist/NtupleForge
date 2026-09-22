@@ -91,7 +91,9 @@ hadronic selection 을 통과한다). 그런데 **어느 variant 도 세 채널�
   `script/runlogs/run_discover_ul16_jetht_v15_*.log`, `run_runs_ul16B_v15_*.log`): preVFP(HIPM) `Run2016B-HIPM_UL2016_NanoAODv15-v1`
   (= v9 의 ver1: run 272760–273017, 9,726,665 ev, 11 file), `Run2016B-HIPM_UL2016_NanoAODv15_v2-v1`(= ver2: run 273150–275376,
   133,752,091 ev, 145 file), `Run2016C/D/E/F-HIPM_UL2016_NanoAODv15-v1`; postVFP `Run2016F/G/H-UL2016_NanoAODv15-v1`. B 의 두 dataset 은
-  run 이 겹치지 않으므로 둘 다 넣는다. registry 행 작성만 남았다(`BTagCSV` 는 별도 discovery 필요).
+  run 이 겹치지 않으므로 둘 다 넣는다. registry 행은 09-17 에 썼고(D-2026-09-17-data-pd-2016), **`BTagCSV` UL16 v15 도 09-18 에 9 개 확인**
+  (`script/runlogs/run_discover_ul16_btagcsv_v15_20260918_060305.log`): JetHT 와 같은 era 구조(`Run2016B-HIPM_UL2016_NanoAODv15-v1`,
+  `..._v2-v1`, C/D/E/F-HIPM `-v1`, F/G/H `-v1`). 2016 데이터는 PD 2 × dataset 9 = 18 개다.
 - **`TTZToQQ` 로 바꾼 데 따른 xsec.** `TTZToBB` 의 861 fb 항목이 AN Tab.9 의 ttZ 841 fb 와 어긋난다는 **기존 열린
   항목**(`tempTTHH/docs/CHANGELOG.md`, `00_START_HERE.md` §4)이 그대로 이어진다. 새 항목은 σ(ttZ)×BR(Z→qq) 이므로
   정의를 이때 확정한다.

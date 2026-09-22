@@ -11,6 +11,55 @@
 
 ---
 
+## D-2026-09-18-2018A-trigger: the whole of Run2018A lacks the analyzer's 2018 six-jet paths; how the analyzer treats 2018A is the user's call
+**OPEN (analyzer side, tempTTHH) · 2026-09-18 measurement, entry written 2026-09-19 · options listed by the AI, decision pending**
+
+- **Facts (`script/runlogs/run_probe_2018{A,B}_sixjet_20260918_07*.log`, `08_branch_schema_migration.md` 7.4, ledger V27-V29).** In
+  `/JetHT/Run2018A-UL2018_NanoAODv15-v2` all 9 files sampled by run (together spanning the era's whole DAS run range 315257-316995) carry
+  `HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2` and `HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5` and none carries
+  `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94` or `HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59`. In `Run2018B` all 6 sampled files
+  (317080-319310) carry all four; C and D carry the new pair only. The v9 inventories agree, so this is the HLT menu, not a v15 processing
+  effect. The analyzer's `requireTriggerBranches2018_()` FATALs without the new pair, i.e. on every 2018A file. Ntuple production is
+  unaffected (wildcard keep rules); the question is analysis-side.
+- **Reference (2026-09-19): AN2019_094 (ttH(bb) full Run 2, FH channel) 3.1.4, Tables 28-30** (`Materials/TTHH/TTH_AN/AN2019_094_v20_ttHAnalysis.pdf`).
+  2018 data = OR of the paths of the run period: A 315252-315974 (`HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5`, `..._SixPFJet32_DoublePFBTagDeepCSV_2p2`),
+  B 315974-317509 (`HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5`, `..._2p2`), C 317509-end (`..._SixPFJet36_PFBTagDeepCSV_1p59`,
+  `..._SixPFJet32_DoublePFBTagDeepCSV_2p94`); `..._QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5` and `HLT_PFHT1050` in all periods; MC uses
+  the period-C configuration only; scale factors are measured against `HLT_IsoMu27` per year as run-averaged efficiencies (3.1.1). So the switch
+  is at run 317509 inside 2018B (the 09-18 wording "A -> B boundary" was the resolution limit of the schema probe; corrected in 08 7.4).
+  Every AN path exists in our 2018 inventories with exactly this period structure (08 7.4 table; ledger V34), and the analyzer's
+  `HLT_REQUIRED["2018"]` is exactly the period-C (= MC) set.
+- **Options.** (a) The AN scheme: pick the path set by run number (A / B / C), 2018A events use the A / B paths (mirrors the 2017 B / C-F grouping
+  of 08 3.2b). (b) OR of both pairs for all of 2018, reading an absent branch as false (2018C/D have no old-pair branch). (c) A post-processing
+  module fills absent HLT branches with false so `requireTriggerBranches2018_()` needs no change; combinable with (a) or (b).
+- **Why the periods are bookkeeping, not selection logic (2026-09-19, user's question "why split at all").** A path that is not in the menu of a
+  run cannot fire, and NanoAOD fills a present-but-inactive HLT branch with false, so for every 2018 event the OR over the union of all seven
+  paths (A-pair, B-pair, C-pair, `_4p5`, `HLT_PFHT1050`) equals the OR over the paths of that event's period. The AN itself states that only
+  one version of 6J1T / 6J2T was active at any time (3.1.4) and derived the scale factors as run-averaged efficiencies (3.1.1), i.e. it did not
+  split the selection by run either; Tables 28-29 record which path was live when, which the efficiency measurement and the documentation need.
+  The only thing the analysis must do is treat an absent branch as false, because UL files of one era carry different branch sets. So the
+  recommendation simplifies to **(b) + (c)**: union OR in the analyzer (one 2018 list, no run-number logic) plus a padding step (or optional
+  reads) for absent HLT branches; MC keeps the period-C set it has; the data / MC efficiency difference is absorbed by the trigger SF, as in the
+  AN. (a) is equivalent at event level and only adds code. Prerequisites unchanged: how AN-2022/122 treated 2018A, and whether the analyzer was
+  ever run on 2018A data (and how it passed).
+- **Analyzer-side facts read on 2026-09-19 (tempTTHH, user's copy; not modified).** (i) `include/eventBuffer.h` `select()`: a chosen branch that is
+  not in the file goes to `missingBranches` and its member stays 0, with only a summary line; `ttHHanalyzer_unified.cc` 302-329 documents this and
+  `requireTriggerBranches2018_()` (331-375) FATALs on purpose because 0 is indistinguishable from "did not fire". So (c) as blanket padding would
+  recreate exactly the silent failure that guard exists for. The user's caution stands; the safe form of (c) is a **declared** absence list: the
+  guard keeps FATALing on anything unexpected, but for 2018 Data it requires `_4p5` + `HLT_PFHT1050` always and at least one complete six-jet
+  pair (A/B or C), logs per file which union members are absent, and reads only those as 0. MC keeps the strict period-C check. (ii) Declared
+  in eventBuffer.h: both 2018 C paths, `_4p5`, `HLT_PFHT1050`, `HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5` (= 2018 period-A 6J1T, same name as 2017
+  C-F) and `HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2`; NOT declared: `HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5` (period-B 6J1T), which
+  must be added to the generated header before it can be read (the compile-time part of the user's concern). (iii) 2018 trigger code
+  (`ttHHanalyzer_unified.cc` 407-414, 460-470): period-C set only, JetHT single-PD OR; 2017 branches on `_era == "B"` only (419-424); there is
+  no run-range logic anywhere. (iv) The 2017 6J1T prescale (AN2019_094 3.1.3: runs 299337-300999, rate reduced by about 75%, overall efficiency
+  82% -> 80%) is handled by nothing explicit: not in the analyzer (only a stale comment in `docs/backup_*`), not in NtupleForge (NanoAOD carries
+  accept bits only, no prescale values). It is absorbed by the trigger SF: `TriggerStudy` derives SF = eff(Data)/eff(MC) from SingleMuon
+  Run2017B-F hadd-merged (run-averaged, reference `HLT_IsoMu27`, numerator = OR of 4J3T/6J1T/6J2T/HT1050, bins nb / jet6 eta / HT / jet6 pT), and
+  the main analyzer applies it to MC (877-884). That is the AN's own treatment (3.1.1, "average efficiency over all runs"); no data up-weighting
+  is needed or allowed. Conditions: same run range (golden JSON) in the SF skims and the analysis; SF applied wherever the OR is used.
+- **Not decided here.** Which option; the AI does not choose an analysis trigger.
+
 ## D-2026-09-17-single-forge: NtupleForge becomes the one orchestrator (post-processing, MiniAOD dictionary, MiniAOD -> NanoAOD with user branches); TTHHGenCategoryTools is absorbed if the structure stays intuitive
 **DECIDED (direction) · 2026-09-17 · user · plan PROPOSED: `11_unified_forge_plan.md`**
 
@@ -37,7 +86,8 @@
 - **Proposal.** Accept it. Mechanism (implemented 2026-09-17, tested with a fake DAS): a registry PRIMARY that starts with `/` is a **pinned full
   dataset path**; `das_scan.sh` queries it as is and reports `RESULT|key|PINNED|1`; `build_from_scan_log.py` skips its flavour exclusion for pinned
   keys and lists them; `das_inventory.sh` reports `PINNED|key|path|in_dump=N` instead of NOT_FOUND. With this the Run 3 scan has NOT_FOUND 0 and
-  the builder may emit a Run 3 config.
+  the builder may emit a Run 3 config. **Confirmed on the real DAS 2026-09-18** (`script/das_ttHH_2024_v15_20260918_0803.log`: 64 EXACT + 1 PINNED,
+  NOT_FOUND 0; ledger V33); the first 2024 config drafts were emitted from that log (STATUS row 18). Still PROPOSED until the user accepts or vetoes.
 - **Alternative.** Drop ttW -> l nu from Run 3 (remove 2024/2025 from the row's ERAS): a small background in the hadronic channel (enters via a lost lepton).
 
 ## D-2026-09-17-tttw-split: tttW stays in the hadronic list as two charge-split keys for v15
@@ -45,10 +95,12 @@
 
 - **Context.** The v9 sample `TTTW_TuneCP5_13TeV-madgraph-pythia8` exists in no NanoAODv15 campaign; v15 has
   `TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8` and `TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8` (names in all four
-  Run 2 v15 campaigns, 2026-09-11 inventory; their DAS status and event counts read "-" there and must be checked).
+  Run 2 v15 campaigns, 2026-09-11 inventory; their DAS status and event counts read "-" there, which only meant that the inventory ran no
+  details query for them). 2026-09-18 summary query (`run_probe_tttw_v15_20260918_060303.log`): all eight datasets exist as `..._v1-v1` with
+  1,630,000-3,597,000 events (per era in the registry comment); the DBS status field is still unread.
 - **Decision (user).** tttW was always part of the hadronic background list, so keep it: two keys `TTTWminus` / `TTTWplus`
   (`ttVV`, `ttHH,had`), one xsec entry each in the analyzer tables; the old `TTTW` key stays as `ttVV_v9` / `alt` for the v9 campaign.
-- **Left.** xsec for the two charge states (XSDB / GenXSecAnalyzer; sum = the old inclusive value); DAS status check (RUNBOOK 7).
+- **Left.** xsec for the two charge states (XSDB / GenXSecAnalyzer; sum = the old inclusive value); DBS status (VALID / PRODUCTION) one-liner (RUNBOOK 8).
 
 ## D-2026-09-17-data-pd-2016: 2016 uses the same data PDs as 2017/2018
 **DECIDED · 2026-09-17 · user decision · registry `script/samples_registry.txt`, `ttHH/04_mc_request_2026-09.md` 4**
@@ -56,7 +108,7 @@
 - **Decision (user).** `JetHT` (both 2016 halves) and `BTagCSV` (both halves, as for 2017), no run-era-split keys: `das_scan.sh`
   finds the per-era datasets with its relaxed data query, and `build_from_scan_log.py` keeps the Run2016B ver1 / ver2 pair as two
   rows (the `_v2` processing token; fixed 2026-09-17, synthetic-log test). The nine UL16 JetHT v15 datasets are verified;
-  `BTagCSV` UL16 v15 is not yet looked up (RUNBOOK 7).
+  `BTagCSV` UL16 v15: nine datasets with the same era structure, 2026-09-18 (`run_discover_ul16_btagcsv_v15_20260918_060305.log`, ledger V32).
 
 ## D-2026-09-17-ul18-v9-parked: the 2018UL NanoAODv9 full production is parked, not completed
 **DECIDED · 2026-09-17 · user decision**
@@ -68,8 +120,10 @@
 - **Requirement stated with it.** The v9 vs v15 differences (types, branch names, removed branches) are important and must stay
   documented: `08_branch_schema_migration.md` 3 (2017UL MC, 127 removed / 370 added / 86 retyped, `script/inventory/diff_v9_v15_2017UL_MC.txt`)
   plus the per-era 2017 Data inventories. Gap: no v9 inventories for 2016 and 2018 exist, so the diff is measured on 2017 only
-  (2016/2018 v15 were shown to have the same main-profile changes, 08 7.2, but not a full diff). Proposed: sweep 2016 and 2018 v9 files
-  (one MC, one Data per era) and write the diffs next to the 2017 one (RUNBOOK 7).
+  (2016/2018 v15 were shown to have the same main-profile changes, 08 7.2, but not a full diff). ~~Proposed: sweep 2016 and 2018 v9 files
+  (one MC, one Data per era) and write the diffs next to the 2017 one (RUNBOOK 7).~~ **Done 2026-09-18**: 16 v9 inventories, 16 diffs
+  (`script/inventory/diff_v9_v15_*.txt`); the physics-object part of the v9 -> v15 change is identical in every era (MC 126 removed / 348 added /
+  86 retyped, Data 120 / 309 / 58), only HLT / L1 / DST entries differ (08 3.5, ledger V29-V30). Requirement satisfied.
 
 ## D-2026-09-17-expanded-id-column-name: the expanded ttbar id branch is called `genTtbarIdExpanded`
 **DECIDED (naming rule) · 2026-09-17 · user proposal, AI concurred · implementation open · detail TTHHGenCategoryTools D17**

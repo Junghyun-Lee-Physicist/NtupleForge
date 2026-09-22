@@ -390,6 +390,29 @@ below 50 GeV")는 목록에서 빠질 때의 이야기이고, 여기서는 **재
 (7.3 절): dead pattern 2 종(`btagWeight_*`, 2017 Data 의 `HLT_QuadPFJet*`)을 제거했고, 남은 exit 3 은 위의
 `Jet_jetId`/`Jet_puId` 재계산 항목 그대로다.
 
+### 3.5 era 별 v9 → v15 diff: 2016 두 half · 2018 MC, Data 13 era (2026-09-18)
+
+D-2026-09-17-ul18-v9-parked 가 요구한 기록. 위의 2017UL MC diff 하나만 있던 것을 `inventory_manifest_v9_2016_2018.txt` 의 v9 인벤토리 16 개
+(`run_sweep_v9_2016_2018_20260918_072530.log`, dumped 16 / failed 0)와 기존 v15 인벤토리로 16 쌍 diff 했다(`run_diff_v9_v15_2016_2018_20260918_072642.log`,
+산출물 `script/inventory/diff_v9_v15_*.txt`). 아래 분류는 diff 파일의 branch 이름 접두어로 나눈 것(obj = `HLT_`/`L1_`/`DST_`/`Flag_`/`Scouting` 이 아닌 전부).
+
+| 쌍 (v9 → v15, 파일 1 + 1) | removed | added | retyped |
+|---|---|---|---|
+| 2016preVFP MC, 2016postVFP MC | 127 = **126 obj** + 1 L1 | 370 = **348 obj** + 18 DST + 4 L1 | **86 obj** |
+| 2017UL MC (3 절) | 127 = **126 obj** + 1 L1 | 370 = **348 obj** + 16 DST + 2 Scouting + 4 L1 | **86 obj** |
+| 2018UL MC | 129 = **126 obj** + 3 L1 | 396 = **348 obj** + 18 DST + 2 Scouting + 28 L1 | **86 obj** |
+| Data 2016 B ver1, B ver2, C, D, E, F HIPM, F, G, H; 2018 B, C, D (12 era) | 121–129 = **120 obj** + 1–9 HLT/L1 | 328–360 = **309 obj** + 15–21 DST + 4–7 L1 + 0–26 HLT (+2 `Flag_*_pRECO` 2018) | **58 obj** |
+| Data 2018A | 378 = **120 obj** + 54 HLT + 204 L1 | 333 = **309 obj** + 18 DST + 2 Flag + 4 L1 | **58 obj** |
+
+읽는 법. ① **물리 객체 branch 의 v9→v15 변화는 era 와 무관하게 하나다**: MC 는 세 해 모두 126/348/86 으로 집합까지 같고(2016 두 half 와 2017 의
+obj 집합 diff 0; 2018 도 obj 는 0, L1·DST 만 다름), Data 는 13 era 전부 120/309/58 로 집합까지 같다. 즉 2017UL 로 확인한 rename·삭제·타입 변화(3.1–3.4 절)가
+2016·2018 에 그대로 적용된다. ② era 마다 다른 것은 전부 트리거 계열(`HLT_`, `L1_`, `DST_` scouting, 2018 의 `Flag_BadPFMuonDzFilter_pRECO`·
+`Flag_hfNoisyHitsFilter_pRECO`)이고, 이는 3.2b 절대로 **run 범위(메뉴)의 문제**다. ③ 2018A Data 의 removed 378 은 스키마가 아니라 표본 파일의 run 덮개 차이다:
+v9 표본(HLT 664)과 v15 표본(HLT 610)이 다른 run 집합을 덮어 v9 쪽 파일에만 있던 HLT 54 + L1 204 가 "removed" 로 잡혔다(7.4 절의 2018A 메뉴 사실과 같은 원인).
+④ MC 와 Data 의 obj 변화 차이(MC 126/348/86 vs Data 120/309/58)는 gen 계열이다: MC 에만 removed 6(`FatJet_nBHadrons/nCHadrons`, `MET_fiducialGenPhi/Pt`,
+`btagWeight_CSVV2/DeepCSVB`), MC 에만 added 40(`Gen*`, `HTXS_*`, `TauSpinner_weight_*`, `GenProton_*`, `LHEPart_*MotherIdx`, `LuminosityBlocks/GenFilter_*`, `Runs/PSSumw` 등) + Data 에만 added 1(`LuminosityBlocks/fill`), MC 에만 retyped 33(`*_genPartIdx`, `*Flavour`, `nGen*`, `nLHE*`,
+`nPSWeight`, `Runs/nLHE*Sumw`), Data 에만 retyped 5(`Proton_*`, `nPPSLocalTrack`). 전부 diff 파일에서 셀 수 있는 수치이며 여기서는 요약만 둔다.
+
 ---
 
 ## 4. 이 절차로 잡은 것 (2026-08-27)
@@ -637,13 +660,53 @@ CPV Data 목록의 exit 4 는 MC v15 목록과 같은 **의도된** 상태다(`H
 
 ### 7.4 HLT: era 별 hadronic b-tag 경로 (인벤토리 실측)
 
-**2018 v15 Data 의 메뉴 진화(새 발견, 한 파일 측정).** `/JetHT/Run2018A-UL2018_NanoAODv15-v2` 의 첫 파일에는 `HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2`
-와 `HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5`(2017 임계값의 DeepCSV 판)만 있고 analyzer 가 요구하는 `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94`,
-`HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` 가 **없다**. Run B 파일에는 두 세트가 다 있고, C·D 에는 새 세트만 있다. analyzer 의
-`requireTriggerBranches2018_()` 은 이 네 경로 부재에 FATAL 하므로(check_branchlist.py 주석), 초기 2018A 파일에서 죽을 수 있다.
-**09-17 측정**(`run_runs_2018A_firstfile_20260917_060634.log`): 그 파일은 run 316058–316719 를 덮고 dataset 은 315257–316995 다. 즉 두 경로는
-적어도 run 316719 까지 메뉴에 없었다. 어느 run 부터 있는지는 2018A 후반·2018B 파일 몇 개의 스키마로 bracket 한다(RUNBOOK §7).
-v9 2018 ntuple 생산 때 어떻게 지나갔는지도 확인 대상.
+**2018 의 메뉴 전환: 2018A 전체에 새 쌍 없음 (09-18, run 별 파일 15 개), 진입 run 317509 는 AN2019_094 로 (09-19).** 처음 한 파일(09-16)에서 본 것: `/JetHT/Run2018A-UL2018_NanoAODv15-v2`
+에는 `HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2`, `HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5`(2017 임계값의 DeepCSV 판)만 있고 analyzer 가
+요구하는 `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94`, `HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` 가 없다. 09-17 에 그 파일의 run 범위
+316058–316719 를 재고 "적어도 316719 까지" 라고 적었는데, 09-18 의 `probe_hlt_path_by_run.py` 측정이 이를 **2018A 전체**로 넓혔다
+(`run_probe_2018A_sixjet_20260918_072158.log`, `run_probe_2018B_sixjet_20260918_072338.log`):
+
+| dataset (v15) | DAS run 범위 | 표본 | 결과 |
+|---|---|---|---|
+| `/JetHT/Run2018A-UL2018_NanoAODv15-v2` | 127 run, 315257–316995 | run 316700 부터 2 개마다 12 run → 파일 9 개, 합쳐 315257–316995 를 덮음 | 9 파일 전부 `_2p2`=1 `_1p5`=1, `_2p94`=0 `_1p59`=0 |
+| `/JetHT/Run2018B-UL2018_NanoAODv15-v2` | 61 run, 317080–319310 | 8 개마다 9 run → 파일 6 개, 317080–319310 | 6 파일 전부 네 경로 =1 |
+
+UL2018 v15 파일은 run 순이 아니라 파일 하나가 era 거의 전체를 덮으므로(예: 315257–316995), 이 방법의 해상도는 여기서 era 크기다: 스키마만으로는 새 두 경로가
+**2018A 마지막 run 316995 와 2018B 첫 파일(317080–317696) 사이**에 들어왔다는 것까지 안다. v9 인벤토리도 같다(`inv_2018A_v9_Data.tsv` 옛 2/새 0,
+`inv_2018B_v9_Data.tsv` 2/2, C·D 0/2) → v15 가공 산물이 아니라 HLT 메뉴 사실. 옛 두 경로는 2018B 파일에도 branch 로 남고 C·D 에서 사라진다.
+**2018A 파일은 전부** analyzer 의 `requireTriggerBranches2018_()` 이 요구하는 두 경로가 없다. 어느 경로가 실제로 fire 했는지(event-level)는 스키마 probe 의 범위 밖이다.
+
+**AN2019_094 (ttH(bb) full Run 2, fully-hadronic, §3.1; `Materials/TTHH/TTH_AN/AN2019_094_v20_ttHAnalysis.pdf`, 09-19 대조)** 가 정확한 run 을 준다.
+2018 데이터는 세 기간의 OR 이고 시뮬레이션은 Period C 구성 하나다(§3.1.4, Tables 28–29; AN 은 밑줄 없이 표기하지만 여기서는 NanoAOD branch 이름으로 적는다):
+
+| 기간 | run | 6J1T | 6J2T | 4J3T | HT |
+|---|---|---|---|---|---|
+| A | 315252–315974 | `HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5` | `HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2` | `HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5` | `HLT_PFHT1050` |
+| B | 315974–317509 | `HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5` | 같음 | 같음 | 같음 |
+| C (= MC) | 317509–end | `HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59` | `HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94` | 같음 | 같음 |
+
+효율은 `HLT_IsoMu27`(2016 은 `HLT_IsoMu24`) 로 뽑은 단일 muon 사건에서 재고, SF 는 HT·medium b-tag 수·6 번째 jet pT 의 함수로 연도별, 기간이 갈리는 해(2017·2018)는
+run 평균으로 낸다(§3.1.1). 제어 경로(Table 30): `HLT_PFHT430_SixPFJet40`(315974–317509), `HLT_PFHT380_SixPFJet32`(315252–317509),
+`HLT_PFHT450_SixPFJet36`·`HLT_PFHT400_SixPFJet32`(317509–end), `HLT_PFHT330PT30_QuadPFJet_75_60_45_40`(전체).
+
+우리 인벤토리(한 파일씩)와 대조하면 전부 AN 의 기간 구조대로 있다(v9 도 같은 결과; 원장 V34):
+
+| 경로 | 2018A | 2018B | 2018C | 2018D | UL18 MC |
+|---|:-:|:-:|:-:|:-:|:-:|
+| `..._SixPFJet40_PFBTagCSV_1p5` (기간 A 6J1T) | v9 표본 o / v15 표본 x (그 파일은 316058–316719 만 덮음) | x | x | x | x |
+| `..._SixPFJet40_PFBTagDeepCSV_1p5` (B), `..._2p2` (A·B) | o | o | x | x | x |
+| `..._1p59`, `..._2p94` (C) | x | o | o | o | o |
+| `..._4p5`, `HLT_PFHT1050`, `HLT_IsoMu27`, `HLT_IsoMu24` | o | o | o | o | o |
+| 제어 `HLT_PFHT430_SixPFJet40`, `HLT_PFHT380_SixPFJet32` | o | o | x | x | x |
+| 제어 `HLT_PFHT450_SixPFJet36`, `HLT_PFHT400_SixPFJet32` | x | o | o | o | o |
+| 제어 `HLT_PFHT330PT30_QuadPFJet_75_60_45_40` | o | o | o | o | o |
+
+AN 의 run 경계와 09-18 probe 는 모순이 없다: 317509 는 2018B(317080–319310) 안이라 2018B 파일은 기간 B·C 사건을 다 담아 두 쌍이 다 있고, 2018A(≤316995) 파일에는
+C 쌍이 없다. 즉 새 쌍의 진입은 A/B 경계가 아니라 **2018B 안의 run 317509** 다(09-18 에 "경계" 라 적은 것은 해상도 한계였고 이 문장으로 대체한다). 기간 A 의 CSV 판 6J1T 는
+2018A 파일 중 run < 315974 를 덮는 파일에만 branch 로 있다(probe 의 9 파일은 315257 부터 덮으므로 있을 것이나 그 경로는 probe 인자에 없었다; 확인은 인벤토리 두 파일).
+결론: analyzer 의 `HLT_REQUIRED["2018"]`(= `requireTriggerBranches2018_()`: C 쌍 + `_4p5` + `HLT_PFHT1050` + `HLT_IsoMu27`)는 **MC 구성 = 기간 C 만**이다.
+AN 방식(기간별 OR)으로 2018A·B 데이터를 살리려면 기간 A/B 경로를 읽어야 하고, 파일에 없는 branch(2018A 의 C 쌍, C·D 의 A/B 경로, 일부 2018A 파일의 CSV 판)를 false 로 다루는
+처리가 필요하다. 선택은 `03_DECISIONS.md` D-2026-09-18-2018A-trigger(사용자).
 
 **Run 3 (2024 Data 9 era 전부 = Summer24 MC = 22 경로, 2025 Data 9 era 전부 = 21 경로).** `HLT_PFHT*` 아래 PNet 기반:
 
@@ -661,7 +724,10 @@ v9 2018 ntuple 생산 때 어떻게 지나갔는지도 확인 대상.
 나눌 필요가 없었다(파일은 관례대로 둘로 두되 규칙은 동일). **어느 경로로 트리거할지는 분석 결정**(`ttHH/03_run3_plan.md` §2), 아직 없다.
 
 **2016 v15 (09-17: era 9 파일 전부 + MC 두 half).** CSV six-jet 4 개(`HLT_PFHT450_SixJet40_BTagCSV_p056`, `HLT_PFHT400_SixJet30_DoubleBTagCSV_p056`
-와 un-tagged 두 개)는 **9 era 파일 전부**에 있다. `HLT_PFHT900`(1050 없음), `HLT_PFJet450/500`, `HLT_IsoMu24`, `HLT_IsoTkMu24`, `HLT_IsoMu27`,
+와 un-tagged 두 개)는 **9 era 파일 전부**에 있다. AN2019_094 Table 24 의 2016 선택은 그 CSV 두 개 + `HLT_PFJet450` 의 OR(효율 기준 `HLT_IsoMu24`; Run H 의 L1 HT
+포화 문제를 `HLT_PFJet450` 으로 보완)이고, 네 경로 모두 9 era 파일과 MC 두 half 에 있다(09-19 대조, 원장 V34) → 2016 트리거 결정(`01_STATUS.md` 표 11)의 후보.
+2017 은 AN Tables 25–26 이 `check_branchlist.py` 의 `HLT_REQUIRED["2017"]`(C–F, PF CSV 판)·`HLT_ERA_CONDITIONAL["2017"]`(Run B calo 판)와 같다; Run B 의
+`TripeCSV_p07` 오타는 AN 표기(`TripleCSV p07`)와 다르고 실제 branch 이름은 오타 쪽이다(3.2b 절). `HLT_PFHT900`(1050 없음), `HLT_PFJet450/500`, `HLT_IsoMu24`, `HLT_IsoTkMu24`, `HLT_IsoMu27`,
 `HLT_Ele27_WPTight_Gsf`, `HLT_PFMET120_PFMHT120_IDTight` 도 전부. `HLT_AK8PFJet450/500` 은 **B ver1(run 272760–273017) 에만 없고** B ver2 부터 있다;
 `HLT_PFHT800` 은 H 에만 없다. `HLT_Ele32_WPTight_Gsf` 는 2016 Data 에 없다(MC 에는 있음). 2016B 의 두 dataset 은 v9 의 ver1/ver2 와 같은 분할이다
 (`-v1` 9.7M ev, `_v2-v1` 133.8M ev, run 이 겹치지 않음; 원장 V21).
@@ -672,6 +738,6 @@ v9 2018 ntuple 생산 때 어떻게 지나갔는지도 확인 대상.
 dead 0, ③ Run 3 목록은 prefiring keep 없음, ④ `check_branchlist.py` 가 2016/2024/2025 를 받음.
 
 남긴 것 (01_STATUS 에 항목으로): ⓐ ~~2016 Data 9 era 행 스윕~~ 09-17 끝남(dead 0, 원장 V23–V25; 두 패턴 라벨 인벤토리는 이 절이 인용하므로 유지);
-ⓑ CPV 목록 per-era 분리(2016 경로명 2 개, 2017B 4 개, `Scouting*` 2016 MC); ⓒ 2018A 에서 `…_2p94`/`…_1p59` 가 메뉴에 들어온 run 의 bracket(첫 파일 316058–316719 에는 없음)과 analyzer 2018 트리거 요구의 관계;
+ⓑ CPV 목록 per-era 분리(2016 경로명 2 개, 2017B 4 개, `Scouting*` 2016 MC); ⓒ ~~2018A 에서 `…_2p94`/`…_1p59` 가 메뉴에 들어온 run 의 bracket~~ 09-18 끝남, 09-19 AN2019_094 로 run 317509 확정(7.4 절); 남은 것은 analyzer 의 2018A 트리거 처리(`01_STATUS.md` 22n);
 ⓓ `Flag_METFilters` 부재(Summer24 MC, 2025 Data)의 analyzer/prescan 영향; ⓔ 2016·Run 3 트리거 결정 → `HLT_REQUIRED` 채우기;
 ⓕ `Jet_jetId`/`Jet_puId` 재계산(3.4 절, 변화 없음); ⓖ Run 3 의 `Jet_puIdDisc` 는 존재하지만 PUPPI jet 에 PU ID 를 쓸지는 JME 권고 확인.

@@ -262,8 +262,14 @@ Summer24 상세 316 행 중 VALID 269 / PRODUCTION 21 / INVALID 26 — INVALID �
    MC 60 dataset 은 키당 정확히 1 개(ext·복수 버전 없음). DATA 는 PD 4 개 × 8 dataset: 2024 `Run2024C..I-MINIv6NANOv15-v1|v2` + `Run2024I-MINIv6NANOv15_v2-v1|v2`,
    2025 `Run2025B..G-PromptReco-v1` + `Run2025C/F-PromptReco-v2`. **DBS `-vN` 꼬리는 PD 마다 다르다**(2024F/G: JetMET0 `-v2`, Muon0 `-v1`; 2024I: JetMET0
    `-v2`, JetMET1 `-v1`) → DATA 행 이름은 반드시 스캔 로그에서 가져온다. 2024 JetMET0 합계 1,210,265,110 ev, 2025 JetMET0 합계 1,190,559,370 ev.
-   **남은 결정**: `TTWJetsToLNu` 를 (a) `mg35x_` 플레이버 dataset 을 PRIMARY 로 받아들이거나 (b) ERAS 에서 2024/2025 를 빼거나. 이것이 남아 있는 동안
-   `build_from_scan_log.py` 는 config 를 내지 않는다(NOT_FOUND 는 exit 3 로 config 발행을 막는다).
+   ~~**남은 결정**: `TTWJetsToLNu` 를 (a) `mg35x_` 플레이버 dataset 을 PRIMARY 로 받아들이거나 (b) ERAS 에서 2024/2025 를 빼거나.~~ **09-17 AI 제안 (a) 를 PINNED
+   전체 경로로 구현, 09-18 실제 스캔으로 확인**(`script/das_ttHH_2024_v15_20260918_0803.log`: EXACT 64 + PINNED 1, NOT_FOUND 0; D-2026-09-17-ttwlnu-pinned 는
+   사용자 veto 전까지 PROPOSED). 그 로그로 **첫 2024 config 초안 2 개**를 냈다(09-19, `build_from_scan_log.py --data-branch-file` 로 MC/Data 분리):
+   `script/config_das_ttHH_2024_v15_20260918_0803_MC.yaml.draft`(MC 61 dataset, 19,322 files, 13.95 TB, jobID `ttHH2024_v15_had_MC_v1`,
+   `branch_hadronic_2024_v15_MC.txt`), `..._Data.yaml.draft`(Data 32 = JetMET0/1 + Muon0/1 × 8, 7,811 files, `ttHH2024_v15_had_Data_v1`,
+   `branch_hadronic_2024_v15_Data.txt`), review 표 `script/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`(CRAB 10,000-job guard OK, 최대 2,532 files).
+   **검토 뒤 사용자가 `crabConfig/` 로 복사**(도구는 덮어쓰지 않는다): Muon0/1 을 had 생산에 넣을지(registry 태그 `had,lep`), `units_per_job`, 출력 사이트, `TTWJetsToLNu`.
+   2025 는 같은 명령을 `script/das_ttHH_2025_v15_20260916_0900.log` 에 돌리면 되지만 그 로그에는 NOT_FOUND 1(`TTWJetsToLNu`, PINNED 도입 전)이 있어 재스캔이 먼저다.
 2. **`build_from_scan_log.py` 의 Run 3 대응** — (a)·(b) **끝남 (2026-09-16)**: `--data-variants {auto,canonical,all}` 추가, `auto` 는 Run 3 era
    (`RUN3_ERAS`)에서 `all` = (PD, era) 당 하나만 남기는 규칙을 끄고 모든 DBS 변형을 `<PD>_<processed string>` 키의 독립 행으로 둔다(2024I 의 `-v2` + `_v2-v1`,
    2025C/F 의 `-v1` + `-v2` 전부 유지; 고치기 전에는 `Run2025C-PromptReco-v1` 155M ev 가 alternate 로 밀렸다). Data 플레이버 `BTVNano`/`JMENano` 는

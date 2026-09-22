@@ -229,23 +229,40 @@ HLT_ERA_CONDITIONAL = {
              "HLT_HT300PT30_QuadJet_75_60_45_40_TripeCSV_p07",
              "HLT_PFHT430_SixJet40_BTagCSV_p080",
              "HLT_PFHT380_SixJet32_DoubleBTagCSV_p075"],
-    # 2018: the early-2018A menu carried the DeepCSV six-jet paths with the 2017
-    # thresholds; the 2p94 / 1p59 paths (HLT_REQUIRED) appear later. Measured
-    # 2026-09-16 on the first file of /JetHT/Run2018A-UL2018_NanoAODv15-v2:
-    # 2p2 and 1p5 present, 2p94 and 1p59 ABSENT (Run B has both sets, C and D
-    # only the new ones). So a Run2018A file can lack the paths the analyzer's
-    # requireTriggerBranches2018_() demands -- an analyzer-side question. That
-    # file covers runs 316058-316719 (dataset 315257-316995; measured
-    # 2026-09-17, run_runs_2018A_firstfile_20260917_060634.log), so the 2p94 /
-    # 1p59 paths were not in the menu at least up to run 316719; where exactly
-    # they start (late 2018A or 2018B) is still to be bracketed.
+    # 2018: the WHOLE of Run2018A carries the DeepCSV six-jet paths with the 2017
+    # thresholds and NOT the 2p94 / 1p59 paths (HLT_REQUIRED). Measured
+    # 2026-09-18 with script/probe_hlt_path_by_run.py on
+    # /JetHT/Run2018A-UL2018_NanoAODv15-v2 (runs 315257-316995 in DAS): 9 files
+    # sampled by run, together spanning 315257-316995, ALL have 2p2 + 1p5 and
+    # NONE has 2p94 / 1p59 (run_probe_2018A_sixjet_20260918_072158.log). Run2018B
+    # (317080-319310): 6 files spanning 317080-319310, ALL four paths present
+    # (run_probe_2018B_sixjet_20260918_072338.log). Run C and D inventories: new
+    # pair only. The v9 inventories agree (inv_2018{A,B,C,D}_v9_Data.tsv), so
+    # this is the HLT menu, not a v15 artefact. The exact run comes from
+    # AN2019_094 (ttH(bb) full Run 2, FH channel, section 3.1.4, Tables 28-30;
+    # cross-checked 2026-09-19, docs/08 section 7.4): period A 315252-315974
+    # (6J1T = ..._SixPFJet40_PFBTagCSV_1p5, 6J2T = ..._2p2), period B
+    # 315974-317509 (6J1T = ..._SixPFJet40_PFBTagDeepCSV_1p5, 6J2T = ..._2p2),
+    # period C 317509-end (= the MC configuration: ..._1p59 / ..._2p94), with
+    # ..._4p5 and HLT_PFHT1050 in every period. 317509 lies inside 2018B, so
+    # 2018B files carry both pairs (consistent with the probe) and every
+    # Run2018A file lacks the pair the analyzer's requireTriggerBranches2018_()
+    # demands -- an analyzer-side decision (docs/01_STATUS.md 22n,
+    # D-2026-09-18-2018A-trigger). The CSV-version 6J1T of period A is only in
+    # 2018A files that cover runs < 315974 (the v9 sample file has it, the v15
+    # sample file, runs 316058-316719, does not).
     "2018": ["HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2",
-             "HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5"],
+             "HLT_PFHT430_SixPFJet40_PFBTagDeepCSV_1p5",
+             "HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5"],
     # 2016 / 2024 / 2025: the analysis has no trigger decision for these eras
     # yet (2016: analyzer has no 2016 era config, D-2026-09-11-run2-scope-2016;
     # Run 3: ttHH/03_run3_plan.md section 2). The candidates below are what the
     # 2026-09-16 inventories contain (docs/08 section 7); they are reported as
-    # information until HLT_REQUIRED for the era is decided.
+    # information until HLT_REQUIRED for the era is decided. 2016 reference:
+    # AN2019_094 Table 24 uses the OR of the first three (BTagCSV_p056,
+    # DoubleBTagCSV_p056, HLT_PFJet450) with HLT_IsoMu24 as the efficiency
+    # reference; all four are in the 9 UL16 v15 era files and both MC halves
+    # (2026-09-19 check, docs/08 section 7.4).
     "2016": ["HLT_PFHT450_SixJet40_BTagCSV_p056",
              "HLT_PFHT400_SixJet30_DoubleBTagCSV_p056",
              "HLT_PFHT900", "HLT_PFJet450", "HLT_AK8PFJet450", "HLT_IsoMu24"],

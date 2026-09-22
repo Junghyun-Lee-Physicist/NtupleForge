@@ -14,6 +14,14 @@ WHY (2026-09-17, docs/01_STATUS.md 22n)
   the run where a path entered (or left) the menu. DAS knows runs and files;
   it does not know the menu. This script combines the two.
 
+RESULT (2026-09-18, run_probe_2018{A,B}_sixjet_20260918_07*.log)
+  UL2018 NanoAODv15 files are not run-ordered: every sampled 2018A file spans
+  almost the whole era (e.g. 315257-316995), so the method resolves to the
+  era boundary here. 2018A: 9 files, all four flags 0 0 1 1 (old pair only).
+  2018B: 6 files, all 1 1 1 1. Schema alone brackets the 2p94 / 1p59 entry
+  between run 316995 (end of 2018A) and the first 2018B file (317080-317696);
+  AN2019_094 Table 28 gives the run: 317509, inside 2018B (docs/08 7.4).
+
 USAGE (lxplus, inside cmssw-el8 after cmsenv; needs dasgoclient + ROOT + proxy)
     python3 script/probe_hlt_path_by_run.py \\
         --dataset /JetHT/Run2018A-UL2018_NanoAODv15-v2/NANOAOD \\

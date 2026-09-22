@@ -9,6 +9,49 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-19 (2): 2018 trigger periods from AN2019_094 cross-checked against the inventories; "A -> B boundary" corrected to run 317509
+
+### Changed
+- The 2018 six-jet menu switch is at run 317509, inside 2018B, per AN2019_094 (ttH(bb) full Run 2, FH channel, section 3.1.4 Tables 28-30; user's
+  copy `Materials/TTHH/TTH_AN/AN2019_094_v20_ttHAnalysis.pdf`), consistent with the 09-18 schema probe (which could only bracket it between run
+  316995 and the first 2018B file). Every AN 2018 path (periods A / B / C, the 4J3T and HT paths, the six control paths, `HLT_IsoMu27`) exists in
+  the 2018 v15 and v9 inventories with the AN's period structure; UL18 MC carries the period-C set only, which is exactly the analyzer's
+  `HLT_REQUIRED["2018"]`. The 2016 AN selection (Table 24) exists in all 9 UL16 v15 era files and both MC halves. Recorded in `08` 7.4 (two
+  tables), STATUS 22n / rows 3 and 11, D-2026-09-18-2018A-trigger (options restated, AI recommends (a) + (c)), ledger V28 (wording) and new V34,
+  `check_branchlist.py` `HLT_ERA_CONDITIONAL["2018"]` (+ `HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5`, comment), `probe_hlt_path_by_run.py` docstring,
+  workspace `00_START_HERE.md`.
+
+## [Unreleased], 2026-09-19: batch 3 results folded in; first Run 3 (2024) config drafts, MC / Data split
+
+### Added
+- `script/das_status.sh`: DBS status (VALID / PRODUCTION / INVALID) + nevents + nfiles per dataset from the `-json` record, because
+  `dataset status=*` lists every status without printing it and `summary` has no status column. Fake-DAS tested. First use: TTTW+/- v15
+  (`..._v1-v1`; the UL17 v15 inventory has a `-v1` TTToHadronic that is INVALID with 0 events) -- workspace RUNBOOK 8.
+- `script/build_from_scan_log.py --data-branch-file`: with it `--emit-config` writes `config_<stem>_MC.yaml.draft` (MC keys, `--branch-file`) and
+  `config_<stem>_Data.yaml.draft` (Data keys, the Data list); `{tier}` in `--job-tag` becomes `MC` / `Data`. Reason: `crab/submit_crab.py` has one
+  `common.branch_file` and the v15 MC and Data lists differ, so the CPV convention (two configs) is the only way to give each tier its list. The
+  single-config path is unchanged apart from a header warning when it mixes MC and Data. Tested: 2024 log -> MC 61 / Data 32 keys, both YAML-parse,
+  byte-identical on re-run.
+- `script/config_das_ttHH_2024_v15_20260918_0803_{MC,Data}.yaml.draft`, `script/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`: the first Run 3
+  config drafts (jobID `ttHH2024_v15_had_{MC,Data}_v1`; MC 61 datasets, 19,322 files, 13.95 TB; Data 32 = JetMET0/1 + Muon0/1 x 8 processing rows,
+  7,811 files; job-count guard OK, largest 2,532 files). Drafts only: the user reviews and copies to `crabConfig/` (STATUS row 18).
+
+### Changed
+- 2018 trigger menu, measured (`script/probe_hlt_path_by_run.py`, batch 3): the 2p94 / 1p59 six-jet paths are absent from ALL sampled Run2018A v15
+  files (9 files spanning runs 315257-316995) and present in all Run2018B files (6 files, 317080-319310); the v9 inventories agree. They entered
+  the menu at the 2018A -> 2018B boundary, so every 2018A file lacks what `requireTriggerBranches2018_()` demands. `check_branchlist.py` 2018
+  comment, `08` 7.4 / 7.5, STATUS 22n (three analyzer options), new `03_DECISIONS.md` D-2026-09-18-2018A-trigger (OPEN, user's call),
+  `probe_hlt_path_by_run.py` docstring RESULT.
+- v9 -> v15 per-era diff recorded (`08` 3.5): 16 v9 inventories (`inv_*_v9_*.tsv`) and 16 diffs (`diff_v9_v15_*.txt`). The physics-object part
+  of the change is identical in every era (MC 126 removed / 348 added / 86 retyped incl. 2016 both halves and 2018; Data 120 / 309 / 58 in all 13
+  eras); only HLT / L1 / DST / `Flag_*_pRECO` entries differ, and 2018A Data's 378 removed is the run coverage of the two sampled files.
+  D-2026-09-17-ul18-v9-parked requirement satisfied.
+- `script/samples_registry.txt` comments: TTTW+/- v15 event counts (8 datasets, 1,630,000-3,597,000; status still unread), BTagCSV UL16 v15 = 9
+  datasets with the JetHT era structure. `03_DECISIONS.md` tttw-split / data-pd-2016 / ttwlnu-pinned (real-DAS confirmation, ledger V33) updated.
+- `docs/09_v15_migration_log.md` 19 (batch 3 record incl. the failed first run and the 09-19 proxy-expired rerun), `10_validation_ledger.md`
+  V27-V33, `01_STATUS.md` rows 3-6, 12, 16, new 18, items 22n / 22r, `ttHH/03_run3_plan.md` 6 1, `ttHH/04_mc_request_2026-09.md` 4; workspace
+  `00_START_HERE.md` 4, RUNBOOK 7 done / 8 next (interactive `voms-proxy-init` alone in its block, same rule as `cmssw-el8`).
+
 ## [Unreleased], 2026-09-18: batch 3 first run failed without cmsenv; the two tools now say so
 
 ### Fixed

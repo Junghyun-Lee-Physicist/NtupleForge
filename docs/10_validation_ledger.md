@@ -4,7 +4,7 @@
 > **증거 파일이 어디 있는지**. 결과의 해석은 각 문서에 있고, 여기는 색인이다(한 사실은 한 곳에: 숫자는 증거 파일과
 > 그 문서를 가리키고 다시 적지 않는 것이 원칙이지만, 표를 읽을 수 있을 만큼의 요약값은 적는다).
 > **대상 독자**: "그거 검증됐나?" 를 묻는 사람. 답은 표의 한 행이어야 한다.
-> **상태**: 2026-09-16 작성, 09-17 V21–V26 추가. 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
+> **상태**: 2026-09-16 작성, 09-17 V21–V26 추가, 09-18 배치 3 의 V27–V33 추가(09-19 등재). 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
 > `script/runlogs/LEDGER.tsv` 의 실행이 이 표의 원자료다. **새 검증을 하면 행을 추가한다.**
 > **관련**: [`08_branch_schema_migration.md`](08_branch_schema_migration.md) (절차·결과), [`09_v15_migration_log.md`](09_v15_migration_log.md) (시간순 로그),
 > `script/runlogs/README.md` (실행 기록 규약).
@@ -48,6 +48,14 @@
 | V24 | 2026-09-17 | `branch_hadronic_2016_v15_Data.txt` × 9 era 인벤토리 (`--era 2016`) | 9 | dead 0 전부; exit 3 = `Jet_jetId`/`Jet_puId` 만 | `script/runlogs/run_check_2016_data_list_20260917_060836.log` | 08 §7.3 |
 | V25 | 2026-09-17 | `branch_CPV_Run2_Data_v15.txt` × 9 era 인벤토리 (`--profile cpv`) | 9 | exit 0 전부 (2016 에서는 공유 HLT 경로명이 살아 있음) | `script/runlogs/run_check_cpv_data_2016_20260917_060842.log` | 08 §7.3 |
 | V26 | 2026-09-17 | `build_from_scan_log.py` canonical 모드에서 `_vN` 처리 변형(UL16 v15 2016B ver2) 을 독립 행으로 | 합성 로그 1 (실제 dataset 이름·event 수) | `JetHT_Run2016B`(9,726,665) 와 `JetHT_Run2016B_v2`(133,752,091) 두 행, BTV/JME 제외 2 | 컨테이너 dry-run (산출물 미커밋; 코드 docstring 09-17 줄) | `ttHH/04` §4, D-2026-09-17-data-pd-2016 |
+| V27 | 2026-09-18 | 2018A v15 Data: six-jet DeepCSV 새 쌍(`_2p94`/`_1p59`) 부재가 era 전체인지 | 파일 9 (run 별 표본, 합쳐 315257–316995), 99 s | 9 파일 전부 옛 쌍(`_2p2`/`_1p5`) 있음·새 쌍 없음 → 2018A 전체 | `script/runlogs/run_probe_2018A_sixjet_20260918_072158.log` | 08 §7.4, 01_STATUS 22n |
+| V28 | 2026-09-18 | 2018B v15 Data: 네 경로의 존재 | 파일 6 (317080–319310), 111 s | 6 파일 전부 네 경로 있음 → 스키마만으로는 새 쌍의 진입이 316995 와 첫 2018B 파일(317080–317696) 사이; AN2019_094 의 317509 와 모순 없음(V34) | `script/runlogs/run_probe_2018B_sixjet_20260918_072338.log` | 08 §7.4 |
+| V29 | 2026-09-18 | v9 브랜치 인벤토리 16 (2016 두 half MC, 2018 MC, 2016 Data 9 era, 2018 Data 4 era) | 16 파일, 71 s | dumped 16 / failed 0; 2018A/B v9 의 six-jet 옛/새 쌍 = v15 와 같음(2/0, 2/2) | `script/inventory/inv_*_v9_*.tsv`, `script/runlogs/run_sweep_v9_2016_2018_20260918_072530.log` | 08 §3.5·§7.4 |
+| V30 | 2026-09-18 | v9 → v15 diff, era 별 16 쌍 | 16 쌍 | 물리 객체 branch 변화는 MC 126/348/86, Data 120/309/58 로 era 무관 동일; 차이는 HLT/L1/DST 만 | `script/inventory/diff_v9_v15_*.txt`, `script/runlogs/run_diff_v9_v15_2016_2018_20260918_072642.log` | 08 §3.5, D-2026-09-17-ul18-v9-parked |
+| V31 | 2026-09-18 | TTTWminus/plus v15 8 dataset 의 존재·event 수 | DAS summary 8 | 1,630,000–3,597,000 ev, 4–9 files (status 는 미조회) | `script/runlogs/run_probe_tttw_v15_20260918_060303.log` | registry 주석, 01_STATUS 표 5 |
+| V32 | 2026-09-18 | BTagCSV UL16 NanoAODv15 dataset 존재 | DAS 1 | 9 dataset, JetHT 와 같은 era 구조 | `script/runlogs/run_discover_ul16_btagcsv_v15_20260918_060305.log` | registry 주석, ttHH/04 §4 |
+| V34 | 2026-09-19 | AN2019_094 §3.1.4 (2018 트리거 3 기간, Tables 28–30) 와 2016 Table 24 의 경로가 우리 2018·2016 인벤토리에 있는가 | 경로 14 × 2018 인벤토리 10(v15 Data 4 + MC 1, v9 5), 경로 4 × 2016 인벤토리 11 | 전부 AN 의 기간 구조대로 존재; MC 는 Period C 만; 기간 A 의 `..._PFBTagCSV_1p5` 는 2018A 파일 중 run < 315974 를 덮는 파일에만(v9 표본 o, v15 표본 x); 2016 4 경로는 11 파일 전부 | 재현: `pdftotext -layout Materials/TTHH/TTH_AN/AN2019_094_v20_ttHAnalysis.pdf` 후 `grep -n "HLT "`; 인벤토리 `awk -F'\t' '$1=="Events" && $2==<path>' script/inventory/inv_2018*_{v15,v9}_*.tsv` (표는 08 §7.4) | 08 §7.4, 01_STATUS 22n, D-2026-09-18-2018A-trigger |
+| V33 | 2026-09-18 | PINNED 모드 실제 DAS 검증 (2024 had 스캔) | 65 키 | EXACT 64 + PINNED 1(`TTWJetsToLNu`), NOT_FOUND 0; builder 가 config 초안 2 개(MC 61, Data 32) 를 냄 | `script/das_ttHH_2024_v15_20260918_0803.log`, `script/runlogs/run_das_scan_2024_had_pinned_20260918_060306.log`, `script/review_das_ttHH_2024_v15_20260918_0803.md` | D-2026-09-17-ttwlnu-pinned, ttHH/03 §6 |
 
 TTHHGenCategoryTools(expanded ttbar id, D17 enriched NanoAOD) 의 Gate 1–5 는 그 저장소의 `docs/06_validation_results.md` 가 원장이다. 여기에는 옮기지 않는다.
 

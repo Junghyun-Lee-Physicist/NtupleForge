@@ -586,3 +586,25 @@ RUNBOOK §6 그대로, lxplus982, git `8690132` → 커밋 `15f377b`. 전부 EXI
 반영: manifest 머리(B 두 dataset 의 run·event 수), `ttHH/04_mc_request_2026-09.md` §4(v15 JetHT 2016 dataset 9 개), `branch_hadronic_2016_v15_Data.txt`·
 `branch_CPV_Run2_Data_v15.txt` 머리, `08` §7.1·§7.3·§7.4·§7.5, `10_validation_ledger.md` V21–V25, `01_STATUS.md` 22l-2·22n·행동 표.
 남은 lxplus 항목은 2018A 의 메뉴 전환 run bracket(RUNBOOK §7)이다.
+
+## 19. 2026-09-18: lxplus 배치 3 (2018 메뉴 전환 run, TTTW·BTagCSV DAS, 2024 PINNED 스캔, v9 인벤토리 16 + diff 16)
+
+RUNBOOK §7. lxplus988, HEAD `1b576b9`, 커밋 `3c71cab`(09-19 맥 pull). 세 번 돌았다: ① 06:03 UTC 컨테이너 밖 [2b] 3 건 전부 EXIT 0;
+② 06:04 컨테이너 안 4 건이 **cmsenv 없이** 돌아 EXIT 1/1/1/0 (여러 줄 붙여넣기의 호스트 셸 버퍼링, `02_CHANGELOG.md` 09-18 (1));
+③ 07:22 같은 4 건을 cmsenv 로 다시 돌려 전부 EXIT 0. 09-19 07:42 의 재실행(HEAD `6c0b5d4`)은 proxy 만료로 probe EXIT 3, sweep EXIT 2 였고 diff 만
+다시 돌아 09-18 과 byte-identical 한 요약을 냈다. LEDGER 에는 세 번이 다 남아 있다(실패 행 삭제 없음).
+
+| step | 결과 | 산출물 |
+|---|---|---|
+| `probe_2018A_sixjet` (99 s) | DAS run 127 개(315257–316995), 316700 부터 2 개마다 12 run → 파일 9 개(합쳐 315257–316995 덮음). **9 파일 전부** `_2p2`·`_1p5` 있음, `_2p94`·`_1p59` 없음 | `run_probe_2018A_sixjet_20260918_072158.log` |
+| `probe_2018B_sixjet` (111 s) | DAS run 61 개(317080–319310), 8 개마다 9 run → 파일 6 개. **6 파일 전부** 네 경로 있음 | `run_probe_2018B_sixjet_20260918_072338.log` |
+| `sweep_v9_2016_2018` (71 s) | dumped 16 / skipped 0 / failed 0. MC: UL16 두 half Events 1504 / HLT 601, UL18 1628 / 651. Data 2016: Events 1286(B ver1)–1363(G), HLT 498–554; 2018: A 1749/664, B 1567/685, C 1542/642, D 1561/657 | `inv_2016{preVFP,postVFP}_v9_MC.tsv`, `inv_2018UL_v9_MC.tsv`, `inv_2016{B1,B2,C,D,E,FHIPM,F,G,H}_v9_Data.tsv`, `inv_2018{A,B,C,D}_v9_Data.tsv`, `run_sweep_v9_2016_2018_20260918_072530.log` |
+| `diff_v9_v15_2016_2018` (3 s) | 16 쌍 전부 exit 4(차이 있음). MC 2016 두 half 127/370/86 = 2017 과 동일, 2018 129/396/86; Data 12 era 121–129 / 328–360 / 58, 2018A 378/333/58 | `diff_v9_v15_{2016preVFP,2016postVFP,2018UL}_MC.txt`, `diff_v9_v15_{2016B,2016Bv2,...,2018D}_Data.txt`, `run_diff_v9_v15_2016_2018_20260918_072642.log` |
+| `probe_tttw_v15` (2 s) | TTTWminus/plus v15 8 dataset(`..._v1-v1`) 의 summary: 1.63M–3.60M ev(표는 registry 주석) | `run_probe_tttw_v15_20260918_060303.log` |
+| `discover_ul16_btagcsv_v15` (1 s) | BTagCSV UL16 v15 9 dataset, JetHT 와 같은 era 구조 | `run_discover_ul16_btagcsv_v15_20260918_060305.log` |
+| `das_scan_2024_had_pinned` (30 s) | MC 61 + DATA 4 → RESULT 65 = EXACT 64 + **PINNED 1**(`TTWJetsToLNu`), NOT_FOUND 0 | `script/das_ttHH_2024_v15_20260918_0803.log`, `run_das_scan_2024_had_pinned_20260918_060306.log` |
+
+**해석은 `08_branch_schema_migration.md` §3.5(era 별 diff)·§7.4(2018 메뉴 전환: 2018A 전체에 새 쌍 없음, 진입 run 317509 는 AN2019_094 대조로)** 에, 검증 행은 `10_validation_ledger.md` V27–V33 에 있다.
+2024 스캔 로그로 처음 낸 Run 3 config 초안 2 개(MC·Data 분리, `build_from_scan_log.py --data-branch-file`, 09-19)는 `script/config_das_ttHH_2024_v15_20260918_0803_{MC,Data}.yaml.draft`
+와 review 표 `script/review_das_ttHH_2024_v15_20260918_0803.{md,tsv}`; 제출 전 사용자 검토(`ttHH/03_run3_plan.md` §6 4).
+남은 lxplus 항목은 TTTW± 8 dataset 의 DBS status 한 줄(RUNBOOK §8).
