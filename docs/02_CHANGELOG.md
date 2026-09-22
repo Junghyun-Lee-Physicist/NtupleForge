@@ -9,6 +9,27 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-22 (2): user decisions (drop TTWJetsToLNu; 2018UL v15 + 2024 first); builder --allow-notfound; submission batch prepared
+
+### Added
+- `script/build_from_scan_log.py --allow-notfound KEY,...`: emit a config while explicitly named keys are NOT_FOUND (written as a commented
+  block); any other NOT_FOUND still refuses (exit 3); a stale allow list is reported. Needed because the 2018UL v15 campaign lacks the five
+  samples under central request. Tested with a synthetic log (2 NOT_FOUND: refused without the flag, refused with a partial list, emitted with
+  59 datasets + block when covered).
+- `script/localcheck_summary.py`: one-line-per-file summary (Events, branches, HLT_ count, run/lumi/event, genWeight, genTtbarId,
+  Runs.genEventSumw) of the 500-event local post-processing checks that precede CRAB (README step 2, lesson A14).
+- Workspace RUNBOOK 10: the full submission batch for 2018UL v15 + 2024 (scan -> build -> crabConfig -> local checks -> preflight -> pilot ->
+  full), with the `nocommit` / `preflight_*.log` / `campaign_*` handling spelled out.
+
+### Changed
+- `script/samples_registry_run3.txt`: `TTWJetsToLNu` row commented out (user 2026-09-22: dropped from Run 3). The 2024 had scan now selects
+  60 MC + 4 DATA. D-2026-09-17-ttwlnu-pinned -> DEPRECATED; the PINNED mechanism stays.
+- `build_from_scan_log.py`: `common.jobID` is now `campaign_<tag>` (CRAB workArea, gitignored by `campaign_*`, v9 convention) while
+  `output_base` keeps the bare tag. The 2025 drafts in `script/` were regenerated from the same log (only these two lines changed).
+- New decision D-2026-09-22-production-order (2018UL v15 + 2024 first; 2025 Data, 2016, 2017 later; analyzer generalisation later; the five
+  absent 2018 samples come in a follow-up config). STATUS header, rows 4 / 18 / 18a / 19, item 22t, a "current position" block at the top of the
+  v15 section; workspace `00_START_HERE.md` 4; `ttHH/03` 6 1.
+
 ## [Unreleased], 2026-09-22: batch 4 folded in (TTTW+/- VALID, 2025 rescan with PINNED); 2025 config drafts
 
 ### Added
@@ -18,8 +39,9 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   PromptReco B-G (C and F as `-v1` + `-v2`), 6,607,369,332 events, 18,494 files, job-count guard OK.
 
 ### Changed
-- TTTW+/- NanoAODv15: six of eight datasets read as VALID with `script/das_status.sh` (`run_probe_tttw_v15_status_20260922_055553.log`); the two
-  UL16APV datasets were missed because the RUNBOOK 8 pattern lacked the `APV` token (AI slip; corrected in RUNBOOK 9). Registry comment,
+- TTTW+/- NanoAODv15: all eight datasets read as VALID with `script/das_status.sh` (`run_probe_tttw_v15_status_20260922_055553.log` for six;
+  `run_probe_tttw_v15_status_apv_20260922_061821.log` for the two UL16APV ones, which the first RUNBOOK 8 pattern missed because it lacked the
+  `APV` token; AI slip, corrected as RUNBOOK 9 and run the same day). DAS side of D-2026-09-17-tttw-split closed; xsec remains. Registry comment,
   D-2026-09-17-tttw-split, STATUS row 5 / 18 / new 22s, `09` 20, ledger V35-V36 (ledger rows re-sorted ascending), `ttHH/03` 6 1, workspace
   `00_START_HERE.md`, RUNBOOK 8 done / 9 next.
 

@@ -19,7 +19,7 @@
 # ==========================================================================
 
 common:
-  jobID: "ttHH2025_v15_had_Data_v1"
+  jobID: "campaign_ttHH2025_v15_had_Data_v1"
   site: "T3_KR_KNU"
   output_base: "ttHH2025_v15_had_Data_v1"
   analysis_module: ["modules/noop.py", "MODULES"]

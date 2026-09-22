@@ -615,7 +615,7 @@ RUNBOOK §8. lxplus956, HEAD `d81f2ad` → 커밋 `1a9f20d`. 컨테이너 없음
 
 | step | 결과 | 산출물 |
 |---|---|---|
-| `probe_tttw_v15_status` (3 s, `das_status.sh` 첫 실제 사용) | 6 dataset 전부 **VALID**, nevents 09-18 과 동일(TTTWminus UL16 1,700,000 / UL17 3,291,000 / UL18 3,485,000; TTTWplus 1,700,000 / 3,389,000 / 3,597,000). **UL16APV 2 개는 안 나왔다**: RUNBOOK §8 의 패턴 `RunIISummer20UL1*NanoAODv15-150X*` 가 `NanoAODAPVv15` 를 못 잡는다(09-18 의 `NanoAOD*v15` 에서 `*` 하나를 빠뜨림; AI 실수, §9 에 한 줄로 보정) | `run_probe_tttw_v15_status_20260922_055553.log` |
+| `probe_tttw_v15_status` (3 s, `das_status.sh` 첫 실제 사용) | 6 dataset 전부 **VALID**, nevents 09-18 과 동일(TTTWminus UL16 1,700,000 / UL17 3,291,000 / UL18 3,485,000; TTTWplus 1,700,000 / 3,389,000 / 3,597,000). **UL16APV 2 개는 안 나왔다**: RUNBOOK §8 의 패턴 `RunIISummer20UL1*NanoAODv15-150X*` 가 `NanoAODAPVv15` 를 못 잡는다(09-18 의 `NanoAOD*v15` 에서 `*` 하나를 빠뜨림; AI 실수). **같은 날 §9 로 보정**: `run_probe_tttw_v15_status_apv_20260922_061821.log`, 둘 다 VALID(1,630,000 / 4, 1,700,000 / 5) → 8/8 VALID, 커밋 `6e276c1` | `run_probe_tttw_v15_status_20260922_055553.log` |
 | `das_scan_2025_had_pinned` (84 s) | MC 61 + DATA 4 → RESULT 65 = EXACT 64 + PINNED 1, NOT_FOUND 0 | `das_ttHH_2025_v15_20260922_0755.log`, `run_das_scan_2025_had_pinned_20260922_055557.log` |
 
 그 로그로 2025 config 초안 2 개를 냈다(`build_from_scan_log.py --data-branch-file`, 09-22): `config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`,

@@ -273,6 +273,8 @@ Summer24 상세 316 행 중 VALID 269 / PRODUCTION 21 / INVALID 26 — INVALID �
    `script/config_das_ttHH_2025_v15_20260922_0755_{MC,Data}.yaml.draft`, review `script/review_das_ttHH_2025_v15_20260922_0755.{md,tsv}`. **2025 MC 초안의 61 dataset 은
    2024 MC 초안과 완전히 같다**(2025 MC 캠페인 없음, Summer24 공용; §1) → MC ntuple 은 한 번만 만들고 2025 는 Data 초안(`ttHH2025_v15_had_Data_v1`,
    `branch_hadronic_2025_v15_Data.txt`; JetMET0/1 + Muon0/1 × PromptReco B~G, C·F 는 `-v1`+`-v2`, 6,607,369,332 ev, 18,494 files, guard OK)만 제출 대상이다.
+   **09-22 사용자 결정**: `TTWJetsToLNu` 는 뺀다(registry 행 주석) → 2024 를 재스캔해 60 MC + 4 DATA 로 config 를 다시 낸다; **2024 는 2018UL v15 와 함께 첫 생산**,
+   2025 Data 는 그 뒤(D-2026-09-22-production-order, RUNBOOK §10).
 2. **`build_from_scan_log.py` 의 Run 3 대응** — (a)·(b) **끝남 (2026-09-16)**: `--data-variants {auto,canonical,all}` 추가, `auto` 는 Run 3 era
    (`RUN3_ERAS`)에서 `all` = (PD, era) 당 하나만 남기는 규칙을 끄고 모든 DBS 변형을 `<PD>_<processed string>` 키의 독립 행으로 둔다(2024I 의 `-v2` + `_v2-v1`,
    2025C/F 의 `-v1` + `-v2` 전부 유지; 고치기 전에는 `Run2025C-PromptReco-v1` 155M ev 가 alternate 로 밀렸다). Data 플레이버 `BTVNano`/`JMENano` 는

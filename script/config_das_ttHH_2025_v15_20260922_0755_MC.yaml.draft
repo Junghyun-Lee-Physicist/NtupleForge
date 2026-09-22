@@ -19,7 +19,7 @@
 # ==========================================================================
 
 common:
-  jobID: "ttHH2025_v15_had_MC_v1"
+  jobID: "campaign_ttHH2025_v15_had_MC_v1"
   site: "T3_KR_KNU"
   output_base: "ttHH2025_v15_had_MC_v1"
   analysis_module: ["modules/noop.py", "MODULES"]
@@ -66,7 +66,6 @@ datasets:
   TTWJetsToQQ: "/TTW-WtoQQ-1Jets_TuneCP5_13p6TeV_amcatnloFXFXold-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM"
 
   # --- ttV_lep ---
-  TTWJetsToLNu: "/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-mg35x_150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM"
   TTLL_MLL50: "/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM"
   TTLL_MLL4to50: "/TTLL_Bin-MLL-4to50_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM"
   TTNuNu: "/TTNuNu_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM"
@@ -113,3 +112,8 @@ datasets:
   ZJetsToQQ_HT1500to2500: "/Zto2Q-4Jets_Bin-HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM"
   ZJetsToQQ_HT2500toInf: "/Zto2Q-4Jets_Bin-HT-2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM"
 
+  # --- UNGROUPED ---
+  TTWJetsToLNu: "/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-mg35x_150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM"
+
+  # !! UNGROUPED keys above are not in samples_registry.txt.
+  # !! Add them to the registry (or explain why not) before submitting.

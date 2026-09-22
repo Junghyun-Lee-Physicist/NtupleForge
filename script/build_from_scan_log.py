@@ -35,7 +35,9 @@ USAGE
         --branch-file branches/branch_keep_all.txt
 
     # 2b. v15 per-tier lists: one _MC and one _Data draft (CPV convention),
-    #     '{tier}' in --job-tag becomes MC / Data
+    #     '{tier}' in --job-tag becomes MC / Data. --allow-notfound lets a config
+    #     out while KNOWN-absent samples are still NOT_FOUND (written as a
+    #     commented block); any other NOT_FOUND still refuses.
     python3 script/build_from_scan_log.py <log> --emit-config \
         --registry script/samples_registry_run3.txt \
         --job-tag ttHH2024_v15_had_{tier}_v1 \
@@ -496,7 +498,10 @@ def emit_config(path, meta, mc, data, prov, args, reg_order, reg_group, tier=Non
               "# " + "=" * 74]
     L += ["",
          "common:",
-         '  jobID: "%s"' % tag,
+         # jobID = CRAB workArea directory (created in the repo root); the 'campaign_' prefix
+         # is what .gitignore excludes (v9 convention: campaign_ttHH2018UL_fullNano_v1).
+         # output_base = /store/user/<user>/<output_base> keeps the bare tag.
+         '  jobID: "campaign_%s"' % tag,
          '  site: "%s"' % args.site,
          '  output_base: "%s"' % tag,
          '  analysis_module: ["%s", "MODULES"]' % args.module,
@@ -544,6 +549,12 @@ def emit_config(path, meta, mc, data, prov, args, reg_order, reg_group, tier=Non
     if leftover:
         L += ["  # !! UNGROUPED keys above are not in samples_registry.txt.",
               "  # !! Add them to the registry (or explain why not) before submitting."]
+    allowed_nf = getattr(args, "_allowed_notfound", []) or []
+    if allowed_nf and tier != "Data":
+        L += ["  # --- NOT in this campaign yet (NOT_FOUND in the scan, allowed by --allow-notfound) ---",
+              "  # --- add them in a later config when the central request or the enriched production lands ---"]
+        L += ["  # %s: NOT_FOUND" % k for k in allowed_nf]
+        L.append("")
 
     _write(path, "\n".join(L) + "\n")
     if leftover:
@@ -728,6 +739,11 @@ def main():
     ap.add_argument("--site", default="T3_KR_KNU")
     ap.add_argument("--module", default="modules/noop.py")
     ap.add_argument("--branch-file", default="branches/branch_keep_all.txt")
+    ap.add_argument("--allow-notfound", default=None, metavar="KEY,KEY,...",
+                    help="registry keys that may be NOT_FOUND in this log without blocking "
+                         "--emit-config (samples known to be absent from the campaign, e.g. the "
+                         "five Run 2 v15 samples under central request). They are written into the "
+                         "config as a commented block. Any OTHER NOT_FOUND still refuses (exit 3).")
     ap.add_argument("--data-branch-file", default=None,
                     help="branch list for the Data tier. When given, --emit-config writes TWO "
                          "drafts, config_<stem>_MC.yaml.draft (MC keys, --branch-file) and "
@@ -772,11 +788,21 @@ def main():
                 meta, mc, data, files, notfound, dup, prov)
 
     rc = 0
-    if notfound or dup:
-        print("FATAL: the log is inconsistent -- %d NOT_FOUND, %d duplicate-key "
-              "collisions. Review table written; no config emitted."
-              % (len(notfound), len(dup)), file=sys.stderr)
+    allowed = set(k for k in (args.allow_notfound or "").split(",") if k)
+    unexpected_nf = [k for k in notfound if k not in allowed]
+    unused_allow = sorted(allowed - set(notfound))
+    if unused_allow:
+        print("[build] NOTE: --allow-notfound names keys that were FOUND (stale list?): %s"
+              % ", ".join(unused_allow))
+    if unexpected_nf or dup:
+        print("FATAL: the log is inconsistent -- %d NOT_FOUND not covered by --allow-notfound (%s), "
+              "%d duplicate-key collisions. Review table written; no config emitted."
+              % (len(unexpected_nf), ", ".join(unexpected_nf) or "-", len(dup)), file=sys.stderr)
         rc = 3
+    elif notfound:
+        print("[build] NOTE: %d NOT_FOUND key(s) explicitly allowed (%s); they are listed as a "
+              "commented block in the config, not as datasets." % (len(notfound), ", ".join(notfound)))
+    args._allowed_notfound = [k for k in notfound if k in allowed]
 
     reg = args.registry or os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                         "samples_registry.txt")

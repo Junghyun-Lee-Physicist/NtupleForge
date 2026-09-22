@@ -11,6 +11,23 @@
 
 ---
 
+## D-2026-09-22-production-order: produce 2018UL v15 and 2024 first; the other years follow; the analyzer is generalised to all years afterwards
+**DECIDED · 2026-09-22 · user**
+
+- **Decision (user).** "2018 년도, 2024 년도에 대해서만 일단 작업을 진행한 후 나머지 년도에 대해 확장." First production = 2018UL NanoAODv15
+  hadronic (MC + Data: JetHT A-D, SingleMuon A-D) and 2024 (Summer24 MC + 2024 Data: JetMET0/1, Muon0/1). 2025 Data, 2016 (both halves) and
+  2017 v15 follow later with the same tools (registry, `das_scan.sh`, `build_from_scan_log.py`, branch lists are already in place for them).
+  The analyzer (tempTTHH) is adapted to all years as a separate, later task (its trigger / era logic today covers 2017 and 2018 only).
+- **Consequences.** (i) The 2018UL v15 config is emitted WITHOUT the five samples that have no central v15 (`TTHHto4b`, `tHW`, `TTZHTo4b`,
+  `TTZZTo4b`, `TT4b`; D-2026-09-11-run2-scope-2016 / `ttHH/04`): `build_from_scan_log.py --allow-notfound` (added 2026-09-22) lists them as a
+  commented block; they arrive in a follow-up config from the central request or the enriched production (D-2026-09-17-run2-v15-two-tracks).
+  (ii) `TTWJetsToLNu` is dropped (D-2026-09-17-ttwlnu-pinned DEPRECATED), so the 2024 scan has 60 MC + 4 DATA keys and NOT_FOUND 0.
+  (iii) The 2025 drafts of 2026-09-22 stay as records; only the 2025 Data config is a future submission (the MC is the same Summer24 set).
+  (iv) Submission procedure = README "UL18 campaign replay order": scan -> build -> local 500-event check per (era, tier) -> preflight ->
+  pilot (1 MC + 1 Data task) -> full; every step through `runlog.sh`; CRAB transcripts stay in `script/runlogs/nocommit/`. Commands: workspace
+  RUNBOOK 10.
+- **Not decided here.** Phase 0 start (D-2026-09-17-single-forge, STATUS row 15) and the analyzer items (STATUS row 12).
+
 ## D-2026-09-18-2018A-trigger: the whole of Run2018A lacks the analyzer's 2018 six-jet paths; how the analyzer treats 2018A is the user's call
 **OPEN (analyzer side, tempTTHH) · 2026-09-18 measurement, entry written 2026-09-19 · options listed by the AI, decision pending**
 
@@ -76,7 +93,7 @@
   Rules that keep it intuitive and the phased plan: `11_unified_forge_plan.md` 3 and 5.
 
 ## D-2026-09-17-ttwlnu-pinned: `TTWJetsToLNu` (Run 3) points at the `mg35x` dataset through a pinned full path
-**PROPOSED by the AI · 2026-09-17 · user said "not important, either way"; revert if the user prefers to drop it**
+**DEPRECATED · 2026-09-22 · user: "TTWJetsToLNu 은 빼자" · the Run 3 hadronic list has no ttW -> l nu; the registry row is commented out (kept as record), the PINNED mechanism stays for other keys · originally PROPOSED by the AI 2026-09-17**
 
 - **Facts (`script/runlogs/run_probe_ttlnu_mg35x_20260917_070407.log`, `run_probe_ttlnu_search_20260917_073835.log`).** The standard Summer24
   NanoAODv15 campaign has no ttW -> l nu sample under any name (only `TTLNu-EWK`, `TTW-WtoQQ-1Jets`, `TTWH/WW/WZ`); no standard MiniAODv6 parent either.
@@ -97,11 +114,11 @@
   `TTTWminus-DR1_TuneCP5_13TeV_amcatnlo-pythia8` and `TTTWplus-DR1_TuneCP5_13TeV_amcatnlo-pythia8` (names in all four
   Run 2 v15 campaigns, 2026-09-11 inventory; their DAS status and event counts read "-" there, which only meant that the inventory ran no
   details query for them). 2026-09-18 summary query (`run_probe_tttw_v15_20260918_060303.log`): all eight datasets exist as `..._v1-v1` with
-  1,630,000-3,597,000 events (per era in the registry comment). 2026-09-22 (`run_probe_tttw_v15_status_20260922_055553.log`): six of the
-  eight are VALID (UL16 postVFP, UL17, UL18, both charges); the two UL16APV datasets were missed by the query pattern and are still unread.
+  1,630,000-3,597,000 events (per era in the registry comment). 2026-09-22 (`run_probe_tttw_v15_status_20260922_055553.log`, `..._apv_20260922_061821.log`): all eight
+  are VALID (the first query missed the two UL16APV datasets through a pattern slip; the second read them).
 - **Decision (user).** tttW was always part of the hadronic background list, so keep it: two keys `TTTWminus` / `TTTWplus`
   (`ttVV`, `ttHH,had`), one xsec entry each in the analyzer tables; the old `TTTW` key stays as `ttVV_v9` / `alt` for the v9 campaign.
-- **Left.** xsec for the two charge states (XSDB / GenXSecAnalyzer; sum = the old inclusive value); DBS status of the two UL16APV datasets (RUNBOOK 9).
+- **Left.** xsec for the two charge states (XSDB / GenXSecAnalyzer; sum = the old inclusive value). DAS side closed 2026-09-22.
 
 ## D-2026-09-17-data-pd-2016: 2016 uses the same data PDs as 2017/2018
 **DECIDED · 2026-09-17 · user decision · registry `script/samples_registry.txt`, `ttHH/04_mc_request_2026-09.md` 4**

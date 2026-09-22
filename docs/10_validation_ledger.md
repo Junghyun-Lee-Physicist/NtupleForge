@@ -4,7 +4,7 @@
 > **증거 파일이 어디 있는지**. 결과의 해석은 각 문서에 있고, 여기는 색인이다(한 사실은 한 곳에: 숫자는 증거 파일과
 > 그 문서를 가리키고 다시 적지 않는 것이 원칙이지만, 표를 읽을 수 있을 만큼의 요약값은 적는다).
 > **대상 독자**: "그거 검증됐나?" 를 묻는 사람. 답은 표의 한 행이어야 한다.
-> **상태**: 2026-09-16 작성, 09-17 V21–V26 추가, 09-18 배치 3 의 V27–V33 추가(09-19 등재), 09-19 V34, 09-22 배치 4 의 V35–V36. 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
+> **상태**: 2026-09-16 작성, 09-17 V21–V26 추가, 09-18 배치 3 의 V27–V33 추가(09-19 등재), 09-19 V34, 09-22 배치 4 의 V35–V37. 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
 > `script/runlogs/LEDGER.tsv` 의 실행이 이 표의 원자료다. **새 검증을 하면 행을 추가한다.**
 > **관련**: [`08_branch_schema_migration.md`](08_branch_schema_migration.md) (절차·결과), [`09_v15_migration_log.md`](09_v15_migration_log.md) (시간순 로그),
 > `script/runlogs/README.md` (실행 기록 규약).
@@ -58,6 +58,7 @@
 | V34 | 2026-09-19 | AN2019_094 §3.1.4 (2018 트리거 3 기간, Tables 28–30) 와 2016 Table 24 의 경로가 우리 2018·2016 인벤토리에 있는가 | 경로 14 × 2018 인벤토리 10(v15 Data 4 + MC 1, v9 5), 경로 4 × 2016 인벤토리 11 | 전부 AN 의 기간 구조대로 존재; MC 는 Period C 만; 기간 A 의 `..._PFBTagCSV_1p5` 는 2018A 파일 중 run < 315974 를 덮는 파일에만(v9 표본 o, v15 표본 x); 2016 4 경로는 11 파일 전부 | 재현: `pdftotext -layout Materials/TTHH/TTH_AN/AN2019_094_v20_ttHAnalysis.pdf` 후 `grep -n "HLT "`; 인벤토리 `awk -F'\t' '$1=="Events" && $2==<path>' script/inventory/inv_2018*_{v15,v9}_*.tsv` (표는 08 §7.4) | 08 §7.4, 01_STATUS 22n, D-2026-09-18-2018A-trigger |
 | V35 | 2026-09-22 | TTTW± NanoAODv15 8 dataset 의 DBS status | DAS -json 6 (패턴이 UL16APV 2 개를 놓침) | 6 개 전부 VALID, nevents 09-18 과 동일 | `script/runlogs/run_probe_tttw_v15_status_20260922_055553.log` | registry 주석, D-2026-09-17-tttw-split, 01_STATUS 표 5 |
 | V36 | 2026-09-22 | 2025 had 스캔, PINNED 포함 (재스캔) | 65 키, 84 s | EXACT 64 + PINNED 1(`TTWJetsToLNu`), NOT_FOUND 0; builder 초안 MC 61(2024 와 동일 dataset) + Data 32 | `script/das_ttHH_2025_v15_20260922_0755.log`, `script/runlogs/run_das_scan_2025_had_pinned_20260922_055557.log`, `script/review_das_ttHH_2025_v15_20260922_0755.md` | ttHH/03 §6 1, 01_STATUS 표 18 |
+| V37 | 2026-09-22 | TTTW± UL16APV NanoAODv15 2 dataset 의 DBS status (V35 의 패턴 누락 보정) | DAS -json 2 | 둘 다 VALID, 1,630,000 / 4 files, 1,700,000 / 5 files (09-18 과 동일) → 8/8 VALID | `script/runlogs/run_probe_tttw_v15_status_apv_20260922_061821.log` | registry 주석, D-2026-09-17-tttw-split, 01_STATUS 표 5 |
 
 TTHHGenCategoryTools(expanded ttbar id, D17 enriched NanoAOD) 의 Gate 1–5 는 그 저장소의 `docs/06_validation_results.md` 가 원장이다. 여기에는 옮기지 않는다.
 
