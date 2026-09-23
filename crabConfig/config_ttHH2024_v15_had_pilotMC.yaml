@@ -1,0 +1,12 @@
+common:
+  jobID: campaign_ttHH2024_v15_had_MC_v1_pilot
+  site: T3_KR_KNU
+  output_base: ttHH2024_v15_had_MC_v1_pilot
+  analysis_module:
+  - modules/noop.py
+  - MODULES
+  branch_file: branches/branch_hadronic_2024_v15_MC.txt
+  splitting: FileBased
+  units_per_job: 1
+datasets:
+  ZZ: /ZZ_TuneCP5_13p6TeV_pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM

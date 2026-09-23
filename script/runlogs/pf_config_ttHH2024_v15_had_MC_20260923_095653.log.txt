@@ -1,0 +1,59 @@
+==============================================================================
+NtupleForge CRAB PREFLIGHT (read-only)
+  config : crabConfig/config_ttHH2024_v15_had_MC.yaml
+  cwd    : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+  time   : 2026-09-23T09:56:53
+  DAS check: OFF (add --check-das to query DAS)
+==============================================================================
+[PASS] config file                        crabConfig/config_ttHH2024_v15_had_MC.yaml
+[PASS] config YAML parse                  ok
+[PASS] common.jobID                       campaign_ttHH2024_v15_had_MC_v1
+[PASS] common.site                        T3_KR_KNU
+[PASS] common.output_base                 ttHH2024_v15_had_MC_v1
+[PASS] common.analysis_module             ['modules/noop.py', 'MODULES']
+[PASS] common.branch_file                 branches/branch_hadronic_2024_v15_MC.txt
+[PASS] common.splitting                   FileBased
+[PASS] common.units_per_job               1
+[PASS] module file                        modules/noop.py
+[PASS] module list variable               MODULES found in noop.py
+[PASS] module siblings shipped            jetsMETcut.py, nanoaod_branch_access.py, topCPVCategorizer.py
+[PASS] branch file                        branches/branch_hadronic_2024_v15_MC.txt (50 rules: 49 keep / 1 drop)
+[PASS] branch file mode                   SLIM ('drop *' present) -- output keeps 49 explicit patterns
+[PASS] slim keeps run                     present
+[PASS] slim keeps luminosityBlock         present
+[PASS] slim keeps event                   present
+[PASS] slim keeps genWeight               present
+[PASS] slim keeps genTtbarId              present
+[PASS] Rule 6 output filename             forgedNtuple.root (submit_crab.py == PSet.py)
+[PASS] worker file crab/PSet.py           /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/crab/PSet.py
+[PASS] worker file crab/crab_script.py    /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/crab/crab_script.py
+[PASS] worker file script/run_postproc.py /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/run_postproc.py
+[PASS] CRABClient import                  ok
+[PASS] env CMSSW_BASE                     /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+[PASS] env SCRAM_ARCH                     el8_amd64_gcc12
+[WARN] VOMS proxy                         only 11.4 h left
+[PASS] cwd writable                       crab_args.txt / log can be written here
+------------------------------------------------------------------------------
+[PASS] dataset count                      60
+[PASS] dataset path syntax                all 60 match /primary/processed/TIER
+[PASS] duplicate datasets                 none
+[PASS] tier mix                           NANOAODSIM=60
+[PASS] MC / Data split                    60 MC, 0 Data
+------------------------------------------------------------------------------
+Per-task preview (workArea=campaign_ttHH2024_v15_had_MC_v1, storage=T3_KR_KNU):
+  outLFNDirBase = /store/user/junghyun/ttHH2024_v15_had_MC_v1
+  QCD_HT1000to1200               requestName=QCD_HT1000to1200               /QCD-4Jets_Bin-HT-1000to1200_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  QCD_HT1200to1500               requestName=QCD_HT1200to1500               /QCD-4Jets_Bin-HT-1200to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  QCD_HT1500to2000               requestName=QCD_HT1500to2000               /QCD-4Jets_Bin-HT-1500to2000_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  QCD_HT2000toInf                requestName=QCD_HT2000toInf                /QCD-4Jets_Bin-HT-2000_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  QCD_HT200to400                 requestName=QCD_HT200to400                 /QCD-4Jets_Bin-HT-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  QCD_HT400to600                 requestName=QCD_HT400to600                 /QCD-4Jets_Bin-HT-400to600_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  QCD_HT600to800                 requestName=QCD_HT600to800                 /QCD-4Jets_Bin-HT-600to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  QCD_HT800to1000                requestName=QCD_HT800to1000                /QCD-4Jets_Bin-HT-800to1000_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  ST_s_antitop_had               requestName=ST_s_antitop_had               /TbarBto2Q-s-channel_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  ST_s_antitop_lep               requestName=ST_s_antitop_lep               /TbarBtoLNu-s-channel_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+  ... (50 more; use --preview -1 for all)
+[PASS] existing CRAB projects             none in campaign_ttHH2024_v15_had_MC_v1
+------------------------------------------------------------------------------
+PREFLIGHT SUMMARY: 33 PASS, 1 WARN, 0 FAIL
+RESULT: READY TO SUBMIT (review the WARNs first)

@@ -1,0 +1,49 @@
+==============================================================================
+NtupleForge CRAB PREFLIGHT (read-only)
+  config : crabConfig/config_ttHH2024_v15_had_pilotMC.yaml
+  cwd    : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+  time   : 2026-09-23T09:59:25
+  DAS check: OFF (add --check-das to query DAS)
+==============================================================================
+[PASS] config file                        crabConfig/config_ttHH2024_v15_had_pilotMC.yaml
+[PASS] config YAML parse                  ok
+[PASS] common.jobID                       campaign_ttHH2024_v15_had_MC_v1_pilot
+[PASS] common.site                        T3_KR_KNU
+[PASS] common.output_base                 ttHH2024_v15_had_MC_v1_pilot
+[PASS] common.analysis_module             ['modules/noop.py', 'MODULES']
+[PASS] common.branch_file                 branches/branch_hadronic_2024_v15_MC.txt
+[PASS] common.splitting                   FileBased
+[PASS] common.units_per_job               1
+[PASS] module file                        modules/noop.py
+[PASS] module list variable               MODULES found in noop.py
+[PASS] module siblings shipped            jetsMETcut.py, nanoaod_branch_access.py, topCPVCategorizer.py
+[PASS] branch file                        branches/branch_hadronic_2024_v15_MC.txt (50 rules: 49 keep / 1 drop)
+[PASS] branch file mode                   SLIM ('drop *' present) -- output keeps 49 explicit patterns
+[PASS] slim keeps run                     present
+[PASS] slim keeps luminosityBlock         present
+[PASS] slim keeps event                   present
+[PASS] slim keeps genWeight               present
+[PASS] slim keeps genTtbarId              present
+[PASS] Rule 6 output filename             forgedNtuple.root (submit_crab.py == PSet.py)
+[PASS] worker file crab/PSet.py           /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/crab/PSet.py
+[PASS] worker file crab/crab_script.py    /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/crab/crab_script.py
+[PASS] worker file script/run_postproc.py /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/run_postproc.py
+[PASS] CRABClient import                  ok
+[PASS] env CMSSW_BASE                     /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+[PASS] env SCRAM_ARCH                     el8_amd64_gcc12
+[WARN] VOMS proxy                         only 11.4 h left
+[PASS] cwd writable                       crab_args.txt / log can be written here
+------------------------------------------------------------------------------
+[PASS] dataset count                      1
+[PASS] dataset path syntax                all 1 match /primary/processed/TIER
+[PASS] duplicate datasets                 none
+[PASS] tier mix                           NANOAODSIM=1
+[PASS] MC / Data split                    1 MC, 0 Data
+------------------------------------------------------------------------------
+Per-task preview (workArea=campaign_ttHH2024_v15_had_MC_v1_pilot, storage=T3_KR_KNU):
+  outLFNDirBase = /store/user/junghyun/ttHH2024_v15_had_MC_v1_pilot
+  ZZ                             requestName=ZZ                             /ZZ_TuneCP5_13p6TeV_pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+[PASS] existing CRAB projects             none in campaign_ttHH2024_v15_had_MC_v1_pilot
+------------------------------------------------------------------------------
+PREFLIGHT SUMMARY: 33 PASS, 1 WARN, 0 FAIL
+RESULT: READY TO SUBMIT (review the WARNs first)

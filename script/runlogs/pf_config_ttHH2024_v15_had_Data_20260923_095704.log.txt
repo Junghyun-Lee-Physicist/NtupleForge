@@ -1,0 +1,59 @@
+==============================================================================
+NtupleForge CRAB PREFLIGHT (read-only)
+  config : crabConfig/config_ttHH2024_v15_had_Data.yaml
+  cwd    : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+  time   : 2026-09-23T09:57:04
+  DAS check: OFF (add --check-das to query DAS)
+==============================================================================
+[PASS] config file                        crabConfig/config_ttHH2024_v15_had_Data.yaml
+[PASS] config YAML parse                  ok
+[PASS] common.jobID                       campaign_ttHH2024_v15_had_Data_v1
+[PASS] common.site                        T3_KR_KNU
+[PASS] common.output_base                 ttHH2024_v15_had_Data_v1
+[PASS] common.analysis_module             ['modules/noop.py', 'MODULES']
+[PASS] common.branch_file                 branches/branch_hadronic_2024_v15_Data.txt
+[PASS] common.splitting                   FileBased
+[PASS] common.units_per_job               1
+[PASS] module file                        modules/noop.py
+[PASS] module list variable               MODULES found in noop.py
+[PASS] module siblings shipped            jetsMETcut.py, nanoaod_branch_access.py, topCPVCategorizer.py
+[PASS] branch file                        branches/branch_hadronic_2024_v15_Data.txt (27 rules: 26 keep / 1 drop)
+[PASS] branch file mode                   SLIM ('drop *' present) -- output keeps 26 explicit patterns
+[PASS] slim keeps run                     present
+[PASS] slim keeps luminosityBlock         present
+[PASS] slim keeps event                   present
+[WARN] slim keeps genWeight               absent -- MC prescan would silently mis-bin (defaults to 0); intended only for Data-only configs
+[WARN] slim keeps genTtbarId              absent -- MC prescan would silently mis-bin (defaults to 0); intended only for Data-only configs
+[PASS] Rule 6 output filename             forgedNtuple.root (submit_crab.py == PSet.py)
+[PASS] worker file crab/PSet.py           /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/crab/PSet.py
+[PASS] worker file crab/crab_script.py    /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/crab/crab_script.py
+[PASS] worker file script/run_postproc.py /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/run_postproc.py
+[PASS] CRABClient import                  ok
+[PASS] env CMSSW_BASE                     /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+[PASS] env SCRAM_ARCH                     el8_amd64_gcc12
+[WARN] VOMS proxy                         only 11.4 h left
+[PASS] cwd writable                       crab_args.txt / log can be written here
+------------------------------------------------------------------------------
+[PASS] dataset count                      32
+[PASS] dataset path syntax                all 32 match /primary/processed/TIER
+[PASS] duplicate datasets                 none
+[PASS] tier mix                           NANOAOD=32
+[PASS] MC / Data split                    0 MC, 32 Data
+------------------------------------------------------------------------------
+Per-task preview (workArea=campaign_ttHH2024_v15_had_Data_v1, storage=T3_KR_KNU):
+  outLFNDirBase = /store/user/junghyun/ttHH2024_v15_had_Data_v1
+  JetMET0_Run2024C-MINIv6NANOv15-v1 requestName=JetMET0_Run2024C-MINIv6NANOv15-v1 /JetMET0/Run2024C-MINIv6NANOv15-v1/NANOAOD
+  JetMET0_Run2024D-MINIv6NANOv15-v1 requestName=JetMET0_Run2024D-MINIv6NANOv15-v1 /JetMET0/Run2024D-MINIv6NANOv15-v1/NANOAOD
+  JetMET0_Run2024E-MINIv6NANOv15-v1 requestName=JetMET0_Run2024E-MINIv6NANOv15-v1 /JetMET0/Run2024E-MINIv6NANOv15-v1/NANOAOD
+  JetMET0_Run2024F-MINIv6NANOv15-v2 requestName=JetMET0_Run2024F-MINIv6NANOv15-v2 /JetMET0/Run2024F-MINIv6NANOv15-v2/NANOAOD
+  JetMET0_Run2024G-MINIv6NANOv15-v2 requestName=JetMET0_Run2024G-MINIv6NANOv15-v2 /JetMET0/Run2024G-MINIv6NANOv15-v2/NANOAOD
+  JetMET0_Run2024H-MINIv6NANOv15-v2 requestName=JetMET0_Run2024H-MINIv6NANOv15-v2 /JetMET0/Run2024H-MINIv6NANOv15-v2/NANOAOD
+  JetMET0_Run2024I-MINIv6NANOv15-v2 requestName=JetMET0_Run2024I-MINIv6NANOv15-v2 /JetMET0/Run2024I-MINIv6NANOv15-v2/NANOAOD
+  JetMET0_Run2024I-MINIv6NANOv15_v2-v1 requestName=JetMET0_Run2024I-MINIv6NANOv15_v2-v1 /JetMET0/Run2024I-MINIv6NANOv15_v2-v1/NANOAOD
+  JetMET1_Run2024C-MINIv6NANOv15-v1 requestName=JetMET1_Run2024C-MINIv6NANOv15-v1 /JetMET1/Run2024C-MINIv6NANOv15-v1/NANOAOD
+  JetMET1_Run2024D-MINIv6NANOv15-v1 requestName=JetMET1_Run2024D-MINIv6NANOv15-v1 /JetMET1/Run2024D-MINIv6NANOv15-v1/NANOAOD
+  ... (22 more; use --preview -1 for all)
+[PASS] existing CRAB projects             none in campaign_ttHH2024_v15_had_Data_v1
+------------------------------------------------------------------------------
+PREFLIGHT SUMMARY: 31 PASS, 3 WARN, 0 FAIL
+RESULT: READY TO SUBMIT (review the WARNs first)

@@ -1,0 +1,49 @@
+=== RUNLOG ================================================================
+step        : localcheck_2024_Data
+start_utc   : 2026-09-23T07:37:05Z
+host        : lxplus963   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 3cb789b   modified_tracked_files: 1
+cmd         : /bin/bash -c cd\ localcheck_v15\ \&\&\ F=\$\(dasgoclient\ -query\ \"file\ dataset=/JetMET0/Run2024C-MINIv6NANOv15-v1/NANOAOD\"\ \|\ head\ -1\)\ \&\&\ python3\ ../script/run_postproc.py\ \"root://cms-xrd-global.cern.ch/\$F\"\ -I\ modules.noop:MODULES\ -b\ ../branches/branch_hadronic_2024_v15_Data.txt\ -N\ 500\ -o\ out_2024_Data.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-23 09:37:05.660209676 +0200 CEST m=+0.000892878
+proxy_left_s: 42280
+===========================================================================
+[run_postproc] : ============================================================
+[run_postproc] : Execution Started at: 2026-09-23 09:37:08
+[run_postproc] : ============================================================
+[run_postproc] : Branch Selection File loaded: ../branches/branch_hadronic_2024_v15_Data.txt
+[run_postproc] :   -> Applied to: OUTPUT tree only (input is read in full)
+[run_postproc] :   -> Preview: ['# =============================================================================', '#  branch_hadronic_2024_v15_Data.txt', '#  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection'] ...
+[run_postproc] : Module Loaded: modules.noop (List Variable: 'MODULES')
+[run_postproc] : Input Files Detected: 1
+[run_postproc] :   -> First file: root://cms-xrd-global.cern.ch//store/data/Run2024C/JetMET0/NANOAOD/MINIv6NANOv15-v1/2540000/064aaf18-b694-49d9-b2cd-2fae03f98476.root
+[run_postproc] : Output Strategy: MERGE (Hadd enabled)
+[run_postproc] :   -> Final Target: out_2024_Data.root
+[run_postproc] : ------------------------------------------------------------
+[run_postproc] : Initializing PostProcessor engine...
+[run_postproc] : Running Event Loop...
+Will write selected trees to .
+23-Sep-2026 09:37:09 CEST  Initiating request to open file root://cms-xrd-global.cern.ch//store/data/Run2024C/JetMET0/NANOAOD/MINIv6NANOv15-v1/2540000/064aaf18-b694-49d9-b2cd-2fae03f98476.root
+Adding file ./064aaf18-b694-49d9-b2cd-2fae03f98476_Skim.root
+Merging Events
+Merging LuminosityBlocks
+Merging Runs
+Merging MetaData
+Merging ParameterSets
+Merging tag
+[run_postproc] : ✅ Job Finished Successfully at 2026-09-23 09:38:08
+[run_postproc] :    Total Runtime: 0:00:59.191984
+Pre-select 500 entries out of 500 (100.00%)
+Selected 500 / 500 entries from root://cms-xrd-global.cern.ch//store/data/Run2024C/JetMET0/NANOAOD/MINIv6NANOv15-v1/2540000/064aaf18-b694-49d9-b2cd-2fae03f98476.root (100.00%)
+Done ./064aaf18-b694-49d9-b2cd-2fae03f98476_Skim.root
+Total time 55.8 sec. to process 500 events. Rate = 9.0 Hz.
+===========================================================================
+end_utc     : 2026-09-23T07:38:08Z
+wall_s      : 63
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_localcheck_2024_Data_20260923_073704.log
+=== END ===================================================================

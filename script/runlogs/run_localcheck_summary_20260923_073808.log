@@ -1,0 +1,24 @@
+=== RUNLOG ================================================================
+step        : localcheck_summary
+start_utc   : 2026-09-23T07:38:09Z
+host        : lxplus963   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 3cb789b   modified_tracked_files: 1
+cmd         : python3 script/localcheck_summary.py localcheck_v15/out_2018_MC.root localcheck_v15/out_2018_Data.root localcheck_v15/out_2024_MC.root localcheck_v15/out_2024_Data.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-23 09:38:09.511741723 +0200 CEST m=+0.001139860
+proxy_left_s: 42216
+===========================================================================
+localcheck_v15/out_2018_MC.root | Events 500 | branches 717 | HLT_ 325 | run/lumi/event y | genWeight y | genTtbarId y | Runs.genEventSumw y
+localcheck_v15/out_2018_Data.root | Events 500 | branches 627 | HLT_ 302 | run/lumi/event y | genWeight n | genTtbarId n | Runs.genEventSumw n
+localcheck_v15/out_2024_MC.root | Events 500 | branches 703 | HLT_ 323 | run/lumi/event y | genWeight y | genTtbarId y | Runs.genEventSumw y
+localcheck_v15/out_2024_Data.root | Events 500 | branches 638 | HLT_ 315 | run/lumi/event y | genWeight n | genTtbarId n | Runs.genEventSumw n
+===========================================================================
+end_utc     : 2026-09-23T07:38:13Z
+wall_s      : 3
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_localcheck_summary_20260923_073808.log
+=== END ===================================================================

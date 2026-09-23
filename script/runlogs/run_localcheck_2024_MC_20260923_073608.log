@@ -1,0 +1,49 @@
+=== RUNLOG ================================================================
+step        : localcheck_2024_MC
+start_utc   : 2026-09-23T07:36:09Z
+host        : lxplus963   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 3cb789b   modified_tracked_files: 1
+cmd         : /bin/bash -c cd\ localcheck_v15\ \&\&\ F=\$\(dasgoclient\ -query\ \"file\ dataset=/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM\"\ \|\ head\ -1\)\ \&\&\ python3\ ../script/run_postproc.py\ \"root://cms-xrd-global.cern.ch/\$F\"\ -I\ modules.noop:MODULES\ -b\ ../branches/branch_hadronic_2024_v15_MC.txt\ -N\ 500\ -o\ out_2024_MC.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-23 09:36:09.302914193 +0200 CEST m=+0.000882922
+proxy_left_s: 42336
+===========================================================================
+[run_postproc] : ============================================================
+[run_postproc] : Execution Started at: 2026-09-23 09:36:11
+[run_postproc] : ============================================================
+[run_postproc] : Branch Selection File loaded: ../branches/branch_hadronic_2024_v15_MC.txt
+[run_postproc] :   -> Applied to: OUTPUT tree only (input is read in full)
+[run_postproc] :   -> Preview: ['# =============================================================================', '#  branch_hadronic_2024_v15_MC.txt', '#  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection'] ...
+[run_postproc] : Module Loaded: modules.noop (List Variable: 'MODULES')
+[run_postproc] : Input Files Detected: 1
+[run_postproc] :   -> First file: root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root
+[run_postproc] : Output Strategy: MERGE (Hadd enabled)
+[run_postproc] :   -> Final Target: out_2024_MC.root
+[run_postproc] : ------------------------------------------------------------
+[run_postproc] : Initializing PostProcessor engine...
+[run_postproc] : Running Event Loop...
+Will write selected trees to .
+23-Sep-2026 09:36:12 CEST  Initiating request to open file root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root
+Adding file ./4b74f791-673b-4b21-be3e-c9287790bc40_Skim.root
+Merging Events
+Merging LuminosityBlocks
+Merging Runs
+Merging MetaData
+Merging ParameterSets
+Merging tag
+[run_postproc] : ✅ Job Finished Successfully at 2026-09-23 09:37:04
+[run_postproc] :    Total Runtime: 0:00:52.301896
+Pre-select 500 entries out of 500 (100.00%)
+Selected 500 / 500 entries from root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root (100.00%)
+Done ./4b74f791-673b-4b21-be3e-c9287790bc40_Skim.root
+Total time 48.7 sec. to process 500 events. Rate = 10.3 Hz.
+===========================================================================
+end_utc     : 2026-09-23T07:37:04Z
+wall_s      : 55
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_localcheck_2024_MC_20260923_073608.log
+=== END ===================================================================
