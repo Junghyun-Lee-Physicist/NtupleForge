@@ -9,6 +9,22 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-23 (2): batch 6 folded in (first v15 production: 2024 + 2018UL scans, four configs, local checks, preflights; 2024 pilot submitted)
+
+### Added
+- `crabConfig/config_ttHH{2024,2018UL}_v15_had_{MC,Data}.yaml` (lxplus commit `3cb789b`; copies of the 09-23 drafts, `cmp` identical): 2024 MC 60 /
+  Data 32 datasets from `script/das/das_ttHH_2024_v15_20260923_0851.log` (EXACT 64), 2018UL MC 42 / Data 8 from
+  `script/das/das_ttHH_2018UL_v15_20260923_0853.log` (EXACT 41 + RELAXED 2; the five expected NOT_FOUND kept as a commented block, first real use of
+  `--allow-notfound`). Together 13,486,536,452 events in 30,690 files, i.e. 30,690 jobs at units_per_job 1 (sum of the four review totals).
+- `crabConfig/config_ttHH2024_v15_had_pilot{MC,Data}.yaml` (lxplus commit `72bd16f`): one dataset each (`ZZ`, `JetMET0_Run2024H-MINIv6NANOv15-v2`)
+  with `_pilot` jobID / output_base; both submitted on 2026-09-23 (task names in `09` 21).
+
+### Changed
+- Records: `09` 21 (the batch), ledger V38-V42 (the two scans, the local NanoAODTools runs of the four v15 hadronic lists, six preflights, the
+  wrapper mock test), STATUS row 18, workspace RUNBOOK 10 ([5] and [6] done; the [2] note on the 09-03 comparison made exact: 49 of the 50
+  2018UL datasets match, `TTZToQQ` was not in the registry on 09-03), `00_START_HERE.md`. Ledger BLUF: the 2018A menu bracket (closed by
+  V27-V28, V34) and the local branch-list run (V40) moved out of "open"; the CRAB-job check of the lists stays open until the pilot outputs.
+
 ## [Unreleased], 2026-09-23: `crab/submit_crab.py` reports failures (exit code, stale project dirs, `--kill` never submits); pilot submit steps split
 
 ### Fixed

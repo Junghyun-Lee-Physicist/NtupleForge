@@ -622,3 +622,38 @@ RUNBOOK §8. lxplus956, HEAD `d81f2ad` → 커밋 `1a9f20d`. 컨테이너 없음
 review `review_das_ttHH_2025_v15_20260922_0755.{md,tsv}`. **MC 초안의 61 dataset 은 2024 MC 초안과 byte 단위로 같다**(머리·jobID 만 다름): 2025 MC 캠페인이
 없어 Summer24 를 같이 쓰기 때문이며, 따라서 MC ntuple 은 한 번만 만들고 2025 는 Data 초안만 제출 대상이다(`ttHH/03` §6 1, STATUS 표 18). Data 32 행 =
 JetMET0/1 + Muon0/1 × PromptReco B~G(C·F 는 `-v1`+`-v2`), 6,607,369,332 ev, 18,494 files, 최대 1,166 files(guard OK). 원장 V35–V36.
+
+## 21. 2026-09-23: lxplus 배치 6 (2018UL v15 + 2024 hadronic 첫 생산: 스캔 → config 4 → 로컬 점검 4 → preflight 6 → 파일럿 2 task 제출)
+
+RUNBOOK §10. lxplus963. 컨테이너 밖 [2] 는 HEAD `8ab47c0` 에서 돌아 커밋 `3cb789b`, 컨테이너 안 [4] 는 `3cb789b` 에서 돌아 커밋 `72bd16f`.
+맥 쪽 wrapper 수정은 커밋 `c7cbe95`(아래). LEDGER 9 행(스캔 2, build 2, 로컬 점검 4, 요약 1)은 전부 EXIT 0. preflight 와 제출은 crab 명령이라
+runlog 가 `script/runlogs/nocommit/` 로 가고 LEDGER 행이 없다. preflight 는 `pf_*.txt` 복사본이 증거다.
+
+| step | 결과 | 산출물 |
+|---|---|---|
+| `das_scan_2024_had_final` (81 s) | RESULT 64 = EXACT 64 (MC 60 + DATA 4), NOT_FOUND 0. 09-18 스캔의 review 표와 비교하면 `TTWJetsToLNu` 한 행만 빠졌고(registry 행 주석, 09-22 결정) 나머지 92 행은 dataset·nevents·nfiles 가 같다 | `script/das/das_ttHH_2024_v15_20260923_0851.log`, `run_das_scan_2024_had_final_20260923_065146.log` |
+| `das_scan_2018UL_had_v15` (75 s) | RESULT 48 = EXACT 41 + RELAXED 2 (JetHT, SingleMuon) + NOT_FOUND 5 (`TTHHto4b`, `tHW`, `TTZHTo4b`, `TTZZTo4b`, `TT4b`; 예상한 5 종 그대로) | `script/das/das_ttHH_2018UL_v15_20260923_0853.log`, `run_das_scan_2018UL_had_v15_20260923_065307.log` |
+| `build_2024_had` | MC 60 키 4,089,997,458 ev / 19,136 files / 입력 13.86 TB, Data 32 키 5,958,480,379 ev / 7,811 files; 최대 2,532 files (job-count guard OK) | `script/drafts/review_das_ttHH_2024_v15_20260923_0851.{md,tsv}`, `script/drafts/config_das_ttHH_2024_v15_20260923_0851_{MC,Data}.yaml.draft`, `run_build_2024_had_20260923_072131.log` |
+| `build_2018UL_had` (`--allow-notfound` 첫 실제 사용) | MC 42 키 1,777,107,873 ev / 2,277 files / 입력 5.35 TB, Data 8 키 1,660,950,742 ev / 1,466 files; 최대 589 files (guard OK); 부재 5 종은 MC config 의 주석 블록 | `script/drafts/review_das_ttHH_2018UL_v15_20260923_0853.{md,tsv}`, `script/drafts/config_das_ttHH_2018UL_v15_20260923_0853_{MC,Data}.yaml.draft`, `run_build_2018UL_had_20260923_072132.log` |
+| crabConfig 4 | 초안을 그대로 복사(네 쌍 `cmp` 동일) | `crabConfig/config_ttHH{2024,2018UL}_v15_had_{MC,Data}.yaml` (`3cb789b`) |
+| `localcheck_{2018,2024}_{MC,Data}` (28 / 39 / 55 / 63 s; cmssw-el8 + cmsenv, ROOT 6.30.09) | 각 dataset 첫 파일에서 500 event, `modules.noop` + 해당 v15 목록(2018 MC `TTToHadronic`, 2018 Data `JetHT` 2018A, 2024 MC `TTto4Q`, 2024 Data `JetMET0` 2024C). 4 개 EXIT 0, `Error in <` 0 줄 | `run_localcheck_{2018_MC_20260923_073458,2018_Data_20260923_073528,2024_MC_20260923_073608,2024_Data_20260923_073704}.log` |
+| `localcheck_summary` | branches / HLT_: 2018 MC 717 / 325, 2018 Data 627 / 302, 2024 MC 703 / 323, 2024 Data 638 / 315. run/lumi/event 는 넷 다 y. MC 두 개는 genWeight·genTtbarId·Runs.genEventSumw 가 y, Data 두 개는 셋 다 n | `run_localcheck_summary_20260923_073808.log` |
+| preflight 4 | 2018UL MC 42: 33 PASS / 1 WARN; 2018UL Data 8: 31 / 3; 2024 MC 60: 33 / 1; 2024 Data 32: 31 / 3. FAIL 0 전부. WARN 은 proxy 11.4 h 와 Data 의 `genWeight`·`genTtbarId` absent(Data 에는 원래 없다). existing CRAB projects 는 전부 none | `script/runlogs/pf_config_ttHH{2018UL,2024}_v15_had_{MC,Data}_20260923_*.log.txt` |
+| 파일럿 config 2 + preflight 2 | 전체 config 에서 한 행씩 떼어 jobID·output_base 에 `_pilot`: `ZZ` (4,800,000 ev, 76 files), `JetMET0_Run2024H-MINIv6NANOv15-v2` (55,794,457 ev, 82 files; 둘 다 09-23 2024 review 의 행). preflight 33 / 1, 31 / 3, FAIL 0 | `crabConfig/config_ttHH2024_v15_had_pilot{MC,Data}.yaml`, `script/runlogs/pf_config_ttHH2024_v15_had_pilot{MC,Data}_20260923_*.log.txt` (`72bd16f`) |
+| 파일럿 제출 | 1 차(07:59 UTC)는 myproxy 재위임의 pass phrase 프롬프트가 붙여 넣은 다음 줄을 가져가 실패했고 wrapper 는 exit 0 이었다. 재시도(08:18~08:25 UTC): `.requestcache` 없는 `crab_ZZ` 정리 → `crab createmyproxy --days 30`(여기서만 pass phrase) → 두 task 제출: `260923_081917:junghyun_crab_ZZ`, `260923_082524:junghyun_crab_JetMET0_Run2024H_MINIv6NANOv15_v2` | transcript 는 `script/runlogs/nocommit/` 에만 있다(커밋 금지). 경위와 CRABClient 근거: `05_troubleshooting.md` A22 |
+
+**2018UL 대조.** config 의 50 dataset 중 49 개는 09-03 스캔(`script/das/das_ttHH_2018UL_v15_20260903_1016.log`)의 DS 행과 dataset·nevents·nfiles 가
+같다. 나머지 1 개 `TTZToQQ`(19,816,000 ev, 34 files)는 09-03 뒤에 registry 에 들어온 키라 그 스캔에 없다(D-2026-09-11-ttz). 09-23 로그의 DS 행이
+88 개로 09-03 의 132 개보다 적은 것은 `--workstream had`(DY·W+jets 44 행은 `lep`) 때문이고, 그 밖에 `QCD_HT2000toInf` 의 JMENano 판 1 행이 빠지고
+`TTZToQQ` 1 행이 늘었다(JMENano·BTVNano 판은 builder 가 원래 빼므로 config 와 무관). TTTW 는 두 키(`TTTWminus`/`TTTWplus`)로 같은 두 dataset 이다.
+
+**총량과 용량.** 네 config 합계 13,486,536,452 ev, 30,690 files = job 30,690 개(units_per_job 1; 네 review 표의 total 합). 출력 추정 20~26 TB 는
+파일럿 출력의 kB/event 로 다시 잰다(RUNBOOK §10 [7b]). 500 event 로컬 점검 파일은 6.6~9.5 kB/event(09-23 사용자가 붙인 `ls -l localcheck_v15/out_*.root`)라
+고정 오버헤드가 커서 추정에 쓰지 않는다.
+
+**wrapper.** 1 차 제출 실패로 `crab/submit_crab.py` 의 결함 셋(실패해도 exit 0, `.requestcache` 없는 작업 디렉토리를 기존 task 로 보고 resubmit,
+`--kill` 이 kill 전에 submit/resubmit)이 드러났고 맥 커밋 `c7cbe95` 에서 고쳤다(오프라인 mock 테스트 `script/test_submit_crab_mock.py`, 원장 V42).
+파일럿 두 task 는 옛 wrapper 로 제출됐다. lxplus 는 전체 제출 [8] 전에 이 커밋을 pull 한다.
+
+검증 행은 `10_validation_ledger.md` V38–V42. 다음은 RUNBOOK §10 [7](파일럿 `--report`, job 1 출력의 branch 이름을 이 절의 로컬 점검과 비교) →
+[7b](T3_KR_KNU 여유) → [8] 전체 4 config 제출.

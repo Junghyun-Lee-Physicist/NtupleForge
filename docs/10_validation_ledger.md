@@ -4,7 +4,7 @@
 > **증거 파일이 어디 있는지**. 결과의 해석은 각 문서에 있고, 여기는 색인이다(한 사실은 한 곳에: 숫자는 증거 파일과
 > 그 문서를 가리키고 다시 적지 않는 것이 원칙이지만, 표를 읽을 수 있을 만큼의 요약값은 적는다).
 > **대상 독자**: "그거 검증됐나?" 를 묻는 사람. 답은 표의 한 행이어야 한다.
-> **상태**: 2026-09-16 작성, 09-17 V21–V26 추가, 09-18 배치 3 의 V27–V33 추가(09-19 등재), 09-19 V34, 09-22 배치 4 의 V35–V37. 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
+> **상태**: 2026-09-16 작성, 09-17 V21–V26 추가, 09-18 배치 3 의 V27–V33 추가(09-19 등재), 09-19 V34, 09-22 배치 4 의 V35–V37, 09-23 배치 6 의 V38–V42. 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
 > `script/runlogs/LEDGER.tsv` 의 실행이 이 표의 원자료다. **새 검증을 하면 행을 추가한다.**
 > **관련**: [`08_branch_schema_migration.md`](08_branch_schema_migration.md) (절차·결과), [`09_v15_migration_log.md`](09_v15_migration_log.md) (시간순 로그),
 > `script/runlogs/README.md` (실행 기록 규약).
@@ -14,8 +14,10 @@
 - 2026-09-17 현재 **닫힌 검증**: CPV 모듈의 v9 기준 동등성(Gate 4)과 v9↔v15 동등성(143,000 event, 불일치 0), Run 2 네 v15 캠페인과 Summer24 의
   샘플 가용성(inventory, `CASE_ONLY` 0), UL16 MiniAODv2 부모 136 키 전부 존재, 브랜치 스키마 48 인벤토리, v15 브랜치 목록 10 개의
   dead-pattern 0.
-- **열린 검증**: CPV 나머지 샘플(`TTToHadronic`, `TTTo2L2Nu`) 코드 경로, CPV Data tier, 2018A 에서 `…_2p94`/`…_1p59` 가 메뉴에 들어온 run(bracket),
-  실제 job 에서의 branch 목록 동작(Step 6, `-N 10`), Run 3 트리거·`Flag_METFilters` 의 analyzer 측 영향. ~~2016 Data 9 era 스윕~~, ~~2018A 첫 파일 run 범위~~ 는 09-17 에 닫혔다(V21–V25).
+- **열린 검증**: CPV 나머지 샘플(`TTToHadronic`, `TTTo2L2Nu`) 코드 경로, CPV Data tier, **CRAB job 출력에서의 branch 목록 동작**(2024 파일럿 2 task
+  제출됨 09-23, 확인은 RUNBOOK §10 [7]), Run 3 트리거·`Flag_METFilters` 의 analyzer 측 영향. ~~2016 Data 9 era 스윕~~, ~~2018A 첫 파일 run 범위~~ 는 09-17 에
+  닫혔다(V21–V25). ~~2018A 에서 `…_2p94`/`…_1p59` 가 메뉴에 들어온 run(bracket)~~ 은 09-18·19 에 닫혔다(2018A 전체에 없음, 진입 run 317509: V27–V28, V34).
+  ~~로컬 NanoAODTools 실행에서의 branch 목록 동작~~ 은 09-23 에 v15 hadronic 네 목록 모두 닫혔다(V40).
 - 읽는 법: **결과 열이 "통과" 라도 규모 열을 같이 본다.** 한 파일·한 샘플 측정은 그렇게 적혀 있다.
 
 ## 1. 원장
@@ -59,6 +61,11 @@
 | V35 | 2026-09-22 | TTTW± NanoAODv15 8 dataset 의 DBS status | DAS -json 6 (패턴이 UL16APV 2 개를 놓침) | 6 개 전부 VALID, nevents 09-18 과 동일 | `script/runlogs/run_probe_tttw_v15_status_20260922_055553.log` | registry 주석, D-2026-09-17-tttw-split, 01_STATUS 표 5 |
 | V36 | 2026-09-22 | 2025 had 스캔, PINNED 포함 (재스캔) | 65 키, 84 s | EXACT 64 + PINNED 1(`TTWJetsToLNu`), NOT_FOUND 0; builder 초안 MC 61(2024 와 동일 dataset) + Data 32 | `script/das/das_ttHH_2025_v15_20260922_0755.log`, `script/runlogs/run_das_scan_2025_had_pinned_20260922_055557.log`, `script/drafts/review_das_ttHH_2025_v15_20260922_0755.md` | ttHH/03 §6 1, 01_STATUS 표 18 |
 | V37 | 2026-09-22 | TTTW± UL16APV NanoAODv15 2 dataset 의 DBS status (V35 의 패턴 누락 보정) | DAS -json 2 | 둘 다 VALID, 1,630,000 / 4 files, 1,700,000 / 5 files (09-18 과 동일) → 8/8 VALID | `script/runlogs/run_probe_tttw_v15_status_apv_20260922_061821.log` | registry 주석, D-2026-09-17-tttw-split, 01_STATUS 표 5 |
+| V38 | 2026-09-23 | 2024 had 최종 스캔(`TTWJetsToLNu` registry 행 주석 뒤) + builder | 64 키, 81 s | EXACT 64, NOT_FOUND 0; 09-18 review 대비 `TTWJetsToLNu` 1 행만 빠지고 92 행은 dataset·nevents·nfiles 동일; MC 60 / Data 32, guard OK(최대 2,532 files) | `script/das/das_ttHH_2024_v15_20260923_0851.log`, `script/runlogs/run_das_scan_2024_had_final_20260923_065146.log`, `script/drafts/review_das_ttHH_2024_v15_20260923_0851.md` | 09 21 절, D-2026-09-22-production-order |
+| V39 | 2026-09-23 | 2018UL v15 had 스캔 + builder `--allow-notfound` 첫 실제 사용 | 48 키, 75 s | EXACT 41 + RELAXED 2 + NOT_FOUND 5(예상 5 종 그대로); MC 42 / Data 8, 부재 5 는 주석 블록, guard OK(최대 589 files); config 50 dataset 중 49 개가 09-03 스캔의 DS 행과 동일(`TTZToQQ` 는 09-03 에 없던 키) | `script/das/das_ttHH_2018UL_v15_20260923_0853.log`, `script/runlogs/run_das_scan_2018UL_had_v15_20260923_065307.log`, `script/drafts/review_das_ttHH_2018UL_v15_20260923_0853.md` | 09 21 절, D-2026-09-22-production-order |
+| V40 | 2026-09-23 | v15 hadronic 브랜치 목록 4 개(2018·2024 × MC·Data)를 NanoAODTools 로 실제 실행 (README 재현 순서 2 단계, A14) | era·tier 당 파일 1 × 500 event, `modules.noop`, cmssw-el8 ROOT 6.30.09 | 4/4 EXIT 0, `Error in <` 0; branches / HLT_ 717/325, 627/302, 703/323, 638/315; MC 는 genWeight·genTtbarId·Runs.genEventSumw y, Data 는 n | `script/runlogs/run_localcheck_{2018_MC,2018_Data,2024_MC,2024_Data}_20260923_07*.log`, `script/runlogs/run_localcheck_summary_20260923_073808.log` | 09 21 절 |
+| V41 | 2026-09-23 | CRAB `--preflight`, 전체 4 config + 파일럿 2 | dataset 42 / 8 / 60 / 32 / 1 / 1 | FAIL 0 전부; WARN 은 proxy 11.4 h 와 Data 의 gen 두 개(정상); existing CRAB projects none | `script/runlogs/pf_config_ttHH*_v15_had_*_20260923_*.log.txt` (6) | 09 21 절 |
+| V42 | 2026-09-23 | `crab/submit_crab.py` 수정본(exit code, stale project dir, `--kill`, preflight 의 stale FAIL) | mock CRABAPI 로 17 checks, 오프라인 | 새 코드 17/17 PASS(AI 세션과 맥 두 곳), 옛 코드 13 FAIL | `script/test_submit_crab_mock.py` (재현 명령 그 자체) | [05](05_troubleshooting.md) A22, 02_CHANGELOG 09-23 |
 
 TTHHGenCategoryTools(expanded ttbar id, D17 enriched NanoAOD) 의 Gate 1–5 는 그 저장소의 `docs/06_validation_results.md` 가 원장이다. 여기에는 옮기지 않는다.
 
