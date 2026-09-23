@@ -1,0 +1,28 @@
+=== RUNLOG ================================================================
+step        : build_2024_had
+start_utc   : 2026-09-23T07:21:32Z
+host        : lxplus963   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 8ab47c0   modified_tracked_files: 1
+cmd         : python3 script/build_from_scan_log.py script/das/das_ttHH_2024_v15_20260923_0851.log --registry script/samples_registry_run3.txt --emit-config --job-tag ttHH2024_v15_had_\{tier\}_v1 --branch-file branches/branch_hadronic_2024_v15_MC.txt --data-branch-file branches/branch_hadronic_2024_v15_Data.txt 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-23 09:21:32.527568749 +0200 CEST m=+0.001130961
+proxy_left_s: 41403
+===========================================================================
+[build] wrote /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/drafts/review_das_ttHH_2024_v15_20260923_0851.md
+[build] wrote /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/drafts/review_das_ttHH_2024_v15_20260923_0851.tsv
+[build] wrote /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/drafts/config_das_ttHH_2024_v15_20260923_0851_MC.yaml.draft
+[build] wrote /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/drafts/config_das_ttHH_2024_v15_20260923_0851_Data.yaml.draft
+===========================================================================
+end_utc     : 2026-09-23T07:21:32Z
+wall_s      : 0
+EXIT        : 0
+outputs (modified during the run, under script/ and branches/):
+        4330  script/drafts/config_das_ttHH_2024_v15_20260923_0851_Data.yaml.draft
+       10332  script/drafts/config_das_ttHH_2024_v15_20260923_0851_MC.yaml.draft
+       15514  script/drafts/review_das_ttHH_2024_v15_20260923_0851.md
+       12886  script/drafts/review_das_ttHH_2024_v15_20260923_0851.tsv
+log         : script/runlogs/run_build_2024_had_20260923_072131.log
+=== END ===================================================================
