@@ -4,7 +4,7 @@ Layout since 2026-09-22 (before that every file sat flat in this directory).
 
 | Where | What | Committed? |
 |---|---|---|
-| `script/*.sh`, `script/*.py` | the tools (DAS scan / inventory / status, branch inventories and checks, config builder, run logging, local checks, v9-v15 validation) | yes |
+| `script/*.sh`, `script/*.py` | the tools (DAS scan / inventory / status, branch inventories and checks, config builder, run logging, local checks, v9-v15 validation) and offline tests (`test_*.py`; `test_submit_crab_mock.py` checks `crab/submit_crab.py` without CRAB) | yes |
 | `script/samples_registry.txt`, `script/samples_registry_run3.txt` | the sample registries (Run 2 / Run 3), the single source for `das_scan.sh` and `build_from_scan_log.py` | yes |
 | `script/inventory_manifest_*.txt` | rows for `sweep_inventories.sh` (which datasets to dump one file of) | yes |
 | `script/validate_v9.json` | settings for `validate_topcpvcat.py` (v9 test) | yes |

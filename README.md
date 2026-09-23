@@ -114,6 +114,7 @@ skim을 적용하려면 cut 모듈을 끼우십시오 — 예제:
 ```bash
 # 제출. 이미 존재하는 task는 실패 job을 AUTO-RESUBMIT합니다
 # (task별 CRAB project dir 존재 여부로 submit/resubmit이 결정됨).
+# .requestcache 가 없는 dir 은 서버에 닿지 못한 제출의 잔재(stale)라서 건드리지 않고 FAILED + rm -r 안내.
 python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL_MC.yaml
 
 # 실패 job만 명시적으로 재제출
@@ -125,9 +126,15 @@ python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL_MC.yaml --statu
 # sample별 압축 요약 리포트 (--status보다 읽기 쉬움)
 python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL_MC.yaml --report
 
-# config에 정의된 모든 job kill
+# config에 정의된 기존 task 전부 kill (제출하지 않음; 2026-09-23 전에는 먼저 submit/resubmit 했다)
 python3 crab/submit_crab.py --config crabConfig/config_CPV2017UL_MC.yaml --kill
 ```
+
+끝에 dataset 별 `SUMMARY` 블록(OK / WARN / FAILED / SKIPPED)을 찍고, **FAILED 나 SKIPPED 가 있으면 exit 1** 입니다
+(2026-09-23 전에는 실패해도 exit 0). proxy·myproxy 실패는 나머지 dataset 을 시도하지 않고 멈춥니다. CRAB 은 myproxy 자격 증명이
+15 일 미만 남으면 30 일짜리를 다시 위임하면서 터미널에서 GRID pass phrase 를 묻기 때문에, **crab 명령은 한 줄씩 붙여 넣습니다**
+(또는 `crab createmyproxy --days 30` 을 먼저 따로). 경위와 재현 테스트(`script/test_submit_crab_mock.py`):
+[`docs/05_troubleshooting.md`](docs/05_troubleshooting.md) A22.
 
 ttHH passthrough 캠페인은 `--config crabConfig/config_ttHH2017UL.yaml`로 동일하게
 관리합니다.
@@ -149,7 +156,8 @@ sandbox 에 함께 실릴 sibling 모듈 · branch 파일(규칙 수, SLIM/PASST
 SLIM 이면 `run`/`luminosityBlock`/`event` 유지와 `genWeight`/`genTtbarId` 누락 여부) ·
 **Rule 6**(`PSet.py`와 `submit_crab.py`의 출력 파일명 일치) · worker 파일 ·
 CRABClient/CMSSW/proxy 환경 · dataset 경로 문법·중복·tier 구성 ·
-task 이름과 `outLFNDirBase` 미리보기 · 제출을 스킵시킬 기존 CRAB project dir.
+task 이름과 `outLFNDirBase` 미리보기 · 기존 CRAB project dir (`.requestcache` 없는 stale dir 은 FAIL,
+살아 있는 task 는 plain submit 이 auto-resubmit 한다는 WARN).
 
 ---
 

@@ -11,7 +11,22 @@ python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml            
 python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml --status    # full crab status per task
 python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml --report    # compact per-sample job-state summary
 python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml --resubmit  # explicit resubmit of failed jobs
-python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml --kill      # kill all tasks
+python3 crab/submit_crab.py --config crabConfig/config_crabTest.yaml --kill      # kill all tasks (never submits)
+
+[Exit status] (2026-09-23)
+0 = every CRAB call of this run succeeded or had nothing to do.
+1 = at least one submit / resubmit / kill / status query failed, a stale project
+    dir blocked a dataset, or datasets were skipped after a proxy failure.
+The SUMMARY block printed at the end names each one; script/runlog.sh records
+the code as EXIT. Before 2026-09-23 every failure was logged and the script
+still exited 0 (the 2024 pilot: "Submit Failed: Problems delegating My-proxy",
+EXIT 0; docs/05_troubleshooting.md A22).
+
+[Interactive prompt] CRAB delegates a 30-day credential to myproxy and renews
+it when less than 15 days are left; that renewal asks for the GRID pass phrase
+on the terminal. Paste crab commands one line at a time, or run
+`crab createmyproxy --days 30` alone first, so no pasted line is read as the
+pass phrase.
 """
 
 import os
@@ -132,6 +147,94 @@ def check_voms():
         logger.error("VOMS Proxy missing or expired.")
         logger.error("Run: voms-proxy-init --voms cms --valid 168:00")
         sys.exit(1)
+
+# --- Outcome helpers (2026-09-23) --------------------------------------------
+# CRABClient facts these rely on (read in the v3.260630 source, the client on
+# lxplus that day):
+#   * SubCommand.__init__ creates the project dir <workArea>/crab_<requestName>
+#     (createWorkArea) BEFORE the VOMS and myproxy steps, so a submit that dies
+#     on the proxy still leaves the dir behind;
+#   * Commands/submit.py writes <project dir>/.requestcache (createCache) only
+#     after the server has returned a task name.
+# Hence a project dir WITHOUT .requestcache is stale: the server never saw that
+# task. Treating it as an existing task (the auto-resubmit branch) fails with
+# "Cannot find .requestcache file", and a fresh `crab submit` refuses it with
+# "Working area ... already exists". Remove it and submit again.
+def has_task_cache(project_dir):
+    return os.path.isfile(os.path.join(project_dir, ".requestcache"))
+
+
+def is_proxy_problem(exc):
+    """True for a failure every later CRAB call of this run would repeat (VOMS,
+    myproxy, user certificate). For myproxy each repeat would also ask for the
+    GRID pass phrase again, so the loop stops instead."""
+    return type(exc).__name__ == "ProxyCreationException" or "proxy" in str(exc).lower()
+
+
+def one_line(text, width=160):
+    s = " ".join(str(text).split())
+    return s if len(s) <= width else s[:width - 3] + "..."
+
+
+class Outcomes:
+    """Per-dataset results of one run, printed as one SUMMARY block at the end.
+    exit_code() is 1 if anything FAILED or was SKIPPED, else 0 (WARN is 0)."""
+
+    def __init__(self, action, n_datasets):
+        self.action = action
+        self.n_datasets = n_datasets
+        self.rows = []            # (level, key, what, detail)
+        self.stale_dirs = []      # project dirs without .requestcache
+
+    def add(self, level, key, what, detail=""):
+        self.rows.append((level, key, what, one_line(detail)))
+
+    def count(self, level):
+        return sum(1 for r in self.rows if r[0] == level)
+
+    def exit_code(self):
+        return 1 if (self.count("FAILED") or self.count("SKIPPED")) else 0
+
+    def print_summary(self):
+        print("=" * 78, flush=True)
+        print("SUMMARY (%s): %d dataset(s): %d OK, %d WARN, %d FAILED, %d SKIPPED"
+              % (self.action, self.n_datasets, self.count("OK"), self.count("WARN"),
+                 self.count("FAILED"), self.count("SKIPPED")))
+        # OK rows carry information (task name, request sent) only for actions
+        # that change something; for status/report the table above has them.
+        levels = ("OK", "WARN", "FAILED", "SKIPPED") if self.action in ("submit", "resubmit", "kill") \
+            else ("WARN", "FAILED", "SKIPPED")
+        for level in levels:
+            for lv, key, what, detail in self.rows:
+                if lv == level:
+                    print("  %-7s %-40s %-9s %s" % (lv, key, what, detail))
+        if self.stale_dirs:
+            print("  hint: stale project dir(s), never seen by the server (no .requestcache):")
+            for d in self.stale_dirs:
+                print("        rm -r %s" % d)
+            print("        then submit again (the command without an action flag).")
+        print("RESULT: %s" % ("OK" if self.exit_code() == 0 else "FAILED (exit 1)"))
+        print("=" * 78, flush=True)
+
+
+def resubmit_task(out, key, project_dir):
+    """`crab resubmit` on an existing task; records the outcome in `out`.
+    Returns the exception if the call raised, else None."""
+    try:
+        res = crabCommand('resubmit', dir=project_dir)
+    except Exception as e:
+        logger.error(f"Resubmit Failed: {e}")
+        out.add("FAILED", key, "resubmit", e)
+        return e
+    if res is None:
+        # CRABClient returns None when it sends nothing: no failed jobs, or the
+        # task status is not available yet (its own message says which).
+        out.add("WARN", key, "resubmit", "no request sent (nothing to resubmit, or status not ready; see CRAB message)")
+    elif res.get('commandStatus') == 'SUCCESS':
+        out.add("OK", key, "resubmit", "resubmit request sent")
+    else:
+        out.add("FAILED", key, "resubmit", "server did not accept the resubmit")
+    return None
 
 # =============================================================================
 # PREFLIGHT (--preflight) — read-only pre-submission checker
@@ -387,11 +490,22 @@ def run_preflight(args):
             pf.note("  ... (%d more; use --preview -1 for all)" % (len(datasets) - args.preview))
             break
         pf.note("  %-30s requestName=%-30s %s" % (key, key, ds))
-    existing = [d for d in glob.glob(os.path.join(work_area, "crab_*")) if os.path.isdir(d)]
-    if existing:
-        pf.warn("existing CRAB projects", "%d dir(s) in %s -- submit would clash/skip: e.g. %s"
-                % (len(existing), work_area, os.path.basename(existing[0])))
-    else:
+    existing = sorted(d for d in glob.glob(os.path.join(work_area, "crab_*")) if os.path.isdir(d))
+    # 2026-09-23: split the old single WARN. A dir WITHOUT .requestcache was
+    # left by a submit that never reached the server (has_task_cache); the
+    # submit branch now refuses it, so it is a FAIL here. A dir WITH it is a
+    # live task that a plain submit auto-RESUBMITS (the old text "would
+    # clash/skip" was wrong).
+    stale = [d for d in existing if not has_task_cache(d)]
+    live = [d for d in existing if has_task_cache(d)]
+    if stale:
+        pf.fail("stale CRAB project dirs",
+                "%d dir(s) without .requestcache (an earlier submit never reached the server), "
+                "e.g. %s -- rm -r them, then submit" % (len(stale), stale[0]))
+    if live:
+        pf.warn("existing CRAB projects", "%d task(s) in %s -- a plain submit auto-RESUBMITS them: e.g. %s"
+                % (len(live), work_area, os.path.basename(live[0])))
+    if not existing:
         pf.ok("existing CRAB projects", "none in %s" % work_area)
 
     # ---- 10. optional DAS existence check ----------------------------------
@@ -675,8 +789,16 @@ def main(args):
     report_rows = []
     report_unknown = set()
 
+    # One action per run, first match in this order (the loop has always
+    # dispatched like this; --kill now comes BEFORE the default submit branch,
+    # see the KILL block).
+    action = ("status" if args.status else "report" if args.report else
+              "resubmit" if args.resubmit else "kill" if args.kill else "submit")
+    out = Outcomes(action, len(datasets))
+    items = list(datasets.items())
+
     # 3. Process Jobs
-    for short_name, dataset in datasets.items():
+    for idx, (short_name, dataset) in enumerate(items):
         req_name = short_name.replace("-", "_")
 
         conf.General.requestName = req_name
@@ -685,76 +807,142 @@ def main(args):
 
         project_dir = os.path.join(conf.General.workArea, "crab_" + req_name)
 
-        print(f"[{short_name}] Processing...")
+        # flush: under runlog.sh stdout is a pipe (block-buffered) while logging
+        # and CRAB write to stderr; without it this line lands after CRAB's
+        # output for the same dataset (seen in the 2026-09-23 pilot transcript).
+        print(f"[{short_name}] Processing...", flush=True)
+        failure = None          # exception of a failed CRAB call, if any
 
         # -- STATUS Action --
         if args.status:
             if os.path.isdir(project_dir):
                 try:
-                    subprocess.run(["crab", "status", "-d", project_dir], check=True)
-                except: pass
+                    rc = subprocess.run(["crab", "status", "-d", project_dir]).returncode
+                    detail = "crab status exit %d" % rc
+                except OSError as e:
+                    rc, detail = -1, "cannot run crab: %s" % e
+                out.add("OK" if rc == 0 else "FAILED", short_name, "status", "" if rc == 0 else detail)
             else:
                 logger.warning("Project not found.")
+                out.add("WARN", short_name, "status", "no project dir (never submitted?)")
             continue
 
         # -- REPORT Action (compact per-sample job-state summary) --
         if args.report:
-            if os.path.isdir(project_dir):
+            if not os.path.isdir(project_dir):
+                logger.warning("Project not found.")
+                out.add("WARN", short_name, "report", "no project dir (never submitted?)")
+            elif not has_task_cache(project_dir):
+                logger.error("Stale project dir (no .requestcache, never reached the server): %s", project_dir)
+                out.add("FAILED", short_name, "stale", project_dir)
+                out.stale_dirs.append(project_dir)
+            else:
                 try:
                     # Silence CRAB's verbose status dump; we only want the dict.
                     with contextlib.redirect_stdout(io.StringIO()):
                         res = crabCommand('status', dir=project_dir)
-                    row, unknown = summarize_status(res.get('jobsPerStatus', {}))
+                    if (res or {}).get('commandStatus') == 'FAILED':
+                        raise RuntimeError("crab status returned commandStatus FAILED")
+                    row, unknown = summarize_status((res or {}).get('jobsPerStatus', {}))
                     report_rows.append((short_name, row))
                     report_unknown |= unknown
+                    out.add("OK", short_name, "report")
                 except Exception as e:
                     logger.error(f"Status query failed for {short_name}: {e}")
                     report_rows.append((short_name, summarize_status({})[0]))
-            else:
-                logger.warning("Project not found.")
-            continue
+                    out.add("FAILED", short_name, "report", e)
+                    failure = e
+            if failure is None or not is_proxy_problem(failure):
+                continue
 
         # -- RESUBMIT Action (explicit; failed jobs only, default resources) --
-        if args.resubmit:
-            if os.path.isdir(project_dir):
-                logger.info("Resubmitting (explicit)...")
-                try:
-                    crabCommand('resubmit', dir=project_dir)
-                except Exception as e:
-                    logger.error(f"Resubmit Failed: {e}")
-            else:
+        elif args.resubmit:
+            if not os.path.isdir(project_dir):
                 logger.warning("Project not found (nothing to resubmit).")
-            continue
+                out.add("WARN", short_name, "resubmit", "no project dir (never submitted?)")
+            elif not has_task_cache(project_dir):
+                logger.error("Stale project dir (no .requestcache, never reached the server): %s", project_dir)
+                out.add("FAILED", short_name, "stale", project_dir)
+                out.stale_dirs.append(project_dir)
+            else:
+                logger.info("Resubmitting (explicit)...")
+                failure = resubmit_task(out, short_name, project_dir)
+            if failure is None or not is_proxy_problem(failure):
+                continue
+
+        # -- KILL Action (explicit). Checked BEFORE the default branch: until
+        # 2026-09-23 it sat after it, so `--kill` first resubmitted every
+        # existing task and SUBMITTED every dataset without a project dir, then
+        # killed them.
+        elif args.kill:
+            if not os.path.isdir(project_dir):
+                logger.warning(f"Project directory not found (nothing to kill): {project_dir}")
+                out.add("WARN", short_name, "kill", "no project dir (nothing to kill)")
+            elif not has_task_cache(project_dir):
+                logger.warning("Stale project dir (no .requestcache): nothing on the server to kill: %s", project_dir)
+                out.add("WARN", short_name, "kill", "stale dir, nothing on the server")
+                out.stale_dirs.append(project_dir)
+            else:
+                logger.info("Action: KILLING Task")
+                try:
+                    res = crabCommand('kill', dir=project_dir)
+                    if (res or {}).get('commandStatus') == 'FAILED':
+                        logger.error("Kill Failed: the server did not accept the kill")
+                        out.add("FAILED", short_name, "kill", "server did not accept the kill")
+                    else:
+                        logger.info("Kill command sent successfully.")
+                        out.add("OK", short_name, "kill", "kill request sent")
+                except HTTPException as hte:
+                    logger.error(f"Kill Failed: {getattr(hte, 'headers', hte)}")
+                    out.add("FAILED", short_name, "kill", getattr(hte, 'headers', hte))
+                except Exception as e:
+                    logger.error(f"Kill Failed: {e}")
+                    out.add("FAILED", short_name, "kill", e)
+                    failure = e
+            print("-" * 60, flush=True)
+            if failure is None or not is_proxy_problem(failure):
+                continue
 
         # -- SUBMIT / RESUBMIT Logic (default action) --
-        if os.path.isdir(project_dir):
+        elif os.path.isdir(project_dir):
+            if not has_task_cache(project_dir):
+                # Left by an earlier submit that died before the server accepted
+                # the task (see has_task_cache). Resubmitting it cannot work.
+                logger.error("Stale project dir (no .requestcache, never reached the server): %s", project_dir)
+                logger.error("Not resubmitting. Remove it and run this command again.")
+                out.add("FAILED", short_name, "stale", project_dir)
+                out.stale_dirs.append(project_dir)
+                continue
             logger.info("Resubmitting...")
-            try:
-                crabCommand('resubmit', dir=project_dir)
-            except Exception as e:
-                logger.error(f"Resubmit Failed: {e}")
+            failure = resubmit_task(out, short_name, project_dir)
         else:
             logger.info("Submitting...")
             try:
-                crabCommand('submit', config=conf)
+                res = crabCommand('submit', config=conf)
             except Exception as e:
                 logger.error(f"Submit Failed: {e}")
-
-        # -- KILL Action --
-        if args.kill:
-            if os.path.isdir(project_dir):
-                logger.info("Action: KILLING Task")
-                try:
-                    crabCommand('kill', dir=project_dir)
-                    logger.info("Kill command sent successfully.")
-                except HTTPException as hte:
-                    logger.error(f"Kill Failed: {hte.headers}")
-                except Exception as e:
-                    logger.error(f"Kill Failed: {e}")
+                out.add("FAILED", short_name, "submit", e)
+                failure = e
             else:
-                logger.warning(f"Project directory not found (nothing to kill): {project_dir}")
-            print("-" * 60)
-            continue
+                status = (res or {}).get('commandStatus')
+                if status == 'SUCCESS' and has_task_cache(project_dir):
+                    out.add("OK", short_name, "submit", "task %s" % (res or {}).get('uniquerequestname', '?'))
+                else:
+                    out.add("FAILED", short_name, "submit", "CRAB returned commandStatus=%r, .requestcache %s"
+                            % (status, "present" if has_task_cache(project_dir) else "missing"))
+            if os.path.isdir(project_dir) and not has_task_cache(project_dir):
+                out.stale_dirs.append(project_dir)
+
+        # A proxy / myproxy failure would repeat for every remaining dataset
+        # (and, for myproxy, ask for the GRID pass phrase each time): stop here.
+        if failure is not None and is_proxy_problem(failure):
+            rest = [k for k, _ in items[idx + 1:]]
+            for k in rest:
+                out.add("SKIPPED", k, action, "not attempted after a proxy failure")
+            logger.error("Proxy/myproxy failure: stopping; %d remaining dataset(s) not attempted. "
+                         "Fix the proxy (run `crab createmyproxy --days 30` ALONE and type the pass "
+                         "phrase), then run the same command again.", len(rest))
+            break
 
     # -- Post-loop: print the compact report (if requested) --
     if args.report:
@@ -776,11 +964,15 @@ def main(args):
                     "memory or walltime will fail again on a plain resubmit.")
         logger.info("      Resubmit those by hand in the CRAB project dir with raised limits, e.g.:")
         logger.info("        crab resubmit -d <workArea>/crab_<reqName> --maxmemory=4000 --maxjobruntime=2700")
-        logger.info("      See docs/troubleshooting.md (CRAB resubmit) for exit codes and details.")
+        logger.info("      See docs/05_troubleshooting.md A10 (CRAB resubmit) for exit codes and details.")
 
     # Cleanup temp file
     if os.path.exists(args_file):
         os.remove(args_file)
+
+    # -- Post-loop: what happened to each dataset, and the exit code ----------
+    out.print_summary()
+    return out.exit_code()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="YAML based CRAB Manager")
@@ -793,7 +985,9 @@ if __name__ == "__main__":
     parser.add_argument("--resubmit", action="store_true",
                         help="Explicitly resubmit failed jobs in existing tasks "
                              "(default resources; raise memory/walltime by hand)")
-    parser.add_argument("--kill", action="store_true", help="Kill all jobs defined in the config")
+    parser.add_argument("--kill", action="store_true",
+                        help="Kill every existing task of the config (never submits; "
+                             "datasets without a project dir are skipped with a WARN)")
     parser.add_argument("--preflight", action="store_true",
                         help="READ-ONLY pre-submission check: config schema, module + "
                              "branch file, Rule-6 output filename, worker files, CRAB/CMSSW/"
@@ -809,4 +1003,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.preflight:
         sys.exit(run_preflight(args))
-    main(args)
+    sys.exit(main(args))

@@ -921,3 +921,72 @@ there is nothing stale to clean.
 `finally` 로 복원. 640k entry × 1666 branch 를 전부 읽고 있어서 20m46s 중 거의 전부가
 거기였다. `finally` 가 중요하다: SetBranchStatus 가 꺼진 채로 값 loop 에 들어가면
 `GetEntry` 가 버퍼를 갱신하지 않아 **조용히 "일치" 로 보일 수 있다.**
+
+---
+
+## A22 · CRAB 제출이 myproxy 위임에서 실패했는데 `EXIT : 0`, 게다가 재실행이 조용히 헛도는 상태로 남았다 (2026-09-23)
+
+**증상.** 2024 파일럿 MC(`ZZ`) 제출 transcript(`script/runlogs/nocommit/run_submit_pilot_2024_MC_20260923_075928.log`, 커밋 금지)의 요지:
+
+```
+Enter GRID pass phrase for this identity:
+ error: Error: Couldn't read user key in /afs/cern.ch/user/j/junghyun/.globus/userkey.pem.
+grid-proxy-init failed ...
+[submit_crab] : Submit Failed: Problems delegating My-proxy.
+EXIT        : 0
+```
+
+같은 블록에 이어 붙인 두 줄(Data 파일럿 제출, `exit`)은 명령으로 실행되지 않았다(Data 쪽 RUNLOG 머리글이 없고, 셸은 `Singularity>` 에 남았다).
+
+**원인 셋.** CRABClient 동작은 lxplus 의 클라이언트와 같은 v3.260630 소스(태그, commit `970fabd`)에서 읽었다.
+
+1. **pass phrase 프롬프트가 붙여 넣은 다음 줄을 먹었다.** myproxy 에 위임된 자격 증명이 만료돼 있었다(`Myproxy is valid: 0`).
+   CRAB 은 남은 기간이 15 일 미만이면(`RENEW_MYPROXY_THRESHOLD = 15`, `Commands/SubCommand.py`) 30 일짜리를 새로 위임하고
+   (`myproxyDesiredValidity = 30`, `CredentialInteractions.py`), 그때 `grid-proxy-init` 이 터미널에서 GRID pass phrase 를 묻는다.
+   RUNBOOK 10 [4] 의 마지막 블록은 제출 두 줄과 `exit` 를 한 번에 붙여 넣게 되어 있었고, 프롬프트가 터미널 버퍼의 입력(뒤에 붙여 넣은
+   줄)을 가져가 key 를 풀지 못했다. 입력을 기다리는 명령은 따로 두라는 RUNBOOK 0 의 규칙을 문서 스스로 어겼다(`AI_LIMITS_AND_PROTOCOL.md` 5 절
+   실패 6 의 재발).
+2. **wrapper 가 실패를 삼켰다.** `crab/submit_crab.py` 는 모든 CRAB 예외를 잡아 `logger.error` 만 하고 exit 0 으로 끝났다. runlog 의
+   `EXIT : 0` 이 성공처럼 보였다.
+3. **실패한 제출이 작업 디렉토리를 남겼다.** `SubCommand.__init__` 은 VOMS(365 행)·myproxy(383 행) 단계보다 먼저 작업 디렉토리를
+   만들고(`createWorkArea`, 328 행), `.requestcache` 는 서버가 task 이름을 돌려준 뒤에만 쓴다(`Commands/submit.py` 146 행). 그래서
+   `campaign_ttHH2024_v15_had_MC_v1_pilot/crab_ZZ` 가 `.requestcache` 없이 남았다. wrapper 의 기본 동작은 디렉토리가 있으면 resubmit
+   이라서, 같은 명령을 다시 돌리면 `Cannot find .requestcache file` 로 또 실패하고 또 exit 0 이었을 것이다. 서버에는 아무 task 도 없다.
+
+**같이 찾은 것.** `--kill` 분기가 기본(submit/resubmit) 분기 **뒤에** 있었다. 그래서 `--kill` 은 기존 task 를 전부 resubmit 하고,
+project dir 이 없는 dataset 은 **제출한 다음** kill 했다.
+
+**조치 (2026-09-23).**
+
+- `crab/submit_crab.py`: dataset 마다 결과를 모아 끝에 `SUMMARY` 블록(OK / WARN / FAILED / SKIPPED)을 찍고, FAILED 나 SKIPPED 가
+  있으면 exit 1. `commandStatus: SUCCESS` 와 `.requestcache` 가 둘 다 있어야 제출 성공이다. `.requestcache` 없는 디렉토리는 stale 로 보고
+  CRAB 을 부르지 않으며 `rm -r` 안내를 낸다(`--resubmit`, `--report` 도 같음; `--kill` 은 WARN). proxy 계열 실패(`ProxyCreationException`
+  또는 메시지에 proxy)는 나머지 dataset 을 시도하지 않고 멈춘다. 모두 같은 이유로 실패하고, myproxy 라면 dataset 마다 pass phrase 를
+  다시 묻기 때문이다. `--kill` 분기는 기본 분기 앞으로 옮겨 제출하지 않는다. `--preflight` 는 stale 디렉토리를 FAIL 로, 살아 있는 task 를
+  "plain submit 이 auto-RESUBMIT 한다" WARN 으로 나눈다(예전 문구 "would clash/skip" 은 틀렸다).
+- 워크스페이스 RUNBOOK 10: myproxy 위임을 `crab createmyproxy --days 30` 한 줄로 떼어 먼저 돌리고(pass phrase 는 사람이 친다), 제출은
+  한 줄씩, 제출 여부는 EXIT 대신 `.requestcache` 로 확인한다.
+
+**검증.** v3.260630 의 순서(작업 디렉토리 → proxy → `.requestcache`)를 흉내 낸 mock CRABAPI 로 옛 코드와 새 코드를 같은 입력에 돌렸다.
+재현: `python3 script/test_submit_crab_mock.py` (CRAB·proxy·네트워크 없이 임시 디렉토리에서만 돈다; 새 코드 17/17 PASS, 옛 코드는 13 개 FAIL).
+
+| 경우 | 옛 코드 | 새 코드 |
+|---|---|---|
+| 첫 dataset 에서 myproxy 실패 (3 dataset) | 3 개 모두 시도, rc 0 | 1 FAILED + 2 SKIPPED, CRAB 호출 1 번, runlog `EXIT : 1` |
+| stale 디렉토리를 둔 채 재실행 | 3 × `Resubmit Failed: Cannot find .requestcache`, rc 0 | stale 1 개 FAILED(CRAB 호출 없음), 나머지 제출, rc 1 |
+| `rm -r` 뒤 재실행 | | 제출 1 + 기존 2 개 auto-resubmit(보낼 것 없음, WARN), rc 0 |
+| `--kill`, 미제출 dataset 1 개 포함 | 기존 3 개 resubmit 후 kill, 미제출 dataset 을 **submit 후 kill**, rc 0 | kill 3, WARN 1, submit 0 |
+| `--report` / `--status` / `--resubmit` 실패 경로 | rc 0 | 해당 행 FAILED, rc 1 |
+| proxy 가 아닌 실패(HTTP 500) | 다음 dataset 계속, rc 0 | 다음 dataset 계속, rc 1 |
+
+**재시도 결과 (같은 날, RUNBOOK 10 [4b]).** 예측대로였다. `crab_ZZ` 는 `.requestcache` 없이 남아 있었고(`STALE` 1 줄) `rm -r` 로 지웠다.
+`crab createmyproxy --days 30` 한 줄에서만 pass phrase 를 물었고(`validity: 29 days, 23:59:00`), 이어진 두 제출은 묻지 않고
+(`Myproxy is valid: 2591940`, `2591580`) 둘 다 `Success: Your task has been delivered to the prod CRAB3 server.` 로 끝났다:
+`260923_081917:junghyun_crab_ZZ`, `260923_082524:junghyun_crab_JetMET0_Run2024H_MINIv6NANOv15_v2`. 두 project dir 모두 `.requestcache` 가 있다.
+(이 제출은 lxplus 의 옛 wrapper 로 했다. 수정본은 전체 제출 전에 들어간다.)
+
+**교훈.** (a) 규칙은 이미 있었다(RUNBOOK 0 이 `crab submit` 을 입력 대기 명령으로 명시). 규칙을 적는 것과 블록을 짤 때 적용하는 것은 다르다.
+블록을 다 쓴 뒤 "이 중 입력을 기다릴 수 있는 줄이 블록 중간에 있는가" 를 한 번 더 본다. 평소에는 묻지 않는 명령도 조건에 따라 묻는다
+(만료 시 재위임, 덮어쓰기 확인).
+(b) wrapper 의 exit code 는 사람이 결과를 판정하는 첫 신호다. 실패를 로그로만 남기는 도구는 성공과 실패를 구별하지 못하게 만든다
+(A16 의 `SUBMITREFUSED` 와 같은 축: 성공처럼 보이는 실패).

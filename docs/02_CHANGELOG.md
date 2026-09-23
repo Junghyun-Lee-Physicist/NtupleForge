@@ -9,6 +9,40 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-23: `crab/submit_crab.py` reports failures (exit code, stale project dirs, `--kill` never submits); pilot submit steps split
+
+### Fixed
+- `crab/submit_crab.py` exited 0 whatever happened: every CRAB exception was caught and only logged. The 2024 pilot on 2026-09-23 ended
+  `Submit Failed: Problems delegating My-proxy` with runlog `EXIT : 0`. Each dataset's outcome is now collected and printed as one
+  `SUMMARY` block at the end (OK / WARN / FAILED / SKIPPED), and the exit code is 1 if anything FAILED or was SKIPPED. A submit counts as
+  done only with `commandStatus: SUCCESS` and a `.requestcache` in the project dir. A proxy-type failure (`ProxyCreationException`, or
+  "proxy" in the message) stops the loop: every later dataset would fail the same way and, for myproxy, ask for the GRID pass phrase again.
+- Stale project dirs. CRABClient (v3.260630 source, the lxplus client) creates `<workArea>/crab_<name>` before the VOMS and myproxy steps
+  and writes `.requestcache` only after the server returns a task name, so a submit that fails on the proxy leaves a dir without
+  `.requestcache`. The default branch took any existing dir for a live task and auto-resubmitted it, which fails with `Cannot find
+  .requestcache file` (and exited 0), so re-running the failed pilot would have done nothing. Such a dir is now reported as FAILED `stale`
+  with an `rm -r` hint and CRAB is not called (`--resubmit` and `--report` the same; `--kill` warns). `--preflight` splits its old single
+  WARN: stale dirs are a FAIL, live tasks a WARN saying that a plain submit auto-resubmits them (the old text "would clash/skip" was wrong).
+- `--kill` ran the default submit/resubmit branch first: it resubmitted every existing task and SUBMITTED every dataset without a project
+  dir, then killed them. The kill branch now comes before it and never submits.
+- Smaller: `[<key>] Processing...` is flushed (under runlog.sh's pipe it printed after CRAB's own output); the resubmit hint points at
+  `docs/05_troubleshooting.md` A10 (was `docs/troubleshooting.md`); an `HTTPException` without `.headers` no longer raises inside the handler.
+
+### Added
+- `script/test_submit_crab_mock.py`: offline test of the wrapper against a mock CRABAPI that follows the v3.260630 order (work area,
+  then proxy, then `.requestcache`). No CRAB, proxy or network; refuses to run if a real CRABClient would be imported. 17 checks: new code
+  17 PASS, the previous code 13 FAIL (proxy failure tried all datasets with rc 0; re-run over the stale dir hit `Cannot find .requestcache`
+  three times with rc 0; `--kill` submitted the never-submitted dataset and then killed it). Record: `docs/05_troubleshooting.md` A22.
+
+### Changed
+- Workspace RUNBOOK 10 [4b] (new): the myproxy delegation is its own line (`crab createmyproxy --days 30`, pass phrase typed by hand), each
+  submit is its own line, and "submitted" is checked by `.requestcache` instead of EXIT. The 09-23 retry with it submitted both pilot tasks
+  (`260923_081917:junghyun_crab_ZZ`, `260923_082524:junghyun_crab_JetMET0_Run2024H_MINIv6NANOv15_v2`). [7] now keeps the full `--report`
+  output under `script/runlogs/nocommit/` and commits only the table + SUMMARY (the wrapper lets CRAB's debug log through to the terminal,
+  so submit output carries S3 signatures; the old [7] tee'd everything straight into `script/runlogs/`), and checks the pilot outputs by
+  branch-name comparison with the 09-23 local checks. [8] first pulls this fix and runs the mock test, then stops at the first config whose
+  submit exits non-zero. RUNBOOK 0: every crab command on its own line.
+
 ## [Unreleased], 2026-09-22 (3): `script/` and repo root tidied into directories; paths rewritten everywhere
 
 ### Changed
