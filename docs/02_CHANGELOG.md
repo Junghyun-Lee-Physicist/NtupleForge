@@ -9,6 +9,19 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-24: 2024 pilot outputs checked (V43), output size measured (V44); the pilot output check moved to KNU
+
+### Changed
+- Records: `09` 21 (pilot job-state snapshots, the full KNU check output, verdict, per-event sizes and the per-config volume table), ledger
+  V43-V44 (BLUF: the CRAB-job check of the branch lists moved out of "open"), STATUS row 18, workspace RUNBOOK 10 ([7] result, [7b] estimate),
+  `00_START_HERE.md`. Both pilots passed: 158/158 jobs done, event totals equal DAS (4,800,000 / 55,794,457), no unreadable file, schema as in the
+  09-23 local checks. Sizes: MC `ZZ` 1.056 kB/event (no LHE branches, a lower bound for MC), Data `JetMET0` 2024H 0.780 kB/event; full production
+  12.1-17.4 TB (MC upper bound from `09` 8b, 1.948 kB/event), replacing the 09-22 estimate of 20-26 TB.
+- Workspace RUNBOOK 10 [7]: the output check now opens every pilot file under `/pnfs` at KNU. The 09-23 version copied job 1 with
+  `crab getoutput`, which on lxplus left `results/` empty: CRABClient v3.260630 fetches every file with `gfal-copy` from
+  `root://cms-xrd-global.cern.ch/<LFN>` (`Commands/getcommand.py` `insertXrootPfns`), so the RUNBOOK sentence "independent of AAA" was wrong
+  (workspace `AI_LIMITS_AND_PROTOCOL.md` 5, failure 7).
+
 ## [Unreleased], 2026-09-23 (2): batch 6 folded in (first v15 production: 2024 + 2018UL scans, four configs, local checks, preflights; 2024 pilot submitted)
 
 ### Added

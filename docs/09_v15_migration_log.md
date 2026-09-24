@@ -655,5 +655,48 @@ runlog 가 `script/runlogs/nocommit/` 로 가고 LEDGER 행이 없다. preflight
 `--kill` 이 kill 전에 submit/resubmit)이 드러났고 맥 커밋 `c7cbe95` 에서 고쳤다(오프라인 mock 테스트 `script/test_submit_crab_mock.py`, 원장 V42).
 파일럿 두 task 는 옛 wrapper 로 제출됐다. lxplus 는 전체 제출 [8] 전에 이 커밋을 pull 한다.
 
-검증 행은 `10_validation_ledger.md` V38–V42. 다음은 RUNBOOK §10 [7](파일럿 `--report`, job 1 출력의 branch 이름을 이 절의 로컬 점검과 비교) →
-[7b](T3_KR_KNU 여유) → [8] 전체 4 config 제출.
+**파일럿 결과 (09-23~24, RUNBOOK §10 [7]).** job 상태는 lxplus `--report` 세 번(수정한 wrapper 의 첫 실사용: 매번 exit 0 과
+`SUMMARY ... RESULT: OK`, 자격 증명 grep 0):
+
+| 확인 (UTC) | `ZZ` (76 job) | `JetMET0_Run2024H` (82 job) |
+|---|---|---|
+| 09-23 08:50 | transferring 76 | running 72, transferring 10 |
+| 09-23 09:35 | done 72, transferring 4 | done 11, running 44, transferring 27 |
+| 09-24 13:46 | done 76 | done 82 |
+
+fail 은 세 번 모두 0. report 는 확인 시점의 스냅샷이라 Data 가 실제로 끝난 시각은 두 번째와 세 번째 사이 어딘가다.
+증거: `script/runlogs/crab_report_pilot{MC,Data}_20260923_{1050,1051,1135}.txt`, `..._20260924_1546.txt` (파일 이름의 시각은 lxplus 현지 CEST).
+
+출력 점검을 처음에는 lxplus 에서 `crab getoutput --jobids=1` 로 하려 했으나 `results/` 가 비었다. CRABClient v3.260630 의 getoutput 은 모든 파일을
+`gfal-copy` 로 `root://cms-xrd-global.cern.ch/<LFN>` 에서 받는다(`Commands/getcommand.py` 의 `insertXrootPfns`, `Commands/remote_copy.py`); RUNBOOK 에
+"AAA 와 무관" 이라고 적은 것은 틀렸다(워크스페이스 `AI_LIMITS_AND_PROTOCOL.md` §5 실패 7). 그래서 KNU(cms01, CMSSW_14_2_1 cmsenv, ROOT 6.30/09)에서
+`/pnfs` 의 파일럿 출력 158 개를 전부 직접 열었다(명령은 RUNBOOK §10 [7]). 출력 전문:
+
+```
+ttHH2024_v15_had_MC_v1_pilot | files 76 | events 4800000 (DAS 4800000) | bytes 5068009312 | 1.056 kB/event | unreadable none
+   forgedNtuple_1.root | branches 674 | HLT_ 323 | non-HLT 351 | LHE* 0 | run/lumi/event y | genWeight y | genTtbarId y | Runs.genEventSumw y
+ttHH2024_v15_had_Data_v1_pilot | files 82 | events 55794457 (DAS 55794457) | bytes 43503667199 | 0.780 kB/event | unreadable none
+   forgedNtuple_1.root | branches 646 | HLT_ 323 | non-HLT 323 | LHE* 0 | run/lumi/event y | genWeight n | genTtbarId n | Runs.genEventSumw n
+```
+
+**판정: 두 파일럿 모두 통과.** event 합계가 DAS 와 같다(noop 통과이므로 event 손실 0), 열리지 않는 파일 0. MC 는 HLT_ 323 이 09-23 로컬 점검(`TTto4Q`)과
+같고, branches 가 703 → 674 로 29 개 적은데 줄어든 29 개가 전부 non-HLT(380 → 351)이며 `ZZ` 에는 LHE 계열이 0 개다(pythia 단독 표본이라 LHE 정보가
+없다). 이 29 개가 로컬 파일의 LHE 계열과 이름까지 같은지는 따로 확인하지 않았다. Data 는 non-HLT 323 이 로컬(638 − 315)과 같고, HLT_ 는 2024C 315 →
+2024H 323 으로 8 개 많다(HLT 집합은 파일의 run 범위가 정한다, `08` §3.2b). gen 세 열은 MC y, Data n 으로 기대대로다.
+
+**크기와 전체 추정.** MC `ZZ` 1.056 kB/event(파일당 66.7 MB), Data `JetMET0` 2024H 0.780 kB/event(파일당 530.5 MB). 09-23 review 의 event 수로:
+
+| config | events | 추정 |
+|---|---:|---:|
+| 2018UL MC | 1,777,107,873 | 1.88~3.46 TB |
+| 2018UL Data | 1,660,950,742 | 1.30 TB |
+| 2024 MC | 4,089,997,458 | 4.32~7.97 TB |
+| 2024 Data | 5,958,480,379 | 4.65 TB |
+| **합계** | **13,486,536,452** | **12.1~17.4 TB** |
+
+MC 의 하한은 `ZZ` 값(LHE 없음), 상한은 8b 절의 1.948 kB/event(2017 hadronic 목록, ttbar 20,000 event)다. 양이 많은 ttbar·QCD 는 LHE 가 있고
+jet 이 많아 상한 쪽이 현실적이다. Data 는 2024H JetMET0 한 era 의 값을 모든 Data PD 에 썼다(Muon PD 는 jet 이 적어 이보다 작을 것으로 본다).
+09-22 의 20~26 TB 추정은 모든 event 에 1.5~1.95 kB/event 를 쓴 값이라 Data 실측으로 대체된다. 파일럿 출력 48.6 GB 는 전체 생산이 같은 두
+dataset 을 다른 jobID·output_base 로 다시 만들므로, 전체 생산을 확인한 뒤 지워도 된다.
+
+검증 행은 `10_validation_ledger.md` V38–V44. 남은 것: T3_KR_KNU `/store/user/junghyun` 여유 확인(RUNBOOK §10 [7b]) → [8] 전체 4 config 제출.
