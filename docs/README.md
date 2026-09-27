@@ -49,6 +49,9 @@ setup과 실행 커맨드만 다루고, 그보다 깊은 내용은 전부 여기
 - **[11_unified_forge_plan.md](11_unified_forge_plan.md)**: 통합 계획(2026-09-17). NtupleForge 를
   후처리 + MiniAOD 사전 + MiniAOD → NanoAOD(+사용자 branch) 의 단일 도구로 만드는 방향(사용자 결정)의
   조각 표, 목표 구조, 비직관화를 막는 규칙, 완료 판정 2 검증, Phase 0–2.
+- **[12_fastpath_workflow_plan.md](12_fastpath_workflow_plan.md)**: 실행 계획(2026-09-27). 2018·2024 stack plot 까지의
+  최단 경로(트랙 P/A/S/V), 한 명령 세 레시피(`slim` / `categorize` / `derive`), 교차 검증 표 X1~X14, job·dataset 수준
+  audit 과 로그 규약. 명령은 워크스페이스 RUNBOOK §11.
 
 **모듈별 (subdirectory, 각자 지역 번호와 지역 README 보유):**
 

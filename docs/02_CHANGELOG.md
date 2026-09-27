@@ -9,6 +9,74 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-27: execution plan for the 2018 / 2024 stack plots, one forge with three recipes (docs only)
+
+### Added
+- `docs/12_fastpath_workflow_plan.md` (PROPOSED). The user's direction of 09-27: validation must not block production; the analyzer
+  runs on the existing kind of ntuple (central NanoAODv15 slimmed here + the MiniAOD-derived tt+nb patch looked up at run time) while the
+  MiniAOD products (sidecar patches, enriched NanoAOD) are cross-validated in parallel against NanoAOD `genTtbarId` and the CPV categories;
+  NtupleForge does "slimmed NanoAOD / MiniAOD dictionary / MiniAOD-derived NanoAOD" under one command. Content: four tracks (production,
+  analyzer, SF and plots, cross-validation) with status per step; user-facing recipe names `slim` / `categorize` / `derive` over the job types
+  of `11`; a cross-validation matrix X1-X14 (identity / implication / correlation, pass criterion, tool, what it gates); a log and audit
+  convention (fixed `FORGE|...` line prefixes, per event / file / job / dataset / campaign, closure checks C1-C3 that fail the job).
+- Design choice recorded there: the 2024 event skim goes through the PostProcessor `cut` path (TTreeFormula entry list, C++) with a new
+  named `--skim`, and the audit is a separate RDataFrame pass, because with any module present NanoAODTools loops over every input event in
+  python and reads all input branches for every accepted event (`output.py` `FullOutput`, CMSSW 14_2_X). Audit objects are TTree / TObjString
+  only because haddnano drops every other type (`PhysicsTools/NanoAOD/scripts/haddnano.py`). `--cut` stays validation-only.
+- Speed-up proposed there: the 2018UL configs are 3,743 jobs (2,277 + 1,466 files, 09-23 review tables) against 26,947 for 2024 and
+  project to 3.2-4.8 TB ([7b], V44), so if [7c] allows, 2018UL is submitted with today's noop path first and the analyzer's own prescan
+  keeps working; the skim code is written for 2024 meanwhile.
+- Workspace RUNBOOK section 11: environment per machine (Mac, lxplus host, lxplus el8 container for NtupleForge, lxplus el7 container for
+  TTHHGenCategoryTools, KNU), an ordered table READY / WAITS, and the READY blocks: the Mac commit, the 2018 patch re-match against central
+  v15 (V1, with expected numbers per sample), and the first KNU build of the 07-29 analyzer code with its unit tests and a read-only preflight.
+
+### Found (recorded in docs/12 section 6 and in D.19 of 01_STATUS)
+- 2018 standard NanoAODv15 has fewer events than MiniAOD for two ttbar samples: `TTbar_SemiLep` 460,133,000 vs 478,982,000 (the JMENano
+  flavour has 478,982,000), `TTbb_Hadronic` 7,946,064 vs 8,049,064; the other four equal the extend rows. The 2017 statement "v15 covers
+  100 % of MiniAOD" does not carry over to 2018. Sources: `script/das/das_ttHH_2018UL_v15_20260923_0853.log`, TTHHGenCategoryTools
+  `docs/06_validation_results.md`.
+- `tempTTHH/data/samples_2018UL.json` lacks three keys of the 2018UL v15 MC config (`TTZToQQ`, `TTTWminus`, `TTTWplus`) and its `das_path`
+  fields are the v9 datasets.
+
+### Sibling repository (TTHHGenCategoryTools, same day)
+- `Validation/filelists/make_nano_filelists_das.sh` era `2018v15` and `Validation/data/das_nevents_2018v15.json`, so the 2018 patches can be
+  re-matched against the v15 event set with the existing condor tools (their `03_changelog.md` 2026-09-27, `01_status.md` O8).
+
+## [Unreleased], 2026-09-24 (2): output-volume measurement with event-skim options (the user's limit is 5-10 TB)
+
+### Added
+- `script/make_slim_branchlists.py` (2026-09-27, the user's question whether unused branches can go too): writes ten DRAFT slim lists
+  `script/drafts/branch_hadronic_<era>_v15_<tier>_slim{A,B,C}.txt`, each the production list unchanged plus explicit `drop` lines
+  (slimA: HF-only jet shapes, links into collections that are not stored, lepton/tau heads of the jet taggers, soft / low-pT / high-pT lepton
+  IDs, beam-spot and GSF-mode internals, HZZ MVA, PV fit details, OtherPV, pileup-truth extras, GenVisTau, GenPart_iso, LHEPart; slimB: + tagger
+  heads beyond B / CvB / CvL / QvG, lepton-MVA inputs and ID / energy internals, two jet muon-subtraction angles, `HLT_AK8PFJet*`; slimC, MC only:
+  + `LHEPdfWeight`). A drop line is written only if it matches a kept branch in every inventory the list serves; branch counts 2024 MC
+  703 -> 619 / 524 / 522, 2024 Data 646 -> 587 / 492 (2024G), 2018UL MC 717 -> 635 / 551 / 549, 2018 Data 664 -> 606 / 522 (2018D).
+  `check_branchlist.py` gives the production verdict on all 17 inventories (all 61 / 62 requirements survive, every pattern matches; exit 3
+  only for the documented v15 absence of `Jet_jetId` / `Jet_puId`). L1 was already out (`L1_*`, 412 branches) and HLT at 323 of 716.
+- `script/size_options.py` also writes the compressed size of every kept branch per sample (whole input file, base copy, every skim copy) to
+  `script/runlogs/size_options_branches.tsv` and prices the slim drafts from it (a draft edited later is re-priced by `--project-only`);
+  the run ends with a TOTAL TB table, branch list x event selection.
+- `script/size_options.py`: for 34 samples (every group of the four v15 hadronic configs that holds many events, each in its own era) it opens
+  one DAS file via AAA, applies the config's branch_file the way NanoAODTools applies `outputbranchsel`, copies the first 10,000 events at
+  LZMA:9 (what `run_postproc.py` writes), copies again only the events passing each of five skims (`6jcount`: at least six jets with |eta| < 2.5
+  and no pT cut beyond what NanoAOD stored, the stored minimum is printed; `6j20` / `6j25` / `6j30`: six jets above 20 / 25 / 30 GeV;
+  `6j20ht400`: `6j20` plus HT of the pT > 20 jets > 400), subtracts the empty-tree header, and projects the four
+  configs with the DAS event counts of the 09-23 review tables. Also a whole-file estimate from the kept branches' compressed size (`meta`),
+  calibration lines against the CRAB pilot (V44), a per-family breakdown for four samples, and a resumable TSV
+  (`script/runlogs/size_options_meas.tsv`). All three skims are looser than the analyzer, which enforces njets >= 6 (pT > 30 after JES/JER,
+  |eta| < 2.4), 6th jet > 40 and HT > 500 in every selecting mode (`tempTTHH/include/SelectionCuts.h`, `kCutSequence` steps 4, 5, 7).
+  Why: with today's lists the production projects to 12.1-17.4 TB (V44). JEC margin (the user's question): six analyzer jets above 40 GeV
+  after corrections means a stored-pT cut at 20 / 25 / 30 GeV loses an event only for a > 100 / 60 / 33 % upward move of such a jet; HT from
+  pT > 20 jets holds every analyzer jet, so HT > 500 in the analyzer implies HT > 400 here unless the pT-weighted mean shift exceeds 25 %.
+- `script/test_size_options_mock.py`: offline test with a fake dasgoclient and a mock ROOT against the real configs, review tables and branch
+  lists (34 checks: mapping, DAS file choice, known sizes, TSV resume and signatures, failure handling and scratch cleanup, era scaling,
+  per-branch table, slim pricing and re-pricing).
+
+### Changed
+- Workspace RUNBOOK 10: new [7c] (the measurement, the slim drafts), [7b] records the limit, [8] runs only after the skim decision is in the configs.
+  STATUS row 18, `00_START_HERE.md`.
+
 ## [Unreleased], 2026-09-24: 2024 pilot outputs checked (V43), output size measured (V44); the pilot output check moved to KNU
 
 ### Changed

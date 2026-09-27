@@ -6,6 +6,8 @@
 > **상태**: 2026-09-17 작성. 방향은 사용자 결정(`03_DECISIONS.md` D-2026-09-17-single-forge), 단계별 세부는 PROPOSED.
 > **관련**: [`04_architecture.md`](04_architecture.md)(현재 NtupleForge 구조), TTHHGenCategoryTools `docs/05_architecture.md`(sidecar/enriched 데이터 흐름),
 > `docs/11_enriched_nanoaod.md`(enriched 레시피·gate), `TopCPVGenCategorizer/README.md`, [`ttHH/03_run3_plan.md`](ttHH/03_run3_plan.md).
+> **2026-09-27**: 이 설계를 2018·2024 최단 경로에 맞춘 실행 계획은 [`12_fastpath_workflow_plan.md`](12_fastpath_workflow_plan.md) 다
+> (사용자용 레시피 이름 `slim` / `categorize` / `derive` = 아래 job_type `postproc` / `cmsrun`(sidecar) / `cmsrun`(nano), 교차 검증 표, audit 규약).
 
 ## 결론 먼저 (BLUF)
 
