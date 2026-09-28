@@ -4,7 +4,7 @@
 > NtupleForge 가 "slimmed NanoAOD 생산 / MiniAOD 에서 tt+nb 사전 만들기 / MiniAOD 에서 NanoAOD 유도" 를 한 명령 체계로 하는 모양,
 > 교차 검증 표, 그리고 실수를 일찍 잡기 위한 중간 로그 규약을 한 곳에 적는다.
 > **대상 독자**: 이 계획을 실행하는 사용자(lxplus, KNU, 맥)와 코드를 쓰는 AI 세션.
-> **상태**: 2026-09-27 작성, **PROPOSED**. 09-28 갱신: V1 **DONE**(ALL SAMPLES PASS, 원장 V45); P1 [7c] 의 v1 측정은 쓰지 않고 `size_options.py` v2 로 34 개를 다시 잰다(원장 V46, RUNBOOK §11). 방향 두 가지는 사용자 제안(09-27): (1) 검증이 생산을 막지 않는다, analyzer 는 기존 방식의
+> **상태**: 2026-09-27 작성, **PROPOSED**. 09-28 갱신: V1 **DONE**(ALL SAMPLES PASS, 원장 V45); P1 [7c] 의 v1 측정은 쓰지 않고 `size_options.py` v2 로 34 개를 다시 잰다(원장 V46, RUNBOOK §11). 09-28 (2): P1 **DONE**(34/34, 원장 V47), P2 **DECIDED**(한도 10 TB, 네 목록 slimB, 2018UL skim 없음, 2024 `6j20`: 합계 5.16 TB; `03_DECISIONS.md` D-2026-09-28-volume, slimB 채택 원장 V48), P3 명령은 RUNBOOK §12. 방향 두 가지는 사용자 제안(09-27): (1) 검증이 생산을 막지 않는다, analyzer 는 기존 방식의
 > ntuple(NanoAOD + categorizer 산출물)로 돌리고 MiniAOD 산출물은 병행해 교차 검증한다; (2) NtupleForge 한 도구가 세 역할을 직관적으로 한다.
 > 세부와 순서는 AI 제안이고 §7 의 결정을 받으면 DECIDED 로 옮긴다.
 > **관련**: [11](11_unified_forge_plan.md)(도구 통합 설계, Phase 0~2 와 완료 판정 (i)(ii)), 명령은 워크스페이스 `RUNBOOK_lxplus_2026-09-16.md` §11,
@@ -19,8 +19,8 @@
   closure 뿐이다.
 - **가장 큰 단축은 2018UL 이다.** 두 config 가 3,743 job(MC 2,277 + Data 1,466 files)으로 2024 의 26,947 job(19,136 + 7,811)의 1/7 이고
   (`script/drafts/review_das_ttHH_2018UL_v15_20260923_0853.md`, `review_das_ttHH_2024_v15_20260923_0851.md`), 출력 추정은 3.2~4.8 TB 다
-  (RUNBOOK §10 [7b], 원장 V44). [7c] 가 허락하면 2018UL 은 새 코드 없이 지금의 noop 경로(파일럿 V43 통과)로 먼저 낸다. 그러면 모든 event 가
-  남으므로 analyzer 의 prescan 도 지금 코드 그대로 쓴다. skim 이 필요한 2024 용 코드(§2.3)는 2018 이 도는 동안 만든다.
+  (RUNBOOK §10 [7b], 원장 V44). **09-28 결정(P2)**: slimB 목록으로 2018UL 은 3.05 TB 이고(V47) skim 없이 지금의 noop 경로(파일럿 V43 통과)로 먼저 낸다(P3).
+  모든 event 가 남으므로 analyzer 의 prescan 도 지금 코드 그대로 쓴다. 2024 는 `6j20`(2.11 TB)이고 그 코드(§2.3)는 2018 이 도는 동안 만든다.
 - **2018 plot 의 critical path 는 ntuple 이 아니라 analyzer 다.** v15 스키마(eventBuffer 재생성, `Jet_jetId`/`Jet_puId` 재계산), 2018 배관
   (tempTTHH STATUS OPEN 6 의 P0', 07-26 부터 미해결), 2018A 트리거 결정(D-2026-09-18-2018A-trigger), 그리고 07-29 의 P0 수정 7 건이
   **한 번도 빌드되지 않았다**(tempTTHH `docs/STATUS.md` "❌ make 미수행"). 그래서 오늘 KNU 에서 빌드부터 한다(§3 A0).
@@ -70,13 +70,13 @@ central MiniAODv2 --(central NANO)--> central NanoAODv15 --[slim]--> forgedNtupl
 ```yaml
 common:
   recipe: slim          # slim | categorize | derive   (absent = slim, so today's four configs keep working)
-  skim: 6j25            # slim only: none | 6jcount | 6j20 | 6j25 | 6j30 | 6j20ht400 (the names size_options.py measured)
+  skim: 6j20            # slim only: none | 6jcount | 6j20 | 6j25 | 6j30 | 6j20ht400 (the names size_options.py measured; 2024 = 6j20, D-2026-09-28-volume)
   audit: true           # slim only: default true
   branch_file: "branches/branch_hadronic_2024_v15_MC.txt"
 ```
 
 명령은 레시피와 무관하게 지금과 같다: `python3 crab/submit_crab.py -c <yaml> --preflight`, 제출, `--report`, `--status`, `--resubmit`, `--kill`.
-preflight 의 첫 줄에 `recipe: slim (postproc; skim 6j25 = <식>; audit on)` 처럼 **무엇을 할지**를 문장으로 찍고, `cmsrun` 레시피는
+preflight 의 첫 줄에 `recipe: slim (postproc; skim 6j20 = <식>; audit on)` 처럼 **무엇을 할지**를 문장으로 찍고, `cmsrun` 레시피는
 `cmssw_release` 와 지금 셸의 `$CMSSW_VERSION` 이 다르면 FAIL 한다(10_6_X cfg 를 14_2_X 셸에서 내는 사고 방지).
 
 ### 2.3 `slim` 의 event skim 과 audit (새 코드, 2024 용)
@@ -124,10 +124,10 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 
 | ID | 무엇 | 어디 | 상태 | 끝나면 |
 |---|---|---|---|---|
-| P1 | [7c] 용량 측정(34 샘플, skim 5 안 × branch 목록 4 안) | lxplus 컨테이너 | **다시** (09-28 v1 은 2018 의 7/11 에서 segfault, 한 행은 읽기 오류와 함께 기록; v2 로 34 개 전부, RUNBOOK §11) | P2 |
-| P2 | config 마다 (branch 목록, event 선택) 선택. 합계는 한도 안에서 1 TB 이상 여유(enriched 는 Run 2 네 era-half 전체로 약 0.47 TB 추정, analyzer 산출물, 파일럿 48.6 GB) | 사용자 | DECIDE | P3, P4 |
-| P3 | **2018UL 제출** (skim 없음이 가능할 때): 고른 목록을 `branches/` 로 → `check_branchlist.py` → 로컬 500 event 점검 2 → preflight 2 → [8] 두 config | lxplus | P2 뒤 READY | S1 |
-| P4 | skim + audit 코드(§2.3), `submit_crab.py` 의 `recipe`/`skim`/`audit`, mock test | AI | CODE (P2 뒤 바로) | P5 |
+| P1 | [7c] 용량 측정(34 샘플, skim 5 안 × branch 목록 4 안) | lxplus 컨테이너 | **DONE 09-28** (v2 34/34, FAILED 0; 원장 V47, `09` 23 절. v1 은 2018 의 7/11 에서 segfault) | P2 |
+| P2 | config 마다 (branch 목록, event 선택) 선택. 합계는 한도 안에서 1 TB 이상 여유(enriched 는 Run 2 네 era-half 전체로 약 0.47 TB 추정, analyzer 산출물, 파일럿 48.6 GB) | 사용자 | **DECIDED 09-28**: 한도 10 TB, 네 목록 slimB(`branches/` 에 채택, V48), 2018UL none, 2024 `6j20`; 합계 5.16 TB(D-2026-09-28-volume) | P3, P4 |
+| P3 | **2018UL 제출** (skim 없음): 고른 목록을 `branches/` 로(09-28 끝, V48) → `check_branchlist.py` → 로컬 500 event 점검 2 → preflight 2 → [8] 두 config | lxplus | **READY** (RUNBOOK §12) | S1 |
+| P4 | skim + audit 코드(§2.3), `submit_crab.py` 의 `recipe`/`skim`/`audit`, mock test. 2024 는 `skim: 6j20` | AI | CODE (지금) | P5 |
 | P5 | 로컬 점검: era·tier 4 개 × 파일 1 개 전부, closure C1~C3, X5·X7 | lxplus 컨테이너 | WAITS P4 | P6 |
 | P6 | skim 파일럿(2024 ttbar 하나 + `JetMET0_Run2024H`), KNU 에서 audit 합산 | lxplus, KNU | WAITS P5 | P7 |
 | P7 | 2024 전체 두 config (2018UL 을 skim 하기로 했으면 그것도) | lxplus | WAITS P6 | S5 |
@@ -167,6 +167,7 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 
 **오늘 병렬로 시작할 수 있는 것**: 맥 커밋 → (lxplus) P1, (lxplus 호스트) V1, (KNU) A0. AI 는 그동안 A1·A2 코드를 쓰고, P1 결과가 오면 P2 정리와 P4.
 **09-28 기준**: V1 끝. (lxplus) P1 을 v2 로 다시, (맥) 2018 patch 를 tempTTHH 로 복사, (KNU) A0.
+**09-28 (2) 기준**: P1 끝, P2 결정. (lxplus) P3 = RUNBOOK §12, (KNU) A0, (AI) P4 와 A1·A2.
 
 ## 4. 교차 검증 표
 
@@ -265,8 +266,10 @@ analyzer 와 TTHH 도구는 이미 같은 수준의 요약을 낸다: `ExpandedT
 
 ## 7. 결정이 필요한 것 (사용자)
 
-1. **P2**: [7c] 결과를 보고 config 마다 branch 목록(current / slimA / slimB / slimC)과 event 선택(none / 6jcount / 6j20 / 6j25 / 6j30 / 6j20ht400).
-   AI 권고 규칙: 2018UL 이 slim 만으로 들어가면 skim 없이 먼저 낸다; 합계는 한도에서 1 TB 이상 남긴다.
+1. ~~**P2**: [7c] 결과를 보고 config 마다 branch 목록(current / slimA / slimB / slimC)과 event 선택(none / 6jcount / 6j20 / 6j25 / 6j30 / 6j20ht400).
+   AI 권고 규칙: 2018UL 이 slim 만으로 들어가면 skim 없이 먼저 낸다; 합계는 한도에서 1 TB 이상 남긴다.~~
+   **DECIDED 09-28 (사용자)**: 한도 10 TB, 네 목록 slimB, 2018UL none, 2024 `6j20`(저장된 pT, 사용자: "어차피 기본적인 JEC가 걸려 있으므로"). 합계 5.16 TB,
+   D-2026-09-28-volume, `09` 23 절.
 2. **2018A 트리거** (D-2026-09-18-2018A-trigger): 기록된 권고는 (b)+(c), 즉 2018 한 목록의 합집합 OR + 선언된 부재 목록.
    그리고 trigger SF 의 기준 트리거(`IsoMu24` 로 가는 P1 항목 vs AN2019_094 의 `IsoMu27`).
 3. **`TT4b` 없이 첫 2018 plot 을 낼지**: (i) enriched `TT4b` 를 기다린다, (ii) 임시로 tt+nb 를 ttbb 와 inclusive 가 갖는 stitching 으로 먼저
@@ -284,8 +287,10 @@ analyzer 와 TTHH 도구는 이미 같은 수준의 요약을 낸다: `ExpandedT
   09-28 [7c]: 사이트 throttle(`[3005] I/O limit exceeded`)에서 ROOT 는 `CopyTree` 를 멈추지 않고, TBranch 는 한 process 에서 오류를 10 번까지만
   알린다. 그래서 측정 도구는 샘플마다 child process 를 쓰고 ROOT 오류 줄 하나로 그 샘플을 FAILED 로 한다(원장 V46). 생산 job 쪽의 같은 위험은
   closure C1~C3(§4, §5) 가 잡는다.
-- **lxplus9 의 tmux**: 그냥 `tmux new` 로 만든 세션은 logout 때 죽는다(CERN KB0008111 의 `tmux.service` 는 그 노드에서만 다시 붙는다).
-  09-28 v2 측정도 ssh 가 끊기며 멈췄다. 그래서 한 시간 넘게 도는 것은 condor job 으로 낸다(`script/condor/size_options.sub`, RUNBOOK §11).
+- **lxplus9 의 tmux**: 그냥 `tmux new` 로 만든 세션은 logout 때 죽는다. CERN KB0008111 의 `tmux.service` 세션은 살고(그 노드에서만 다시 붙는다),
+  09-28 v2 대화형 실행도 ssh 가 끊긴 뒤 그 안에서 끝까지 돌았다(`09` 23 절; 그날 "멈췄다" 고 적은 것은 틀림). 한 시간 넘게 도는 것은 여전히
+  condor job 으로 낸다(`script/condor/size_options.sub`, RUNBOOK §11): 노드와 세션에 묶이지 않는다. 같은 측정을 두 곳에서 동시에 돌리지 않는다
+  (09-28 에는 두 실행이 같은 TSV 에 썼고 행은 섞이지 않았지만 22 샘플을 두 번 쟀다).
 - **CRAB task 당 10,000 job**: 2024 최대 dataset 2,532 files(원장 V38), 2018UL 589 files(V39). units_per_job 1 에서 안전.
 - **용량**: P8 이 dataset 별 크기를 기록하고 합계를 한도와 비교한다.
 - **AI 가 외부 도구 동작을 짐작하는 것**(AI_LIMITS 실패 7): 이 문서의 NanoAODTools·haddnano·GenTtbarCategorizer 서술은 CMSSW 14_2_X 소스를,

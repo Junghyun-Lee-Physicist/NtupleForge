@@ -42,7 +42,17 @@ Output is byte-identical on regeneration (no timestamp).
 Writes script/drafts/branch_hadronic_<era>_v15_<tier>_slim{A,B,C}.txt. A draft
 becomes real only when copied over a production list by hand. Needs no ROOT
 or CMSSW, only python3 >= 3.7 (it imports script/check_branchlist.py). Exit 0
-ok, 1 a requirement would be lost or a draft differs under --check. ASCII only.
+ok, 1 a requirement would be lost, a draft differs under --check, or an
+adopted block no longer matches its draft. ASCII only.
+
+After an adoption. Adopting a tier means copying its draft over the production
+list with the DRAFT header of the block replaced by one whose first line is
+"#  <tier>, ADOPTED <date> ...". Such a list is split at that block: the
+drafts are made from the part above it (so they stay byte-identical and keep
+showing what each tier removes from the list as it was before), and the
+block's rules must equal those of a fresh draft of its tier; otherwise FAIL
+(the list above the block or the tiers here changed: adopt the new draft
+again). 2026-09-28: slimB adopted on all four lists (docs/12 P2).
 """
 import argparse
 import fnmatch
@@ -134,6 +144,23 @@ def inventory(path):
     return out
 
 
+ADOPTED_RE = re.compile(r"\n\n# =+\n#  (slim[ABC]), ADOPTED ")
+ADOPTED_WORD = re.compile(r"^#.*\bADOPTED\b", re.M)
+
+
+def split_adopted(text):
+    """(list above an adopted block, its tier or None); see 'After an adoption'.
+    Raises ValueError when a comment says ADOPTED but no block has the exact
+    form, so a damaged header cannot switch the block check off."""
+    m = ADOPTED_RE.search(text)
+    if not m:
+        if ADOPTED_WORD.search(text):
+            raise ValueError("a comment says ADOPTED but no block starts with a blank line, a '# ===' line "
+                             "and '#  slimX, ADOPTED ' (two spaces after '#'); restore that header")
+        return text, None
+    return text[:m.start()] + "\n", m.group(1)
+
+
 def rules_of_text(text):
     rules = []
     for line in text.splitlines():
@@ -196,11 +223,22 @@ def main():
     args = ap.parse_args()
     bad = 0
     for lpath, era, mc, invs in LISTS:
-        prod_text = open(os.path.join(REPO, lpath)).read()
+        full_text = open(os.path.join(REPO, lpath)).read()
+        try:
+            prod_text, adopted = split_adopted(full_text)
+        except ValueError as e:
+            print("== %s\n         FAIL: %s (nothing written for this list)" % (lpath, e))
+            bad += 1
+            continue
         prod_rules = rules_of_text(prod_text)
         inv_sets = [(i, inventory(i)) for i in invs]
         prod_kept = dict((i, kept(inv, prod_rules)) for i, inv in inv_sets)
-        print("== %s (%s, %s; %d inventories)" % (lpath, era, "MC" if mc else "Data", len(invs)))
+        print("== %s (%s, %s; %d inventories)%s" % (
+            lpath, era, "MC" if mc else "Data", len(invs),
+            "; carries the ADOPTED %s block, drafts are made from the list above it" % adopted if adopted else ""))
+        if adopted and adopted not in [t for t, _ in TIERS if mc or t != "slimC"]:
+            print("         FAIL: ADOPTED tier %s is not a tier of this list" % adopted)
+            bad += 1
         for tier, groups in TIERS:
             if tier == "slimC" and not mc:
                 continue
@@ -233,6 +271,12 @@ def main():
                 with open(out, "w") as f:
                     f.write(text)
                 state = "written %s" % os.path.relpath(out, REPO)
+            if tier == adopted:
+                if rules_of_text(full_text) == slim_rules:
+                    state += " | ADOPTED block: same rules"
+                else:
+                    lost_all.append("the ADOPTED %s block of %s has other rules than this draft "
+                                    "(copy the draft block over it again)" % (tier, lpath))
             print("   %-5s drop lines %3d | kept per inventory %s | %s" % (
                 tier, len(used_p), " ".join(sorted(set(counts))), state))
             na = [p for p, miss in skipped if len(miss) == len(invs)]

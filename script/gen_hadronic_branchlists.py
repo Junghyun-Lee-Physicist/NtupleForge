@@ -12,6 +12,13 @@ blocks here and regenerate.
 The generated files are UNVERIFIED against a real v15 schema by construction --
 that verification is script/check_branchlist.py --inventory, and every header
 says so.
+
+SUPERSEDED for branches/ (2026-09-28). Since 2026-09-16 the four lists are
+edited by hand (checked against the v15 inventories; 'keep btagWeight_*' is
+gone), and since 2026-09-28 the two 2018 lists end with the ADOPTED slimB block
+(script/make_slim_branchlists.py). This generator reproduces neither, so it
+refuses to overwrite an existing file whose content differs (exit 1); write to
+another directory to compare, or pass --force to overwrite anyway.
 """
 import os
 import sys
@@ -296,15 +303,27 @@ def build(era, tier):
 
 
 def main():
-    outdir = sys.argv[1] if len(sys.argv) > 1 else "."
+    force = "--force" in sys.argv[1:]
+    rest = [a for a in sys.argv[1:] if a != "--force"]
+    outdir = rest[0] if rest else "."
     os.makedirs(outdir, exist_ok=True)
+    refused = 0
     for era in ("2017", "2018"):
         for tier in ("MC", "Data"):
             p = os.path.join(outdir, "branch_hadronic_%s_v15_%s.txt" % (era, tier))
+            txt = build(era, tier)
+            if os.path.exists(p) and not force:
+                with open(p, encoding="utf-8") as fh:
+                    if fh.read() != txt:
+                        print("REFUSED %s: differs from this generator's output (see SUPERSEDED in the"
+                              " docstring); write to another directory, or --force" % p)
+                        refused += 1
+                        continue
             with open(p, "w", encoding="utf-8") as fh:
-                fh.write(build(era, tier))
+                fh.write(txt)
             print("wrote", p)
+    return 1 if refused else 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

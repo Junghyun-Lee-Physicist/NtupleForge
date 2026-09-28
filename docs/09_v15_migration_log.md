@@ -736,3 +736,58 @@ v1 값은 쓰지 않는다. v2 와 비교할 때만 본다(TSV 에 이력으로 
 
 같은 날 확인한 운영 사실: lxplus9 에서 그냥 `tmux new` 로 만든 세션은 logout 때 죽는다. logout 뒤에도 사는 세션은
 `systemctl --user start tmux.service` 뒤 `tmux a` 로 들어간다(CERN KB0008111). RUNBOOK §11 은 09-28 판부터 이것을 쓴다.
+
+## 23. 2026-09-28: [7c] v2 측정 34/34, 용량 결정(10 TB, slimB, 2018UL skim 없음, 2024 `6j20`), slimB 채택
+
+**두 실행이 같이 돌았다.** (1) condor job 하나(`script/condor/submit_size_options.sh`, 실행 노드 b9p22p7168, git `2251a90`):
+`run_size_options_2018_20260928_121744.log`(5 s, 11 개가 이미 TSV 에 있어 건너뜀) 뒤 `run_size_options_20260928_121750.log`
+(12:17:51~14:41:45 UTC, `EXIT : 0`). (2) 오후의 대화형 v2 실행(lxplus9110 의 `tmux.service` 세션, git `0a4af6d`):
+`run_size_options_2018_20260928_105959.log`(11:00:01~12:07:29, 2018UL 11 개) 뒤 `run_size_options_20260928_120729.log`(12:07:30~14:11:22, `EXIT : 0`).
+RUNBOOK §11 의 "대화형 실행은 ssh 와 함께 멈췄다" 는 틀렸다: 화면만 끊겼고 process 는 `tmux.service` 안에서 끝까지 돌았다(22 절 끝의
+"logout 때 죽는다" 는 그냥 `tmux new` 에 해당하고, `tmux.service` 세션은 산다). 두 2018 단계의 `EXIT : 1` 은 `--only` 11 개라서 나오는 `PARTIAL` 이다(설계대로).
+
+**결과의 무결성.** 네 runlog 모두 `FAILED` 0 줄, ROOT 오류 줄(`Error in <`, `SysError in <`, `Fatal in <`) 0. TSV 는 두 process 가 AFS 의 같은 파일에
+한 줄씩 append 했지만 66 행 전부 27 열이고, v2 행 56 개(34 샘플, 그중 22 개는 두 실행이 모두 잼)마다 `size_options_branches.tsv` 의 branch 행 수가
+`n_kept` 와 같다(v2 행의 branch 행 38,758). 두 번 잰 22 쌍: 같은 LFN, 통과 수·`n_kept`·`meta` 바이트는 정확히 같고, LZMA 출력 바이트는 0.08 %,
+tree header 는 0.16 % 안에서 같다. projection 은 샘플마다 마지막 행을 쓰며(`size_options.py` 의 "last row wins"), 두 실행의 끝 표는 소수 둘째 자리까지 같다.
+v1 과 겹치는 10 샘플도 같은 파일, 같은 통과 수이고 출력 바이트는 0.01 %, tree header 는 0.14 % 안이다: v1 이 읽기 오류와 함께 기록한
+`QCD_HT500to700` 도 값은 맞았다(2.4e-5). 규칙(오류 줄이 있으면 행을 남기지 않는다)은 그대로 둔다. 방법 점검: `calibration:` 의 `ratio pilot/this` 는 `ZZ` 1.023,
+`JetMET0` 2024H 0.991; 34 샘플 모두 `smallest stored Jet_pt 15.0 GeV`.
+
+**표** (`run_size_options_20260928_121750.log` 끝, TOTAL TB, 네 config 합; 열 = event 선택, 행 = branch 목록):
+
+| 목록 | none | 6jcount | 6j20 | 6j25 | 6j30 | 6j20ht400 |
+|---|---:|---:|---:|---:|---:|---:|
+| current | 15.65 | 6.06 | 4.38 | 3.28 | 2.48 | 3.35 |
+| slimA | 13.08 | 5.14 | 3.72 | 2.79 | 2.11 | 2.85 |
+| slimB | 10.98 | 4.35 | 3.15 | 2.36 | 1.79 | 2.41 |
+| slimC | 10.36 | 4.09 | 2.97 | 2.23 | 1.69 | 2.27 |
+
+slimB 를 config 별로 (TB; 같은 log):
+
+| config | none | 6jcount | 6j20 | 6j25 | 6j30 | 6j20ht400 |
+|---|---:|---:|---:|---:|---:|---:|
+| 2024 MC (60 ds, 4,089,997,458 ev) | 5.14 | 2.45 | 1.80 | 1.36 | 1.03 | 1.39 |
+| 2024 Data (32 ds, 5,958,480,379 ev) | 2.79 | 0.49 | 0.31 | 0.22 | 0.17 | 0.28 |
+| 2018UL MC (42 ds, 1,777,107,873 ev) | 2.25 | 1.20 | 0.90 | 0.68 | 0.50 | 0.60 |
+| 2018UL Data (8 ds, 1,660,950,742 ev) | 0.80 | 0.21 | 0.14 | 0.11 | 0.09 | 0.13 |
+
+`6j20` 이 남기는 event: 2024 MC 28.8 %, 2024 Data 5.3 %, 2018UL MC 33.3 %, 2018UL Data 9.7 %.
+
+**결정 (사용자, 09-28).** "10 TB로 간다. SlimB로 간다. pT cut은 20 GeV로 하자. 어차피 기본적인 JEC가 걸려 있으므로 큰 문제는 없을듯(당장엔)".
+AI 가 읽은 뜻(사용자에게 그대로 알림): 한도 10 TB, 네 목록 모두 slimB, 2018UL 은 skim 없이 지금 코드로(P3), 2024 는 `6j20`(P4 코드 뒤).
+합계 2018UL 3.05 (MC 2.25 + Data 0.80) + 2024 2.11 (MC 1.80 + Data 0.31) = **5.16 TB**, 한도에서 4.8 TB 남는다(enriched 약 0.47 TB, analyzer 산출물,
+파일럿 48.6 GB 는 그 안). 기록: `03_DECISIONS.md` D-2026-09-28-volume, `12` P2.
+
+**채택.** 네 `branches/branch_hadronic_{2018,2024}_v15_{MC,Data}.txt` 끝에 `script/drafts/*_slimB.txt` 의 drop 블록을 그대로 붙이고 블록 머리만
+`#  slimB, ADOPTED 2026-09-28 ...` 로 바꿨다. 블록 위는 09-28 까지의 목록과 바이트가 같다(mock test 가 v1 signature 로 확인: 09-28 v1 log 와 같다).
+`check_branchlist.py` 17 inventory: 채택 전후 출력이 규칙 수와 kept 수 두 줄만 다르고((A) OK, (B) 전부 생존, (C) 는 `Jet_jetId`/`Jet_puId` 와 2018A 의
+HLT 두 경로로 그대로, exit 3), kept 집합은 줄기만 했다(추가 0, 빠진 HLT 는 `HLT_AK8PFJet*` 만). kept: 2018UL MC 717 → 551(HLT_ 325 → 291),
+2018 Data A/B/C/D 627/686/649/664 → 485/544/507/522, 2024 MC 703 → 524, 2024 Data 638~648 → 484~494(원장 V48).
+따라 고친 도구: `make_slim_branchlists.py` 는 ADOPTED 블록 위로 초안을 만들고(초안은 바이트 그대로) 블록이 새 slimB 초안과 규칙이 다르면
+FAIL, 머리가 망가져 ADOPTED 라는 말만 남아도 FAIL(검토 agent 가 찾음: 그 전에는 한 칸 공백 차이로 검사가 꺼졌다); `test_size_options_mock.py` 는 저장소 사본(temp)에서 목록을 블록 위 부분으로 두고 돈다(채택 뒤 원본으로는 3 개 check 가 FAIL 했다:
+mock 숫자가 채택 전 목록 기준); `gen_hadronic_branchlists.py`(08-17 판, `btagWeight_*` 도 아직 씀)는 내용이 다른 파일을 덮어쓰지 않는다.
+
+**signature.** 목록 내용이 바뀌었으므로 HEAD 의 `size_options.py --project-only` 는 "nothing measured yet for these signatures" 로 exit 1 이다.
+위 표는 이 절의 runlog 가 기록이고, 다시 계산하려면 채택 전 커밋(`5fbfdee`)을 checkout 한 곳에서 `--project-only`. 새로 재면 채택된 목록이
+current 가 되고, 그때 slimA·slimB 초안은 current 보다 작지 않으므로(재지 않은 branch 는 값이 없다) 절감으로 읽지 않는다.

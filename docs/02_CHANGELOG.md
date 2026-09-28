@@ -9,6 +9,46 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-28 (2): volume decided (10 TB, slimB, 2018UL without skim, 2024 `6j20`); slimB adopted in `branches/`
+
+### Changed
+- `branches/branch_hadronic_{2018,2024}_v15_{MC,Data}.txt`: slimB ADOPTED (user decision, `03_DECISIONS.md` D-2026-09-28-volume).
+  Each file is the list of 09-28 unchanged plus the drop block of `script/drafts/<file>_slimB.txt`, whose header now starts
+  `#  slimB, ADOPTED 2026-09-28` and gives the kept counts. Kept branches: 2018UL MC 717 -> 551 (HLT_ 325 -> 291), 2018 Data A/B/C/D
+  627/686/649/664 -> 485/544/507/522, 2024 MC 703 -> 524, 2024 Data 638-648 -> 484-494. `check_branchlist.py` gives the same (A), (B)
+  and (C) verdicts on all 17 inventories and the kept sets only shrink; the only HLT paths that go are `HLT_AK8PFJet*` (ledger V48).
+  The preflight line becomes `168 rules: 50 keep / 118 drop` (2018 MC) and `135 rules: 26 keep / 109 drop` (2018 Data). The four
+  crabConfigs are unchanged (same `branch_file` paths).
+- `script/make_slim_branchlists.py`: a list with an ADOPTED block is split at that block. The drafts are made from the part above it
+  (byte-identical on regeneration), and `--check` fails when the block's rules differ from a fresh draft of its tier or when the tier
+  does not exist for that list; a comment that says ADOPTED without a well-formed block header is a FAIL too (nothing written), so a
+  damaged header cannot switch the check off (found by the independent review of this batch). Tried in the AI session: a removed
+  drop line, an edited line above the block, a wrong tier name, a header with one space after '#'.
+- `script/test_size_options_mock.py`: runs a copy of `size_options.py` in a temp mirror of the repository whose lists are the part
+  above an ADOPTED block, so the mock numbers do not depend on the production tier (against the adopted lists three checks failed).
+  New check 47: every list's ADOPTED block is well formed (or absent). 47/47 PASS in both trees (adopted and pre-adoption); the v1-signature note still reads "equal the 09-28 lxplus log", which shows the
+  part above each block is byte-identical to the 09-28 list. It now needs python >= 3.7 (it imports make_slim_branchlists.py, which
+  imports check_branchlist.py); cmsenv has 3.9.
+- `script/gen_hadronic_branchlists.py`: refuses to overwrite an existing list whose content differs (exit 1, `--force` overrides).
+  The 08-17 generator no longer reproduces any of the four lists (edited by hand since 09-16; it still writes `keep btagWeight_*`,
+  and the 2018 lists carry slimB); run on `branches/` it would have undone both without a word.
+
+### Validated
+- [7c] measurement v2, 34/34 samples (ledger V47, `09` section 23): the condor job and the interactive run both `EXIT : 0`, `FAILED` 0,
+  no ROOT error line; the 22 samples that both measured agree (same LFN, pass counts exact, output bytes within 0.08 %, tree headers
+  within 0.16 %), and so do the ten v1 rows (0.01 %, headers 0.14 %). TOTAL TB: today's lists without skim 15.65, slimB without skim 10.98, slimB `6j20` everywhere 3.15; the decided
+  combination 5.16 (2018UL 3.05, 2024 2.11).
+
+### Corrected
+- The entry below and RUNBOOK 11 say the interactive v2 run of 09-28 "stopped with the ssh connection after two samples". It did not:
+  the process went on in the `tmux.service` session on lxplus9110 and finished (`run_size_options_20260928_120729.log`, `EXIT : 0`),
+  at the same time as the condor job. Both appended to the same TSV on AFS and no row was damaged (66 rows, all 27 columns).
+
+### Note
+- `size_options.py` signatures hash the list bytes, so at HEAD `--project-only` finds no current rows (exit 1, `nothing measured yet
+  for these signatures`). The [7c] table stays in the runlog and is recomputed on a checkout of `5fbfdee` (the last commit before
+  the adoption).
+
 ## [Unreleased], 2026-09-28: the 2018 patches pass against central NanoAODv15 (V1); size_options.py measurement v2
 
 ### Fixed

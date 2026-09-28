@@ -3,10 +3,14 @@
 """
 test_size_options_mock.py -- offline test of script/size_options.py.
 
-Runs the real script against the real crabConfigs, review tables and branch
-lists of this repository, with a fake dasgoclient and a mock ROOT module put
-in front of PATH / PYTHONPATH (both written to a temp dir). Nothing in the
-repository is written: the TSV and the scratch files live in the temp dir.
+Runs a copy of the real script in a temp mirror of this repository (its
+crabConfigs, review tables, slim drafts and branch lists), with a fake
+dasgoclient and a mock ROOT module put in front of PATH / PYTHONPATH. A branch
+list that carries an ADOPTED slim block (script/make_slim_branchlists.py,
+"After an adoption") is mirrored as the list above that block, the list the
+drafts are made from, so the mock numbers below do not depend on which tier
+production uses. Nothing in the repository is written: the mirror, the TSV
+and the scratch files live in the temp dir.
 It checks control flow and bookkeeping (mapping, DAS file choice, TSV resume,
 signatures, failure handling incl. ROOT read errors on stderr and a crashing
 or hanging child process, one child per sample, projection sums, era scaling,
@@ -16,7 +20,8 @@ in fails the number checks.
 
     python3 script/test_size_options_mock.py        # last line: RESULT: ALL PASS
 
-Needs python3 with PyYAML (cmsenv has it). Python 3.6 compatible, ASCII only.
+Needs python3 >= 3.7 with PyYAML (cmsenv has both; the mirror imports
+script/make_slim_branchlists.py, which imports check_branchlist.py). ASCII only.
 """
 import hashlib
 import importlib.util
@@ -28,7 +33,42 @@ import sys
 import tempfile
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SCRIPT = os.path.join(REPO, "script", "size_options.py")
+REAL_SCRIPT = os.path.join(REPO, "script", "size_options.py")
+SCRIPT = REAL_SCRIPT   # set to the mirror's copy in main()
+
+
+def make_mirror(root):
+    """Copy what size_options.py reads into root; lists as they were before an adoption."""
+    sys.path.insert(0, os.path.join(REPO, "script"))
+    import make_slim_branchlists as msb   # split_adopted: the one definition of an ADOPTED block
+    spec = importlib.util.spec_from_file_location("size_options_real", REAL_SCRIPT)
+    so = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(so)
+    os.makedirs(os.path.join(root, "script"))
+    shutil.copy(REAL_SCRIPT, os.path.join(root, "script", "size_options.py"))
+    shutil.copytree(os.path.join(REPO, "script", "drafts"), os.path.join(root, "script", "drafts"))
+    adopted, damaged = [], []
+    for _e, _t, cpath, _r in so.CONFIGS:
+        dst = os.path.join(root, cpath)
+        if not os.path.isdir(os.path.dirname(dst)):
+            os.makedirs(os.path.dirname(dst))
+        shutil.copy(os.path.join(REPO, cpath), dst)
+        bf = so.load_config(cpath)[0]["branch_file"]
+        with open(os.path.join(REPO, bf)) as f:
+            text = f.read()
+        try:
+            base, tier = msb.split_adopted(text)
+        except ValueError as e:   # a damaged ADOPTED header: mirror as is, fail the check in main()
+            base, tier = text, None
+            damaged.append("%s: %s" % (os.path.basename(bf), e))
+        if tier:
+            adopted.append("%s (%s)" % (os.path.basename(bf), tier))
+        dst = os.path.join(root, bf)
+        if not os.path.isdir(os.path.dirname(dst)):
+            os.makedirs(os.path.dirname(dst))
+        with open(dst, "w") as f:
+            f.write(base)
+    return os.path.join(root, "script", "size_options.py"), adopted, damaged
 
 FAKE_DAS = r'''#!/bin/bash
 q="$2"
@@ -210,8 +250,13 @@ def check(name, ok, detail=""):
 
 
 def main():
+    global SCRIPT
     tmp = tempfile.mkdtemp(prefix="test_size_options_")
     try:
+        SCRIPT, adopted, damaged = make_mirror(os.path.join(tmp, "repo"))
+        print("      note: mirror of the repository in the temp dir; lists with an ADOPTED block, mirrored as the"
+              " list above it: %s" % (", ".join(adopted) or "none"))
+        check("every branch list's ADOPTED block is well formed (or there is none)", not damaged, damaged)
         os.makedirs(os.path.join(tmp, "bin"))
         os.makedirs(os.path.join(tmp, "mock"))
         das = os.path.join(tmp, "bin", "dasgoclient")
@@ -252,7 +297,8 @@ def main():
 
         # rows of measurement v1 (before 2026-09-28) must never be current: the signature of the same inputs
         # computed the v1 way must differ from today's. (The lxplus log of the 09-28 v1 run printed v1_log;
-        # while the branch lists are unchanged the v1 recomputation equals it, which is printed as a note.)
+        # the mirror's lists are the 09-28 lists while nothing above an ADOPTED block changes, and then the
+        # v1 recomputation equals it, which is printed as a note.)
         spec = importlib.util.spec_from_file_location("size_options_mod", SCRIPT)
         so = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(so)
@@ -260,7 +306,7 @@ def main():
         v1, v2 = [], []
         for _e, _t, cpath, _r in so.CONFIGS:
             bf = so.load_config(cpath)[0]["branch_file"]
-            with open(os.path.join(REPO, bf), "rb") as f:
+            with open(os.path.join(so.REPO, bf), "rb") as f:   # the mirror's list
                 h = hashlib.md5(f.read())
             h.update(("|".join(e for _, e in so.SKIMS) + "|n=%d" % 10000).encode("ascii"))
             v1.append(h.hexdigest()[:12])

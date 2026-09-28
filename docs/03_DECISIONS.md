@@ -11,6 +11,32 @@
 
 ---
 
+## D-2026-09-28-volume: output limit 10 TB; slimB branch lists for all four configs; 2018UL without event skim, 2024 with `6j20`
+**DECIDED · 2026-09-28 · user**
+
+- **Decision (user).** "10 TB로 간다. SlimB로 간다. pT cut은 20 GeV로 하자. 어차피 기본적인 JEC가 걸려 있으므로 큰 문제는 없을듯(당장엔)".
+  Read as (AI, told to the user): the output budget on T3_KR_KNU is 10 TB; the four v15 hadronic lists become slimB
+  (`script/make_slim_branchlists.py`); the event selection is none for 2018UL (submitted now on today's noop path, plan 12 P3) and `6j20`
+  for 2024 (at least six jets with stored `Jet_pt > 20` and `abs(Jet_eta) < 2.5`; waits for the skim + audit code, plan 12 P4).
+- **Numbers** ([7c] measurement v2, 34 samples, ledger V47, `09` section 23): 2018UL MC 2.25 + Data 0.80 + 2024 MC 1.80 + Data 0.31
+  = 5.16 TB. For comparison: slimB without any skim 10.98 TB (over the limit), slimB + `6j20` everywhere 3.15 TB, today's lists without
+  skim 15.65 TB.
+- **Why.** slimB drops only branches the analyzer does not read and keeps the jet-ID recomputation inputs, JEC/JER inputs, b-jet
+  regressions, the B / CvB / CvL / QvG taggers, all MET and `Flag_*`, lepton IDs, isolations and SF inputs, `LHEScaleWeight`, `PSWeight`
+  and `LHEPdfWeight` (slimC would drop the PDF weights; not taken). 2018UL without skim keeps every event, so the analyzer's
+  `--mode prescan` works as it is and no new code stands before the submission. The skim cut acts on the stored NanoAOD `Jet_pt`, which
+  carries the central JEC; the analyzer needs six jets above 40 GeV after its own JES/JER in every mode, so a jet stored below 20 GeV
+  must move up by more than 100 % to change an event (workspace RUNBOOK 10 [7c]). The user accepts this margin for now.
+- **Alternatives.** Limit 5 TB (2024 at `6j25` / `6j30` or a skim on 2018UL); slimC (0.31 TB less for the chosen selections, 4.85 TB, PDF weights lost); 2024 at
+  `6j25` / `6j30` / `6j20ht400` (2024 slimB 1.58 / 1.20 / 1.67 TB instead of 2.11: 0.4 to 0.9 TB saved for a smaller margin).
+- **Consequences.** (i) The four `branches/branch_hadronic_{2018,2024}_v15_{MC,Data}.txt` end with the slimB draft block under an
+  `ADOPTED` header (ledger V48); `make_slim_branchlists.py` makes the drafts from the part above it and fails if the block drifts;
+  `test_size_options_mock.py` mirrors the lists above the block; `gen_hadronic_branchlists.py` no longer overwrites a differing list.
+  (ii) `size_options.py` signatures follow the list bytes: the v2 rows of 09-28 are the record of this decision, and `--project-only` at
+  HEAD finds no current rows (recompute on a checkout of `5fbfdee`). (iii) 2024 waits for P4 (`--skim 6j20` on the `cut` path plus
+  RDataFrame audit, plan 12 section 2.3), P5 local checks and the P6 skim pilot. (iv) 2018UL: 3,743 jobs (2,277 + 1,466 files).
+- **Not decided here.** 2024 trigger and b-tag (plan 12 section 7 item 4), 2018A trigger (D-2026-09-18-2018A-trigger).
+
 ## D-2026-09-22-production-order: produce 2018UL v15 and 2024 first; the other years follow; the analyzer is generalised to all years afterwards
 **DECIDED · 2026-09-22 · user**
 
