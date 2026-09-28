@@ -126,7 +126,7 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 |---|---|---|---|---|
 | P1 | [7c] 용량 측정(34 샘플, skim 5 안 × branch 목록 4 안) | lxplus 컨테이너 | **DONE 09-28** (v2 34/34, FAILED 0; 원장 V47, `09` 23 절. v1 은 2018 의 7/11 에서 segfault) | P2 |
 | P2 | config 마다 (branch 목록, event 선택) 선택. 합계는 한도 안에서 1 TB 이상 여유(enriched 는 Run 2 네 era-half 전체로 약 0.47 TB 추정, analyzer 산출물, 파일럿 48.6 GB) | 사용자 | **DECIDED 09-28**: 한도 10 TB, 네 목록 slimB(`branches/` 에 채택, V48), 2018UL none, 2024 `6j20`; 합계 5.16 TB(D-2026-09-28-volume) | P3, P4 |
-| P3 | **2018UL 제출** (skim 없음): 고른 목록을 `branches/` 로(09-28 끝, V48) → `check_branchlist.py` → 로컬 500 event 점검 2 → preflight 2 → [8] 두 config | lxplus | **READY** (RUNBOOK §12) | S1 |
+| P3 | **2018UL 제출** (skim 없음): 고른 목록을 `branches/` 로(09-28 끝, V48) → `check_branchlist.py` → 로컬 500 event 점검 2 → preflight 2 → [8] 두 config | lxplus | **SUBMITTED 09-28** (42 + 8 task OK, 로컬 점검 551 / 485 = 예측; V49, `09` 24 절). 다음 `--report`, P8 | S1 |
 | P4 | skim + audit 코드(§2.3), `submit_crab.py` 의 `recipe`/`skim`/`audit`, mock test. 2024 는 `skim: 6j20` | AI | CODE (지금) | P5 |
 | P5 | 로컬 점검: era·tier 4 개 × 파일 1 개 전부, closure C1~C3, X5·X7 | lxplus 컨테이너 | WAITS P4 | P6 |
 | P6 | skim 파일럿(2024 ttbar 하나 + `JetMET0_Run2024H`), KNU 에서 audit 합산 | lxplus, KNU | WAITS P5 | P7 |
@@ -168,6 +168,7 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 **오늘 병렬로 시작할 수 있는 것**: 맥 커밋 → (lxplus) P1, (lxplus 호스트) V1, (KNU) A0. AI 는 그동안 A1·A2 코드를 쓰고, P1 결과가 오면 P2 정리와 P4.
 **09-28 기준**: V1 끝. (lxplus) P1 을 v2 로 다시, (맥) 2018 patch 를 tempTTHH 로 복사, (KNU) A0.
 **09-28 (2) 기준**: P1 끝, P2 결정. (lxplus) P3 = RUNBOOK §12, (KNU) A0, (AI) P4 와 A1·A2.
+**09-28 (3) 기준**: P3 제출 끝. (lxplus) 몇 시간 뒤 `--report`, (KNU) A0, (AI) P4.
 
 ## 4. 교차 검증 표
 

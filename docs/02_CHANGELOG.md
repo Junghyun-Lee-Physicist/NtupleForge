@@ -9,6 +9,15 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-28 (3): 2018UL v15 hadronic submitted with the slimB lists (plan 12 P3)
+
+### Validated
+- lxplus941, `31beadf`, workspace RUNBOOK 12: the slimB lists ran through NanoAODTools for the first time (500-event local checks,
+  noop module like the CRAB jobs): 551 branches / 291 `HLT_` (2018UL MC `TTToHadronic`) and 485 / 268 (`JetHT` 2018A), exactly the
+  `check_branchlist.py` prediction, gen branches present in MC only, no `Error in <` line. Preflights FAIL 0 (Data: the two expected
+  gen-branch WARNs). Submitted: MC 42/42 OK, Data 8/8 OK (task names in `09` section 24); lxplus commit `ff52d5f` holds the runlogs,
+  the two preflight copies and `LEDGER.tsv` only (no `nocommit/`, no S3 signature). Ledger V49.
+
 ## [Unreleased], 2026-09-28 (2): volume decided (10 TB, slimB, 2018UL without skim, 2024 `6j20`); slimB adopted in `branches/`
 
 ### Changed

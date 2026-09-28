@@ -791,3 +791,22 @@ mock 숫자가 채택 전 목록 기준); `gen_hadronic_branchlists.py`(08-17 �
 **signature.** 목록 내용이 바뀌었으므로 HEAD 의 `size_options.py --project-only` 는 "nothing measured yet for these signatures" 로 exit 1 이다.
 위 표는 이 절의 runlog 가 기록이고, 다시 계산하려면 채택 전 커밋(`5fbfdee`)을 checkout 한 곳에서 `--project-only`. 새로 재면 채택된 목록이
 current 가 되고, 그때 slimA·slimB 초안은 current 보다 작지 않으므로(재지 않은 branch 는 값이 없다) 절감으로 읽지 않는다.
+
+## 24. 2026-09-28 (저녁): 2018UL v15 hadronic 제출 (P3, slimB 목록, skim 없음)
+
+lxplus941, git `31beadf`(slimB 채택 커밋), 명령은 워크스페이스 RUNBOOK §12. 전부 기대대로.
+
+- **slimB 목록의 첫 NanoAODTools 실행** (로컬 500 event, noop 모듈, 제출과 같은 경로): MC `TTToHadronic` 파일 `002d2fd2-...`(size_options 가 잰 파일과 같음)
+  `branches 551 | HLT_ 291`, gen 세 열 y; Data `JetHT` Run2018A 파일 `8a1a5246-...` `branches 485 | HLT_ 268`, gen 세 열 n. `check_branchlist.py`
+  예측(원장 V48)과 정확히 같다. 두 runlog 모두 `EXIT : 0`, `Error in <` 0 줄(`run_localcheck_2018_{MC,Data}_20260928_*.log`,
+  `run_localcheck_summary_20260928_171622.log`).
+- **preflight**: MC 34 PASS / 0 WARN / 0 FAIL, Data 32 PASS / 2 WARN(`slim keeps genWeight`·`genTtbarId` absent, Data 라 정상) / 0 FAIL;
+  `branch file ... (168 rules: 50 keep / 118 drop)`, `(135 rules: 26 keep / 109 drop)`; 두 work area 모두 `none`(첫 제출)
+  (`pf_config_ttHH2018UL_v15_had_{MC,Data}_20260928_19162{7,9}.log.txt`).
+- **제출**: MC `SUMMARY (submit): 42 dataset(s): 42 OK, 0 WARN, 0 FAILED, 0 SKIPPED`(17:19:43~17:21:11 UTC, wall 119 s; 첫 task
+  `260928_171943:junghyun_crab_TTbar_SemiLep`, 끝 `260928_172111:junghyun_crab_ZJetsToQQ_HT800toInf`), Data `8 dataset(s): 8 OK, ...`
+  (17:22:22~17:22:37 UTC, wall 21 s; `260928_172222:junghyun_crab_JetHT_Run2018A` ~ `260928_172237:junghyun_crab_SingleMuon_Run2018D`).
+  myproxy 는 다시 묻지 않았다. transcript 는 `script/runlogs/nocommit/` 에만 있다.
+- **커밋** `ff52d5f`(lxplus): runlog 3, pf 2, `LEDGER.tsv` 뿐. `nocommit/` 없음, 여섯 파일에서 S3 서명 grep 0(AI 가 맥에서 확인).
+- 출력: T3_KR_KNU `/store/user/junghyun/ttHH2018UL_v15_had_{MC,Data}_v1`, 3,743 job, 예상 3.05 TB(원장 V47). 다음은 `--report`(RUNBOOK §12 8),
+  전부 끝나면 KNU 에서 dataset 별 파일·event 수 대 DAS(계획 12 P8).
