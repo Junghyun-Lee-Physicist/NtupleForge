@@ -1,0 +1,36 @@
+# =============================================================================
+# size_options.sub -- the [7c] measurement (script/size_options.py) as ONE
+# HTCondor job on CERN batch, so closing the laptop or losing ssh does not stop it.
+#
+# Submit on the lxplus EL9 HOST (condor_submit is not inside cmssw-el8), from
+# the NtupleForge directory, with a valid proxy on AFS (full path):
+#   export X509_USER_PROXY=/afs/cern.ch/user/<u>/<user>/.../proxy.cert
+#   mkdir -p ~/condor_size_options
+#   condor_submit script/condor/size_options.sub
+# Watch: condor_q ; progress: the newest script/runlogs/run_size_options*.log ;
+# job stdout/stderr: ~/condor_size_options/size_options.<cluster>.out / .err
+#
+# Choices, as in TTHHGenCategoryTools/Validation/scripts/submit_validation_condor.py
+# (which runs at CERN): getenv False and the release set up from cvmfs in the
+# job; container image requested with MY.SingularityImage; x509userproxy;
+# condor manages no output files (the job writes its few text files itself);
+# every condor-managed path on AFS (CERN schedds refuse /eos paths here).
+# =============================================================================
+universe                = vanilla
+executable              = script/condor/size_options_job.sh
+arguments               = $ENV(PWD) $ENV(HOME)
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+transfer_output_files   = ""
+output                  = $ENV(HOME)/condor_size_options/size_options.$(ClusterId).out
+error                   = $ENV(HOME)/condor_size_options/size_options.$(ClusterId).err
+log                     = $ENV(HOME)/condor_size_options/size_options.$(ClusterId).log
+request_cpus            = 4
+request_memory          = 4000
+getenv                  = False
+use_x509userproxy       = true
+x509userproxy           = $ENV(X509_USER_PROXY)
+MY.SingularityImage     = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/cmssw/el8:x86_64"
++JobFlavour             = "workday"
+notification            = never
+queue

@@ -41,6 +41,19 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   four faults in the first v2 draft, all fixed and re-checked: the full disk now gives `FAILED: write error on ... (disk full?)` or
   `only 4 MB free`, no row.
 
+### Added
+- `script/condor/size_options.sub` + `script/condor/size_options_job.sh`: the whole [7c] measurement as ONE HTCondor job
+  (CMSSW el8 image via `MY.SingularityImage`, `getenv = False`, release set up from cvmfs in the job, `x509userproxy`, condor
+  manages no output files, `+JobFlavour = "workday"`, 4 cores), because the interactive v2 run of 09-28 (lxplus9110, `0a4af6d`)
+  stopped with the ssh connection after two samples. The job checks the proxy, the CMSSW environment (PyROOT, dasgoclient) and the
+  offline test before measuring (exit 12 / 13 / 14), then runs the 2018UL eleven and the full set like RUNBOOK 11, and retries
+  failed samples twice (after 10 min, then through `root://xrootd-cms.infn.it/`). Scratch copies go to the worker's local disk;
+  only the runlogs and the two TSVs are written to AFS. Dry-run in the AI session with stubbed cvmfs / scram, the mock ROOT and
+  the fake dasgoclient, clean environment (`env -i`): all measured, exit 0; a persistent read error, three FAILED passes, exit 1;
+  a transient one, measured by the first retry, exit 0; no proxy, exit 12; no CMSSW environment, exit 13.
+- The two samples that the interactive v2 run finished repeat v1 exactly (2018UL `TTbar_Hadronic` 1.844 / 1.847 kB, `TTbar_SemiLep`
+  1.826 / 1.831 kB, every skim column equal): without read errors v1 and v2 measure the same.
+
 ### Validated (ledger V45)
 - 2018 tt+nb patches vs central NanoAODv15 (plan `docs/12` V1, TTHH O8): 6 samples, 972,574,595 events, 63 condor jobs. First run
   (cluster 13488511, 09-27) with the lxplus binary not rebuilt: 19 of 21 `TTToHadronic` chunks exit 4 (nano read failure, no retry in

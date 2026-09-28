@@ -284,8 +284,8 @@ analyzer 와 TTHH 도구는 이미 같은 수준의 요약을 낸다: `ExpandedT
   09-28 [7c]: 사이트 throttle(`[3005] I/O limit exceeded`)에서 ROOT 는 `CopyTree` 를 멈추지 않고, TBranch 는 한 process 에서 오류를 10 번까지만
   알린다. 그래서 측정 도구는 샘플마다 child process 를 쓰고 ROOT 오류 줄 하나로 그 샘플을 FAILED 로 한다(원장 V46). 생산 job 쪽의 같은 위험은
   closure C1~C3(§4, §5) 가 잡는다.
-- **lxplus9 의 tmux**: 그냥 `tmux new` 로 만든 세션은 logout 때 죽는다. 오래 도는 것은 `systemctl --user start tmux.service` 뒤 `tmux a`
-  (CERN KB0008111; RUNBOOK §11).
+- **lxplus9 의 tmux**: 그냥 `tmux new` 로 만든 세션은 logout 때 죽는다(CERN KB0008111 의 `tmux.service` 는 그 노드에서만 다시 붙는다).
+  09-28 v2 측정도 ssh 가 끊기며 멈췄다. 그래서 한 시간 넘게 도는 것은 condor job 으로 낸다(`script/condor/size_options.sub`, RUNBOOK §11).
 - **CRAB task 당 10,000 job**: 2024 최대 dataset 2,532 files(원장 V38), 2018UL 589 files(V39). units_per_job 1 에서 안전.
 - **용량**: P8 이 dataset 별 크기를 기록하고 합계를 한도와 비교한다.
 - **AI 가 외부 도구 동작을 짐작하는 것**(AI_LIMITS 실패 7): 이 문서의 NanoAODTools·haddnano·GenTtbarCategorizer 서술은 CMSSW 14_2_X 소스를,
