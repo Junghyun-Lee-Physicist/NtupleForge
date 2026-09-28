@@ -700,3 +700,39 @@ jet 이 많아 상한 쪽이 현실적이다. Data 는 2024H JetMET0 한 era 의
 dataset 을 다른 jobID·output_base 로 다시 만들므로, 전체 생산을 확인한 뒤 지워도 된다.
 
 검증 행은 `10_validation_ledger.md` V38–V44. 남은 것: T3_KR_KNU `/store/user/junghyun` 여유 확인(RUNBOOK §10 [7b]) → [8] 전체 4 config 제출.
+
+## 22. 2026-09-27~28: V1 통과, [7c] v1 측정 중단 → `size_options.py` measurement v2
+
+lxplus996. 계획은 [`12_fastpath_workflow_plan.md`](12_fastpath_workflow_plan.md), 명령은 워크스페이스 RUNBOOK §11.
+
+**V1 (2018 patch ↔ 중앙 NanoAODv15, TTHH O8).** 09-27 17:49 UTC 에 63 job 제출(cluster 13488511; nano filelist 14 / 15 / 8 / 407 / 589 / 169 파일,
+preflight 29 PASS / 0 FAIL). lxplus 의 `matchTtbarIdSorted` 를 다시 빌드하지 않은 채 제출해서 `TTToHadronic` 21 chunk 중 19 개가 exit 4 로 끝났다
+(읽기 실패가 드러난 것이지 틀린 PASS 가 아니다). 09-28 에 다시 빌드하고(`strings ... | grep -c reopening` = 1) 19 개만 다시 냈다(13489070):
+63/63 ok, 집계 `OVERALL: ALL SAMPLES PASS` (`script/runlogs/run_v1_aggregate_20260928_083134.log`). 수치와 해석은 TTHHGenCategoryTools
+`docs/06_validation_results.md` 끝 절, 원장 V45. 결론: 2018 patch 6 편은 v15 ntuple 에 그대로 쓰고, `ttnb_TTbar_SemiLep.root` 의 보류도 풀린다.
+
+**[7c] v1.** 09-28 08:32 UTC 부터 tmux 안에서 2018UL 11 개, 이어서 전체. 2018UL 7 개를 잰 뒤 다음 샘플(`QCD_HT1000to1500`)에서 process 가
+segmentation violation 으로 죽었다(`CPyCppyy::op_dealloc`, runlog `EXIT : 129` = 128 + ROOT 의 `kSigSegmentationViolation`;
+`run_size_options_2018_20260928_083223.log`, wall 3,726 s). 그 전 `QCD_HT500to700` 의 AAA 읽기가 사이트 throttle 에 걸렸다
+(`[3005] I/O limit exceeded and wait time hit`; `TBranch::GetBasket` 오류 10 줄 뒤 ROOT 가 `stopping reporting error messages`, 이 샘플만 2,373 s).
+v1 은 그 행을 그대로 기록했다. 대응은 `size_options.py` measurement v2: 샘플마다 child process, ROOT 오류 줄 하나면 FAILED, 충돌과 timeout 은
+그 샘플만 FAILED(02_CHANGELOG 2026-09-28, 원장 V46). v2 는 row signature 가 달라 v1 행을 쓰지 않으므로 34 개를 다시 잰다. 이어서 돌기 시작한
+전체 실행(09:34:36 UTC, 같은 v1 코드)은 멈추고 v2 로 다시 한다.
+
+v1 값은 쓰지 않는다. v2 와 비교할 때만 본다(TSV 에 이력으로 남는다):
+
+| era | 샘플 | base kB/event | 6j25 통과 비율 / kB | slimB | 비고 |
+|---|---|---|---|---|---|
+| 2024 | TTbar_Hadronic | 1.819 | 0.378 / 0.757 | -26.1 % | 09-27 |
+| 2024 | TTbar_SemiLep | 1.816 | 0.215 / 0.454 | -27.5 % | 09-27 |
+| 2024 | TTbar_DiLep | 1.765 | 0.100 / 0.227 | -28.8 % | 09-27 |
+| 2018UL | TTbar_Hadronic | 1.844 | 0.425 / 0.861 | -26.7 % | 497 s |
+| 2018UL | TTbar_SemiLep | 1.826 | 0.235 / 0.495 | -28.0 % | 85 s |
+| 2018UL | TTbar_DiLep | 1.777 | 0.117 / 0.266 | -29.1 % | 96 s |
+| 2018UL | ST_t_top | 1.463 | 0.038 / 0.092 | -26.0 % | 48 s |
+| 2018UL | QCD_HT300to500 | 1.355 | 0.033 / 0.075 | -24.8 % | 102 s |
+| 2018UL | QCD_HT500to700 | 1.502 | 0.100 / 0.201 | -24.9 % | 2,373 s, **읽기 오류 뒤 기록** |
+| 2018UL | QCD_HT700to1000 | 1.598 | 0.155 / 0.314 | -25.1 % | 66 s, 같은 process 에서 오류 뒤 |
+
+같은 날 확인한 운영 사실: lxplus9 에서 그냥 `tmux new` 로 만든 세션은 logout 때 죽는다. logout 뒤에도 사는 세션은
+`systemctl --user start tmux.service` 뒤 `tmux a` 로 들어간다(CERN KB0008111). RUNBOOK §11 은 09-28 판부터 이것을 쓴다.

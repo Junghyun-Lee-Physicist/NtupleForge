@@ -8,15 +8,18 @@ lists of this repository, with a fake dasgoclient and a mock ROOT module put
 in front of PATH / PYTHONPATH (both written to a temp dir). Nothing in the
 repository is written: the TSV and the scratch files live in the temp dir.
 It checks control flow and bookkeeping (mapping, DAS file choice, TSV resume,
-signatures, failure handling, projection sums, era scaling, the per-branch
-table and the pricing of the slim drafts in script/drafts/), not ROOT itself;
-the mock gives exactly known sizes, so a real ROOT sneaking in fails the
-number checks.
+signatures, failure handling incl. ROOT read errors on stderr and a crashing
+or hanging child process, one child per sample, projection sums, era scaling,
+the per-branch table and the pricing of the slim drafts in script/drafts/),
+not ROOT itself; the mock gives exactly known sizes, so a real ROOT sneaking
+in fails the number checks.
 
     python3 script/test_size_options_mock.py        # last line: RESULT: ALL PASS
 
 Needs python3 with PyYAML (cmsenv has it). Python 3.6 compatible, ASCII only.
 """
+import hashlib
+import importlib.util
 import os
 import re
 import shutil
@@ -44,8 +47,13 @@ fi
 '''
 
 MOCK_ROOT = r'''
-import fnmatch, os
-kFatal = 6000
+import fnmatch, os, signal, sys, time
+if os.environ.get("MOCK_IMPORT_LOG"):
+    with open(os.environ["MOCK_IMPORT_LOG"], "a") as _f:
+        _f.write(" ".join(sys.argv) + "\n")
+if os.environ.get("MOCK_IMPORTFAIL"):
+    raise ImportError("mock: libCore.so: cannot open shared object file")
+kPrint, kWarning, kError, kFatal = 0, 2000, 3000, 6000
 gErrorIgnoreLevel = 0
 CUR = [None]
 COMP, HDR_PER_BRANCH, FILE_HDR, NFILE = 0.3, 60, 2000, 60000
@@ -117,6 +125,25 @@ class Tree(object):
     def CopyTree(self, sel, opt="", n=None, first=0):
         if sel and os.environ.get("MOCK_BADSKIM"):
             return None
+        if sel and os.environ.get("MOCK_SKIMERR"):   # a read error on the local base copy (skim phase)
+            os.write(2, b"Error in <TBasket::ReadBasketBuffers>: fNbytes = 1234, fKeylen = 80, fObjlen = 0\n")
+        flood = os.environ.get("MOCK_FLOOD")
+        if flood and flood in getattr(self, "url", ""):
+            os.write(2, b"Error in <TNetXNGFile::ReadBuffer>: [ERROR] flood line\n" * 100000)
+        url = getattr(self, "url", "")
+        bad = os.environ.get("MOCK_READERR")
+        if bad and bad in url:   # what ROOT prints when a basket cannot be read over AAA
+            os.write(2, ("Error in <TNetXNGFile::ReadBuffers>: [ERROR] Server responded with an error: "
+                         "[3005] I/O limit exceeded and wait time hit.\n"
+                         "Error in <TBranch::GetBasket>: File: %s at byte:0, branch:Jet_pt, entry:2759, "
+                         "badread=1, nerrors=1, basketnumber=2\n" % url).encode())
+        if os.environ.get("MOCK_SEGV") and os.environ["MOCK_SEGV"] in url:
+            os.write(2, b"Error in <TNetXNGFile::ReadBuffer>: [ERROR] written just before the crash\n")
+            os.kill(os.getpid(), signal.SIGSEGV)
+        if os.environ.get("MOCK_HANG") and os.environ["MOCK_HANG"] in url:
+            time.sleep(30)
+        if url and os.environ.get("MOCK_WARNLINE"):
+            os.write(2, b"Warning in <TClass::Init>: no dictionary for class edm::Hash<1> is available\n")
         ne = self.entries if n is None else min(n, self.entries)
         if sel:
             for s, f in PASS:
@@ -134,6 +161,9 @@ class Tree(object):
         self.written = True
 class TFile(object):
     OPEN = {}
+    kWriteError = 1 << 14
+    def TestBit(self, bit):
+        return bit == TFile.kWriteError and self.mode == "RECREATE" and bool(os.environ.get("MOCK_WRITEERR"))
     def __init__(self, path, mode="", title="", comp=101):
         self.path, self.mode, self.comp, self.trees, self.src, self.closed = path, mode, comp, [], None, False
         CUR[0] = self
@@ -143,7 +173,11 @@ class TFile(object):
         if bad and bad in url:
             return None
         f = TFile(url, "READ", "", 209)
-        f.src = Tree(universe(url), NFILE) if url.startswith("root://") else TFile.OPEN[url]
+        if url.startswith("root://"):
+            f.src = Tree(universe(url), NFILE)
+            f.src.url = url
+        else:
+            f.src = TFile.OPEN[url]
         return f
     def IsZombie(self):
         return False
@@ -190,6 +224,7 @@ def main():
         brtsv = os.path.join(tmp, "branches.tsv")
         work = os.path.join(tmp, "work")
         os.makedirs(work)
+        imports = os.path.join(tmp, "root_imports.log")   # the mock ROOT logs every process that imports it
         env = dict(os.environ)
         env["PATH"] = os.path.join(tmp, "bin") + os.pathsep + env.get("PATH", "")
         env["PYTHONPATH"] = os.path.join(tmp, "mock") + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
@@ -215,6 +250,25 @@ def main():
             src = f.read()
         check("script is ASCII only", all(b < 128 for b in bytearray(src)))
 
+        # rows of measurement v1 (before 2026-09-28) must never be current: the signature of the same inputs
+        # computed the v1 way must differ from today's. (The lxplus log of the 09-28 v1 run printed v1_log;
+        # while the branch lists are unchanged the v1 recomputation equals it, which is printed as a note.)
+        spec = importlib.util.spec_from_file_location("size_options_mod", SCRIPT)
+        so = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(so)
+        v1_log = ["28d75c077e12", "261a9d8be076", "e4c4e53fe381", "535e676b18b8"]   # 2024 MC/Data, 2018UL MC/Data
+        v1, v2 = [], []
+        for _e, _t, cpath, _r in so.CONFIGS:
+            bf = so.load_config(cpath)[0]["branch_file"]
+            with open(os.path.join(REPO, bf), "rb") as f:
+                h = hashlib.md5(f.read())
+            h.update(("|".join(e for _, e in so.SKIMS) + "|n=%d" % 10000).encode("ascii"))
+            v1.append(h.hexdigest()[:12])
+            v2.append(so.signature(bf, 10000))
+        check("row signatures carry the measurement version: none equals the v1 signature of the same inputs",
+              len(v2) == 4 and not set(v1) & set(v2), (v1, v2))
+        print("      note: v1 signatures of these inputs %s the 09-28 lxplus log" % ("equal" if v1 == v1_log else "differ from"))
+
         rc, out = run("--dry-run")
         lines = [l for l in out.splitlines() if re.search(r"\s/store/(mc|data)/run[23]/", l)]
         check("dry-run exits 0", rc == 0, (rc, out[-400:]))
@@ -224,9 +278,13 @@ def main():
               len(lines) == 34 and all(l.endswith("/b_file.root") for l in lines), lines[:2])
         check("dry-run writes no TSV", not os.path.exists(tsv))
 
-        rc, out = run()
+        rc, out = run(env={"MOCK_IMPORT_LOG": imports})
         t1 = total(out)
         check("full run exits 0", rc == 0, (rc, out[-600:]))
+        with open(imports) as f:
+            imp = f.read().splitlines()
+        check("ROOT is imported only by child processes, one per measured sample (34)",
+              len(imp) == 34 and all(" --child " in l + " " for l in imp), imp[:3])
         check("full run: 34 TSV rows", nrows() == 34, nrows())
         check("full run: no FAILED / PARTIAL", "FAILED" not in out and "PARTIAL" not in out, out[-400:])
         check("full run prints TOTAL", t1 is not None)
@@ -298,12 +356,66 @@ def main():
               rc == 1 and "TTreeFormula rejected" in out and nrows() == 34 and os.listdir(work) == [],
               (rc, nrows(), os.listdir(work), out[-300:]))
 
-        rc, out = run("--fresh", "--only", "2024:MC:WW")
-        check("--fresh re-measures and appends one row", rc == 0 and nrows() == 35, (rc, nrows()))
+        rc, out = run("--fresh", "--only", "2024:MC:WW", env={"MOCK_READERR": "_WW_Tune"})
+        check("a ROOT read error during the AAA copy: FAILED, exit 1, no new row, errors still shown, no scratch file",
+              rc == 1 and "ROOT read error" in out and "Error in <TBranch::GetBasket>" in out and nrows() == 34
+              and os.listdir(work) == [], (rc, nrows(), os.listdir(work), out[-300:]))
+
+        rc, out = run("--fresh", "--only", "2024:MC:WW", "--only", "2024:MC:ZZ", env={"MOCK_SEGV": "_WW_Tune"})
+        check("a crash of one sample's child: that sample FAILED (its last ROOT lines shown), the next one measured",
+              rc == 1 and re.search(r"WW +FAILED: child ended with exit -?\d+ and no result", out) is not None
+              and "written just before the crash" in out and nrows() == 35 and os.listdir(work) == [],
+              (rc, nrows(), os.listdir(work), out[-400:]))
+
+        rc, out = run("--fresh", "--only", "2024:MC:WW", "--child-timeout", "2", env={"MOCK_HANG": "_WW_Tune"})
+        check("a child that hangs is killed after --child-timeout: FAILED, exit 1, no row, no scratch file",
+              rc == 1 and "no result after 2 s" in out and nrows() == 35 and os.listdir(work) == [],
+              (rc, nrows(), os.listdir(work), out[-300:]))
+
+        rc, out = run("--fresh", "--only", "2024:MC:WW", env={"MOCK_SKIMERR": "1"})
+        check("a ROOT error while the skims are copied: FAILED, exit 1, no row, no scratch file",
+              rc == 1 and "during the skim copies" in out and nrows() == 35 and os.listdir(work) == [],
+              (rc, nrows(), os.listdir(work), out[-300:]))
+
+        rc, out = run("--fresh", "--only", "2024:MC:WW", env={"MOCK_WRITEERR": "1"})
+        check("an output file ROOT could not write (kWriteError, e.g. disk full): FAILED, no row",
+              rc == 1 and "write error on" in out and nrows() == 35 and os.listdir(work) == [],
+              (rc, nrows(), os.listdir(work), out[-300:]))
+
+        rc, out = run("--fresh", "--only", "2024:MC:WW", env={"MOCK_FLOOD": "_WW_Tune"})
+        check("a flood of 100000 ROOT error lines: counted in the FAILED line, echo cut to head and tail",
+              rc == 1 and "100000 ROOT read error(s)" in out and "captured lines not shown" in out
+              and len(out) < 200000 and nrows() == 35, (rc, nrows(), len(out), out[-300:]))
+
+        with open(os.path.join(work, "2024_MC_WW_result.json"), "w") as f:
+            f.write('{"ok": {"stale": 1}}')
+        with open(os.path.join(work, "2024_MC_WW_stderr.txt"), "w") as f:
+            f.write("STALE capture of an earlier attempt\n")
+        rc, out = run("--fresh", "--only", "2024:MC:WW", env={"MOCK_SEGV": "_WW_Tune"})
+        check("files of an earlier attempt in the workdir are not taken for this one (crash -> FAILED, no row)",
+              rc == 1 and "child ended with exit" in out and "STALE" not in out and nrows() == 35
+              and os.listdir(work) == [], (rc, nrows(), os.listdir(work), out[-300:]))
+
+        rc, out = run("--fresh", "--only", "2024:MC:WW", "--min-free-mb", "1000000000")
+        check("not enough free space in the scratch dir: FAILED before the child starts, no row",
+              rc == 1 and "MB free in" in out and nrows() == 35, (rc, nrows(), out[-300:]))
+
+        rc, out = run("--fresh", "--only", "2024:MC:WW", env={"MOCK_IMPORTFAIL": "1"})
+        check("PyROOT import failing in the child: FATAL with the real reason, exit 4, no row",
+              rc == 4 and "FATAL: PyROOT import failed in the child (ImportError: mock: libCore.so" in out and nrows() == 35,
+              (rc, nrows(), out[-300:]))
+
+        rc, out = run("--child-timeout", "0")
+        check("--child-timeout 0 exits 2", rc == 2, rc)
+
+        rc, out = run("--fresh", "--only", "2024:MC:WW", env={"MOCK_WARNLINE": "1"})
+        check("--fresh re-measures and appends one row (a ROOT Warning line does not fail it)",
+              rc == 0 and nrows() == 36 and "Warning in <TClass::Init>" in out and "FAILED" not in out,
+              (rc, nrows(), out[-300:]))
         check("... and the projection is unchanged (same mock numbers)", total(out) == t1, (total(out), t1))
 
         rc, out = run("-n", "5000", "--only", "2024:MC:WW")
-        check("-n 5000 is a new signature: measured again, projection PARTIAL", rc == 1 and nrows() == 36
+        check("-n 5000 is a new signature: measured again, projection PARTIAL", rc == 1 and nrows() == 37
               and "PARTIAL" in out, (rc, nrows()))
 
         with open(tsv, "a") as f:

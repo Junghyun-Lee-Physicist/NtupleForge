@@ -4,7 +4,7 @@
 > **증거 파일이 어디 있는지**. 결과의 해석은 각 문서에 있고, 여기는 색인이다(한 사실은 한 곳에: 숫자는 증거 파일과
 > 그 문서를 가리키고 다시 적지 않는 것이 원칙이지만, 표를 읽을 수 있을 만큼의 요약값은 적는다).
 > **대상 독자**: "그거 검증됐나?" 를 묻는 사람. 답은 표의 한 행이어야 한다.
-> **상태**: 2026-09-16 작성, 09-17 V21–V26 추가, 09-18 배치 3 의 V27–V33 추가(09-19 등재), 09-19 V34, 09-22 배치 4 의 V35–V37, 09-23~24 배치 6 의 V38–V44. 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
+> **상태**: 2026-09-16 작성, 09-17 V21–V26 추가, 09-18 배치 3 의 V27–V33 추가(09-19 등재), 09-19 V34, 09-22 배치 4 의 V35–V37, 09-23~24 배치 6 의 V38–V44, 09-28 의 V45(2018 patch ↔ 중앙 v15)·V46(`size_options.py` v2 mock). 그 이전 행은 기존 문서에서 옮겨 적었고(출처 열), 이날부터는 `script/runlog.sh` 가 남기는
 > `script/runlogs/LEDGER.tsv` 의 실행이 이 표의 원자료다. **새 검증을 하면 행을 추가한다.**
 > **관련**: [`08_branch_schema_migration.md`](08_branch_schema_migration.md) (절차·결과), [`09_v15_migration_log.md`](09_v15_migration_log.md) (시간순 로그),
 > `script/runlogs/README.md` (실행 기록 규약).
@@ -18,6 +18,7 @@
   닫혔다(V21–V25). ~~2018A 에서 `…_2p94`/`…_1p59` 가 메뉴에 들어온 run(bracket)~~ 은 09-18·19 에 닫혔다(2018A 전체에 없음, 진입 run 317509: V27–V28, V34).
   ~~로컬 NanoAODTools 실행에서의 branch 목록 동작~~ 은 09-23 에 v15 hadronic 네 목록 모두 닫혔다(V40). ~~CRAB job 출력에서의 branch 목록 동작~~ 은
   09-24 에 2024 파일럿 두 task(158 파일, event 합계 = DAS)로 닫혔다(V43). 2018UL 목록의 CRAB 출력은 전체 생산 첫 파일에서 본다.
+  ~~2018 tt+nb patch 가 v15 ntuple 에 맞는가~~ 는 09-28 에 6 샘플 전량으로 닫혔다(V45).
 - 읽는 법: **결과 열이 "통과" 라도 규모 열을 같이 본다.** 한 파일·한 샘플 측정은 그렇게 적혀 있다.
 
 ## 1. 원장
@@ -68,6 +69,8 @@
 | V42 | 2026-09-23 | `crab/submit_crab.py` 수정본(exit code, stale project dir, `--kill`, preflight 의 stale FAIL) | mock CRABAPI 로 17 checks, 오프라인 | 새 코드 17/17 PASS(AI 세션과 맥 두 곳), 옛 코드 13 FAIL | `script/test_submit_crab_mock.py` (재현 명령 그 자체) | [05](05_troubleshooting.md) A22, 02_CHANGELOG 09-23 |
 | V43 | 2026-09-24 | 2024 파일럿 CRAB 출력(`ZZ` 76 job, `JetMET0_Run2024H` 82 job)의 완결성과 스키마 | 158 파일 전부를 KNU `/pnfs` 에서 직접(ROOT 6.30/09), job 상태 스냅샷 3 번 | fail 0, 158/158 done; event 합계 = DAS(4,800,000 / 55,794,457), 열리지 않는 파일 0; MC: HLT_ 323 = 로컬 점검, non-HLT 351(LHE 계열 0, 로컬보다 29 적음), gen 세 열 y; Data: non-HLT 323 = 로컬, HLT_ 323(2024C 의 315 보다 8 많음), gen n | `script/runlogs/crab_report_pilot{MC,Data}_2026092*_*.txt` (6); KNU 점검 출력 전문은 09 21 절(재현 명령 RUNBOOK §10 [7]) | 09 21 절 |
 | V44 | 2026-09-24 | v15 hadronic 목록의 CRAB 실제 출력 크기 per event | 파일럿 158 파일, 48.6 GB | MC `ZZ` 1.056 kB/event(LHE 없음 → MC 하한), Data `JetMET0` 2024H 0.780 kB/event → 전체 생산 추정 12.1~17.4 TB(MC 상한은 8b 의 1.948) | 09 21 절(KNU 점검 출력) | 09 21 절, RUNBOOK §10 [7b] |
+| V45 | 2026-09-28 | 2018 tt+nb patch ↔ 중앙 NanoAODv15 (계획 12 V1, 판정 X1~X3; TTHH O8) | 6 샘플 전량 972,574,595 event, nano 1,202 파일 / condor 63 job | `OVERALL: ALL SAMPLES PASS`: 6 샘플 모두 nano total == v15 DAS, unmatched 0, disagree 0, 불변식 0. extend == v15 인 넷은 `nAddBJets>=3` 이 patch 행 수와 같고 61/62/71/72 분해도 같다(TTToHadronic 36,835, TTTo2L2Nu 11,790, ttbb_SemiLeptonic 37,420, ttbb_2L2Nu 15,766); v15 가 적은 둘은 기대값대로(TTToSemiLeptonic 43,090 vs 43,086, ttbb_Hadronic 32,660 vs 32,649). 첫 제출(cluster 13488511)은 lxplus binary 를 다시 빌드하지 않아 `TTToHadronic` 19/21 chunk 가 exit 4(드러난 실패), 재빌드 뒤 19 개 재제출(13489070) 63/63 ok | `script/runlogs/run_v1_aggregate_20260928_083134.log`, `run_v1_submit_20260927_174937.log` | TTHH `docs/06_validation_results.md` 끝 절, 12 V1 |
+| V46 | 2026-09-28 | `script/size_options.py` measurement v2: 샘플마다 child process, ROOT 오류 줄이면 FAILED, 충돌·timeout 은 그 샘플만, v1 행은 signature 가 달라 쓰지 않음 | mock ROOT + 가짜 dasgoclient, 오프라인 46 checks + 별도 검토 agent 의 실험(4 MiB tmpfs, 남은 결과 파일, 200 MB 오류 홍수) | AI 세션에서 46/46 PASS; 검토에서 나온 결함 넷은 고친 뒤 다시 확인; v1 script 는 새 읽기 오류 검사에서 FAIL(행 기록, exit 0). v1 signature 네 개를 다시 계산해 09-28 lxplus 로그의 값과 같음을 확인 | 재현: `python3 script/test_size_options_mock.py` (lxplus 에서 RUNBOOK §11 2 의 첫 명령으로 한 번 더) | 02_CHANGELOG 2026-09-28 |
 
 TTHHGenCategoryTools(expanded ttbar id, D17 enriched NanoAOD) 의 Gate 1–5 는 그 저장소의 `docs/06_validation_results.md` 가 원장이다. 여기에는 옮기지 않는다.
 

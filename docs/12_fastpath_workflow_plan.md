@@ -4,7 +4,7 @@
 > NtupleForge 가 "slimmed NanoAOD 생산 / MiniAOD 에서 tt+nb 사전 만들기 / MiniAOD 에서 NanoAOD 유도" 를 한 명령 체계로 하는 모양,
 > 교차 검증 표, 그리고 실수를 일찍 잡기 위한 중간 로그 규약을 한 곳에 적는다.
 > **대상 독자**: 이 계획을 실행하는 사용자(lxplus, KNU, 맥)와 코드를 쓰는 AI 세션.
-> **상태**: 2026-09-27 작성, **PROPOSED**. 방향 두 가지는 사용자 제안(09-27): (1) 검증이 생산을 막지 않는다, analyzer 는 기존 방식의
+> **상태**: 2026-09-27 작성, **PROPOSED**. 09-28 갱신: V1 **DONE**(ALL SAMPLES PASS, 원장 V45); P1 [7c] 의 v1 측정은 쓰지 않고 `size_options.py` v2 로 34 개를 다시 잰다(원장 V46, RUNBOOK §11). 방향 두 가지는 사용자 제안(09-27): (1) 검증이 생산을 막지 않는다, analyzer 는 기존 방식의
 > ntuple(NanoAOD + categorizer 산출물)로 돌리고 MiniAOD 산출물은 병행해 교차 검증한다; (2) NtupleForge 한 도구가 세 역할을 직관적으로 한다.
 > 세부와 순서는 AI 제안이고 §7 의 결정을 받으면 DECIDED 로 옮긴다.
 > **관련**: [11](11_unified_forge_plan.md)(도구 통합 설계, Phase 0~2 와 완료 판정 (i)(ii)), 명령은 워크스페이스 `RUNBOOK_lxplus_2026-09-16.md` §11,
@@ -26,8 +26,9 @@
   **한 번도 빌드되지 않았다**(tempTTHH `docs/STATUS.md` "❌ make 미수행"). 그래서 오늘 KNU 에서 빌드부터 한다(§3 A0).
 - **2024 의 critical path 는 결정이다**: 트리거 집합, b-tagger 와 SF 방식, era 보정. `ttHH/03_run3_plan.md` §2 의 "기억" 행은 twiki 원문
   확인 전에는 코드에 넣지 않는다는 규칙이 있다.
-- **MiniAOD 쪽 교차 검증 하나는 지금 바로 돌릴 수 있다**: 2018 patch 를 중앙 v15 NanoAOD 와 맞추는 condor 캠페인(V1). 필요한 것은
-  TTHHGenCategoryTools 의 filelist era 하나와 기준값 파일 하나였고 이번 변경에 들어 있다.
+- **MiniAOD 쪽 교차 검증 하나(V1)는 09-28 에 끝났다**: 2018 patch 를 중앙 v15 NanoAOD 여섯 샘플 전량과 맞춰 `ALL SAMPLES PASS`.
+  extend 와 v15 의 event 수가 같은 네 샘플은 patch 행 수와 정확히 같고, v15 가 적은 둘은 기대값대로다(TTHH `docs/06` 끝 절, 원장 V45).
+  그래서 S1 의 tt+nb 분할은 이 patch 로 간다.
 - **이번 조사에서 새로 확인한 것 (§6)**: 2018 v15 표준 NanoAOD 는 MiniAOD 보다 `TTbar_SemiLep` 이 18,849,000 event(3.9 %), `TTbb_Hadronic` 이
   103,000 event(1.3 %) 적다. 2017 에서 확인한 "v15 = MiniAOD 100 %" 는 2018 에 그대로 옮길 수 없고, patch coverage 판정의 모집단은 v15 여야 한다.
 
@@ -123,7 +124,7 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 
 | ID | 무엇 | 어디 | 상태 | 끝나면 |
 |---|---|---|---|---|
-| P1 | [7c] 용량 측정(34 샘플, skim 5 안 × branch 목록 4 안) | lxplus 컨테이너 | READY (맥 커밋 뒤) | P2 |
+| P1 | [7c] 용량 측정(34 샘플, skim 5 안 × branch 목록 4 안) | lxplus 컨테이너 | **다시** (09-28 v1 은 2018 의 7/11 에서 segfault, 한 행은 읽기 오류와 함께 기록; v2 로 34 개 전부, RUNBOOK §11) | P2 |
 | P2 | config 마다 (branch 목록, event 선택) 선택. 합계는 한도 안에서 1 TB 이상 여유(enriched 는 Run 2 네 era-half 전체로 약 0.47 TB 추정, analyzer 산출물, 파일럿 48.6 GB) | 사용자 | DECIDE | P3, P4 |
 | P3 | **2018UL 제출** (skim 없음이 가능할 때): 고른 목록을 `branches/` 로 → `check_branchlist.py` → 로컬 500 event 점검 2 → preflight 2 → [8] 두 config | lxplus | P2 뒤 READY | S1 |
 | P4 | skim + audit 코드(§2.3), `submit_crab.py` 의 `recipe`/`skim`/`audit`, mock test | AI | CODE (P2 뒤 바로) | P5 |
@@ -147,7 +148,7 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 
 | ID | 무엇 | 상태 | 막고 있는 것 |
 |---|---|---|---|
-| S1 | 2018 prescan → `consolidate_prescan.py` → stitch factor (tt+nb 분할은 V1 을 통과한 patch 로) | WAITS | P3, A0~A2, V1 |
+| S1 | 2018 prescan → `consolidate_prescan.py` → stitch factor (tt+nb 분할은 V1 을 통과한 patch 로) | WAITS | P3, A0~A2 (V1 은 끝) |
 | S2 | `btagtrig` 2018 → merge → TriggerStudy → `trigger_sf` (기준 트리거 `HLT_IsoMu24`, D-2026-09-18 의 기록: AN2019_094 는 `IsoMu27` 기준) | WAITS | S1, A3, 기준 트리거 결정 |
 | S3 | bTagSF RW 2018 (FH region) → `btagNormReweight` JSON | WAITS | S2 |
 | S4 | `main` 2018 (SF on) → merge → plotter → **첫 2018 stack plot**. 신호와 `TT4b` 는 V5 뒤에 추가, 그 전 stitching 은 §7 결정 3 | WAITS | S3 |
@@ -157,14 +158,15 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 
 | ID | 무엇 | 어디 | 상태 | 풀어 주는 것 |
 |---|---|---|---|---|
-| V1 | 2018 patch ↔ 중앙 v15 NanoAOD: `matchTtbarIdSorted` 캠페인 6 샘플 63 job(`tt4b` 는 중앙 v15 없음), 판정 X1~X3 | lxplus 호스트 (CERN condor) | **READY** (TTHH 커밋 뒤) | S1 의 tt+nb 분할, S3 의 tt+nb group |
+| V1 | 2018 patch ↔ 중앙 v15 NanoAOD: `matchTtbarIdSorted` 캠페인 6 샘플 63 job(`tt4b` 는 중앙 v15 없음), 판정 X1~X3 | lxplus 호스트 (CERN condor) | **DONE 09-28** (ALL PASS, 원장 V45) | S1 의 tt+nb 분할, S3 의 tt+nb group |
 | V2 | 생산 중 closure C1~C3 | CRAB job | P4 에 포함 | P7 의 신뢰 |
-| V3 | analyzer 실행 시 조회 점검(X4) + `tools/check_ttnb_coverage.py`(v15 기대값은 V1 에서) | KNU | S1 과 함께 | S1~S4 |
+| V3 | analyzer 실행 시 조회 점검(X4) + `tools/check_ttnb_coverage.py`(v15 기대값: V1 결과, TTHH `docs/06` 끝 절의 `nAddBJets≥3`) | KNU | S1 과 함께 | S1~S4 |
 | V4 | CPV 증인: 2018 v15 ttbar 샘플 몇 파일에 `topCPVCategorizer` + `genTtbarId` 교차표(X8~X10) | lxplus 컨테이너 | CODE (비교 스크립트) | 해석 (plot 을 막지 않음) |
 | V5 | Phase 0 enriched 2018: `TT4b` → `TTHHto4b` → 나머지 셋. X11·X12 | lxplus (CRAB cmsrun) | CODE + 승인 | S4 의 신호와 `TT4b` |
 | V6 | 2024 sidecar(15_0_X, TTHH O5) → patch → 중앙 2024 v15 와 매칭 | lxplus | CODE | S5 의 tt+nb 분할 |
 
 **오늘 병렬로 시작할 수 있는 것**: 맥 커밋 → (lxplus) P1, (lxplus 호스트) V1, (KNU) A0. AI 는 그동안 A1·A2 코드를 쓰고, P1 결과가 오면 P2 정리와 P4.
+**09-28 기준**: V1 끝. (lxplus) P1 을 v2 로 다시, (맥) 2018 patch 를 tempTTHH 로 복사, (KNU) A0.
 
 ## 4. 교차 검증 표
 
@@ -279,6 +281,11 @@ analyzer 와 TTHH 도구는 이미 같은 수준의 요약을 낸다: `ExpandedT
 
 - **무증상 오답**: tempTTHH P0 7 건이 전부 "크래시 없이 틀린 숫자" 였다(tempTTHH STATUS OPEN 6). 대응은 closure(§4, §5)와 FATAL.
 - **AAA 불안정**: TTHH T-24(파일 open timeout, 한 dataset 에 job 이 몰릴 때). V1 은 재시도가 읽기 경로에 있는 `matchTtbarIdSorted` 를 쓴다.
+  09-28 [7c]: 사이트 throttle(`[3005] I/O limit exceeded`)에서 ROOT 는 `CopyTree` 를 멈추지 않고, TBranch 는 한 process 에서 오류를 10 번까지만
+  알린다. 그래서 측정 도구는 샘플마다 child process 를 쓰고 ROOT 오류 줄 하나로 그 샘플을 FAILED 로 한다(원장 V46). 생산 job 쪽의 같은 위험은
+  closure C1~C3(§4, §5) 가 잡는다.
+- **lxplus9 의 tmux**: 그냥 `tmux new` 로 만든 세션은 logout 때 죽는다. 오래 도는 것은 `systemctl --user start tmux.service` 뒤 `tmux a`
+  (CERN KB0008111; RUNBOOK §11).
 - **CRAB task 당 10,000 job**: 2024 최대 dataset 2,532 files(원장 V38), 2018UL 589 files(V39). units_per_job 1 에서 안전.
 - **용량**: P8 이 dataset 별 크기를 기록하고 합계를 한도와 비교한다.
 - **AI 가 외부 도구 동작을 짐작하는 것**(AI_LIMITS 실패 7): 이 문서의 NanoAODTools·haddnano·GenTtbarCategorizer 서술은 CMSSW 14_2_X 소스를,

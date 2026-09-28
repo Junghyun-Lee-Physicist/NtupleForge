@@ -9,6 +9,53 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-28: the 2018 patches pass against central NanoAODv15 (V1); size_options.py measurement v2
+
+### Fixed
+- `script/size_options.py` (measurement v2). The [7c] run of 09-28 on lxplus996 showed two faults of v1. (a) A read error passed
+  silently: the site serving the 2018UL `QCD_HT500to700` file throttled the reads (`Error in <TNetXNGFile::ReadBuffer>: ... [3005] I/O
+  limit exceeded and wait time hit`, then `Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_.../073cc70c-....root
+  at byte:..., entry:2759`, ten of each, 2,373 s instead of about 100 s), `TTree::CopyTree` went on with stale buffers and the row was
+  recorded; TBranch then stops reporting (`file probably overwritten: stopping reporting error messages`, a limit of 10 per process).
+  (b) After `QCD_HT700to1000` the process died of a segmentation violation in `CPyCppyy::op_dealloc` at a function return (runlog
+  `EXIT : 129` = 128 + ROOT's `kSigSegmentationViolation`), so the four remaining 2018 samples were not measured. Now:
+  every sample runs in a child process of its own (`--child`, internal; `--child-timeout`, default 3600 s), with the C-level stderr
+  (fd 2) of every ROOT call captured and the error level set to kWarning in the child (not left to `.rootrc`); any `Error in <` /
+  `SysError in <` / `Fatal in <` line makes the sample FAILED (no row, exit 1), the captured lines are still printed (first and last 40
+  when ROOT floods; memory stays bounded), and a crash or a timeout of the child fails only that sample. An output file with TFile
+  `kWriteError` (a full disk) and a scratch dir with less than `--min-free-mb` (default 500) free also fail the sample; leftovers of an
+  earlier attempt are removed before a child starts and a result counts only with exit 0. The child keeps every ROOT object
+  referenced and leaves with `os._exit`, so no PyROOT dealloc runs; the parent does not import ROOT. The measurement version is part
+  of the row signature, so all v1 rows (2024 ttbar three of 09-27, 2018UL seven of 09-28, and whatever the second v1 command of 09-28 added
+  before it was stopped) stay in the TSV as history and are not used:
+  the next plain run measures all 34 samples once, resumable as before. The v1 signatures printed in the lxplus log (`28d75c077e12`,
+  `261a9d8be076`, `e4c4e53fe381`, `535e676b18b8`) were recomputed from today's inputs and are equal, so exactly those rows drop out.
+- `script/test_size_options_mock.py`: 46 checks (was 34). New: no current signature equals the v1 signature of the same inputs (and a
+  note whether the v1 recomputation still equals the 09-28 lxplus log), ROOT imported only by child processes (34 in the
+  full run), a read error in the AAA copy and one in the skim copies (FAILED, no row, errors still shown, no scratch file), a crashing
+  child (that sample FAILED with its last ROOT lines shown, the next sample measured), a hanging child killed by `--child-timeout`,
+  a write error, a flood of 100,000 error lines (counted, echo cut), leftovers of an earlier attempt, too little free space, PyROOT
+  failing to import in the child (exit 4 with the real reason), `--child-timeout 0` (exit 2), and a ROOT `Warning` line that must not
+  fail a sample. The v1 script with the new read-error check fails it (row recorded, exit 0), as it should. An independent review
+  pass (a second AI agent with its own experiments: a 4 MiB tmpfs as scratch dir, a stale result file, a 200 MB error flood) found
+  four faults in the first v2 draft, all fixed and re-checked: the full disk now gives `FAILED: write error on ... (disk full?)` or
+  `only 4 MB free`, no row.
+
+### Validated (ledger V45)
+- 2018 tt+nb patches vs central NanoAODv15 (plan `docs/12` V1, TTHH O8): 6 samples, 972,574,595 events, 63 condor jobs. First run
+  (cluster 13488511, 09-27) with the lxplus binary not rebuilt: 19 of 21 `TTToHadronic` chunks exit 4 (nano read failure, no retry in
+  the old binary; loud, not silent). After the rebuild the 19 were resubmitted (cluster 13489070): 63/63 ok, and the aggregation says
+  `OVERALL: ALL SAMPLES PASS` (`script/runlogs/run_v1_aggregate_20260928_083134.log`): nano total == v15 DAS, unmatched 0, disagree 0,
+  invariants 0 for every sample. The four samples with extend == v15 give exactly the patch row counts and the same 61/62/71/72 split
+  as the patch table (TTToHadronic 36,835, TTTo2L2Nu 11,790, ttbb_SemiLeptonic 37,420, ttbb_2L2Nu 15,766); the two with fewer v15 events
+  give TTToSemiLeptonic 43,090 (expected 43,086) and ttbb_Hadronic 32,660 (expected 32,649). The patches serve the v15 ntuples,
+  including `ttnb_TTbar_SemiLep.root`, on hold since the v9 FAIL of 07-28. Numbers: TTHHGenCategoryTools `docs/06_validation_results.md`.
+
+### Found
+- On lxplus9 a session started with plain `tmux new` is killed at logout; a session that survives logout is started with
+  `systemctl --user start tmux.service` and entered with `tmux a` (CERN KB0008111, as quoted by the HSF training page "Persistent
+  screen or tmux session on lxplus"). Workspace RUNBOOK 11 used plain `tmux` until 09-28 and now uses the service.
+
 ## [Unreleased], 2026-09-27: execution plan for the 2018 / 2024 stack plots, one forge with three recipes (docs only)
 
 ### Added

@@ -69,6 +69,25 @@ Calibration. ZZ and JetMET0_Run2024H went through the real CRAB pilot
 whole dataset, file headers and the Runs/LuminosityBlocks/MetaData trees
 included. The script prints its own number for those two next to them.
 
+Read errors and child processes (2026-09-28, measurement v2). ROOT does not
+stop a CopyTree when a basket cannot be read over AAA ("Error in
+<TBranch::GetBasket>", e.g. "[3005] I/O limit exceeded" from a throttled
+site); the copy goes on with stale buffers, silently, and TBranch reports at
+most 10 such errors per process. The v1 run of 09-28 hit both and then died of
+a segmentation violation in a PyROOT dealloc. So now every sample is measured
+in a child process of its own (--child, internal), with the C-level stderr of
+every ROOT call captured (error level set to kWarning in the child, whatever
+.rootrc says): any "Error in <", "SysError in <" or "Fatal in <" line makes
+the sample FAILED (printed, not written to the TSV, exit 1), and the captured
+lines are printed afterwards (first and last 40 of them if ROOT floods). An
+output file ROOT could not write (TFile kWriteError) and a scratch dir with less
+than --min-free-mb (default 500) free fail the sample too; a crash or
+--child-timeout (default 3600 s) of the child fails only that sample. Run the
+same command again to retry the failed ones, or add --redirector
+root://xrootd-cms.infn.it/. The measurement version is part of the row
+signature, so rows of v1 are not used (they stay in the TSV as history) and
+the next run measures every sample once.
+
 Known bias. A skim copy of few events holds one basket (~150 B) per branch
 that a production file spreads over many more events, so a low-pass skim is
 overstated by at most n_branches x 150 B / n per input event (printed as
@@ -86,12 +105,16 @@ Exit: 0 ok | 1 a sample failed, or a dataset could not be projected |
       2 bad arguments | 4 PyROOT missing
 """
 import argparse
+import collections
 import csv
 import fnmatch
 import hashlib
+import importlib.util
+import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -105,6 +128,10 @@ DEFAULT_TSV = "script/runlogs/size_options_meas.tsv"
 DEFAULT_BR_TSV = "script/runlogs/size_options_branches.tsv"
 SLIM_TIERS = ("slimA", "slimB", "slimC")
 ERAS = ("2024", "2018UL")
+MEASURE_VERSION = 2   # part of every row signature; 2 = child process per sample + read-error rule (2026-09-28)
+CHILD_TIMEOUT_S = 3600
+MIN_FREE_MB = 500      # a sample's scratch copies are a few 10 MB; a full disk would truncate them
+CAPTURE_SHOWN = 40     # captured ROOT lines echoed at the head and at the tail (a flood is cut in the middle)
 
 CONFIGS = [   # (era, tier, crabConfig, review table with DAS nevents / nfiles)
     ("2024", "MC", "crabConfig/config_ttHH2024_v15_had_MC.yaml",
@@ -294,6 +321,8 @@ def signature(branch_file, n):
     with open(os.path.join(REPO, branch_file), "rb") as f:
         h.update(f.read())
     h.update(("|".join(e for _, e in SKIMS) + "|n=%d" % n).encode("ascii"))
+    if MEASURE_VERSION > 1:   # v1 rows keep their old signature, so they are simply not current any more
+        h.update(("|measure=v%d" % MEASURE_VERSION).encode("ascii"))
     return h.hexdigest()[:12]
 
 
@@ -339,11 +368,120 @@ def leaf_count(branch):
     return lc.GetName() if lc else ""
 
 
+ROOT_ERROR_PREFIXES = ("Error in <", "SysError in <", "Fatal in <")
+
+
+def scan_capture(fh):
+    """Stream a capture file: (n lines, n ROOT error lines, first error line, head lines, tail lines).
+    Memory stays bounded however many lines ROOT wrote (only TBranch::GetBasket stops at 10)."""
+    n = n_err = 0
+    first = ""
+    head, tail = [], collections.deque(maxlen=CAPTURE_SHOWN)
+    for raw in fh:
+        line = raw.decode("utf-8", "replace").rstrip("\n")
+        n += 1
+        for part in line.split("\r"):   # a progress line ending in \r may carry an error after it
+            if part.startswith(ROOT_ERROR_PREFIXES):
+                n_err += 1
+                if not first:
+                    first = part
+        if len(head) < CAPTURE_SHOWN:
+            head.append(line)
+        else:
+            tail.append(line)
+    return n, n_err, first, head, list(tail)
+
+
+def echo_capture(scan):
+    n, _, _, head, tail = scan
+    if not n:
+        return
+    lines = head + ([] if n <= len(head) + len(tail) else
+                    ["... (%d captured lines not shown) ..." % (n - len(head) - len(tail))]) + tail
+    sys.stderr.write("\n".join(lines) + "\n")
+    sys.stderr.flush()
+
+
+class CapturedStderr(object):
+    """Capture the C-level stderr (fd 2) of a block.
+
+    ROOT's default error handler writes 'Error in <...>' with fprintf(stderr),
+    which Python cannot see; redirecting fd 2 to a file can. On exit the file is
+    scanned (n_errors, first_error) and echoed to the real stderr, the first and
+    last CAPTURE_SHOWN lines of it, so it still reaches the terminal and the
+    runlog. The file is a named one so that, if the process dies inside the
+    block, the parent can still print what ROOT wrote (run_child).
+    """
+
+    def __init__(self, path):
+        self.path = path
+        self.n_errors, self.first_error = 0, ""
+
+    def __enter__(self):
+        sys.stdout.flush()
+        sys.stderr.flush()
+        self.tmp = open(self.path, "w+b")
+        self.saved = os.dup(2)
+        os.dup2(self.tmp.fileno(), 2)
+        return self
+
+    def __exit__(self, *exc):
+        try:
+            sys.stderr.flush()
+        except Exception:
+            pass
+        os.dup2(self.saved, 2)
+        os.close(self.saved)
+        self.tmp.seek(0)
+        scan = scan_capture(self.tmp)
+        self.tmp.close()
+        os.remove(self.path)
+        self.n_errors, self.first_error = scan[1], scan[2]
+        echo_capture(scan)
+        return False
+
+
+def refuse_on_root_errors(cap, what):
+    if cap.n_errors:
+        raise RuntimeError("%d ROOT read error(s) during %s, sample not recorded (first: %s)"
+                           % (cap.n_errors, what, cap.first_error.strip()[:160]))
+
+
+def closed_ok(ROOT, tfile, path):
+    """Close an output file and refuse it if ROOT could not write it (e.g. a full disk:
+    ROOT then prints one SysError, which a full disk may swallow too, and goes on)."""
+    tfile.Close()
+    if tfile.TestBit(getattr(ROOT.TFile, "kWriteError", 1 << 14)):   # TFile::EStatusBits kWriteError = BIT(14)
+        raise RuntimeError("write error on %s (disk full?)" % path)
+    return os.path.getsize(path)
+
+
+# The child never lets PyROOT delete anything: every ROOT object it makes stays
+# referenced here and the child leaves with os._exit. (09-28: the v1 run died
+# with a segmentation violation in CPyCppyy::op_dealloc when a function
+# returned, a Python proxy deleting its C++ object; that object was already
+# gone, either deleted by ROOT with its file or damaged after the read errors.)
+KEEP = []
+
+
 def measure(ROOT, url, rules, nmax, skims, workdir, tag, breakdown):
+    err = os.path.join(workdir, tag + "_stderr.txt")
+    with CapturedStderr(err) as cap:
+        res = measure_remote(ROOT, url, rules, nmax, workdir, tag, breakdown)
+    refuse_on_root_errors(cap, "the AAA read")
+    with CapturedStderr(err) as cap:
+        measure_skims(ROOT, res, skims, workdir, tag)
+    refuse_on_root_errors(cap, "the skim copies")
+    return res
+
+
+def measure_remote(ROOT, url, rules, nmax, workdir, tag, breakdown):
     f = ROOT.TFile.Open(url)
+    KEEP.append(f)
     if not f or f.IsZombie():
         raise RuntimeError("cannot open " + url)
     t = f.Get("Events")
+    KEEP.append(t)
     if not t:
         raise RuntimeError("no Events tree in " + url)
     res = {"n_file": int(t.GetEntries()), "comp": int(f.GetCompressionSettings()),
@@ -372,45 +510,159 @@ def measure(ROOT, url, rules, nmax, skims, workdir, tag, breakdown):
 
     base_path = os.path.join(workdir, tag + "_base.root")
     out = ROOT.TFile(base_path, "RECREATE", "", LZMA9)
+    KEEP.append(out)
     out.cd()
     tb = t.CopyTree("", "", res["n_in"])
+    KEEP.append(tb)
     if not tb:
         raise RuntimeError("CopyTree gave nothing for " + url)
     tb.Write()
     for b in tb.GetListOfBranches():
         res["br"].setdefault(b.GetName(), {"count": "", "meta": 0})["base"] = int(b.GetZipBytes())
-    out.Close()
+    res["base_bytes"] = closed_ok(ROOT, out, base_path)
     f.Close()
-    res["base_bytes"] = os.path.getsize(base_path)
+    res["base_path"] = base_path
+    return res
 
+
+def measure_skims(ROOT, res, skims, workdir, tag):
+    base_path = res.pop("base_path")
     fb = ROOT.TFile.Open(base_path)
+    KEEP.append(fb)
     tbb = fb.Get("Events")
+    KEEP.append(tbb)
     p = os.path.join(workdir, tag + "_empty.root")
     e = ROOT.TFile(p, "RECREATE", "", LZMA9)
+    KEEP.append(e)
     e.cd()
     te = tbb.CloneTree(0)
+    KEEP.append(te)
     te.Write()
-    e.Close()
-    res["empty_bytes"] = os.path.getsize(p)
+    res["empty_bytes"] = closed_ok(ROOT, e, p)
     os.remove(p)
     res["jet_ptmin"] = float(tbb.GetMinimum("Jet_pt"))   # 0 if no Jet_pt, huge if no jet
     for name, expr in skims:
         p = os.path.join(workdir, tag + "_" + name + ".root")
         o = ROOT.TFile(p, "RECREATE", "", LZMA9)
+        KEEP.append(o)
         o.cd()
         tk = tbb.CopyTree(expr)
+        KEEP.append(tk)
         if not tk:
             raise RuntimeError("skim %s: TTreeFormula rejected %s" % (name, expr))
         nk = int(tk.GetEntries())
         tk.Write()
         for b in tk.GetListOfBranches():
             res["br"].setdefault(b.GetName(), {"count": "", "meta": 0})[name] = int(b.GetZipBytes())
-        o.Close()
-        res["skims"][name] = (nk, os.path.getsize(p))
+        res["skims"][name] = (nk, closed_ok(ROOT, o, p))
         os.remove(p)
     fb.Close()
     os.remove(base_path)
-    return res
+
+
+def child_main(job_path):
+    """One sample in a process of its own (python3 size_options.py --child JOB.json).
+
+    Why a process per sample: a ROOT crash then ends only that sample, and ROOT's
+    per-process state starts fresh (TBranch::GetBasket reports at most 10 basket
+    read errors per process and is silent after that; the v1 run of 09-28 reached
+    that limit and later died of a segmentation violation). Writes the result as
+    JSON to job["result"] ({"ok": ...}, {"error": ...} or {"fatal": ...}) and leaves
+    with os._exit, so no PyROOT teardown runs.
+    """
+    with open(job_path) as f:
+        job = json.load(f)
+    try:
+        try:
+            import ROOT
+        except Exception as ex:   # ImportError, or anything else PyROOT raises while starting
+            out = {"fatal": "PyROOT import failed in the child (%s: %s); run inside cmssw-el8 after cmsenv"
+                            % (type(ex).__name__, ex)}
+        else:
+            ROOT.gROOT.SetBatch(True)
+            ROOT.gErrorIgnoreLevel = ROOT.kWarning   # not left to .rootrc / rootlogon: every Error line must print
+            if job["threads"] > 1:
+                ROOT.EnableImplicitMT(job["threads"])
+            out = {"ok": measure(ROOT, job["url"], [tuple(r) for r in job["rules"]], job["n"],
+                                 [tuple(k) for k in job["skims"]], job["workdir"], job["tag"], job["breakdown"])}
+    except Exception as ex:   # reported by the parent as FAILED
+        out = {"error": str(ex)}
+        for fn in os.listdir(job["workdir"]):   # free the space first: a full disk must not also eat the result
+            if fn.startswith(job["tag"] + "_") and fn.endswith(".root"):
+                try:
+                    os.remove(os.path.join(job["workdir"], fn))
+                except OSError:
+                    pass
+    code = 0
+    try:
+        with open(job["result"], "w") as f:
+            json.dump(out, f)
+    except Exception as ex:
+        sys.stderr.write("size_options child: could not write %s: %s (measurement said: %s)\n"
+                         % (job["result"], ex, out.get("error") or out.get("fatal") or "ok"))
+        code = 3
+    sys.stdout.flush()
+    sys.stderr.flush()
+    try:   # os._exit does not flush C stdio (ROOT prints some notes with printf)
+        import ctypes
+        ctypes.CDLL(None).fflush(None)
+    except Exception:
+        pass
+    os._exit(code)
+
+
+class ChildFatal(Exception):
+    """The child could not measure anything at all (no PyROOT): stop, exit 4."""
+
+
+def run_child(job, timeout, min_free_mb=MIN_FREE_MB):
+    """Measure one sample in a child process; returns the result dict or raises RuntimeError.
+    The child shares this process's stdout and stderr, so its ROOT lines land in the runlog
+    in order; if it dies inside a capture, what ROOT had written there is printed here."""
+    workdir, tag = job["workdir"], job["tag"]
+    for fn in os.listdir(workdir):   # leftovers of an earlier, interrupted attempt must not be read as this one
+        if fn.startswith(tag + "_"):
+            os.remove(os.path.join(workdir, fn))
+    st = os.statvfs(workdir)
+    free_mb = st.f_bavail * st.f_frsize / 1e6
+    if free_mb < min_free_mb:
+        raise RuntimeError("only %.0f MB free in %s (need %d, --min-free-mb)" % (free_mb, workdir, min_free_mb))
+    base = os.path.join(workdir, tag)
+    job_path, job["result"] = base + "_job.json", base + "_result.json"
+    with open(job_path, "w") as f:
+        json.dump(job, f)
+
+    def print_capture():
+        err = base + "_stderr.txt"
+        if os.path.exists(err):
+            with open(err, "rb") as f:
+                echo_capture(scan_capture(f))
+
+    sys.stdout.flush()
+    sys.stderr.flush()
+    try:
+        rc = subprocess.run([sys.executable, os.path.abspath(__file__), "--child", job_path],
+                            timeout=timeout).returncode
+    except subprocess.TimeoutExpired:
+        print_capture()
+        raise RuntimeError("no result after %d s, child killed (--child-timeout)" % timeout)
+    out = None
+    if rc == 0:
+        try:
+            with open(job["result"]) as f:
+                out = json.load(f)
+        except (IOError, OSError, ValueError):
+            out = None
+    if out is None:
+        print_capture()
+        raise RuntimeError("child ended with exit %d and no result (a crash; its output is above)" % rc)
+    for pth in (job_path, job["result"]):
+        os.remove(pth)
+    if "fatal" in out:
+        raise ChildFatal(out["fatal"])
+    if "error" in out:
+        raise RuntimeError(out["error"])
+    return out["ok"]
 
 
 # ---- TSV persistence ---------------------------------------------------------
@@ -700,9 +952,16 @@ def main():
     ap.add_argument("--threads", type=int, default=4, help="ROOT implicit MT threads (default 4)")
     ap.add_argument("--redirector", default=XRD)
     ap.add_argument("--workdir", default=None, help="scratch dir (default: a new temp dir)")
+    ap.add_argument("--child-timeout", type=int, default=CHILD_TIMEOUT_S,
+                    help="seconds one sample may take before its child is killed (default %d)" % CHILD_TIMEOUT_S)
+    ap.add_argument("--min-free-mb", type=int, default=MIN_FREE_MB,
+                    help="a sample is not started with less free space in the scratch dir (default %d)" % MIN_FREE_MB)
+    ap.add_argument("--child", metavar="JOB_JSON", help=argparse.SUPPRESS)   # internal: one sample
     args = ap.parse_args()
-    if args.n <= 0:
-        print("FATAL: -n must be positive", file=sys.stderr)
+    if args.child:
+        child_main(args.child)   # does not return
+    if args.n <= 0 or args.child_timeout <= 0 or args.min_free_mb < 0:
+        print("FATAL: -n and --child-timeout must be positive, --min-free-mb not negative", file=sys.stderr)
         return 2
 
     cfg = {}
@@ -740,6 +999,8 @@ def main():
     print("# skims: " + " | ".join("%s = %s" % s for s in SKIMS))
     print("# n per sample %d | TSV %s (%d usable rows) | signatures %s" % (
         args.n, args.tsv, len(rows), " ".join("%s:%s=%s" % (e, t, cfg[(e, t)]["sig"]) for e, t, _, _ in CONFIGS)))
+    print("# measurement v%d: one child process per sample; a ROOT error line fails the sample (no row);"
+          " rows of an older version carry another signature and are not used" % MEASURE_VERSION)
 
     def epf(era, tier, key):
         c = cfg[(era, tier)]
@@ -755,17 +1016,9 @@ def main():
 
     fails = 0
     if not args.project_only:
-        ROOT = None
-        if not args.dry_run:
-            try:
-                import ROOT as _R
-            except ImportError:
-                print("FATAL: PyROOT not importable; run inside cmssw-el8 after cmsenv", file=sys.stderr)
-                return 4
-            _R.gROOT.SetBatch(True)
-            if args.threads > 1:
-                _R.EnableImplicitMT(args.threads)
-            ROOT = _R
+        if not args.dry_run and importlib.util.find_spec("ROOT") is None:   # the children import it, not this process
+            print("FATAL: PyROOT not importable; run inside cmssw-el8 after cmsenv", file=sys.stderr)
+            return 4
         workdir = args.workdir or tempfile.mkdtemp(prefix="size_options_")
         if not args.dry_run:
             print("# workdir %s | threads %d" % (workdir, args.threads))
@@ -788,10 +1041,17 @@ def main():
                 if args.dry_run:
                     print("%-6s %-4s %-34s %-11s %8s ev  %s" % (era, tier, key, group_of(tier, key), nev, lfn))
                     continue
-                r = measure(ROOT, args.redirector + lfn, read_rules(c["branch_file"]), args.n, SKIMS,
-                            workdir, tag, (era, tier, key) in BREAKDOWN)
+                r = run_child({"url": args.redirector + lfn, "rules": read_rules(c["branch_file"]), "n": args.n,
+                               "skims": SKIMS, "workdir": workdir, "tag": tag, "threads": args.threads,
+                               "breakdown": (era, tier, key) in BREAKDOWN}, args.child_timeout, args.min_free_mb)
+            except ChildFatal as ex:
+                print("FATAL: %s" % ex, file=sys.stderr)
+                if not args.workdir:
+                    shutil.rmtree(workdir, ignore_errors=True)
+                return 4
             except Exception as ex:   # keep going; the TSV keeps what worked
                 print("%-6s %-4s %-34s FAILED: %s" % (era, tier, key, str(ex)[:200]))
+                sys.stdout.flush()
                 fails += 1
                 for fn in os.listdir(workdir):   # scratch files of this sample
                     if fn.startswith(tag + "_"):
