@@ -2,11 +2,12 @@
 # size_options.sub -- the [7c] measurement (script/size_options.py) as ONE
 # HTCondor job on CERN batch, so closing the laptop or losing ssh does not stop it.
 #
-# Submit on the lxplus EL9 HOST (condor_submit is not inside cmssw-el8), from
-# the NtupleForge directory, with a valid proxy on AFS (full path):
-#   export X509_USER_PROXY=/afs/cern.ch/user/<u>/<user>/.../proxy.cert
-#   mkdir -p ~/condor_size_options
-#   condor_submit script/condor/size_options.sub
+# Submit with the wrapper, which makes a fresh VOMS proxy first (lxplus EL9 HOST;
+# condor_submit is not inside cmssw-el8):
+#   /bin/bash script/condor/submit_size_options.sh
+# By hand, from the NtupleForge directory, with a valid proxy on AFS (full path):
+#   export X509_USER_PROXY=/afs/cern.ch/user/<u>/<user>/private/x509up_ntupleforge
+#   mkdir -p ~/condor_size_options && condor_submit script/condor/size_options.sub
 # Watch: condor_q ; progress: the newest script/runlogs/run_size_options*.log ;
 # job stdout/stderr: ~/condor_size_options/size_options.<cluster>.out / .err
 #

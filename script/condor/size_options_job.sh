@@ -29,7 +29,7 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 arch="$(ls -d "${NF}/../../.SCRAM"/*_amd64_* 2>/dev/null | head -1)"   # the release area's own arch
 [ -n "${arch}" ] && export SCRAM_ARCH="$(basename "${arch}")"
 cd "${NF}/.." || exit 11
-eval "$(scramv1 runtime -sh)"   # cmsenv; eval of nothing succeeds, hence the check below
+eval "$(scramv1 runtime -sh)"   # = cmsenv (an alias, not available in a script); eval of nothing succeeds, hence the check below
 if [ -z "${CMSSW_BASE:-}" ] || ! command -v dasgoclient >/dev/null 2>&1 || ! python3 -c "import ROOT" >/dev/null 2>&1; then
   echo "[job] FATAL: no CMSSW environment with PyROOT and dasgoclient in $(pwd) (SCRAM_ARCH=${SCRAM_ARCH:-unset})"
   exit 13

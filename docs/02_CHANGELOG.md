@@ -51,6 +51,10 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   only the runlogs and the two TSVs are written to AFS. Dry-run in the AI session with stubbed cvmfs / scram, the mock ROOT and
   the fake dasgoclient, clean environment (`env -i`): all measured, exit 0; a persistent read error, three FAILED passes, exit 1;
   a transient one, measured by the first retry, exit 0; no proxy, exit 12; no CMSSW environment, exit 13.
+- `script/condor/submit_size_options.sh` (the user's request, same day): every submission first makes a new VOMS proxy
+  (`voms-proxy-init --voms cms --rfc --valid 96:00`, into `~/private/x509up_ntupleforge`), so the job never gets an old proxy file
+  close to expiry; then checks the host has `condor_submit` and the el8 image is visible, and submits from the repository. The job
+  itself does what `cmsenv` does (`eval scramv1 runtime -sh`, the alias is not available in a script) inside the CMSSW el8 image.
 - The two samples that the interactive v2 run finished repeat v1 exactly (2018UL `TTbar_Hadronic` 1.844 / 1.847 kB, `TTbar_SemiLep`
   1.826 / 1.831 kB, every skim column equal): without read errors v1 and v2 measure the same.
 
