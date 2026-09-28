@@ -55,3 +55,6 @@ utc_start	step	exit	wall_s	host	git_head	log	outputs
 2026-09-28T12:17:45Z	size_options_2018	1	5	b9p22p7168	2251a90	script/runlogs/run_size_options_2018_20260928_121744.log	none
 2026-09-28T12:07:30Z	size_options	0	7432	lxplus9110	0a4af6d	script/runlogs/run_size_options_20260928_120729.log	script/README.md;script/condor/size_options.sub;script/condor/size_options_job.sh
 2026-09-28T12:17:51Z	size_options	0	8634	b9p22p7168	2251a90	script/runlogs/run_size_options_20260928_121750.log	none
+2026-09-28T17:13:49Z	localcheck_2018_MC	0	115	lxplus941	31beadf	script/runlogs/run_localcheck_2018_MC_20260928_171347.log	none
+2026-09-28T17:15:45Z	localcheck_2018_Data	0	37	lxplus941	31beadf	script/runlogs/run_localcheck_2018_Data_20260928_171544.log	none
+2026-09-28T17:16:23Z	localcheck_summary	0	2	lxplus941	31beadf	script/runlogs/run_localcheck_summary_20260928_171622.log	none
