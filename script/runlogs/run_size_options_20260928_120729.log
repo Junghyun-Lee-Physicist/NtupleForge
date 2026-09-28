@@ -1,0 +1,306 @@
+=== RUNLOG ================================================================
+step        : size_options
+start_utc   : 2026-09-28T12:07:30Z
+host        : lxplus9110   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 0a4af6d   modified_tracked_files: 1
+cmd         : python3 script/size_options.py 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-28 14:07:30.47338048 +0200 CEST m=+0.000736788
+proxy_left_s: 326342
+===========================================================================
+# mapping: config dataset groups -> measured sample group (planned samples)
+  2024 MC (60 datasets)
+    tt_semilep     3 ds      536170459 ev  <- 2024:tt_semilep
+    tt_had         3 ds      517150275 ev  <- 2024:tt_had
+    tt_dilep       3 ds      512187459 ev  <- 2024:tt_dilep
+    wjets:400      1 ds      401294004 ev  <- 2024:wjets:400
+    zjets:400      1 ds      181710909 ev  <- 2024:zjets:400
+    st_had         4 ds      145983708 ev  <- 2024:st_had
+    st_lep         4 ds      142066199 ev  <- 2024:st_lep
+    st_tw          6 ds      136155952 ev  <- 2024:st_tw
+    qcd:600        1 ds      128235651 ev  <- 2024:qcd:600
+    qcd:800        1 ds      124956604 ev  <- 2024:qcd:1000
+    qcd:200        1 ds      115255250 ev  <- 2024:qcd:200
+    qcd:1000       1 ds      114436708 ev  <- 2024:qcd:1000
+    qcd:1500       1 ds      113208234 ev  <- 2024:qcd:1500
+    ttx            8 ds      110167561 ev  <- 2024:ttx
+    qcd:1200       1 ds      107835822 ev  <- 2024:qcd:1000
+    qcd:400        1 ds      106725734 ev  <- 2024:qcd:400
+    vv             3 ds       99334793 ev  <- 2024:vv
+    qcd:2000       1 ds       91953615 ev  <- 2024:qcd:1500
+    multitop      10 ds       90765949 ev  <- 2024:multitop
+    zjets:1500     1 ds       67205770 ev  <- 2024:zjets:1500
+    wjets:800      1 ds       53389988 ev  <- 2024:wjets:800
+    wjets:2500     1 ds       52106542 ev  <- 2024:wjets:800
+    zjets:800      1 ds       51509657 ev  <- 2024:zjets:1500
+    wjets:1500     1 ds       48297099 ev  <- 2024:wjets:800
+    zjets:2500     1 ds       41893516 ev  <- 2024:zjets:1500
+  2024 Data (32 datasets)
+    pd_muon       16 ds     3541175807 ev  <- 2024:pd_muon
+    pd_jet        16 ds     2417304572 ev  <- 2024:pd_jet
+  2018UL MC (42 datasets)
+    tt_semilep     2 ds      470511681 ev  <- 2018UL:tt_semilep
+    tt_had         2 ds      351194064 ev  <- 2018UL:tt_had
+    st_incl        2 ds      274589000 ev  <- 2018UL:st_incl
+    tt_dilep       2 ds      150868850 ev  <- 2018UL:tt_dilep
+    ttx            7 ds       97638492 ev  <- 2024:ttx
+    qcd:300        1 ds       61705174 ev  <- 2018UL:qcd:300
+    qcd:200        1 ds       57336623 ev  <- 2018UL:qcd:300
+    qcd:500        1 ds       49184771 ev  <- 2018UL:qcd:500
+    qcd:700        1 ds       48506751 ev  <- 2018UL:qcd:700
+    multitop       7 ds       34000000 ev  <- 2024:multitop
+    vv             3 ds       27145000 ev  <- 2024:vv
+    st_lep         1 ds       19365999 ev  <- 2024:st_lep
+    st_had         1 ds       16391000 ev  <- 2024:st_had
+    st_tw          2 ds       15705000 ev  <- 2024:st_tw
+    qcd:1000       1 ds       14527915 ev  <- 2018UL:qcd:1000
+    zjets:400      1 ds       13930474 ev  <- 2024:zjets:400
+    wjets:600      1 ds       13633226 ev  <- 2024:wjets:800
+    wjets:800      1 ds       13581343 ev  <- 2024:wjets:800
+    zjets:600      1 ds       12029507 ev  <- 2024:zjets:400
+    qcd:1500       1 ds       10871473 ev  <- 2018UL:qcd:1000
+    zjets:800      1 ds        9681521 ev  <- 2024:zjets:1500
+    wjets:400      1 ds        9335298 ev  <- 2024:wjets:400
+    qcd:2000       1 ds        5374711 ev  <- 2018UL:qcd:1000
+  2018UL Data (8 datasets)
+    pd_muon        4 ds      985393490 ev  <- 2018UL:pd_muon
+    pd_jet         4 ds      675557252 ev  <- 2018UL:pd_jet
+# slim drafts for branches/branch_hadronic_2024_v15_MC.txt: slimA, slimB, slimC
+# slim drafts for branches/branch_hadronic_2024_v15_Data.txt: slimA, slimB, slimC (= previous tier)
+# slim drafts for branches/branch_hadronic_2018_v15_MC.txt: slimA, slimB, slimC
+# slim drafts for branches/branch_hadronic_2018_v15_Data.txt: slimA, slimB, slimC (= previous tier)
+# skims: 6jcount = Sum$(abs(Jet_eta)<2.5)>=6 | 6j20 = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6 | 6j25 = Sum$(Jet_pt>25 && abs(Jet_eta)<2.5)>=6 | 6j30 = Sum$(Jet_pt>30 && abs(Jet_eta)<2.5)>=6 | 6j20ht400 = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6 && Sum$(Jet_pt*(Jet_pt>20 && abs(Jet_eta)<2.5))>400
+# n per sample 10000 | TSV script/runlogs/size_options_meas.tsv (21 usable rows) | signatures 2024:MC=343a47f1420e 2024:Data=b42ae0aeb3a9 2018UL:MC=2fd06e7d24ba 2018UL:Data=fa5fe5d75158
+# measurement v2: one child process per sample; a ROOT error line fails the sample (no row); rows of an older version carry another signature and are not used
+# workdir /tmp/junghyun/size_options_sqpxa5vk | threads 4
+era    tier key                                group         n_in   base   meta       6jcount          6j20          6j25          6j30     6j20ht400  hdrkB bias<=  comp  nbr
+  (kB per INPUT event; every skim column is 'pass fraction, kB'; base = first n_in events copied at LZMA:9, meta = kept branches of the whole input file; hdrkB = per-file tree header; comp = input compression, 209 = LZMA:9; nbr = kept branches, pilot output had 674 (ZZ) / 646 (JetMET0 H))
+2024   MC   TTbar_Hadronic                     tt_had       10000  1.819  1.826  0.684  1.311  0.520  1.017  0.378  0.757  0.255  0.518  0.290  0.593   26.9  0.011   209  703
+       460 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/02206ef6-823f-4270-a5ac-e7c206ed7600.root
+       slim drafts on the whole input file: slimA -15.2% (619 br), slimB -26.1% (524 br), slimC -31.3% (522 br)
+       kept bytes by family (whole input file): Jet 0.687 (38%), GenPart 0.380 (21%), Electron 0.151 (8%), Muon 0.105 (6%), GenJet 0.103 (6%), LHEPdfWeight 0.096 (5%), LHEPart 0.092 (5%), HLT_* 0.034 (2%), PuppiMET 0.024 (1%), PFMET 0.024 (1%), Rho 0.020 (1%), PV 0.018 (1%)
+2024   MC   TTbar_SemiLep                      tt_semilep   10000  1.816  1.817  0.475  0.951  0.321  0.661  0.215  0.454  0.141  0.311  0.177  0.384   26.8  0.011   209  703
+       458 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/004eb958-f042-48a7-b7a3-2f1cd5185215.root
+       slim drafts on the whole input file: slimA -16.4% (619 br), slimB -27.5% (524 br), slimC -32.8% (522 br)
+2024   MC   TTbar_DiLep                        tt_dilep     10000  1.765  1.774  0.272  0.556  0.161  0.347  0.100  0.227  0.060  0.148  0.088  0.206   26.9  0.011   209  703
+       450 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/100000/016a8301-8bde-443d-a9f2-9dd5837b3f6d.root
+       slim drafts on the whole input file: slimA -17.5% (619 br), slimB -28.8% (524 br), slimC -34.2% (522 br)
+2024   MC   TTHHto4b                           multitop     10000  2.599  2.634  0.975  2.546  0.947  2.480  0.906  2.377  0.848  2.236  0.908  2.381   26.9  0.011   209  703
+       902 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/TTHH-HHto4B_TuneCP5_13p6TeV_madgraph-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/110000/816bc6a6-7ca0-4a67-896d-0b0e3dcb6fba.root
+       slim drafts on the whole input file: slimA -15.1% (619 br), slimB -26.9% (524 br), slimC -31.1% (522 br)
+2024   MC   ttHToNonbb                         ttx          10000  2.279  2.305  0.891  2.072  0.801  1.884  0.693  1.645  0.578  1.391  0.653  1.562   26.9  0.011   209  703
+       137 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/TTH-HtoNon2B_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/025434ab-aa42-43f7-8122-ab070c35c38c.root
+       slim drafts on the whole input file: slimA -15.2% (619 br), slimB -26.6% (524 br), slimC -31.4% (522 br)
+2024   MC   QCD_HT200to400                     qcd:200      10000  1.232  1.239  0.076  0.134  0.022  0.052  0.006  0.026  0.002  0.015  0.001  0.013   26.9  0.011   209  703
+       330 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/QCD-4Jets_Bin-HT-200to400_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/003cfc2e-bea4-4828-a06c-ac83ed693abb.root
+       slim drafts on the whole input file: slimA -14.5% (619 br), slimB -23.9% (524 br), slimC -32.6% (522 br)
+2024   MC   QCD_HT400to600                     qcd:400      10000  1.429  1.433  0.203  0.355  0.107  0.202  0.059  0.121  0.031  0.074  0.092  0.176   26.9  0.011   209  703
+       405 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/QCD-4Jets_Bin-HT-400to600_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/0e5115f9-67a6-4175-9786-103b17b68db9.root
+       slim drafts on the whole input file: slimA -14.2% (619 br), slimB -24.3% (524 br), slimC -32.1% (522 br)
+2024   MC   QCD_HT600to800                     qcd:600      10000  1.529  1.555  0.284  0.514  0.169  0.320  0.104  0.209  0.068  0.147  0.169  0.320   26.9  0.011   209  703
+       440 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/QCD-4Jets_Bin-HT-600to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/006f7cbe-2703-4198-ac5d-715eb25055a5.root
+       slim drafts on the whole input file: slimA -14.2% (619 br), slimB -24.5% (524 br), slimC -32.0% (522 br)
+2024   MC   QCD_HT1000to1200                   qcd:1000     10000  1.669  1.690  0.381  0.740  0.263  0.524  0.194  0.396  0.148  0.311  0.263  0.524   26.9  0.011   209  703
+       223 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/QCD-4Jets_Bin-HT-1000to1200_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/04944a66-298c-46e2-88a8-7d4fd3774290.root
+       slim drafts on the whole input file: slimA -14.3% (619 br), slimB -24.9% (524 br), slimC -32.0% (522 br)
+2024   MC   QCD_HT1500to2000                   qcd:1500     10000  1.799  1.829  0.427  0.882  0.306  0.650  0.234  0.502  0.185  0.411  0.306  0.650   26.8  0.011   209  703
+       231 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/QCD-4Jets_Bin-HT-1500to2000_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/100000/058b2317-cb61-4759-8e42-92f94a6ce300.root
+       slim drafts on the whole input file: slimA -14.7% (619 br), slimB -25.4% (524 br), slimC -32.2% (522 br)
+2024   MC   WJetsToQQ_HT400to800               wjets:400    10000  1.534  1.546  0.291  0.517  0.170  0.318  0.103  0.205  0.068  0.145  0.156  0.293   26.9  0.011   209  703
+       180 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/004d5dd5-1745-4664-9a9c-4a7402c6bd50.root
+       slim drafts on the whole input file: slimA -15.1% (619 br), slimB -25.3% (524 br), slimC -33.2% (522 br)
+2024   MC   WJetsToQQ_HT800to1500              wjets:800    10000  1.733  1.758  0.463  0.894  0.338  0.668  0.258  0.515  0.196  0.400  0.338  0.668   26.9  0.011   209  703
+       90 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-800to1500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/130000/01157d4e-9b38-4c14-9e37-2be7a5b45521.root
+       slim drafts on the whole input file: slimA -15.1% (619 br), slimB -25.8% (524 br), slimC -32.9% (522 br)
+2024   MC   ZJetsToQQ_HT400to800               zjets:400    10000  1.591  1.599  0.319  0.591  0.195  0.373  0.126  0.251  0.077  0.163  0.169  0.327   26.9  0.011   209  703
+       66 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/Zto2Q-4Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2520000/000916f8-f457-4d29-a64a-378ba6aa7ff1.root
+       slim drafts on the whole input file: slimA -15.3% (619 br), slimB -25.4% (524 br), slimC -33.1% (522 br)
+2024   MC   ZJetsToQQ_HT1500to2500             zjets:1500   10000  2.012  2.046  0.596  1.304  0.478  1.058  0.397  0.896  0.331  0.755  0.478  1.058   26.9  0.011   209  703
+       156 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/Zto2Q-4Jets_Bin-HT-1500to2500_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/130000/01c2e4ff-9af5-4154-9657-7768333112f8.root
+       slim drafts on the whole input file: slimA -15.6% (619 br), slimB -26.4% (524 br), slimC -32.7% (522 br)
+2024   MC   ST_t_top_had                       st_had       10000  1.443  1.462  0.143  0.270  0.069  0.146  0.039  0.093  0.022  0.060  0.032  0.080   26.9  0.011   209  703
+       62 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/TBbarQto2Q-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/0293003b-9e6b-40b7-8d9e-3d7aa1538447.root
+       slim drafts on the whole input file: slimA -15.7% (619 br), slimB -25.3% (524 br), slimC -32.5% (522 br)
+2024   MC   ST_t_top_lep                       st_lep       10000  1.431  1.438  0.072  0.154  0.033  0.082  0.018  0.054  0.010  0.037  0.014  0.047   26.9  0.011   209  703
+       757 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/TBbarQtoLNu-t-channel-4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/003fb301-ba80-483f-b627-56513d560d55.root
+       slim drafts on the whole input file: slimA -16.9% (619 br), slimB -26.9% (524 br), slimC -34.2% (522 br)
+2024   MC   ST_tW_top_had                      st_tw        10000  1.631  1.642  0.452  0.823  0.290  0.538  0.185  0.362  0.118  0.243  0.147  0.298   26.9  0.011   209  703
+       77 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/TWminusto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/01ebbbe2-d7ab-4e7b-8069-9bb7e70e9f0e.root
+       slim drafts on the whole input file: slimA -15.5% (619 br), slimB -26.0% (524 br), slimC -30.8% (522 br)
+2024   MC   WW                                 vv           10000  1.024  1.031  0.054  0.094  0.020  0.046  0.010  0.031  0.006  0.023  0.007  0.026   25.5  0.010   209  674
+       670 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/WW_TuneCP5_13p6TeV_pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/0042c330-6553-4081-907e-c67019960d51.root
+       slim drafts on the whole input file: slimA -12.9% (601 br), slimB -24.4% (506 br), slimC -24.4% (506 br)
+2024   MC   ZZ                                 vv           10000  1.032  1.042  0.063  0.110  0.025  0.056  0.013  0.035  0.007  0.026  0.011  0.034   25.5  0.010   209  674
+       692 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIII2024Summer24NanoAODv15/ZZ_TuneCP5_13p6TeV_pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/0017669a-d442-4c3f-bc47-8156cf997f0d.root
+       slim drafts on the whole input file: slimA -12.6% (601 br), slimB -23.8% (506 br), slimC -23.8% (506 br)
+       calibration: CRAB pilot 1.056 kB/event (whole dataset, all trees); this sample 1.032 incl. header share (meta-based 1.042); ratio pilot/this 1.023
+2024   Data JetMET0_Run2024C-MINIv6NANOv15-v1  pd_jet       10000  0.735  0.752  0.158  0.185  0.087  0.115  0.058  0.084  0.040  0.065  0.083  0.111   23.5  0.010   209  638
+       297 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2024C/JetMET0/NANOAOD/MINIv6NANOv15-v1/2530000/02d0d3cb-0be8-4b53-9742-4f40b2469051.root
+       slim drafts on the whole input file: slimA -16.6% (579 br), slimB -34.3% (484 br)
+2024   Data JetMET0_Run2024G-MINIv6NANOv15-v2  pd_jet       10000  0.761  0.780  0.168  0.199  0.097  0.129  0.063  0.092  0.043  0.069  0.092  0.124   23.6  0.010   209  646
+       139 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2024G/JetMET0/NANOAOD/MINIv6NANOv15-v2/100000/05fb5a15-102f-46e6-baf7-d589810a08c3.root
+       slim drafts on the whole input file: slimA -16.4% (587 br), slimB -34.0% (492 br)
+       kept bytes by family (whole input file): Jet 0.428 (55%), Muon 0.114 (15%), Electron 0.098 (13%), PuppiMET 0.025 (3%), PFMET 0.024 (3%), HLT_* 0.021 (3%), Rho 0.019 (2%), PV 0.017 (2%), OtherPV 0.011 (1%), RawPuppiMET 0.008 (1%), RawPFMET 0.008 (1%), Flag_* 0.004 (1%)
+2024   Data JetMET0_Run2024H-MINIv6NANOv15-v2  pd_jet       10000  0.787  0.794  0.195  0.227  0.115  0.147  0.073  0.102  0.051  0.078  0.109  0.141   23.5  0.010   209  646
+       137 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2024H/JetMET0/NANOAOD/MINIv6NANOv15-v2/2520000/112f8743-d7cc-4257-9544-057b7fc1db43.root
+       slim drafts on the whole input file: slimA -16.4% (587 br), slimB -34.1% (492 br)
+       calibration: CRAB pilot 0.780 kB/event (whole dataset, all trees); this sample 0.787 incl. header share (meta-based 0.794); ratio pilot/this 0.991
+2024   Data Muon0_Run2024G-MINIv6NANOv15-v1    pd_muon      10000  0.706  0.690  0.048  0.073  0.021  0.042  0.011  0.029  0.006  0.022  0.013  0.033   23.6  0.010   209  646
+       55 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2024G/Muon0/NANOAOD/MINIv6NANOv15-v1/110000/07cdc5f5-aec7-429f-9d62-5300592f14fe.root
+       slim drafts on the whole input file: slimA -19.4% (587 br), slimB -37.1% (492 br)
+2018UL MC   TTbar_Hadronic                     tt_had       10000  1.844  1.847  0.735  1.417  0.575  1.131  0.425  0.861  0.297  0.610  0.321  0.663   26.8  0.011   209  717
+       488 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v2/100000/002d2fd2-a3b0-45f0-8e23-2e0304114149.root
+       slim drafts on the whole input file: slimA -14.9% (635 br), slimB -26.7% (551 br), slimC -32.3% (549 br)
+2018UL MC   TTbar_SemiLep                      tt_semilep   10000  1.826  1.831  0.521  1.040  0.356  0.735  0.235  0.495  0.156  0.343  0.186  0.404   26.8  0.011   209  717
+       493 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v2/130000/00697485-5ff4-4991-8ba4-b8d1e80c4391.root
+       slim drafts on the whole input file: slimA -16.1% (635 br), slimB -28.0% (551 br), slimC -33.5% (549 br)
+2018UL MC   TTbar_DiLep                        tt_dilep     10000  1.777  1.779  0.312  0.647  0.186  0.402  0.117  0.266  0.073  0.179  0.102  0.239   26.8  0.011   209  717
+       463 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v2/2810000/034bac3b-8b10-48a5-af32-5c5247f38065.root
+       slim drafts on the whole input file: slimA -17.2% (635 br), slimB -29.1% (551 br), slimC -34.9% (549 br)
+2018UL MC   ST_t_top                           st_incl      10000  1.463  1.477  0.147  0.284  0.071  0.151  0.038  0.092  0.022  0.061  0.032  0.081   26.8  0.011   209  717
+       367 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/009deac4-e54b-48ef-bcce-c02436e53fff.root
+       slim drafts on the whole input file: slimA -15.6% (635 br), slimB -26.0% (551 br), slimC -34.8% (549 br)
+2018UL MC   QCD_HT300to500                     qcd:300      10000  1.355  1.366  0.176  0.303  0.075  0.145  0.033  0.075  0.015  0.044  0.032  0.073   26.8  0.011   209  717
+       362 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT300to500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/06f87fa3-6316-4e57-bd0f-c8f9cc5ba13c.root
+       slim drafts on the whole input file: slimA -14.0% (635 br), slimB -24.8% (551 br), slimC -32.9% (549 br)
+2018UL MC   QCD_HT500to700                     qcd:500      10000  1.502  1.507  0.303  0.542  0.170  0.320  0.100  0.201  0.060  0.130  0.167  0.314   26.7  0.011   209  717
+       441 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root
+       slim drafts on the whole input file: slimA -13.8% (635 br), slimB -24.9% (551 br), slimC -32.4% (549 br)
+2018UL MC   QCD_HT700to1000                    qcd:700      10000  1.598  1.614  0.360  0.676  0.229  0.443  0.155  0.314  0.107  0.225  0.229  0.443   26.7  0.011   209  717
+       543 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT700to1000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/007ef96e-27c7-4fc0-8c39-8b287021cc48.root
+       slim drafts on the whole input file: slimA -13.9% (635 br), slimB -25.1% (551 br), slimC -32.4% (549 br)
+2018UL MC   QCD_HT1000to1500                   qcd:1000     10000  1.706  1.732  0.417  0.822  0.283  0.577  0.204  0.425  0.150  0.325  0.283  0.577   26.7  0.011   209  717
+       494 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT1000to1500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/100000/11401ba3-6700-4326-b0ea-e7ef2920b477.root
+       slim drafts on the whole input file: slimA -14.1% (635 br), slimB -25.4% (551 br), slimC -32.4% (549 br)
+2018UL Data JetHT_Run2018A                     pd_jet       10000  0.939  0.880  0.361  0.432  0.242  0.301  0.175  0.229  0.132  0.180  0.234  0.291   23.2  0.010   209  653
+       172 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2018A/JetHT/NANOAOD/UL2018_NanoAODv15-v2/120000/065411b1-69f8-4e56-8247-26c3204b22f7.root
+       slim drafts on the whole input file: slimA -15.7% (595 br), slimB -35.0% (509 br)
+2018UL Data JetHT_Run2018D                     pd_jet       10000  0.815  0.857  0.265  0.306  0.178  0.220  0.126  0.166  0.095  0.133  0.172  0.214   23.2  0.010   209  664
+       183 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2018D/JetHT/NANOAOD/UL2018_NanoAODv15-v2/120000/02def2b8-9c7d-4d06-9f0f-c2c7909b481e.root
+       slim drafts on the whole input file: slimA -15.7% (606 br), slimB -35.0% (522 br)
+2018UL Data SingleMuon_Run2018D                pd_muon      10000  0.666  0.651  0.044  0.070  0.019  0.041  0.011  0.030  0.007  0.025  0.014  0.034   23.1  0.010   209  658
+       38 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2018D/SingleMuon/NANOAOD/UL2018_NanoAODv15-v2/120000/00b21657-67e8-4dc3-8bd5-2b87f085b673.root
+       slim drafts on the whole input file: slimA -18.8% (600 br), slimB -37.1% (516 br)
+
+# projection, current branch lists: TB = DAS events x kB per input event of the mapped group (+ one tree header per DAS file)
+== 2024 MC: 60 datasets, 4089997458 events, 19136 files
+   TB    base   6.98  meta   7.03  6jcount   3.33  6j20   2.45  6j25   1.86  6j30   1.41  6j20ht400   1.90
+   kept events  6jcount 1.661e9 (40.6%)  6j20 1.177e9 (28.8%)  6j25 0.858e9 (21.0%)  6j30 0.626e9 (15.3%)  6j20ht400 0.880e9 (21.5%)
+   group        measured as                     events       base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+   tt_semilep   2024:tt_semilep              536170459      0.974      0.974      0.510      0.354      0.243      0.167      0.206
+   tt_had       2024:tt_had                  517150275      0.941      0.944      0.678      0.526      0.391      0.268      0.307
+   tt_dilep     2024:tt_dilep                512187459      0.904      0.909      0.285      0.178      0.116      0.076      0.106
+   wjets:400    2024:wjets:400               401294004      0.616      0.620      0.208      0.128      0.082      0.058      0.118
+   zjets:400    2024:zjets:400               181710909      0.289      0.291      0.107      0.068      0.046      0.030      0.059
+   ttx          2024:ttx                     110167561      0.251      0.254      0.228      0.208      0.181      0.153      0.172
+   multitop     2024:multitop                 90765949      0.236      0.239      0.231      0.225      0.216      0.203      0.216
+   st_tw        2024:st_tw                   136155952      0.222      0.224      0.112      0.073      0.049      0.033      0.041
+   st_had       2024:st_had                  145983708      0.211      0.213      0.039      0.021      0.014      0.009      0.012
+   qcd:800      2024:qcd:1000                124956604      0.209      0.211      0.092      0.065      0.050      0.039      0.065
+   qcd:1500     2024:qcd:1500                113208234      0.204      0.207      0.100      0.074      0.057      0.047      0.074
+   st_lep       2024:st_lep                  142066199      0.203      0.204      0.022      0.012      0.008      0.005      0.007
+   qcd:600      2024:qcd:600                 128235651      0.196      0.199      0.066      0.041      0.027      0.019      0.041
+   qcd:1000     2024:qcd:1000                114436708      0.191      0.193      0.085      0.060      0.045      0.036      0.060
+   qcd:1200     2024:qcd:1000                107835822      0.180      0.182      0.080      0.056      0.043      0.034      0.056
+   qcd:2000     2024:qcd:1500                 91953615      0.165      0.168      0.081      0.060      0.046      0.038      0.060
+   qcd:400      2024:qcd:400                 106725734      0.153      0.153      0.038      0.022      0.013      0.008      0.019
+   qcd:200      2024:qcd:200                 115255250      0.142      0.143      0.015      0.006      0.003      0.002      0.001
+   zjets:1500   2024:zjets:1500               67205770      0.135      0.138      0.088      0.071      0.060      0.051      0.071
+   zjets:800    2024:zjets:1500               51509657      0.104      0.105      0.067      0.055      0.046      0.039      0.055
+   vv           2024:vv                       99334793      0.102      0.103      0.010      0.005      0.003      0.002      0.003
+   wjets:800    2024:wjets:800                53389988      0.093      0.094      0.048      0.036      0.027      0.021      0.036
+   wjets:2500   2024:wjets:800                52106542      0.090      0.092      0.047      0.035      0.027      0.021      0.035
+   zjets:2500   2024:zjets:1500               41893516      0.084      0.086      0.055      0.044      0.038      0.032      0.044
+   wjets:1500   2024:wjets:800                48297099      0.084      0.085      0.043      0.032      0.025      0.019      0.032
+== 2024 Data: 32 datasets, 5958480379 events, 7811 files
+   TB    base   4.34  meta   4.32  6jcount   0.75  6j20   0.46  6j25   0.33  6j30   0.25  6j20ht400   0.42
+   kept events  6jcount 0.589e9 (9.9%)  6j20 0.314e9 (5.3%)  6j25 0.194e9 (3.3%)  6j30 0.131e9 (2.2%)  6j20ht400 0.277e9 (4.7%)
+   group        measured as                     events       base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+   pd_muon      2024:pd_muon                3541175807      2.499      2.444      0.259      0.148      0.103      0.078      0.115
+   pd_jet       2024:pd_jet                 2417304572      1.840      1.874      0.492      0.315      0.225      0.171      0.303
+== 2018UL MC: 42 datasets, 1777107873 events, 2277 files
+   TB    base   3.08  meta   3.10  6jcount   1.65  6j20   1.24  6j25   0.93  6j30   0.69  6j20ht400   0.83
+   kept events  6jcount 0.819e9 (46.1%)  6j20 0.592e9 (33.3%)  6j25 0.428e9 (24.1%)  6j30 0.308e9 (17.3%)  6j20ht400 0.374e9 (21.0%)
+   group        measured as                     events       base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+   tt_semilep   2018UL:tt_semilep            470511681      0.859      0.862      0.489      0.346      0.233      0.161      0.190
+   tt_had       2018UL:tt_had                351194064      0.648      0.649      0.498      0.397      0.302      0.214      0.233
+   st_incl      2018UL:st_incl               274589000      0.402      0.405      0.078      0.042      0.025      0.017      0.022
+   tt_dilep     2018UL:tt_dilep              150868850      0.268      0.268      0.098      0.061      0.040      0.027      0.036
+   ttx          2024:ttx x1.01                97638492      0.224      0.226      0.203      0.185      0.162      0.137      0.153
+   multitop     2024:multitop x1.01           34000000      0.089      0.090      0.087      0.085      0.081      0.076      0.081
+   qcd:300      2018UL:qcd:300                61705174      0.084      0.084      0.019      0.009      0.005      0.003      0.005
+   qcd:200      2018UL:qcd:300                57336623      0.078      0.078      0.017      0.008      0.004      0.002      0.004
+   qcd:700      2018UL:qcd:700                48506751      0.077      0.078      0.033      0.022      0.015      0.011      0.021
+   qcd:500      2018UL:qcd:500                49184771      0.074      0.074      0.027      0.016      0.010      0.006      0.015
+   vv           2024:vv x1.01                 27145000      0.028      0.028      0.003      0.001      0.001      0.001      0.001
+   st_lep       2024:st_lep x1.01             19365999      0.028      0.028      0.003      0.002      0.001      0.001      0.001
+   st_tw        2024:st_tw x1.01              15705000      0.026      0.026      0.013      0.008      0.006      0.004      0.005
+   qcd:1000     2018UL:qcd:1000               14527915      0.025      0.025      0.012      0.008      0.006      0.005      0.008
+   st_had       2024:st_had x1.01             16391000      0.024      0.024      0.004      0.002      0.002      0.001      0.001
+   wjets:600    2024:wjets:800 x1.01          13633226      0.024      0.024      0.012      0.009      0.007      0.005      0.009
+   wjets:800    2024:wjets:800 x1.01          13581343      0.024      0.024      0.012      0.009      0.007      0.005      0.009
+   zjets:400    2024:zjets:400 x1.01          13930474      0.022      0.022      0.008      0.005      0.004      0.002      0.005
+   zjets:800    2024:zjets:1500 x1.01          9681521      0.020      0.020      0.013      0.010      0.009      0.007      0.010
+   zjets:600    2024:zjets:400 x1.01          12029507      0.019      0.019      0.007      0.005      0.003      0.002      0.004
+   qcd:1500     2018UL:qcd:1000               10871473      0.019      0.019      0.009      0.006      0.005      0.004      0.006
+   wjets:400    2024:wjets:400 x1.01           9335298      0.014      0.015      0.005      0.003      0.002      0.001      0.003
+   qcd:2000     2018UL:qcd:1000                5374711      0.009      0.009      0.004      0.003      0.002      0.002      0.003
+== 2018UL Data: 8 datasets, 1660950742 events, 1466 files
+   TB    base   1.25  meta   1.23  6jcount   0.32  6j20   0.22  6j25   0.16  6j30   0.13  6j20ht400   0.20
+   kept events  6jcount 0.255e9 (15.4%)  6j20 0.161e9 (9.7%)  6j25 0.113e9 (6.8%)  6j30 0.084e9 (5.1%)  6j20ht400 0.151e9 (9.1%)
+   group        measured as                     events       base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+   pd_muon      2018UL:pd_muon               985393490      0.656      0.641      0.069      0.041      0.029      0.024      0.034
+   pd_jet       2018UL:pd_jet                675557252      0.593      0.587      0.249      0.176      0.133      0.106      0.171
+
+TOTAL TB   base  15.65  meta  15.68  6jcount   6.06  6j20   4.38  6j25   3.28  6j30   2.48  6j20ht400   3.35
+   base        15.65 TB  > 10 TB
+   meta        15.68 TB  > 10 TB
+   6jcount      6.06 TB  <= 10 TB
+   6j20         4.38 TB  <= 5 TB
+   6j25         3.28 TB  <= 5 TB
+   6j30         2.48 TB  <= 5 TB
+   6j20ht400    3.35 TB  <= 5 TB
+
+# projection, slimA drafts (script/drafts/, events as above): TB = DAS events x kB per input event of the mapped group (+ one tree header per DAS file)
+   2024   MC   TB  base   5.89  meta   5.94  6jcount   2.83  6j20   2.09  6j25   1.58  6j30   1.20  6j20ht400   1.61
+   2024   Data TB  base   3.56  meta   3.54  6jcount   0.63  6j20   0.39  6j25   0.28  6j30   0.21  6j20ht400   0.35
+   2018UL MC   TB  base   2.61  meta   2.62  6jcount   1.41  6j20   1.06  6j25   0.79  6j30   0.59  6j20ht400   0.70
+   2018UL Data TB  base   1.03  meta   1.02  6jcount   0.27  6j20   0.18  6j25   0.14  6j30   0.11  6j20ht400   0.17
+
+TOTAL TB   base  13.08  meta  13.11  6jcount   5.14  6j20   3.72  6j25   2.79  6j30   2.11  6j20ht400   2.85
+
+# projection, slimB drafts (script/drafts/, events as above): TB = DAS events x kB per input event of the mapped group (+ one tree header per DAS file)
+   2024   MC   TB  base   5.14  meta   5.18  6jcount   2.45  6j20   1.80  6j25   1.36  6j30   1.03  6j20ht400   1.39
+   2024   Data TB  base   2.79  meta   2.77  6jcount   0.49  6j20   0.31  6j25   0.22  6j30   0.17  6j20ht400   0.28
+   2018UL MC   TB  base   2.25  meta   2.26  6jcount   1.20  6j20   0.90  6j25   0.68  6j30   0.50  6j20ht400   0.60
+   2018UL Data TB  base   0.80  meta   0.78  6jcount   0.21  6j20   0.14  6j25   0.11  6j30   0.09  6j20ht400   0.13
+
+TOTAL TB   base  10.98  meta  11.00  6jcount   4.35  6j20   3.15  6j25   2.36  6j30   1.79  6j20ht400   2.41
+
+# projection, slimC drafts (script/drafts/, events as above): TB = DAS events x kB per input event of the mapped group (+ one tree header per DAS file)
+   2024   MC   TB  base   4.71  meta   4.75  6jcount   2.28  6j20   1.68  6j25   1.27  6j30   0.97  6j20ht400   1.30
+   2024   Data TB  base   2.79  meta   2.77  6jcount   0.49  6j20   0.31  6j25   0.22  6j30   0.17  6j20ht400   0.28
+   2018UL MC   TB  base   2.06  meta   2.07  6jcount   1.12  6j20   0.84  6j25   0.63  6j30   0.47  6j20ht400   0.56
+   2018UL Data TB  base   0.80  meta   0.78  6jcount   0.21  6j20   0.14  6j25   0.11  6j30   0.09  6j20ht400   0.13
+
+TOTAL TB   base  10.36  meta  10.38  6jcount   4.09  6j20   2.97  6j25   2.23  6j30   1.69  6j20ht400   2.27
+
+# TOTAL TB of the four configs: branch list (rows) x event selection (columns)
+  list          base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+  current      15.65      15.68       6.06       4.38       3.28       2.48       3.35
+  slimA        13.08      13.11       5.14       3.72       2.79       2.11       2.85
+  slimB        10.98      11.00       4.35       3.15       2.36       1.79       2.41
+  slimC        10.36      10.38       4.09       2.97       2.23       1.69       2.27
+===========================================================================
+end_utc     : 2026-09-28T14:11:22Z
+wall_s      : 7432
+EXIT        : 0
+outputs (modified during the run, under script/ and branches/):
+        3053  script/README.md
+        2001  script/condor/size_options.sub
+        4013  script/condor/size_options_job.sh
+log         : script/runlogs/run_size_options_20260928_120729.log
+=== END ===================================================================

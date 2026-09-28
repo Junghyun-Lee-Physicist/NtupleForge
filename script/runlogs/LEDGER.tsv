@@ -46,3 +46,12 @@ utc_start	step	exit	wall_s	host	git_head	log	outputs
 2026-09-23T07:36:09Z	localcheck_2024_MC	0	55	lxplus963	3cb789b	script/runlogs/run_localcheck_2024_MC_20260923_073608.log	none
 2026-09-23T07:37:05Z	localcheck_2024_Data	0	63	lxplus963	3cb789b	script/runlogs/run_localcheck_2024_Data_20260923_073704.log	none
 2026-09-23T07:38:09Z	localcheck_summary	0	3	lxplus963	3cb789b	script/runlogs/run_localcheck_summary_20260923_073808.log	none
+2026-09-27T17:49:32Z	v1_filelists	0	4	lxplus9109	571e22a	script/runlogs/run_v1_filelists_20260927_174932.log	none
+2026-09-27T17:49:36Z	v1_preflight	0	1	lxplus9109	571e22a	script/runlogs/run_v1_preflight_20260927_174936.log	none
+2026-09-27T17:49:37Z	v1_submit	0	2	lxplus9109	571e22a	script/runlogs/run_v1_submit_20260927_174937.log	none
+2026-09-28T08:31:36Z	v1_aggregate	0	0	lxplus996	571e22a	script/runlogs/run_v1_aggregate_20260928_083134.log	none
+2026-09-28T08:32:28Z	size_options_2018	129	3726	lxplus996	571e22a	script/runlogs/run_size_options_2018_20260928_083223.log	none
+2026-09-28T11:00:01Z	size_options_2018	1	4047	lxplus9110	0a4af6d	script/runlogs/run_size_options_2018_20260928_105959.log	none
+2026-09-28T12:17:45Z	size_options_2018	1	5	b9p22p7168	2251a90	script/runlogs/run_size_options_2018_20260928_121744.log	none
+2026-09-28T12:07:30Z	size_options	0	7432	lxplus9110	0a4af6d	script/runlogs/run_size_options_20260928_120729.log	script/README.md;script/condor/size_options.sub;script/condor/size_options_job.sh
+2026-09-28T12:17:51Z	size_options	0	8634	b9p22p7168	2251a90	script/runlogs/run_size_options_20260928_121750.log	none

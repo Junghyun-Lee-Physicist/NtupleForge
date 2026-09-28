@@ -1,0 +1,48 @@
+=== RUNLOG ================================================================
+step        : v1_submit
+start_utc   : 2026-09-27T17:49:37Z
+host        : lxplus9109   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 571e22a   modified_tracked_files: 1
+cmd         : python3 scripts/submit_validation_condor.py --era 2018 --samples ttbb_Hadronic\,ttbb_SemiLeptonic\,ttbb_2L2Nu\,TTToHadronic\,TTToSemiLeptonic\,TTTo2L2Nu --nano-filelist-dir filelists/nano2018v15 --out-base /eos/user/j/junghyun/TTHHGenCategoryTools/valout2018v15 --work-base condor_val2018v15 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-27 19:49:37.490570961 +0200 CEST m=+0.000752561
+proxy_left_s: 691186
+===========================================================================
+Submitting job(s)...............................................................
+63 job(s) submitted to cluster 13488511.
+era              : 2018
+extend filelists : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/filelists/sidecar2018
+nano filelists   : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/filelists/nano2018v15
+sorted base      : /eos/user/j/junghyun/TTHHGenCategoryTools/sorted2018
+out base         : /eos/user/j/junghyun/TTHHGenCategoryTools/valout2018v15   (results via root://eosuser.cern.ch/)
+work base        : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/condor_val2018v15   (condor scaffolding, must NOT be /eos)
+samples          : ttbb_Hadronic, ttbb_SemiLeptonic, ttbb_2L2Nu, TTToHadronic, TTToSemiLeptonic, TTTo2L2Nu
+
+planned jobs: 63
+   ttbb_Hadronic          1 job(s)
+   ttbb_SemiLeptonic      1 job(s)
+   ttbb_2L2Nu             1 job(s)
+   TTToHadronic          21 job(s)
+   TTToSemiLeptonic      30 job(s)
+   TTTo2L2Nu              9 job(s)
+
+[proxy] /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/proxy.cert  (192 h left)
+results -> root://eosuser.cern.ch//eos/user/j/junghyun/TTHHGenCategoryTools/valout2018v15/results/
+wrote /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/condor_val2018v15/match.sub
+wrote /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/condor_val2018v15/match.args
+logs  /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/condor_val2018v15/logs
+condor_submit exit=0
+
+monitor:   condor_q
+logs:      /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/condor_val2018v15/logs
+aggregate: python3 /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/scripts/aggregate_validation.py --era 2018 --samples ttbb_Hadronic,ttbb_SemiLeptonic,ttbb_2L2Nu,TTToHadronic,TTToSemiLeptonic,TTTo2L2Nu
+===========================================================================
+end_utc     : 2026-09-27T17:49:39Z
+wall_s      : 2
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_v1_submit_20260927_174937.log
+=== END ===================================================================

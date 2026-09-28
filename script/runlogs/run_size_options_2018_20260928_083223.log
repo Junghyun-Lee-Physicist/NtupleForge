@@ -1,0 +1,1089 @@
+=== RUNLOG ================================================================
+step        : size_options_2018
+start_utc   : 2026-09-28T08:32:28Z
+host        : lxplus996   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 571e22a   modified_tracked_files: 1
+cmd         : python3 script/size_options.py --only 2018UL:MC:TTbar_Hadronic --only 2018UL:MC:TTbar_SemiLep --only 2018UL:MC:TTbar_DiLep --only 2018UL:MC:ST_t_top --only 2018UL:MC:QCD_HT300to500 --only 2018UL:MC:QCD_HT500to700 --only 2018UL:MC:QCD_HT700to1000 --only 2018UL:MC:QCD_HT1000to1500 --only 2018UL:Data:JetHT_Run2018A --only 2018UL:Data:JetHT_Run2018D --only 2018UL:Data:SingleMuon_Run2018D 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-28 10:32:28.287440637 +0200 CEST m=+0.004696627
+proxy_left_s: 339244
+===========================================================================
+# mapping: config dataset groups -> measured sample group (planned samples)
+  2024 MC (60 datasets)
+    tt_semilep     3 ds      536170459 ev  <- 2024:tt_semilep
+    tt_had         3 ds      517150275 ev  <- 2024:tt_had
+    tt_dilep       3 ds      512187459 ev  <- 2024:tt_dilep
+    wjets:400      1 ds      401294004 ev  <- 2024:wjets:400
+    zjets:400      1 ds      181710909 ev  <- 2024:zjets:400
+    st_had         4 ds      145983708 ev  <- 2024:st_had
+    st_lep         4 ds      142066199 ev  <- 2024:st_lep
+    st_tw          6 ds      136155952 ev  <- 2024:st_tw
+    qcd:600        1 ds      128235651 ev  <- 2024:qcd:600
+    qcd:800        1 ds      124956604 ev  <- 2024:qcd:1000
+    qcd:200        1 ds      115255250 ev  <- 2024:qcd:200
+    qcd:1000       1 ds      114436708 ev  <- 2024:qcd:1000
+    qcd:1500       1 ds      113208234 ev  <- 2024:qcd:1500
+    ttx            8 ds      110167561 ev  <- 2024:ttx
+    qcd:1200       1 ds      107835822 ev  <- 2024:qcd:1000
+    qcd:400        1 ds      106725734 ev  <- 2024:qcd:400
+    vv             3 ds       99334793 ev  <- 2024:vv
+    qcd:2000       1 ds       91953615 ev  <- 2024:qcd:1500
+    multitop      10 ds       90765949 ev  <- 2024:multitop
+    zjets:1500     1 ds       67205770 ev  <- 2024:zjets:1500
+    wjets:800      1 ds       53389988 ev  <- 2024:wjets:800
+    wjets:2500     1 ds       52106542 ev  <- 2024:wjets:800
+    zjets:800      1 ds       51509657 ev  <- 2024:zjets:1500
+    wjets:1500     1 ds       48297099 ev  <- 2024:wjets:800
+    zjets:2500     1 ds       41893516 ev  <- 2024:zjets:1500
+  2024 Data (32 datasets)
+    pd_muon       16 ds     3541175807 ev  <- 2024:pd_muon
+    pd_jet        16 ds     2417304572 ev  <- 2024:pd_jet
+  2018UL MC (42 datasets)
+    tt_semilep     2 ds      470511681 ev  <- 2018UL:tt_semilep
+    tt_had         2 ds      351194064 ev  <- 2018UL:tt_had
+    st_incl        2 ds      274589000 ev  <- 2018UL:st_incl
+    tt_dilep       2 ds      150868850 ev  <- 2018UL:tt_dilep
+    ttx            7 ds       97638492 ev  <- 2024:ttx
+    qcd:300        1 ds       61705174 ev  <- 2018UL:qcd:300
+    qcd:200        1 ds       57336623 ev  <- 2018UL:qcd:300
+    qcd:500        1 ds       49184771 ev  <- 2018UL:qcd:500
+    qcd:700        1 ds       48506751 ev  <- 2018UL:qcd:700
+    multitop       7 ds       34000000 ev  <- 2024:multitop
+    vv             3 ds       27145000 ev  <- 2024:vv
+    st_lep         1 ds       19365999 ev  <- 2024:st_lep
+    st_had         1 ds       16391000 ev  <- 2024:st_had
+    st_tw          2 ds       15705000 ev  <- 2024:st_tw
+    qcd:1000       1 ds       14527915 ev  <- 2018UL:qcd:1000
+    zjets:400      1 ds       13930474 ev  <- 2024:zjets:400
+    wjets:600      1 ds       13633226 ev  <- 2024:wjets:800
+    wjets:800      1 ds       13581343 ev  <- 2024:wjets:800
+    zjets:600      1 ds       12029507 ev  <- 2024:zjets:400
+    qcd:1500       1 ds       10871473 ev  <- 2018UL:qcd:1000
+    zjets:800      1 ds        9681521 ev  <- 2024:zjets:1500
+    wjets:400      1 ds        9335298 ev  <- 2024:wjets:400
+    qcd:2000       1 ds        5374711 ev  <- 2018UL:qcd:1000
+  2018UL Data (8 datasets)
+    pd_muon        4 ds      985393490 ev  <- 2018UL:pd_muon
+    pd_jet         4 ds      675557252 ev  <- 2018UL:pd_jet
+# slim drafts for branches/branch_hadronic_2024_v15_MC.txt: slimA, slimB, slimC
+# slim drafts for branches/branch_hadronic_2024_v15_Data.txt: slimA, slimB, slimC (= previous tier)
+# slim drafts for branches/branch_hadronic_2018_v15_MC.txt: slimA, slimB, slimC
+# slim drafts for branches/branch_hadronic_2018_v15_Data.txt: slimA, slimB, slimC (= previous tier)
+# skims: 6jcount = Sum$(abs(Jet_eta)<2.5)>=6 | 6j20 = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6 | 6j25 = Sum$(Jet_pt>25 && abs(Jet_eta)<2.5)>=6 | 6j30 = Sum$(Jet_pt>30 && abs(Jet_eta)<2.5)>=6 | 6j20ht400 = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6 && Sum$(Jet_pt*(Jet_pt>20 && abs(Jet_eta)<2.5))>400
+# n per sample 10000 | TSV script/runlogs/size_options_meas.tsv (3 usable rows) | signatures 2024:MC=28d75c077e12 2024:Data=261a9d8be076 2018UL:MC=e4c4e53fe381 2018UL:Data=535e676b18b8
+# workdir /tmp/junghyun/size_options_c3bxg53i | threads 4
+era    tier key                                group         n_in   base   meta       6jcount          6j20          6j25          6j30     6j20ht400  hdrkB bias<=  comp  nbr
+  (kB per INPUT event; every skim column is 'pass fraction, kB'; base = first n_in events copied at LZMA:9, meta = kept branches of the whole input file; hdrkB = per-file tree header; comp = input compression, 209 = LZMA:9; nbr = kept branches, pilot output had 674 (ZZ) / 646 (JetMET0 H))
+2018UL MC   TTbar_Hadronic                     tt_had       10000  1.844  1.847  0.735  1.417  0.575  1.131  0.425  0.861  0.297  0.610  0.321  0.663   26.8  0.011   209  717
+       497 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v2/100000/002d2fd2-a3b0-45f0-8e23-2e0304114149.root
+       slim drafts on the whole input file: slimA -14.9% (635 br), slimB -26.7% (551 br), slimC -32.3% (549 br)
+       kept bytes by family (whole input file): Jet 0.699 (38%), GenPart 0.382 (21%), Electron 0.151 (8%), Muon 0.107 (6%), LHEPdfWeight 0.102 (6%), GenJet 0.102 (6%), LHEPart 0.092 (5%), HLT_* 0.033 (2%), PuppiMET 0.024 (1%), PFMET 0.024 (1%), Rho 0.021 (1%), PV 0.017 (1%)
+2018UL MC   TTbar_SemiLep                      tt_semilep   10000  1.826  1.831  0.521  1.040  0.356  0.735  0.235  0.495  0.156  0.343  0.186  0.404   26.8  0.011   209  717
+       85 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v2/130000/00697485-5ff4-4991-8ba4-b8d1e80c4391.root
+       slim drafts on the whole input file: slimA -16.1% (635 br), slimB -28.0% (551 br), slimC -33.5% (549 br)
+2018UL MC   TTbar_DiLep                        tt_dilep     10000  1.777  1.779  0.312  0.647  0.186  0.402  0.117  0.266  0.073  0.179  0.102  0.239   26.8  0.011   209  717
+       96 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v2/2810000/034bac3b-8b10-48a5-af32-5c5247f38065.root
+       slim drafts on the whole input file: slimA -17.2% (635 br), slimB -29.1% (551 br), slimC -34.9% (549 br)
+2018UL MC   ST_t_top                           st_incl      10000  1.463  1.477  0.147  0.284  0.071  0.151  0.038  0.092  0.022  0.061  0.032  0.081   26.8  0.011   209  717
+       48 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/009deac4-e54b-48ef-bcce-c02436e53fff.root
+       slim drafts on the whole input file: slimA -15.6% (635 br), slimB -26.0% (551 br), slimC -34.8% (549 br)
+2018UL MC   QCD_HT300to500                     qcd:300      10000  1.355  1.366  0.176  0.303  0.075  0.145  0.033  0.075  0.015  0.044  0.032  0.073   26.8  0.011   209  717
+       102 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT300to500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/06f87fa3-6316-4e57-bd0f-c8f9cc5ba13c.root
+       slim drafts on the whole input file: slimA -14.0% (635 br), slimB -24.8% (551 br), slimC -32.9% (549 br)
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:5672950, branch:HLT_Mu25_TkMu0_Onia, entry:2759, badread=4, nerrors=1, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:5665547, branch:HLT_PFJet550, entry:2759, badread=4, nerrors=2, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:5728719, branch:Flag_HBHENoiseIsoFilter, entry:2759, badread=4, nerrors=3, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:5642774, branch:Flag_BadPFMuonFilter, entry:2759, badread=4, nerrors=4, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:5836653, branch:HLT_Mu15_IsoVVVL_PFHT450, entry:2759, badread=4, nerrors=5, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:5831862, branch:HLT_Mu43NoFiltersNoVtx_Photon43_CaloIdL, entry:2759, badread=4, nerrors=6, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:6463334, branch:Jet_btagUParTAK4B, entry:2759, badread=4, nerrors=7, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:5776182, branch:HLT_Mu7_IP4_part2, entry:2759, badread=4, nerrors=8, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:8847574, branch:Muon_tuneP_charge, entry:2759, badread=4, nerrors=9, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TBranch::GetBasket>: File: root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root at byte:8787355, branch:PuppiMET_covYY, entry:2759, badread=4, nerrors=10, basketnumber=2
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit
+
+2018UL MC   QCD_HT500to700                     qcd:500      10000  1.502  1.507  0.303  0.542  0.170  0.320  0.100  0.201  0.060  0.130  0.167  0.314   26.7  0.011   209  717
+       2373 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root
+       slim drafts on the whole input file: slimA -13.8% (635 br), slimB -24.9% (551 br), slimC -32.4% (549 br)
+2018UL MC   QCD_HT700to1000                    qcd:700      10000  1.598  1.614  0.360  0.676  0.229  0.443  0.155  0.314  0.107  0.225  0.229  0.443   26.7  0.011   209  717
+       66 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT700to1000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/007ef96e-27c7-4fc0-8c39-8b287021cc48.root
+       slim drafts on the whole input file: slimA -13.9% (635 br), slimB -25.1% (551 br), slimC -32.4% (549 br)
+ file probably overwritten: stopping reporting error messages
+ *** Break *** segmentation violation
+
+
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+
+Thread 33 (Thread 0x7fcef4c6e700 (LWP 1282745) "python3"):
+#0  0x00007fcf19fc7a46 in do_futex_wait.constprop () from /lib64/libpthread.so.0
+#1  0x00007fcf19fc7b38 in __new_sem_wait_slow.constprop.0 () from /lib64/libpthread.so.0
+#2  0x00007fcefbbceb76 in XrdCl::JobManager::RunJobs() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#3  0x00007fcefbbcec29 in RunRunnerThread () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 32 (Thread 0x7fcef546f700 (LWP 1282744) "python3"):
+#0  0x00007fcf19fc7a46 in do_futex_wait.constprop () from /lib64/libpthread.so.0
+#1  0x00007fcf19fc7b38 in __new_sem_wait_slow.constprop.0 () from /lib64/libpthread.so.0
+#2  0x00007fcefbbceb76 in XrdCl::JobManager::RunJobs() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#3  0x00007fcefbbcec29 in RunRunnerThread () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 31 (Thread 0x7fcef5c70700 (LWP 1282742) "python3"):
+#0  0x00007fcf19fc7a46 in do_futex_wait.constprop () from /lib64/libpthread.so.0
+#1  0x00007fcf19fc7b38 in __new_sem_wait_slow.constprop.0 () from /lib64/libpthread.so.0
+#2  0x00007fcefbbceb76 in XrdCl::JobManager::RunJobs() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#3  0x00007fcefbbcec29 in RunRunnerThread () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 30 (Thread 0x7fcef8475700 (LWP 1282741) "python3"):
+#0  0x00007fcf19fc8e20 in nanosleep () from /lib64/libpthread.so.0
+#1  0x00007fcefbd0bc68 in XrdSysTimer::Wait(int) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbb3f8ec in XrdCl::TaskManager::RunTasks() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#3  0x00007fcefbb3fa29 in RunRunnerThread () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 29 (Thread 0x7fcef8c76700 (LWP 1282737) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 28 (Thread 0x7fcef9477700 (LWP 1282735) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 27 (Thread 0x7fcef9c78700 (LWP 1282733) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 26 (Thread 0x7fcefa479700 (LWP 1282732) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 25 (Thread 0x7fcefac7a700 (LWP 1282731) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 24 (Thread 0x7fcefb47b700 (LWP 1282730) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 23 (Thread 0x7fcef7c74700 (LWP 1282729) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 22 (Thread 0x7fcef6c72700 (LWP 1282728) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 21 (Thread 0x7fcef6471700 (LWP 1282727) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 20 (Thread 0x7fcef7473700 (LWP 1282726) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 19 (Thread 0x7fce9affb700 (LWP 1157691) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc1069a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc1069a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc1069a0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106980) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106980) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 18 (Thread 0x7fce9b3fc700 (LWP 1157690) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc1068a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc1068a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc1068a0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106880) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106880) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 17 (Thread 0x7fce9b7fd700 (LWP 1157689) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106924) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106924) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106920) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106900) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106900) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 16 (Thread 0x7fce9bbfe700 (LWP 1131502) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106aa4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106aa4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106aa0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106a80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106a80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 15 (Thread 0x7fce9bfff700 (LWP 1131501) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106a24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106a24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106a20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106a00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106a00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 14 (Thread 0x7fcecc79f700 (LWP 1131449) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106ba4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106ba4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106ba0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106b80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106b80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 13 (Thread 0x7fceccba0700 (LWP 1131448) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106b24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106b24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106b20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106b00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106b00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 12 (Thread 0x7fceccfa1700 (LWP 1131447) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106ca4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106ca4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106ca0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106c80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106c80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 11 (Thread 0x7fcecd7a3700 (LWP 1131446) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106da4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106da4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106da0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106d80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106d80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 10 (Thread 0x7fcecd3a2700 (LWP 1131445) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106c24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106c24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106c20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106c00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106c00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 9 (Thread 0x7fcecdba4700 (LWP 1131444) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106ea4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106ea4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106ea0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106e80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106e80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 8 (Thread 0x7fcecdfa5700 (LWP 1131443) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106d24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106d24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106d20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106d00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106d00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 7 (Thread 0x7fcece3a6700 (LWP 1131442) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106e24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106e24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106e20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106e00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106e00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 6 (Thread 0x7fcece7a7700 (LWP 1131441) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106fa4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106fa4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106fa0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106f80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106f80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 5 (Thread 0x7fceceba8700 (LWP 1131440) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106f24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106f24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106f20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106f00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106f00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 4 (Thread 0x7fcecefa9700 (LWP 1121308) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc107024) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc107024) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc107020) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc107000) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc107000) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 3 (Thread 0x7fcecf3aa700 (LWP 1121307) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc107124) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc107124) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc107120) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc107100) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc107100) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 2 (Thread 0x7fcecf7ab700 (LWP 1121306) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc1070a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc1070a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc1070a0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc107080) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc107080) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 1 (Thread 0x7fcf1ab38f00 (LWP 1118496) "python3"):
+#0  0x00007fcf1955ed12 in waitpid () from /lib64/libc.so.6
+#1  0x00007fcf194b51e7 in do_system () from /lib64/libc.so.6
+#2  0x00007fcf18375f3d in TUnixSystem::StackTrace() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libCore.so
+#3  0x00007fcf1864d773 in (anonymous namespace)::TExceptionHandlerImp::HandleException(int) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy_backend3_9.so
+#4  0x00007fcf18373891 in TUnixSystem::DispatchSignals(ESignals) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libCore.so
+#5  <signal handler called>
+#6  0x0000000008ff9180 in ?? ()
+#7  0x00007fcf186ba129 in CPyCppyy::op_dealloc_nofree(CPyCppyy::CPPInstance*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy3_9.so
+#8  0x00007fcf186ba241 in CPyCppyy::op_dealloc(CPyCppyy::CPPInstance*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy3_9.so
+#9  0x00007fcf1a512152 in subtype_dealloc (self=0x7fcecc19d640) at Objects/typeobject.c:1353
+#10 0x00007fcf1a465b43 in _Py_DECREF (op=<optimized out>) at ./Include/object.h:430
+#11 frame_dealloc (f=0x68bb080) at Objects/frameobject.c:585
+#12 0x00007fcf1a59e5f5 in _Py_DECREF (op=<optimized out>) at ./Include/object.h:430
+#13 _PyEval_EvalCode (tstate=tstate
+entry=0x4b7030, _co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=<optimized out>, argcount=<optimized out>, kwnames=0x0, kwargs=0x821868, kwcount=<optimized out>, kwstep=1, defs=0x0, defcount=<optimized out>, kwdefs=0x0, closure=0x0, name=0x7fcf1943e5b0, qualname=0x7fcf1943e5b0) at Python/ceval.c:4344
+#14 0x00007fcf1a4b769d in _PyFunction_Vectorcall (func=<optimized out>, stack=<optimized out>, nargsf=<optimized out>, kwnames=<optimized out>) at Objects/call.c:396
+#15 0x00007fcf1a46c0d1 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x821828, callable=0x7fcf18aab160, tstate=0x4b7030) at ./Include/cpython/abstract.h:118
+#16 PyObject_Vectorcall (kwnames=0x0, nargsf=<optimized out>, args=<optimized out>, callable=<optimized out>) at ./Include/cpython/abstract.h:127
+#17 call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x4b7030) at Python/ceval.c:5077
+#18 _PyEval_EvalFrameDefault (tstate=<optimized out>, f=<optimized out>, throwflag=<optimized out>) at Python/ceval.c:3520
+#19 0x00007fcf1a59ea91 in _PyEval_EvalFrame (throwflag=0, f=0x8214d0, tstate=0x4b7030) at ./Include/internal/pycore_ceval.h:40
+#20 _PyEval_EvalCode (tstate=tstate
+entry=0x4b7030, _co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=<optimized out>, argcount=0, kwnames=0x0, kwargs=0x574110, kwcount=0, kwstep=1, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x7fcf1a9e02b0, qualname=0x7fcf1a9e02b0) at Python/ceval.c:4329
+#21 0x00007fcf1a4b769d in _PyFunction_Vectorcall (func=<optimized out>, stack=<optimized out>, nargsf=<optimized out>, kwnames=<optimized out>) at Objects/call.c:396
+#22 0x00007fcf1a46c0d1 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x574110, callable=0x7fcf18aab9d0, tstate=0x4b7030) at ./Include/cpython/abstract.h:118
+#23 PyObject_Vectorcall (kwnames=0x0, nargsf=<optimized out>, args=<optimized out>, callable=<optimized out>) at ./Include/cpython/abstract.h:127
+#24 call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x4b7030) at Python/ceval.c:5077
+#25 _PyEval_EvalFrameDefault (tstate=<optimized out>, f=<optimized out>, throwflag=<optimized out>) at Python/ceval.c:3520
+#26 0x00007fcf1a59ea91 in _PyEval_EvalFrame (throwflag=0, f=0x573f90, tstate=0x4b7030) at ./Include/internal/pycore_ceval.h:40
+#27 _PyEval_EvalCode (tstate=0x4b7030, _co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kwnames=0x0, kwargs=0x0, kwcount=0, kwstep=2, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x0, qualname=0x0) at Python/ceval.c:4329
+#28 0x00007fcf1a59ee32 in _PyEval_EvalCodeWithName (_co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kwnames=kwnames
+entry=0x0, kwargs=0x0, kwcount=0, kwstep=2, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x0, qualname=0x0) at Python/ceval.c:4361
+#29 0x00007fcf1a59ee7b in PyEval_EvalCodeEx (_co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kws=kws
+entry=0x0, kwcount=0, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0) at Python/ceval.c:4377
+#30 0x00007fcf1a59eeab in PyEval_EvalCode (co=co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940) at Python/ceval.c:828
+#31 0x00007fcf1a5de3a9 in run_eval_code_obj (locals=0x7fcf1aa1d940, globals=0x7fcf1aa1d940, co=0x7fcf193b1d40, tstate=0x4b7030) at Python/pythonrun.c:1221
+#32 run_mod (mod=<optimized out>, filename=filename
+entry=0x7fcf1a985780, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, flags=flags
+entry=0x7ffdc2875238, arena=arena
+entry=0x7fcf1a801fd0) at Python/pythonrun.c:1242
+#33 0x00007fcf1a5dfdf2 in pyrun_file (flags=0x7ffdc2875238, closeit=1, locals=0x7fcf1aa1d940, globals=0x7fcf1aa1d940, start=257, filename=0x7fcf1a985780, fp=0x57a720) at Python/pythonrun.c:1140
+#34 pyrun_simple_file (flags=0x7ffdc2875238, closeit=1, filename=0x7fcf1a985780, fp=0x57a720) at Python/pythonrun.c:450
+#35 PyRun_SimpleFileExFlags (fp=fp
+entry=0x57a720, filename=<optimized out>, closeit=closeit
+entry=1, flags=flags
+entry=0x7ffdc2875238) at Python/pythonrun.c:483
+#36 0x00007fcf1a5e0453 in PyRun_AnyFileExFlags (fp=fp
+entry=0x57a720, filename=<optimized out>, closeit=closeit
+entry=1, flags=flags
+entry=0x7ffdc2875238) at Python/pythonrun.c:92
+#37 0x00007fcf1a5fdea8 in pymain_run_file (cf=0x7ffdc2875238, config=0x4b4c30) at Modules/main.c:373
+#38 pymain_run_python (exitcode=0x7ffdc2875230) at Modules/main.c:598
+#39 Py_RunMain () at Modules/main.c:677
+#40 0x00007fcf1a5fe3c7 in pymain_main (args=0x7ffdc2875320) at Modules/main.c:707
+#41 Py_BytesMain (argc=<optimized out>, argv=<optimized out>) at Modules/main.c:731
+#42 0x00007fcf19491865 in __libc_start_main () from /lib64/libc.so.6
+#43 0x000000000040107e in _start ()
+===========================================================
+
+
+The lines below might hint at the cause of the crash. If you see question
+marks as part of the stack trace, try to recompile with debugging information
+enabled and export CLING_DEBUG=1 environment variable before running.
+You may get help by asking at the ROOT forum https://root.cern/forum
+preferably using the command (.forum bug) in the ROOT prompt.
+Only if you are really convinced it is a bug in ROOT then please submit a
+report at https://root.cern/bugs or (preferably) using the command (.gh bug) in
+the ROOT prompt. Please post the ENTIRE stack trace
+from above as an attachment in addition to anything else
+that might help us fixing this issue.
+===========================================================
+#6  0x0000000008ff9180 in ?? ()
+#7  0x00007fcf186ba129 in CPyCppyy::op_dealloc_nofree(CPyCppyy::CPPInstance*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy3_9.so
+#8  0x00007fcf186ba241 in CPyCppyy::op_dealloc(CPyCppyy::CPPInstance*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy3_9.so
+#9  0x00007fcf1a512152 in subtype_dealloc (self=0x7fcecc19d640) at Objects/typeobject.c:1353
+#10 0x00007fcf1a465b43 in _Py_DECREF (op=<optimized out>) at ./Include/object.h:430
+#11 frame_dealloc (f=0x68bb080) at Objects/frameobject.c:585
+#12 0x00007fcf1a59e5f5 in _Py_DECREF (op=<optimized out>) at ./Include/object.h:430
+#13 _PyEval_EvalCode (tstate=tstate
+entry=0x4b7030, _co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=<optimized out>, argcount=<optimized out>, kwnames=0x0, kwargs=0x821868, kwcount=<optimized out>, kwstep=1, defs=0x0, defcount=<optimized out>, kwdefs=0x0, closure=0x0, name=0x7fcf1943e5b0, qualname=0x7fcf1943e5b0) at Python/ceval.c:4344
+#14 0x00007fcf1a4b769d in _PyFunction_Vectorcall (func=<optimized out>, stack=<optimized out>, nargsf=<optimized out>, kwnames=<optimized out>) at Objects/call.c:396
+#15 0x00007fcf1a46c0d1 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x821828, callable=0x7fcf18aab160, tstate=0x4b7030) at ./Include/cpython/abstract.h:118
+#16 PyObject_Vectorcall (kwnames=0x0, nargsf=<optimized out>, args=<optimized out>, callable=<optimized out>) at ./Include/cpython/abstract.h:127
+#17 call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x4b7030) at Python/ceval.c:5077
+#18 _PyEval_EvalFrameDefault (tstate=<optimized out>, f=<optimized out>, throwflag=<optimized out>) at Python/ceval.c:3520
+#19 0x00007fcf1a59ea91 in _PyEval_EvalFrame (throwflag=0, f=0x8214d0, tstate=0x4b7030) at ./Include/internal/pycore_ceval.h:40
+#20 _PyEval_EvalCode (tstate=tstate
+entry=0x4b7030, _co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=<optimized out>, argcount=0, kwnames=0x0, kwargs=0x574110, kwcount=0, kwstep=1, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x7fcf1a9e02b0, qualname=0x7fcf1a9e02b0) at Python/ceval.c:4329
+#21 0x00007fcf1a4b769d in _PyFunction_Vectorcall (func=<optimized out>, stack=<optimized out>, nargsf=<optimized out>, kwnames=<optimized out>) at Objects/call.c:396
+#22 0x00007fcf1a46c0d1 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x574110, callable=0x7fcf18aab9d0, tstate=0x4b7030) at ./Include/cpython/abstract.h:118
+#23 PyObject_Vectorcall (kwnames=0x0, nargsf=<optimized out>, args=<optimized out>, callable=<optimized out>) at ./Include/cpython/abstract.h:127
+#24 call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x4b7030) at Python/ceval.c:5077
+#25 _PyEval_EvalFrameDefault (tstate=<optimized out>, f=<optimized out>, throwflag=<optimized out>) at Python/ceval.c:3520
+#26 0x00007fcf1a59ea91 in _PyEval_EvalFrame (throwflag=0, f=0x573f90, tstate=0x4b7030) at ./Include/internal/pycore_ceval.h:40
+#27 _PyEval_EvalCode (tstate=0x4b7030, _co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kwnames=0x0, kwargs=0x0, kwcount=0, kwstep=2, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x0, qualname=0x0) at Python/ceval.c:4329
+#28 0x00007fcf1a59ee32 in _PyEval_EvalCodeWithName (_co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kwnames=kwnames
+entry=0x0, kwargs=0x0, kwcount=0, kwstep=2, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x0, qualname=0x0) at Python/ceval.c:4361
+#29 0x00007fcf1a59ee7b in PyEval_EvalCodeEx (_co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kws=kws
+entry=0x0, kwcount=0, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0) at Python/ceval.c:4377
+#30 0x00007fcf1a59eeab in PyEval_EvalCode (co=co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940) at Python/ceval.c:828
+#31 0x00007fcf1a5de3a9 in run_eval_code_obj (locals=0x7fcf1aa1d940, globals=0x7fcf1aa1d940, co=0x7fcf193b1d40, tstate=0x4b7030) at Python/pythonrun.c:1221
+#32 run_mod (mod=<optimized out>, filename=filename
+entry=0x7fcf1a985780, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, flags=flags
+entry=0x7ffdc2875238, arena=arena
+entry=0x7fcf1a801fd0) at Python/pythonrun.c:1242
+#33 0x00007fcf1a5dfdf2 in pyrun_file (flags=0x7ffdc2875238, closeit=1, locals=0x7fcf1aa1d940, globals=0x7fcf1aa1d940, start=257, filename=0x7fcf1a985780, fp=0x57a720) at Python/pythonrun.c:1140
+#34 pyrun_simple_file (flags=0x7ffdc2875238, closeit=1, filename=0x7fcf1a985780, fp=0x57a720) at Python/pythonrun.c:450
+#35 PyRun_SimpleFileExFlags (fp=fp
+entry=0x57a720, filename=<optimized out>, closeit=closeit
+entry=1, flags=flags
+entry=0x7ffdc2875238) at Python/pythonrun.c:483
+#36 0x00007fcf1a5e0453 in PyRun_AnyFileExFlags (fp=fp
+entry=0x57a720, filename=<optimized out>, closeit=closeit
+entry=1, flags=flags
+entry=0x7ffdc2875238) at Python/pythonrun.c:92
+#37 0x00007fcf1a5fdea8 in pymain_run_file (cf=0x7ffdc2875238, config=0x4b4c30) at Modules/main.c:373
+#38 pymain_run_python (exitcode=0x7ffdc2875230) at Modules/main.c:598
+#39 Py_RunMain () at Modules/main.c:677
+#40 0x00007fcf1a5fe3c7 in pymain_main (args=0x7ffdc2875320) at Modules/main.c:707
+#41 Py_BytesMain (argc=<optimized out>, argv=<optimized out>) at Modules/main.c:731
+#42 0x00007fcf19491865 in __libc_start_main () from /lib64/libc.so.6
+#43 0x000000000040107e in _start ()
+===========================================================
+
+
+ *** Break *** segmentation violation
+
+
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+
+Thread 33 (Thread 0x7fcef4c6e700 (LWP 1282745) "python3"):
+#0  0x00007fcf19fc7a46 in do_futex_wait.constprop () from /lib64/libpthread.so.0
+#1  0x00007fcf19fc7b38 in __new_sem_wait_slow.constprop.0 () from /lib64/libpthread.so.0
+#2  0x00007fcefbbceb76 in XrdCl::JobManager::RunJobs() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#3  0x00007fcefbbcec29 in RunRunnerThread () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 32 (Thread 0x7fcef546f700 (LWP 1282744) "python3"):
+#0  0x00007fcf19fc7a46 in do_futex_wait.constprop () from /lib64/libpthread.so.0
+#1  0x00007fcf19fc7b38 in __new_sem_wait_slow.constprop.0 () from /lib64/libpthread.so.0
+#2  0x00007fcefbbceb76 in XrdCl::JobManager::RunJobs() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#3  0x00007fcefbbcec29 in RunRunnerThread () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 31 (Thread 0x7fcef5c70700 (LWP 1282742) "python3"):
+#0  0x00007fcf19fc7a46 in do_futex_wait.constprop () from /lib64/libpthread.so.0
+#1  0x00007fcf19fc7b38 in __new_sem_wait_slow.constprop.0 () from /lib64/libpthread.so.0
+#2  0x00007fcefbbceb76 in XrdCl::JobManager::RunJobs() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#3  0x00007fcefbbcec29 in RunRunnerThread () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 30 (Thread 0x7fcef8475700 (LWP 1282741) "python3"):
+#0  0x00007fcf19fc8e20 in nanosleep () from /lib64/libpthread.so.0
+#1  0x00007fcefbd0bc68 in XrdSysTimer::Wait(int) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbb3f8ec in XrdCl::TaskManager::RunTasks() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#3  0x00007fcefbb3fa29 in RunRunnerThread () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdCl.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 29 (Thread 0x7fcef8c76700 (LWP 1282737) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 28 (Thread 0x7fcef9477700 (LWP 1282735) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 27 (Thread 0x7fcef9c78700 (LWP 1282733) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 26 (Thread 0x7fcefa479700 (LWP 1282732) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 25 (Thread 0x7fcefac7a700 (LWP 1282731) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 24 (Thread 0x7fcefb47b700 (LWP 1282730) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 23 (Thread 0x7fcef7c74700 (LWP 1282729) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 22 (Thread 0x7fcef6c72700 (LWP 1282728) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 21 (Thread 0x7fcef6471700 (LWP 1282727) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 20 (Thread 0x7fcef7473700 (LWP 1282726) "python3"):
+#0  0x00007fcf19596287 in epoll_wait () from /lib64/libc.so.6
+#1  0x00007fcefbd05fd2 in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#2  0x00007fcefbd01f3d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#3  0x00007fcefbd0b377 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/cms/cmssw/CMSSW_14_2_1/external/el8_amd64_gcc12/lib/libXrdUtils.so.3
+#4  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#5  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 19 (Thread 0x7fce9affb700 (LWP 1157691) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc1069a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc1069a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc1069a0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106980) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106980) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 18 (Thread 0x7fce9b3fc700 (LWP 1157690) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc1068a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc1068a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc1068a0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106880) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106880) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 17 (Thread 0x7fce9b7fd700 (LWP 1157689) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106924) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106924) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106920) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106900) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106900) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 16 (Thread 0x7fce9bbfe700 (LWP 1131502) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106aa4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106aa4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106aa0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106a80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106a80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 15 (Thread 0x7fce9bfff700 (LWP 1131501) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106a24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106a24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106a20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106a00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106a00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 14 (Thread 0x7fcecc79f700 (LWP 1131449) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106ba4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106ba4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106ba0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106b80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106b80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 13 (Thread 0x7fceccba0700 (LWP 1131448) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106b24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106b24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106b20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106b00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106b00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 12 (Thread 0x7fceccfa1700 (LWP 1131447) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106ca4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106ca4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106ca0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106c80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106c80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 11 (Thread 0x7fcecd7a3700 (LWP 1131446) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106da4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106da4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106da0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106d80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106d80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 10 (Thread 0x7fcecd3a2700 (LWP 1131445) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106c24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106c24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106c20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106c00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106c00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 9 (Thread 0x7fcecdba4700 (LWP 1131444) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106ea4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106ea4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106ea0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106e80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106e80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 8 (Thread 0x7fcecdfa5700 (LWP 1131443) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106d24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106d24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106d20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106d00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106d00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 7 (Thread 0x7fcece3a6700 (LWP 1131442) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106e24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106e24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106e20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106e00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106e00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 6 (Thread 0x7fcece7a7700 (LWP 1131441) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106fa4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106fa4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106fa0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106f80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106f80) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 5 (Thread 0x7fceceba8700 (LWP 1131440) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc106f24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc106f24) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc106f20) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc106f00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc106f00) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 4 (Thread 0x7fcecefa9700 (LWP 1121308) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc107024) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc107024) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc107020) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc107000) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc107000) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 3 (Thread 0x7fcecf3aa700 (LWP 1121307) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc107124) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc107124) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc107120) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc107100) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc107100) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 2 (Thread 0x7fcecf7ab700 (LWP 1121306) "python3"):
+#0  0x00007fcf1949049d in syscall () from /lib64/libc.so.6
+#1  0x00007fcf17f69fd2 in tbb::detail::r1::futex_wait (comparand=2, futex=0x7fcefc1070a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:100
+#2  tbb::detail::r1::binary_semaphore::P (this=0x7fcefc1070a4) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/semaphore.h:253
+#3  tbb::detail::r1::rml::internal::thread_monitor::wait (this=0x7fcefc1070a0) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/rml_thread_monitor.h:235
+#4  tbb::detail::r1::rml::private_worker::run (this=0x7fcefc107080) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:273
+#5  tbb::detail::r1::rml::private_worker::thread_routine (arg=0x7fcefc107080) at /data/cmsbld/jenkins/workspace/ib-run-pr-tests/testBuildDir/BUILD/el8_amd64_gcc12/external/tbb/v2021.9.0-e785b749a0b6cb9c66dc1d78066210e0/tbb-v2021.9.0/src/tbb/private_server.cpp:221
+#6  0x00007fcf19fbf1ca in start_thread () from /lib64/libpthread.so.0
+#7  0x00007fcf19490953 in clone () from /lib64/libc.so.6
+
+Thread 1 (Thread 0x7fcf1ab38f00 (LWP 1118496) "python3"):
+#0  0x00007fcf1955ed12 in waitpid () from /lib64/libc.so.6
+#1  0x00007fcf194b51e7 in do_system () from /lib64/libc.so.6
+#2  0x00007fcf18375f3d in TUnixSystem::StackTrace() () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libCore.so
+#3  0x00007fcf1864d5f3 in (anonymous namespace)::TExceptionHandlerImp::HandleException(int) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy_backend3_9.so
+#4  0x00007fcf18373891 in TUnixSystem::DispatchSignals(ESignals) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libCore.so
+#5  <signal handler called>
+#6  0x0000000008ff9180 in ?? ()
+#7  0x00007fcf186ba129 in CPyCppyy::op_dealloc_nofree(CPyCppyy::CPPInstance*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy3_9.so
+#8  0x00007fcf186ba241 in CPyCppyy::op_dealloc(CPyCppyy::CPPInstance*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy3_9.so
+#9  0x00007fcf1a512152 in subtype_dealloc (self=0x7fcecc19d640) at Objects/typeobject.c:1353
+#10 0x00007fcf1a465b43 in _Py_DECREF (op=<optimized out>) at ./Include/object.h:430
+#11 frame_dealloc (f=0x68bb080) at Objects/frameobject.c:585
+#12 0x00007fcf1a59e5f5 in _Py_DECREF (op=<optimized out>) at ./Include/object.h:430
+#13 _PyEval_EvalCode (tstate=tstate
+entry=0x4b7030, _co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=<optimized out>, argcount=<optimized out>, kwnames=0x0, kwargs=0x821868, kwcount=<optimized out>, kwstep=1, defs=0x0, defcount=<optimized out>, kwdefs=0x0, closure=0x0, name=0x7fcf1943e5b0, qualname=0x7fcf1943e5b0) at Python/ceval.c:4344
+#14 0x00007fcf1a4b769d in _PyFunction_Vectorcall (func=<optimized out>, stack=<optimized out>, nargsf=<optimized out>, kwnames=<optimized out>) at Objects/call.c:396
+#15 0x00007fcf1a46c0d1 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x821828, callable=0x7fcf18aab160, tstate=0x4b7030) at ./Include/cpython/abstract.h:118
+#16 PyObject_Vectorcall (kwnames=0x0, nargsf=<optimized out>, args=<optimized out>, callable=<optimized out>) at ./Include/cpython/abstract.h:127
+#17 call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x4b7030) at Python/ceval.c:5077
+#18 _PyEval_EvalFrameDefault (tstate=<optimized out>, f=<optimized out>, throwflag=<optimized out>) at Python/ceval.c:3520
+#19 0x00007fcf1a59ea91 in _PyEval_EvalFrame (throwflag=0, f=0x8214d0, tstate=0x4b7030) at ./Include/internal/pycore_ceval.h:40
+#20 _PyEval_EvalCode (tstate=tstate
+entry=0x4b7030, _co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=<optimized out>, argcount=0, kwnames=0x0, kwargs=0x574110, kwcount=0, kwstep=1, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x7fcf1a9e02b0, qualname=0x7fcf1a9e02b0) at Python/ceval.c:4329
+#21 0x00007fcf1a4b769d in _PyFunction_Vectorcall (func=<optimized out>, stack=<optimized out>, nargsf=<optimized out>, kwnames=<optimized out>) at Objects/call.c:396
+#22 0x00007fcf1a46c0d1 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x574110, callable=0x7fcf18aab9d0, tstate=0x4b7030) at ./Include/cpython/abstract.h:118
+#23 PyObject_Vectorcall (kwnames=0x0, nargsf=<optimized out>, args=<optimized out>, callable=<optimized out>) at ./Include/cpython/abstract.h:127
+#24 call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x4b7030) at Python/ceval.c:5077
+#25 _PyEval_EvalFrameDefault (tstate=<optimized out>, f=<optimized out>, throwflag=<optimized out>) at Python/ceval.c:3520
+#26 0x00007fcf1a59ea91 in _PyEval_EvalFrame (throwflag=0, f=0x573f90, tstate=0x4b7030) at ./Include/internal/pycore_ceval.h:40
+#27 _PyEval_EvalCode (tstate=0x4b7030, _co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kwnames=0x0, kwargs=0x0, kwcount=0, kwstep=2, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x0, qualname=0x0) at Python/ceval.c:4329
+#28 0x00007fcf1a59ee32 in _PyEval_EvalCodeWithName (_co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kwnames=kwnames
+entry=0x0, kwargs=0x0, kwcount=0, kwstep=2, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x0, qualname=0x0) at Python/ceval.c:4361
+#29 0x00007fcf1a59ee7b in PyEval_EvalCodeEx (_co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kws=kws
+entry=0x0, kwcount=0, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0) at Python/ceval.c:4377
+#30 0x00007fcf1a59eeab in PyEval_EvalCode (co=co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940) at Python/ceval.c:828
+#31 0x00007fcf1a5de3a9 in run_eval_code_obj (locals=0x7fcf1aa1d940, globals=0x7fcf1aa1d940, co=0x7fcf193b1d40, tstate=0x4b7030) at Python/pythonrun.c:1221
+#32 run_mod (mod=<optimized out>, filename=filename
+entry=0x7fcf1a985780, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, flags=flags
+entry=0x7ffdc2875238, arena=arena
+entry=0x7fcf1a801fd0) at Python/pythonrun.c:1242
+#33 0x00007fcf1a5dfdf2 in pyrun_file (flags=0x7ffdc2875238, closeit=1, locals=0x7fcf1aa1d940, globals=0x7fcf1aa1d940, start=257, filename=0x7fcf1a985780, fp=0x57a720) at Python/pythonrun.c:1140
+#34 pyrun_simple_file (flags=0x7ffdc2875238, closeit=1, filename=0x7fcf1a985780, fp=0x57a720) at Python/pythonrun.c:450
+#35 PyRun_SimpleFileExFlags (fp=fp
+entry=0x57a720, filename=<optimized out>, closeit=closeit
+entry=1, flags=flags
+entry=0x7ffdc2875238) at Python/pythonrun.c:483
+#36 0x00007fcf1a5e0453 in PyRun_AnyFileExFlags (fp=fp
+entry=0x57a720, filename=<optimized out>, closeit=closeit
+entry=1, flags=flags
+entry=0x7ffdc2875238) at Python/pythonrun.c:92
+#37 0x00007fcf1a5fdea8 in pymain_run_file (cf=0x7ffdc2875238, config=0x4b4c30) at Modules/main.c:373
+#38 pymain_run_python (exitcode=0x7ffdc2875230) at Modules/main.c:598
+#39 Py_RunMain () at Modules/main.c:677
+#40 0x00007fcf1a5fe3c7 in pymain_main (args=0x7ffdc2875320) at Modules/main.c:707
+#41 Py_BytesMain (argc=<optimized out>, argv=<optimized out>) at Modules/main.c:731
+#42 0x00007fcf19491865 in __libc_start_main () from /lib64/libc.so.6
+#43 0x000000000040107e in _start ()
+===========================================================
+
+
+The lines below might hint at the cause of the crash. If you see question
+marks as part of the stack trace, try to recompile with debugging information
+enabled and export CLING_DEBUG=1 environment variable before running.
+You may get help by asking at the ROOT forum https://root.cern/forum
+preferably using the command (.forum bug) in the ROOT prompt.
+Only if you are really convinced it is a bug in ROOT then please submit a
+report at https://root.cern/bugs or (preferably) using the command (.gh bug) in
+the ROOT prompt. Please post the ENTIRE stack trace
+from above as an attachment in addition to anything else
+that might help us fixing this issue.
+===========================================================
+#6  0x0000000008ff9180 in ?? ()
+#7  0x00007fcf186ba129 in CPyCppyy::op_dealloc_nofree(CPyCppyy::CPPInstance*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy3_9.so
+#8  0x00007fcf186ba241 in CPyCppyy::op_dealloc(CPyCppyy::CPPInstance*) () from /cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.09-0fd387670244508fd2077d7feaf8b1c8/lib/libcppyy3_9.so
+#9  0x00007fcf1a512152 in subtype_dealloc (self=0x7fcecc19d640) at Objects/typeobject.c:1353
+#10 0x00007fcf1a465b43 in _Py_DECREF (op=<optimized out>) at ./Include/object.h:430
+#11 frame_dealloc (f=0x68bb080) at Objects/frameobject.c:585
+#12 0x00007fcf1a59e5f5 in _Py_DECREF (op=<optimized out>) at ./Include/object.h:430
+#13 _PyEval_EvalCode (tstate=tstate
+entry=0x4b7030, _co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=<optimized out>, argcount=<optimized out>, kwnames=0x0, kwargs=0x821868, kwcount=<optimized out>, kwstep=1, defs=0x0, defcount=<optimized out>, kwdefs=0x0, closure=0x0, name=0x7fcf1943e5b0, qualname=0x7fcf1943e5b0) at Python/ceval.c:4344
+#14 0x00007fcf1a4b769d in _PyFunction_Vectorcall (func=<optimized out>, stack=<optimized out>, nargsf=<optimized out>, kwnames=<optimized out>) at Objects/call.c:396
+#15 0x00007fcf1a46c0d1 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x821828, callable=0x7fcf18aab160, tstate=0x4b7030) at ./Include/cpython/abstract.h:118
+#16 PyObject_Vectorcall (kwnames=0x0, nargsf=<optimized out>, args=<optimized out>, callable=<optimized out>) at ./Include/cpython/abstract.h:127
+#17 call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x4b7030) at Python/ceval.c:5077
+#18 _PyEval_EvalFrameDefault (tstate=<optimized out>, f=<optimized out>, throwflag=<optimized out>) at Python/ceval.c:3520
+#19 0x00007fcf1a59ea91 in _PyEval_EvalFrame (throwflag=0, f=0x8214d0, tstate=0x4b7030) at ./Include/internal/pycore_ceval.h:40
+#20 _PyEval_EvalCode (tstate=tstate
+entry=0x4b7030, _co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=<optimized out>, argcount=0, kwnames=0x0, kwargs=0x574110, kwcount=0, kwstep=1, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x7fcf1a9e02b0, qualname=0x7fcf1a9e02b0) at Python/ceval.c:4329
+#21 0x00007fcf1a4b769d in _PyFunction_Vectorcall (func=<optimized out>, stack=<optimized out>, nargsf=<optimized out>, kwnames=<optimized out>) at Objects/call.c:396
+#22 0x00007fcf1a46c0d1 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x574110, callable=0x7fcf18aab9d0, tstate=0x4b7030) at ./Include/cpython/abstract.h:118
+#23 PyObject_Vectorcall (kwnames=0x0, nargsf=<optimized out>, args=<optimized out>, callable=<optimized out>) at ./Include/cpython/abstract.h:127
+#24 call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x4b7030) at Python/ceval.c:5077
+#25 _PyEval_EvalFrameDefault (tstate=<optimized out>, f=<optimized out>, throwflag=<optimized out>) at Python/ceval.c:3520
+#26 0x00007fcf1a59ea91 in _PyEval_EvalFrame (throwflag=0, f=0x573f90, tstate=0x4b7030) at ./Include/internal/pycore_ceval.h:40
+#27 _PyEval_EvalCode (tstate=0x4b7030, _co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kwnames=0x0, kwargs=0x0, kwcount=0, kwstep=2, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x0, qualname=0x0) at Python/ceval.c:4329
+#28 0x00007fcf1a59ee32 in _PyEval_EvalCodeWithName (_co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kwnames=kwnames
+entry=0x0, kwargs=0x0, kwcount=0, kwstep=2, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0, name=0x0, qualname=0x0) at Python/ceval.c:4361
+#29 0x00007fcf1a59ee7b in PyEval_EvalCodeEx (_co=_co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, args=args
+entry=0x0, argcount=argcount
+entry=0, kws=kws
+entry=0x0, kwcount=0, defs=0x0, defcount=0, kwdefs=0x0, closure=0x0) at Python/ceval.c:4377
+#30 0x00007fcf1a59eeab in PyEval_EvalCode (co=co
+entry=0x7fcf193b1d40, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940) at Python/ceval.c:828
+#31 0x00007fcf1a5de3a9 in run_eval_code_obj (locals=0x7fcf1aa1d940, globals=0x7fcf1aa1d940, co=0x7fcf193b1d40, tstate=0x4b7030) at Python/pythonrun.c:1221
+#32 run_mod (mod=<optimized out>, filename=filename
+entry=0x7fcf1a985780, globals=globals
+entry=0x7fcf1aa1d940, locals=locals
+entry=0x7fcf1aa1d940, flags=flags
+entry=0x7ffdc2875238, arena=arena
+entry=0x7fcf1a801fd0) at Python/pythonrun.c:1242
+#33 0x00007fcf1a5dfdf2 in pyrun_file (flags=0x7ffdc2875238, closeit=1, locals=0x7fcf1aa1d940, globals=0x7fcf1aa1d940, start=257, filename=0x7fcf1a985780, fp=0x57a720) at Python/pythonrun.c:1140
+#34 pyrun_simple_file (flags=0x7ffdc2875238, closeit=1, filename=0x7fcf1a985780, fp=0x57a720) at Python/pythonrun.c:450
+#35 PyRun_SimpleFileExFlags (fp=fp
+entry=0x57a720, filename=<optimized out>, closeit=closeit
+entry=1, flags=flags
+entry=0x7ffdc2875238) at Python/pythonrun.c:483
+#36 0x00007fcf1a5e0453 in PyRun_AnyFileExFlags (fp=fp
+entry=0x57a720, filename=<optimized out>, closeit=closeit
+entry=1, flags=flags
+entry=0x7ffdc2875238) at Python/pythonrun.c:92
+#37 0x00007fcf1a5fdea8 in pymain_run_file (cf=0x7ffdc2875238, config=0x4b4c30) at Modules/main.c:373
+#38 pymain_run_python (exitcode=0x7ffdc2875230) at Modules/main.c:598
+#39 Py_RunMain () at Modules/main.c:677
+#40 0x00007fcf1a5fe3c7 in pymain_main (args=0x7ffdc2875320) at Modules/main.c:707
+#41 Py_BytesMain (argc=<optimized out>, argv=<optimized out>) at Modules/main.c:731
+#42 0x00007fcf19491865 in __libc_start_main () from /lib64/libc.so.6
+#43 0x000000000040107e in _start ()
+===========================================================
+
+
+===========================================================================
+end_utc     : 2026-09-28T09:34:34Z
+wall_s      : 3726
+EXIT        : 129
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_size_options_2018_20260928_083223.log
+=== END ===================================================================

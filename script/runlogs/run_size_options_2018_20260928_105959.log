@@ -1,0 +1,210 @@
+=== RUNLOG ================================================================
+step        : size_options_2018
+start_utc   : 2026-09-28T11:00:01Z
+host        : lxplus9110   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 0a4af6d   modified_tracked_files: 1
+cmd         : python3 script/size_options.py --only 2018UL:MC:TTbar_Hadronic --only 2018UL:MC:TTbar_SemiLep --only 2018UL:MC:TTbar_DiLep --only 2018UL:MC:ST_t_top --only 2018UL:MC:QCD_HT300to500 --only 2018UL:MC:QCD_HT500to700 --only 2018UL:MC:QCD_HT700to1000 --only 2018UL:MC:QCD_HT1000to1500 --only 2018UL:Data:JetHT_Run2018A --only 2018UL:Data:JetHT_Run2018D --only 2018UL:Data:SingleMuon_Run2018D 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-28 13:00:01.057058152 +0200 CEST m=+0.006477200
+proxy_left_s: 330391
+===========================================================================
+# mapping: config dataset groups -> measured sample group (planned samples)
+  2024 MC (60 datasets)
+    tt_semilep     3 ds      536170459 ev  <- 2024:tt_semilep
+    tt_had         3 ds      517150275 ev  <- 2024:tt_had
+    tt_dilep       3 ds      512187459 ev  <- 2024:tt_dilep
+    wjets:400      1 ds      401294004 ev  <- 2024:wjets:400
+    zjets:400      1 ds      181710909 ev  <- 2024:zjets:400
+    st_had         4 ds      145983708 ev  <- 2024:st_had
+    st_lep         4 ds      142066199 ev  <- 2024:st_lep
+    st_tw          6 ds      136155952 ev  <- 2024:st_tw
+    qcd:600        1 ds      128235651 ev  <- 2024:qcd:600
+    qcd:800        1 ds      124956604 ev  <- 2024:qcd:1000
+    qcd:200        1 ds      115255250 ev  <- 2024:qcd:200
+    qcd:1000       1 ds      114436708 ev  <- 2024:qcd:1000
+    qcd:1500       1 ds      113208234 ev  <- 2024:qcd:1500
+    ttx            8 ds      110167561 ev  <- 2024:ttx
+    qcd:1200       1 ds      107835822 ev  <- 2024:qcd:1000
+    qcd:400        1 ds      106725734 ev  <- 2024:qcd:400
+    vv             3 ds       99334793 ev  <- 2024:vv
+    qcd:2000       1 ds       91953615 ev  <- 2024:qcd:1500
+    multitop      10 ds       90765949 ev  <- 2024:multitop
+    zjets:1500     1 ds       67205770 ev  <- 2024:zjets:1500
+    wjets:800      1 ds       53389988 ev  <- 2024:wjets:800
+    wjets:2500     1 ds       52106542 ev  <- 2024:wjets:800
+    zjets:800      1 ds       51509657 ev  <- 2024:zjets:1500
+    wjets:1500     1 ds       48297099 ev  <- 2024:wjets:800
+    zjets:2500     1 ds       41893516 ev  <- 2024:zjets:1500
+  2024 Data (32 datasets)
+    pd_muon       16 ds     3541175807 ev  <- 2024:pd_muon
+    pd_jet        16 ds     2417304572 ev  <- 2024:pd_jet
+  2018UL MC (42 datasets)
+    tt_semilep     2 ds      470511681 ev  <- 2018UL:tt_semilep
+    tt_had         2 ds      351194064 ev  <- 2018UL:tt_had
+    st_incl        2 ds      274589000 ev  <- 2018UL:st_incl
+    tt_dilep       2 ds      150868850 ev  <- 2018UL:tt_dilep
+    ttx            7 ds       97638492 ev  <- 2024:ttx
+    qcd:300        1 ds       61705174 ev  <- 2018UL:qcd:300
+    qcd:200        1 ds       57336623 ev  <- 2018UL:qcd:300
+    qcd:500        1 ds       49184771 ev  <- 2018UL:qcd:500
+    qcd:700        1 ds       48506751 ev  <- 2018UL:qcd:700
+    multitop       7 ds       34000000 ev  <- 2024:multitop
+    vv             3 ds       27145000 ev  <- 2024:vv
+    st_lep         1 ds       19365999 ev  <- 2024:st_lep
+    st_had         1 ds       16391000 ev  <- 2024:st_had
+    st_tw          2 ds       15705000 ev  <- 2024:st_tw
+    qcd:1000       1 ds       14527915 ev  <- 2018UL:qcd:1000
+    zjets:400      1 ds       13930474 ev  <- 2024:zjets:400
+    wjets:600      1 ds       13633226 ev  <- 2024:wjets:800
+    wjets:800      1 ds       13581343 ev  <- 2024:wjets:800
+    zjets:600      1 ds       12029507 ev  <- 2024:zjets:400
+    qcd:1500       1 ds       10871473 ev  <- 2018UL:qcd:1000
+    zjets:800      1 ds        9681521 ev  <- 2024:zjets:1500
+    wjets:400      1 ds        9335298 ev  <- 2024:wjets:400
+    qcd:2000       1 ds        5374711 ev  <- 2018UL:qcd:1000
+  2018UL Data (8 datasets)
+    pd_muon        4 ds      985393490 ev  <- 2018UL:pd_muon
+    pd_jet         4 ds      675557252 ev  <- 2018UL:pd_jet
+# slim drafts for branches/branch_hadronic_2024_v15_MC.txt: slimA, slimB, slimC
+# slim drafts for branches/branch_hadronic_2024_v15_Data.txt: slimA, slimB, slimC (= previous tier)
+# slim drafts for branches/branch_hadronic_2018_v15_MC.txt: slimA, slimB, slimC
+# slim drafts for branches/branch_hadronic_2018_v15_Data.txt: slimA, slimB, slimC (= previous tier)
+# skims: 6jcount = Sum$(abs(Jet_eta)<2.5)>=6 | 6j20 = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6 | 6j25 = Sum$(Jet_pt>25 && abs(Jet_eta)<2.5)>=6 | 6j30 = Sum$(Jet_pt>30 && abs(Jet_eta)<2.5)>=6 | 6j20ht400 = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6 && Sum$(Jet_pt*(Jet_pt>20 && abs(Jet_eta)<2.5))>400
+# n per sample 10000 | TSV script/runlogs/size_options_meas.tsv (10 usable rows) | signatures 2024:MC=343a47f1420e 2024:Data=b42ae0aeb3a9 2018UL:MC=2fd06e7d24ba 2018UL:Data=fa5fe5d75158
+# measurement v2: one child process per sample; a ROOT error line fails the sample (no row); rows of an older version carry another signature and are not used
+# workdir /tmp/junghyun/size_options_i1a1i51g | threads 4
+era    tier key                                group         n_in   base   meta       6jcount          6j20          6j25          6j30     6j20ht400  hdrkB bias<=  comp  nbr
+  (kB per INPUT event; every skim column is 'pass fraction, kB'; base = first n_in events copied at LZMA:9, meta = kept branches of the whole input file; hdrkB = per-file tree header; comp = input compression, 209 = LZMA:9; nbr = kept branches, pilot output had 674 (ZZ) / 646 (JetMET0 H))
+2018UL MC   TTbar_Hadronic                     tt_had       10000  1.844  1.847  0.735  1.417  0.575  1.131  0.425  0.861  0.297  0.610  0.321  0.663   26.8  0.011   209  717
+       488 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v2/100000/002d2fd2-a3b0-45f0-8e23-2e0304114149.root
+       slim drafts on the whole input file: slimA -14.9% (635 br), slimB -26.7% (551 br), slimC -32.3% (549 br)
+       kept bytes by family (whole input file): Jet 0.699 (38%), GenPart 0.382 (21%), Electron 0.151 (8%), Muon 0.107 (6%), LHEPdfWeight 0.102 (6%), GenJet 0.102 (6%), LHEPart 0.092 (5%), HLT_* 0.033 (2%), PuppiMET 0.024 (1%), PFMET 0.024 (1%), Rho 0.021 (1%), PV 0.017 (1%)
+2018UL MC   TTbar_SemiLep                      tt_semilep   10000  1.826  1.831  0.521  1.040  0.356  0.735  0.235  0.495  0.156  0.343  0.186  0.404   26.8  0.011   209  717
+       493 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v2/130000/00697485-5ff4-4991-8ba4-b8d1e80c4391.root
+       slim drafts on the whole input file: slimA -16.1% (635 br), slimB -28.0% (551 br), slimC -33.5% (549 br)
+2018UL MC   TTbar_DiLep                        tt_dilep     10000  1.777  1.779  0.312  0.647  0.186  0.402  0.117  0.266  0.073  0.179  0.102  0.239   26.8  0.011   209  717
+       463 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v2/2810000/034bac3b-8b10-48a5-af32-5c5247f38065.root
+       slim drafts on the whole input file: slimA -17.2% (635 br), slimB -29.1% (551 br), slimC -34.9% (549 br)
+2018UL MC   ST_t_top                           st_incl      10000  1.463  1.477  0.147  0.284  0.071  0.151  0.038  0.092  0.022  0.061  0.032  0.081   26.8  0.011   209  717
+       367 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/009deac4-e54b-48ef-bcce-c02436e53fff.root
+       slim drafts on the whole input file: slimA -15.6% (635 br), slimB -26.0% (551 br), slimC -34.8% (549 br)
+2018UL MC   QCD_HT300to500                     qcd:300      10000  1.355  1.366  0.176  0.303  0.075  0.145  0.033  0.075  0.015  0.044  0.032  0.073   26.8  0.011   209  717
+       362 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT300to500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/06f87fa3-6316-4e57-bd0f-c8f9cc5ba13c.root
+       slim drafts on the whole input file: slimA -14.0% (635 br), slimB -24.8% (551 br), slimC -32.9% (549 br)
+2018UL MC   QCD_HT500to700                     qcd:500      10000  1.502  1.507  0.303  0.542  0.170  0.320  0.100  0.201  0.060  0.130  0.167  0.314   26.7  0.011   209  717
+       441 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/073cc70c-7c59-4505-8a3f-aa3ff3ffbf8b.root
+       slim drafts on the whole input file: slimA -13.8% (635 br), slimB -24.9% (551 br), slimC -32.4% (549 br)
+2018UL MC   QCD_HT700to1000                    qcd:700      10000  1.598  1.614  0.360  0.676  0.229  0.443  0.155  0.314  0.107  0.225  0.229  0.443   26.7  0.011   209  717
+       543 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT700to1000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/007ef96e-27c7-4fc0-8c39-8b287021cc48.root
+       slim drafts on the whole input file: slimA -13.9% (635 br), slimB -25.1% (551 br), slimC -32.4% (549 br)
+2018UL MC   QCD_HT1000to1500                   qcd:1000     10000  1.706  1.732  0.417  0.822  0.283  0.577  0.204  0.425  0.150  0.325  0.283  0.577   26.7  0.011   209  717
+       494 s, smallest stored Jet_pt 15.0 GeV, /store/mc/RunIISummer20UL18NanoAODv15/QCD_HT1000to1500_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/100000/11401ba3-6700-4326-b0ea-e7ef2920b477.root
+       slim drafts on the whole input file: slimA -14.1% (635 br), slimB -25.4% (551 br), slimC -32.4% (549 br)
+2018UL Data JetHT_Run2018A                     pd_jet       10000  0.939  0.880  0.361  0.432  0.242  0.301  0.175  0.229  0.132  0.180  0.234  0.291   23.2  0.010   209  653
+       172 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2018A/JetHT/NANOAOD/UL2018_NanoAODv15-v2/120000/065411b1-69f8-4e56-8247-26c3204b22f7.root
+       slim drafts on the whole input file: slimA -15.7% (595 br), slimB -35.0% (509 br)
+2018UL Data JetHT_Run2018D                     pd_jet       10000  0.815  0.857  0.265  0.306  0.178  0.220  0.126  0.166  0.095  0.133  0.172  0.214   23.2  0.010   209  664
+       183 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2018D/JetHT/NANOAOD/UL2018_NanoAODv15-v2/120000/02def2b8-9c7d-4d06-9f0f-c2c7909b481e.root
+       slim drafts on the whole input file: slimA -15.7% (606 br), slimB -35.0% (522 br)
+       kept bytes by family (whole input file): Jet 0.492 (57%), Electron 0.120 (14%), Muon 0.105 (12%), PuppiMET 0.025 (3%), PFMET 0.024 (3%), HLT_* 0.021 (3%), Rho 0.020 (2%), PV 0.017 (2%), OtherPV 0.011 (1%), RawPuppiMET 0.008 (1%), RawPFMET 0.008 (1%), Flag_* 0.003 (0%)
+2018UL Data SingleMuon_Run2018D                pd_muon      10000  0.666  0.651  0.044  0.070  0.019  0.041  0.011  0.030  0.007  0.025  0.014  0.034   23.1  0.010   209  658
+       38 s, smallest stored Jet_pt 15.0 GeV, /store/data/Run2018D/SingleMuon/NANOAOD/UL2018_NanoAODv15-v2/120000/00b21657-67e8-4dc3-8bd5-2b87f085b673.root
+       slim drafts on the whole input file: slimA -18.8% (600 br), slimB -37.1% (516 br)
+
+# projection, current branch lists: TB = DAS events x kB per input event of the mapped group (+ one tree header per DAS file)
+== 2024 MC: 60 datasets, 2468115811 events, 5726 files
+   TB    base   4.29  meta   4.32  6jcount   2.24  6j20   1.59  6j25   1.14  6j30   0.81  6j20ht400   1.08
+   kept events  6jcount 1.142e9 (46.3%)  6j20 0.789e9 (32.0%)  6j25 0.547e9 (22.1%)  6j30 0.374e9 (15.2%)  6j20ht400 0.518e9 (21.0%)
+   group        measured as                     events       base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+   tt_semilep   2018UL:tt_semilep            536170459      0.979      0.982      0.558      0.394      0.265      0.184      0.217
+   tt_had       2018UL:tt_had                517150275      0.954      0.955      0.733      0.585      0.445      0.316      0.343
+   tt_dilep     2018UL:tt_dilep              512187459      0.910      0.911      0.332      0.206      0.136      0.092      0.123
+   qcd:600      2018UL:qcd:700               128235651      0.205      0.207      0.087      0.057      0.040      0.029      0.057
+   qcd:800      2018UL:qcd:700               124956604      0.200      0.202      0.084      0.055      0.039      0.028      0.055
+   qcd:1000     2018UL:qcd:1000              114436708      0.195      0.198      0.094      0.066      0.049      0.037      0.066
+   qcd:1500     2018UL:qcd:1000              113208234      0.193      0.196      0.093      0.065      0.048      0.037      0.065
+   qcd:1200     2018UL:qcd:1000              107835822      0.184      0.187      0.089      0.062      0.046      0.035      0.062
+   qcd:400      2018UL:qcd:500               106725734      0.160      0.161      0.058      0.034      0.021      0.014      0.033
+   qcd:2000     2018UL:qcd:1000               91953615      0.157      0.159      0.076      0.053      0.039      0.030      0.053
+   qcd:200      2018UL:qcd:300               115255250      0.156      0.157      0.035      0.017      0.009      0.005      0.008
+== 2024 Data: 32 datasets, 5958480379 events, 7811 files
+   TB    base   4.48  meta   4.40  6jcount   1.14  6j20   0.78  6j25   0.58  6j30   0.47  6j20ht400   0.73
+   kept events  6jcount 0.913e9 (15.3%)  6j20 0.576e9 (9.7%)  6j25 0.403e9 (6.8%)  6j30 0.301e9 (5.1%)  6j20ht400 0.540e9 (9.1%)
+   group        measured as                     events       base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+   pd_muon      2018UL:pd_muon              3541175807      2.359      2.305      0.249      0.147      0.106      0.088      0.122
+   pd_jet       2018UL:pd_jet               2417304572      2.121      2.100      0.892      0.629      0.477      0.378      0.611
+== 2018UL MC: 42 datasets, 1494671013 events, 1816 files
+   TB    base   2.54  meta   2.55  6jcount   1.28  6j20   0.92  6j25   0.65  6j30   0.45  6j20ht400   0.54
+   kept events  6jcount 0.657e9 (44.0%)  6j20 0.454e9 (30.4%)  6j25 0.311e9 (20.8%)  6j30 0.209e9 (14.0%)  6j20ht400 0.256e9 (17.1%)
+   group        measured as                     events       base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+   tt_semilep   2018UL:tt_semilep            470511681      0.859      0.862      0.489      0.346      0.233      0.161      0.190
+   tt_had       2018UL:tt_had                351194064      0.648      0.649      0.498      0.397      0.302      0.214      0.233
+   st_incl      2018UL:st_incl               274589000      0.402      0.405      0.078      0.042      0.025      0.017      0.022
+   tt_dilep     2018UL:tt_dilep              150868850      0.268      0.268      0.098      0.061      0.040      0.027      0.036
+   qcd:300      2018UL:qcd:300                61705174      0.084      0.084      0.019      0.009      0.005      0.003      0.005
+   qcd:200      2018UL:qcd:300                57336623      0.078      0.078      0.017      0.008      0.004      0.002      0.004
+   qcd:700      2018UL:qcd:700                48506751      0.077      0.078      0.033      0.022      0.015      0.011      0.021
+   qcd:500      2018UL:qcd:500                49184771      0.074      0.074      0.027      0.016      0.010      0.006      0.015
+   qcd:1000     2018UL:qcd:1000               14527915      0.025      0.025      0.012      0.008      0.006      0.005      0.008
+   qcd:1500     2018UL:qcd:1000               10871473      0.019      0.019      0.009      0.006      0.005      0.004      0.006
+   qcd:2000     2018UL:qcd:1000                5374711      0.009      0.009      0.004      0.003      0.002      0.002      0.003
+== 2018UL Data: 8 datasets, 1660950742 events, 1466 files
+   TB    base   1.25  meta   1.23  6jcount   0.32  6j20   0.22  6j25   0.16  6j30   0.13  6j20ht400   0.20
+   kept events  6jcount 0.255e9 (15.4%)  6j20 0.161e9 (9.7%)  6j25 0.113e9 (6.8%)  6j30 0.084e9 (5.1%)  6j20ht400 0.151e9 (9.1%)
+   group        measured as                     events       base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+   pd_muon      2018UL:pd_muon               985393490      0.656      0.641      0.069      0.041      0.029      0.024      0.034
+   pd_jet       2018UL:pd_jet                675557252      0.593      0.587      0.249      0.176      0.133      0.106      0.171
+
+# PARTIAL: 70 datasets (1904318507 events) have no measured group, so the totals below are too LOW. Missing: 2018UL MC multitop (7 ds, 34000000 ev); 2018UL MC st_had (1 ds, 16391000 ev); 2018UL MC st_lep (1 ds, 19365999 ev); 2018UL MC st_tw (2 ds, 15705000 ev); 2018UL MC ttx (7 ds, 97638492 ev); 2018UL MC vv (3 ds, 27145000 ev); 2018UL MC wjets:400 (1 ds, 9335298 ev); 2018UL MC wjets:600 (1 ds, 13633226 ev); 2018UL MC wjets:800 (1 ds, 13581343 ev); 2018UL MC zjets:400 (1 ds, 13930474 ev); 2018UL MC zjets:600 (1 ds, 12029507 ev); 2018UL MC zjets:800 (1 ds, 9681521 ev); 2024 MC multitop (10 ds, 90765949 ev); 2024 MC st_had (4 ds, 145983708 ev); 2024 MC st_lep (4 ds, 142066199 ev); 2024 MC st_tw (6 ds, 136155952 ev); 2024 MC ttx (8 ds, 110167561 ev); 2024 MC vv (3 ds, 99334793 ev); 2024 MC wjets:1500 (1 ds, 48297099 ev); 2024 MC wjets:2500 (1 ds, 52106542 ev); 2024 MC wjets:400 (1 ds, 401294004 ev); 2024 MC wjets:800 (1 ds, 53389988 ev); 2024 MC zjets:1500 (1 ds, 67205770 ev); 2024 MC zjets:2500 (1 ds, 41893516 ev); 2024 MC zjets:400 (1 ds, 181710909 ev); 2024 MC zjets:800 (1 ds, 51509657 ev)
+TOTAL TB   base  12.56  meta  12.50  6jcount   4.98  6j20   3.50  6j25   2.53  6j30   1.85  6j20ht400   2.56  (PARTIAL)
+   base        12.56 TB  > 10 TB  (PARTIAL)
+   meta        12.50 TB  > 10 TB  (PARTIAL)
+   6jcount      4.98 TB  <= 5 TB  (PARTIAL)
+   6j20         3.50 TB  <= 5 TB  (PARTIAL)
+   6j25         2.53 TB  <= 5 TB  (PARTIAL)
+   6j30         1.85 TB  <= 5 TB  (PARTIAL)
+   6j20ht400    2.56 TB  <= 5 TB  (PARTIAL)
+
+# projection, slimA drafts (script/drafts/, events as above): TB = DAS events x kB per input event of the mapped group (+ one tree header per DAS file)
+   2024   MC   TB  base   3.63  meta   3.65  6jcount   1.90  6j20   1.36  6j25   0.97  6j30   0.69  6j20ht400   0.93
+   2024   Data TB  base   3.70  meta   3.64  6jcount   0.97  6j20   0.66  6j25   0.50  6j30   0.40  6j20ht400   0.62
+   2018UL MC   TB  base   2.15  meta   2.16  6jcount   1.09  6j20   0.78  6j25   0.55  6j30   0.38  6j20ht400   0.46
+   2018UL Data TB  base   1.03  meta   1.02  6jcount   0.27  6j20   0.18  6j25   0.14  6j30   0.11  6j20ht400   0.17
+
+# PARTIAL: 70 datasets (1904318507 events) have no measured group, so the totals below are too LOW. Missing: 2018UL MC multitop (7 ds, 34000000 ev); 2018UL MC st_had (1 ds, 16391000 ev); 2018UL MC st_lep (1 ds, 19365999 ev); 2018UL MC st_tw (2 ds, 15705000 ev); 2018UL MC ttx (7 ds, 97638492 ev); 2018UL MC vv (3 ds, 27145000 ev); 2018UL MC wjets:400 (1 ds, 9335298 ev); 2018UL MC wjets:600 (1 ds, 13633226 ev); 2018UL MC wjets:800 (1 ds, 13581343 ev); 2018UL MC zjets:400 (1 ds, 13930474 ev); 2018UL MC zjets:600 (1 ds, 12029507 ev); 2018UL MC zjets:800 (1 ds, 9681521 ev); 2024 MC multitop (10 ds, 90765949 ev); 2024 MC st_had (4 ds, 145983708 ev); 2024 MC st_lep (4 ds, 142066199 ev); 2024 MC st_tw (6 ds, 136155952 ev); 2024 MC ttx (8 ds, 110167561 ev); 2024 MC vv (3 ds, 99334793 ev); 2024 MC wjets:1500 (1 ds, 48297099 ev); 2024 MC wjets:2500 (1 ds, 52106542 ev); 2024 MC wjets:400 (1 ds, 401294004 ev); 2024 MC wjets:800 (1 ds, 53389988 ev); 2024 MC zjets:1500 (1 ds, 67205770 ev); 2024 MC zjets:2500 (1 ds, 41893516 ev); 2024 MC zjets:400 (1 ds, 181710909 ev); 2024 MC zjets:800 (1 ds, 51509657 ev)
+TOTAL TB   base  10.51  meta  10.47  6jcount   4.23  6j20   2.98  6j25   2.16  6j30   1.58  6j20ht400   2.19  (PARTIAL)
+
+# projection, slimB drafts (script/drafts/, events as above): TB = DAS events x kB per input event of the mapped group (+ one tree header per DAS file)
+   2024   MC   TB  base   3.13  meta   3.15  6jcount   1.63  6j20   1.16  6j25   0.83  6j30   0.59  6j20ht400   0.79
+   2024   Data TB  base   2.86  meta   2.81  6jcount   0.74  6j20   0.50  6j25   0.38  6j30   0.31  6j20ht400   0.48
+   2018UL MC   TB  base   1.85  meta   1.86  6jcount   0.93  6j20   0.66  6j25   0.47  6j30   0.33  6j20ht400   0.39
+   2018UL Data TB  base   0.80  meta   0.78  6jcount   0.21  6j20   0.14  6j25   0.11  6j30   0.09  6j20ht400   0.13
+
+# PARTIAL: 70 datasets (1904318507 events) have no measured group, so the totals below are too LOW. Missing: 2018UL MC multitop (7 ds, 34000000 ev); 2018UL MC st_had (1 ds, 16391000 ev); 2018UL MC st_lep (1 ds, 19365999 ev); 2018UL MC st_tw (2 ds, 15705000 ev); 2018UL MC ttx (7 ds, 97638492 ev); 2018UL MC vv (3 ds, 27145000 ev); 2018UL MC wjets:400 (1 ds, 9335298 ev); 2018UL MC wjets:600 (1 ds, 13633226 ev); 2018UL MC wjets:800 (1 ds, 13581343 ev); 2018UL MC zjets:400 (1 ds, 13930474 ev); 2018UL MC zjets:600 (1 ds, 12029507 ev); 2018UL MC zjets:800 (1 ds, 9681521 ev); 2024 MC multitop (10 ds, 90765949 ev); 2024 MC st_had (4 ds, 145983708 ev); 2024 MC st_lep (4 ds, 142066199 ev); 2024 MC st_tw (6 ds, 136155952 ev); 2024 MC ttx (8 ds, 110167561 ev); 2024 MC vv (3 ds, 99334793 ev); 2024 MC wjets:1500 (1 ds, 48297099 ev); 2024 MC wjets:2500 (1 ds, 52106542 ev); 2024 MC wjets:400 (1 ds, 401294004 ev); 2024 MC wjets:800 (1 ds, 53389988 ev); 2024 MC zjets:1500 (1 ds, 67205770 ev); 2024 MC zjets:2500 (1 ds, 41893516 ev); 2024 MC zjets:400 (1 ds, 181710909 ev); 2024 MC zjets:800 (1 ds, 51509657 ev)
+TOTAL TB   base   8.65  meta   8.61  6jcount   3.50  6j20   2.47  6j25   1.79  6j30   1.30  6j20ht400   1.80  (PARTIAL)
+
+# projection, slimC drafts (script/drafts/, events as above): TB = DAS events x kB per input event of the mapped group (+ one tree header per DAS file)
+   2024   MC   TB  base   2.87  meta   2.89  6jcount   1.51  6j20   1.08  6j25   0.77  6j30   0.55  6j20ht400   0.73
+   2024   Data TB  base   2.86  meta   2.81  6jcount   0.74  6j20   0.50  6j25   0.38  6j30   0.31  6j20ht400   0.48
+   2018UL MC   TB  base   1.69  meta   1.70  6jcount   0.86  6j20   0.62  6j25   0.44  6j30   0.31  6j20ht400   0.37
+   2018UL Data TB  base   0.80  meta   0.78  6jcount   0.21  6j20   0.14  6j25   0.11  6j30   0.09  6j20ht400   0.13
+
+# PARTIAL: 70 datasets (1904318507 events) have no measured group, so the totals below are too LOW. Missing: 2018UL MC multitop (7 ds, 34000000 ev); 2018UL MC st_had (1 ds, 16391000 ev); 2018UL MC st_lep (1 ds, 19365999 ev); 2018UL MC st_tw (2 ds, 15705000 ev); 2018UL MC ttx (7 ds, 97638492 ev); 2018UL MC vv (3 ds, 27145000 ev); 2018UL MC wjets:400 (1 ds, 9335298 ev); 2018UL MC wjets:600 (1 ds, 13633226 ev); 2018UL MC wjets:800 (1 ds, 13581343 ev); 2018UL MC zjets:400 (1 ds, 13930474 ev); 2018UL MC zjets:600 (1 ds, 12029507 ev); 2018UL MC zjets:800 (1 ds, 9681521 ev); 2024 MC multitop (10 ds, 90765949 ev); 2024 MC st_had (4 ds, 145983708 ev); 2024 MC st_lep (4 ds, 142066199 ev); 2024 MC st_tw (6 ds, 136155952 ev); 2024 MC ttx (8 ds, 110167561 ev); 2024 MC vv (3 ds, 99334793 ev); 2024 MC wjets:1500 (1 ds, 48297099 ev); 2024 MC wjets:2500 (1 ds, 52106542 ev); 2024 MC wjets:400 (1 ds, 401294004 ev); 2024 MC wjets:800 (1 ds, 53389988 ev); 2024 MC zjets:1500 (1 ds, 67205770 ev); 2024 MC zjets:2500 (1 ds, 41893516 ev); 2024 MC zjets:400 (1 ds, 181710909 ev); 2024 MC zjets:800 (1 ds, 51509657 ev)
+TOTAL TB   base   8.22  meta   8.18  6jcount   3.32  6j20   2.34  6j25   1.70  6j30   1.24  6j20ht400   1.71  (PARTIAL)
+
+# TOTAL TB of the four configs: branch list (rows) x event selection (columns)
+  list          base       meta    6jcount       6j20       6j25       6j30  6j20ht400
+  current      12.56      12.50       4.98       3.50       2.53       1.85       2.56  (PARTIAL)
+  slimA        10.51      10.47       4.23       2.98       2.16       1.58       2.19  (PARTIAL)
+  slimB         8.65       8.61       3.50       2.47       1.79       1.30       1.80  (PARTIAL)
+  slimC         8.22       8.18       3.32       2.34       1.70       1.24       1.71  (PARTIAL)
+===========================================================================
+end_utc     : 2026-09-28T12:07:29Z
+wall_s      : 4047
+EXIT        : 1
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_size_options_2018_20260928_105959.log
+=== END ===================================================================

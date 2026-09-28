@@ -1,0 +1,63 @@
+=== RUNLOG ================================================================
+step        : v1_preflight
+start_utc   : 2026-09-27T17:49:36Z
+host        : lxplus9109   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 571e22a   modified_tracked_files: 1
+cmd         : python3 scripts/submit_validation_condor.py --era 2018 --samples ttbb_Hadronic\,ttbb_SemiLeptonic\,ttbb_2L2Nu\,TTToHadronic\,TTToSemiLeptonic\,TTTo2L2Nu --nano-filelist-dir filelists/nano2018v15 --out-base /eos/user/j/junghyun/TTHHGenCategoryTools/valout2018v15 --work-base condor_val2018v15 --preflight 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-27 19:49:36.791387343 +0200 CEST m=+0.000742781
+proxy_left_s: 691187
+===========================================================================
+era              : 2018
+extend filelists : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/filelists/sidecar2018
+nano filelists   : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/filelists/nano2018v15
+sorted base      : /eos/user/j/junghyun/TTHHGenCategoryTools/sorted2018
+out base         : /eos/user/j/junghyun/TTHHGenCategoryTools/valout2018v15   (results via root://eosuser.cern.ch/)
+work base        : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/condor_val2018v15   (condor scaffolding, must NOT be /eos)
+samples          : ttbb_Hadronic, ttbb_SemiLeptonic, ttbb_2L2Nu, TTToHadronic, TTToSemiLeptonic, TTTo2L2Nu
+
+========================================================================================
+submit_validation_condor.py PREFLIGHT   era=2018
+========================================================================================
+[PASS] binary matchTtbarIdSorted                  /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/bin/matchTtbarIdSorted
+[PASS] binary sortSplitExtend                     /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/bin/sortSplitExtend
+[PASS] condor_submit                              /usr/bin/condor_submit
+[PASS] container image                            /cvmfs/unpacked.cern.ch/registry.hub.docker.com/cmssw/el7:x86_64
+[PASS] CMSSW base for job env                     /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1
+[PASS] cvmfs cmsset_default.sh                    /cvmfs/cms.cern.ch/cmsset_default.sh
+[PASS] x509 proxy                                 /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation/proxy.cert  (192 h left)
+[PASS] out-base not on AFS                        /eos/user/j/junghyun/TTHHGenCategoryTools/valout2018v15
+[PASS] sorted-base not on AFS                     /eos/user/j/junghyun/TTHHGenCategoryTools/sorted2018
+[PASS] extend filelist ttbb_Hadronic              169 files
+[PASS] nano chunks ttbb_Hadronic                  1 chunk(s)
+[PASS] sorted dir ttbb_Hadronic                   /eos/user/j/junghyun/TTHHGenCategoryTools/sorted2018/ttbb_Hadronic
+[PASS] extend filelist ttbb_SemiLeptonic          219 files
+[PASS] nano chunks ttbb_SemiLeptonic              1 chunk(s)
+[PASS] sorted dir ttbb_SemiLeptonic               /eos/user/j/junghyun/TTHHGenCategoryTools/sorted2018/ttbb_SemiLeptonic
+[PASS] extend filelist ttbb_2L2Nu                 103 files
+[PASS] nano chunks ttbb_2L2Nu                     1 chunk(s)
+[PASS] sorted dir ttbb_2L2Nu                      /eos/user/j/junghyun/TTHHGenCategoryTools/sorted2018/ttbb_2L2Nu
+[PASS] extend filelist TTToHadronic               7195 files
+[PASS] nano chunks TTToHadronic                   21 chunk(s)
+[PASS] sorted dir TTToHadronic                    /eos/user/j/junghyun/TTHHGenCategoryTools/sorted2018/TTToHadronic
+[PASS] extend filelist TTToSemiLeptonic           1003 files
+[PASS] nano chunks TTToSemiLeptonic               30 chunk(s)
+[PASS] sorted dir TTToSemiLeptonic                /eos/user/j/junghyun/TTHHGenCategoryTools/sorted2018/TTToSemiLeptonic
+[PASS] extend filelist TTTo2L2Nu                  3069 files
+[PASS] nano chunks TTTo2L2Nu                      9 chunk(s)
+[PASS] sorted dir TTTo2L2Nu                       /eos/user/j/junghyun/TTHHGenCategoryTools/sorted2018/TTTo2L2Nu
+[PASS] worker reads EOS (POSIX)                   verified 2026-07-28 smoke; job exits 125 if it ever stops working
+[PASS] total condor jobs                          63
+----------------------------------------------------------------------------------------
+PREFLIGHT: 29 PASS, 0 WARN, 0 FAIL
+RESULT: READY
+===========================================================================
+end_utc     : 2026-09-27T17:49:37Z
+wall_s      : 1
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_v1_preflight_20260927_174936.log
+=== END ===================================================================

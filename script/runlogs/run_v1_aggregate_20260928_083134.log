@@ -1,0 +1,141 @@
+=== RUNLOG ================================================================
+step        : v1_aggregate
+start_utc   : 2026-09-28T08:31:36Z
+host        : lxplus996   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 571e22a   modified_tracked_files: 1
+cmd         : python3 scripts/aggregate_validation.py --era 2018 --samples ttbb_Hadronic\,ttbb_SemiLeptonic\,ttbb_2L2Nu\,TTToHadronic\,TTToSemiLeptonic\,TTTo2L2Nu --nano-filelist-dir filelists/nano2018v15 --out-base /eos/user/j/junghyun/TTHHGenCategoryTools/valout2018v15 --xsec-db data/das_nevents_2018v15.json 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-28 10:31:36.357002851 +0200 CEST m=+0.006255886
+proxy_left_s: 339296
+===========================================================================
+============================================================================================
+ttbarId-extend validation summary   era=2018
+  json dir  : /eos/user/j/junghyun/TTHHGenCategoryTools/valout2018v15/results
+  nano lists: filelists/nano2018v15
+  xsec db   : data/das_nevents_2018v15.json
+============================================================================================
+
+### ttbb_Hadronic        PASS
+    [ok  ] all chunks present             1/1
+    [ok  ] nano total == DAS nevents      7,946,064 vs 7,946,064
+    [ok  ] matched > 0                    7,946,064
+    [ok  ] unmatched == 0                 0
+    [ok  ] disagree == 0                  0
+    [ok  ] conservation ge3 == extended   32,660 vs 32,660
+    [ok  ] viol_ext_but_lt3 == 0          0
+    [ok  ] viol_ge3_not_ext == 0          0
+    [ok  ] viol_prefix_changed == 0       0
+    [ok  ] viol_le2_changed == 0          0
+    [ok  ] every chunk exit 0             ok
+    [ok  ] no per-chunk anomalies         ok
+    part loads (all chunks): 184   [184 per chunk]
+    tt+bbb (61+62) : 28,799     tt+4b (71+72) : 3,861
+    Expanded sub-code counts     : {'61': 19387, '62': 9412, '71': 3436, '72': 425}
+    nano sub-code of reclassified: {'53': 22812, '54': 9548, '55': 300}
+
+### ttbb_SemiLeptonic    PASS
+    [ok  ] all chunks present             1/1
+    [ok  ] nano total == DAS nevents      10,378,681 vs 10,378,681
+    [ok  ] matched > 0                    10,378,681
+    [ok  ] unmatched == 0                 0
+    [ok  ] disagree == 0                  0
+    [ok  ] conservation ge3 == extended   37,420 vs 37,420
+    [ok  ] viol_ext_but_lt3 == 0          0
+    [ok  ] viol_ge3_not_ext == 0          0
+    [ok  ] viol_prefix_changed == 0       0
+    [ok  ] viol_le2_changed == 0          0
+    [ok  ] every chunk exit 0             ok
+    [ok  ] no per-chunk anomalies         ok
+    part loads (all chunks): 862   [862 per chunk]
+    tt+bbb (61+62) : 33,157     tt+4b (71+72) : 4,263
+    Expanded sub-code counts     : {'61': 22173, '62': 10984, '71': 3806, '72': 457}
+    nano sub-code of reclassified: {'53': 25973, '54': 11102, '55': 345}
+
+### ttbb_2L2Nu           PASS
+    [ok  ] all chunks present             1/1
+    [ok  ] nano total == DAS nevents      4,858,850 vs 4,858,850
+    [ok  ] matched > 0                    4,858,850
+    [ok  ] unmatched == 0                 0
+    [ok  ] disagree == 0                  0
+    [ok  ] conservation ge3 == extended   15,766 vs 15,766
+    [ok  ] viol_ext_but_lt3 == 0          0
+    [ok  ] viol_ge3_not_ext == 0          0
+    [ok  ] viol_prefix_changed == 0       0
+    [ok  ] viol_le2_changed == 0          0
+    [ok  ] every chunk exit 0             ok
+    [ok  ] no per-chunk anomalies         ok
+    part loads (all chunks): 311   [311 per chunk]
+    tt+bbb (61+62) : 13,978     tt+4b (71+72) : 1,788
+    Expanded sub-code counts     : {'61': 9271, '62': 4707, '71': 1588, '72': 200}
+    nano sub-code of reclassified: {'53': 10853, '54': 4766, '55': 147}
+
+### TTToHadronic         PASS
+    [ok  ] all chunks present             21/21
+    [ok  ] nano total == DAS nevents      343,248,000 vs 343,248,000
+    [ok  ] matched > 0                    343,248,000
+    [ok  ] unmatched == 0                 0
+    [ok  ] disagree == 0                  0
+    [ok  ] conservation ge3 == extended   36,835 vs 36,835
+    [ok  ] viol_ext_but_lt3 == 0          0
+    [ok  ] viol_ge3_not_ext == 0          0
+    [ok  ] viol_prefix_changed == 0       0
+    [ok  ] viol_le2_changed == 0          0
+    [ok  ] every chunk exit 0             ok
+    [ok  ] no per-chunk anomalies         ok
+    part loads (all chunks): 115,867   [5,517 per chunk]
+    tt+bbb (61+62) : 32,822     tt+4b (71+72) : 4,013
+    Expanded sub-code counts     : {'61': 22844, '62': 9978, '71': 3702, '72': 311}
+    nano sub-code of reclassified: {'53': 26529, '54': 10076, '55': 230}
+
+### TTToSemiLeptonic     PASS
+    [ok  ] all chunks present             30/30
+    [ok  ] nano total == DAS nevents      460,133,000 vs 460,133,000
+    [ok  ] matched > 0                    460,133,000
+    [ok  ] unmatched == 0                 0
+    [ok  ] disagree == 0                  0
+    [ok  ] conservation ge3 == extended   43,090 vs 43,090
+    [ok  ] viol_ext_but_lt3 == 0          0
+    [ok  ] viol_ge3_not_ext == 0          0
+    [ok  ] viol_prefix_changed == 0       0
+    [ok  ] viol_le2_changed == 0          0
+    [ok  ] every chunk exit 0             ok
+    [ok  ] no per-chunk anomalies         ok
+    part loads (all chunks): 140,283   [4,676 per chunk]
+    tt+bbb (61+62) : 38,569     tt+4b (71+72) : 4,521
+    Expanded sub-code counts     : {'61': 26908, '62': 11661, '71': 4197, '72': 324}
+    nano sub-code of reclassified: {'53': 31072, '54': 11754, '55': 264}
+
+### TTTo2L2Nu            PASS
+    [ok  ] all chunks present             9/9
+    [ok  ] nano total == DAS nevents      146,010,000 vs 146,010,000
+    [ok  ] matched > 0                    146,010,000
+    [ok  ] unmatched == 0                 0
+    [ok  ] disagree == 0                  0
+    [ok  ] conservation ge3 == extended   11,790 vs 11,790
+    [ok  ] viol_ext_but_lt3 == 0          0
+    [ok  ] viol_ge3_not_ext == 0          0
+    [ok  ] viol_prefix_changed == 0       0
+    [ok  ] viol_le2_changed == 0          0
+    [ok  ] every chunk exit 0             ok
+    [ok  ] no per-chunk anomalies         ok
+    part loads (all chunks): 31,173   [3,463 per chunk]
+    tt+bbb (61+62) : 10,541     tt+4b (71+72) : 1,249
+    Expanded sub-code counts     : {'61': 7311, '62': 3230, '71': 1146, '72': 103}
+    nano sub-code of reclassified: {'53': 8453, '54': 3275, '55': 62}
+
+============================================================================================
+OVERALL: ALL SAMPLES PASS
+============================================================================================
+Reminder: 2017 reference numbers (tt+nb 1,882,170 = 1,585,810 + 296,360)
+are NOT the 2018 acceptance criteria -- the event counts differ.
+Record the numbers above in docs/06_validation_results.md (append).
+===========================================================================
+end_utc     : 2026-09-28T08:31:36Z
+wall_s      : 0
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_v1_aggregate_20260928_083134.log
+=== END ===================================================================

@@ -1,0 +1,70 @@
+=== RUNLOG ================================================================
+step        : v1_filelists
+start_utc   : 2026-09-27T17:49:32Z
+host        : lxplus9109   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/TTHHGenCategoryTools/CMSSW_10_6_32_patch1/src/TTHHGenCategoryTools/Validation
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 571e22a   modified_tracked_files: 0
+cmd         : /bin/bash -c cd\ filelists\ \&\&\ ./make_nano_filelists_das.sh\ 2018v15 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-27 19:49:32.944292133 +0200 CEST m=+0.003422256
+proxy_left_s: 691191
+===========================================================================
+==============================================================
+ make_nano_filelists_das.sh  era=2018v15  mode=xrootd
+ campaign : RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1
+ outdir   : nano2018v15   (split size 20)
+ started  : 2026-09-27T17:49:33Z
+==============================================================
+
+### tt4b
+  SKIP (expected): no central dataset for tt4b in RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1 -> not listed
+
+### ttbb_Hadronic
+  query: file dataset=/TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-*/NANOAODSIM
+  dataset: /TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1/NANOAODSIM
+  files : 14  -> nano2018v15/filelist_ttbb_Hadronic.txt
+  splits: 1 file(s) in nano2018v15/ttbb_Hadronic/ (20 paths each)
+
+### ttbb_SemiLeptonic
+  query: file dataset=/TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-*/NANOAODSIM
+  dataset: /TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1/NANOAODSIM
+  files : 15  -> nano2018v15/filelist_ttbb_SemiLeptonic.txt
+  splits: 1 file(s) in nano2018v15/ttbb_SemiLeptonic/ (20 paths each)
+
+### ttbb_2L2Nu
+  query: file dataset=/TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-*/NANOAODSIM
+  dataset: /TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1/NANOAODSIM
+  files : 8  -> nano2018v15/filelist_ttbb_2L2Nu.txt
+  splits: 1 file(s) in nano2018v15/ttbb_2L2Nu/ (20 paths each)
+
+### TTToHadronic
+  query: file dataset=/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-*/NANOAODSIM
+  dataset: /TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v2/NANOAODSIM
+  files : 407  -> nano2018v15/filelist_TTToHadronic.txt
+  splits: 21 file(s) in nano2018v15/TTToHadronic/ (20 paths each)
+
+### TTToSemiLeptonic
+  query: file dataset=/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-*/NANOAODSIM
+  dataset: /TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v2/NANOAODSIM
+  files : 589  -> nano2018v15/filelist_TTToSemiLeptonic.txt
+  splits: 30 file(s) in nano2018v15/TTToSemiLeptonic/ (20 paths each)
+
+### TTTo2L2Nu
+  query: file dataset=/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-*/NANOAODSIM
+  dataset: /TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v2/NANOAODSIM
+  files : 169  -> nano2018v15/filelist_TTTo2L2Nu.txt
+  splits: 9 file(s) in nano2018v15/TTTo2L2Nu/ (20 paths each)
+
+==============================================================
+ done: 2026-09-27T17:49:36Z   overall rc=0
+ summary log: nano2018v15/summary_2018v15.log
+==============================================================
+===========================================================================
+end_utc     : 2026-09-27T17:49:36Z
+wall_s      : 4
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_v1_filelists_20260927_174932.log
+=== END ===================================================================
