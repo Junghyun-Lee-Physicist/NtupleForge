@@ -1,0 +1,23 @@
+=== RUNLOG ================================================================
+step        : p5_summary
+start_utc   : 2026-09-29T09:03:18Z
+host        : lxplus9105   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 039f12b   modified_tracked_files: 1
+cmd         : python3 script/localcheck_summary.py localcheck_v15/out_2024_MC_6j20.root localcheck_v15/out_2024C_Data_6j20.root localcheck_v15/out_2024_ZZ_6j20_full.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-29 11:03:18.481667604 +0200 CEST m=+0.006424424
+proxy_left_s: 680777
+===========================================================================
+localcheck_v15/out_2024_MC_6j20.root | Events 10429 | branches 524 | HLT_ 278 | run/lumi/event y | genWeight y | genTtbarId y | Runs.genEventSumw y
+localcheck_v15/out_2024C_Data_6j20.root | Events 1764 | branches 484 | HLT_ 270 | run/lumi/event y | genWeight n | genTtbarId n | Runs.genEventSumw n
+localcheck_v15/out_2024_ZZ_6j20_full.root | Events 3775 | branches 506 | HLT_ 278 | run/lumi/event y | genWeight y | genTtbarId y | Runs.genEventSumw y
+===========================================================================
+end_utc     : 2026-09-29T09:03:29Z
+wall_s      : 11
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p5_summary_20260929_090313.log
+=== END ===================================================================

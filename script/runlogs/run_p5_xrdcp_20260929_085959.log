@@ -1,0 +1,20 @@
+=== RUNLOG ================================================================
+step        : p5_xrdcp
+start_utc   : 2026-09-29T09:00:05Z
+host        : lxplus9105   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 039f12b   modified_tracked_files: 1
+cmd         : env XRD_REQUESTTIMEOUT=120 timeout 1800 xrdcp -f --nopbar root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/ZZ_TuneCP5_13p6TeV_pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root /tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-29 11:00:05.31432668 +0200 CEST m=+0.015865700
+proxy_left_s: 680970
+===========================================================================
+===========================================================================
+end_utc     : 2026-09-29T09:00:20Z
+wall_s      : 15
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p5_xrdcp_20260929_085959.log
+=== END ===================================================================

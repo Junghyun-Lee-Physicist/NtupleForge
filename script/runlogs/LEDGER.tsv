@@ -58,3 +58,13 @@ utc_start	step	exit	wall_s	host	git_head	log	outputs
 2026-09-28T17:13:49Z	localcheck_2018_MC	0	115	lxplus941	31beadf	script/runlogs/run_localcheck_2018_MC_20260928_171347.log	none
 2026-09-28T17:15:45Z	localcheck_2018_Data	0	37	lxplus941	31beadf	script/runlogs/run_localcheck_2018_Data_20260928_171544.log	none
 2026-09-28T17:16:23Z	localcheck_summary	0	2	lxplus941	31beadf	script/runlogs/run_localcheck_summary_20260928_171622.log	none
+2026-09-29T06:10:07Z	p5_test_mock	0	34	lxplus9105	039f12b	script/runlogs/run_p5_test_mock_20260929_061005.log	none
+2026-09-29T06:11:11Z	p5_test_root	0	493	lxplus9105	039f12b	script/runlogs/run_p5_test_root_20260929_061109.log	none
+2026-09-29T06:20:55Z	p5_2024_MC_6j20	0	2286	lxplus9105	039f12b	script/runlogs/run_p5_2024_MC_6j20_20260929_062052.log	none
+2026-09-29T06:59:03Z	p5_2024_MC_6j20_check	0	35	lxplus9105	039f12b	script/runlogs/run_p5_2024_MC_6j20_check_20260929_065901.log	none
+2026-09-29T06:59:40Z	p5_2024C_Data_6j20	0	444	lxplus9105	039f12b	script/runlogs/run_p5_2024C_Data_6j20_20260929_065938.log	none
+2026-09-29T07:07:06Z	p5_2024C_Data_6j20_check	0	102	lxplus9105	039f12b	script/runlogs/run_p5_2024C_Data_6j20_check_20260929_070705.log	none
+2026-09-29T09:00:05Z	p5_xrdcp	0	15	lxplus9105	039f12b	script/runlogs/run_p5_xrdcp_20260929_085959.log	none
+2026-09-29T09:00:50Z	p5_2024_ZZ_6j20_full	0	103	lxplus9105	039f12b	script/runlogs/run_p5_2024_ZZ_6j20_full_20260929_090047.log	none
+2026-09-29T09:02:41Z	p5_2024_ZZ_6j20_full_check	0	32	lxplus9105	039f12b	script/runlogs/run_p5_2024_ZZ_6j20_full_check_20260929_090234.log	none
+2026-09-29T09:03:18Z	p5_summary	0	11	lxplus9105	039f12b	script/runlogs/run_p5_summary_20260929_090313.log	none

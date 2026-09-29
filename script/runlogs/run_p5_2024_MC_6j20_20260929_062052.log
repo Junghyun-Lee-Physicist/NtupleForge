@@ -1,0 +1,81 @@
+=== RUNLOG ================================================================
+step        : p5_2024_MC_6j20
+start_utc   : 2026-09-29T06:20:55Z
+host        : lxplus9105   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 039f12b   modified_tracked_files: 1
+cmd         : /bin/bash -c cd\ localcheck_v15\ \&\&\ python3\ ../script/run_postproc.py\ root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root\ -I\ modules.noop:MODULES\ -b\ ../branches/branch_hadronic_2024_v15_MC.txt\ --skim\ 6j20\ --audit\ -N\ 20000\ -o\ out_2024_MC_6j20.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-29 08:20:55.353077115 +0200 CEST m=+0.001927002
+proxy_left_s: 690520
+===========================================================================
+[run_postproc] : ============================================================
+[run_postproc] : Execution Started at: 2026-09-29 08:21:00
+[run_postproc] : ============================================================
+[run_postproc] : Branch Selection File loaded: ../branches/branch_hadronic_2024_v15_MC.txt
+[run_postproc] :   -> Applied to: OUTPUT tree only (input is read in full)
+[run_postproc] :   -> Preview: ['# =============================================================================', '#  branch_hadronic_2024_v15_MC.txt', '#  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection'] ...
+[run_postproc] : Module Loaded: modules.noop (List Variable: 'MODULES')
+[run_postproc] : Input Files Detected: 1
+[run_postproc] :   -> First file: root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root
+[run_postproc] : Output Strategy: MERGE (Hadd enabled)
+[run_postproc] :   -> Final Target: out_2024_MC_6j20.root
+[run_postproc] : ------------------------------------------------------------
+[run_postproc] : ============================================================
+[run_postproc] : EVENT SKIM (production): 6j20
+[run_postproc] :   cut = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6
+[run_postproc] :   Runs / LuminosityBlocks stay whole; audit ON (forge_audit.py)
+[run_postproc] : ============================================================
+[run_postproc] : Initializing PostProcessor engine...
+[run_postproc] : Running Event Loop, then the forge audit...
+Will write selected trees to .
+29-Sep-2026 08:21:00 CEST  Initiating request to open file root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root
+Adding file ./4b74f791-673b-4b21-be3e-c9287790bc40_Skim.root
+Merging Events
+Merging LuminosityBlocks
+Merging Runs
+Merging MetaData
+Merging ParameterSets
+Merging tag
+Pre-select 10429 entries out of 20000 (52.15%)
+Selected 10429 / 20000 entries from root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root (52.15%)
+Done ./4b74f791-673b-4b21-be3e-c9287790bc40_Skim.root
+Total time 2177.5 sec. to process 20000 events. Rate = 9.2 Hz.
+FORGE|EVT|1:226:165839|nj20=3|ht20=238.94|pass=0|gtid=100
+FORGE|EVT|1:226:165830|nj20=6|ht20=319.44|pass=1|gtid=10152
+FORGE|EVT|1:226:165833|nj20=5|ht20=339.23|pass=0|gtid=10141
+FORGE|EVT|1:226:165832|nj20=6|ht20=388.16|pass=1|gtid=10200
+FORGE|EVT|1:226:165827|nj20=4|ht20=318.23|pass=0|gtid=10200
+FORGE|EVT|1:226:165831|nj20=4|ht20=235.73|pass=0|gtid=10100
+FORGE|EVT|1:226:165829|nj20=5|ht20=332.30|pass=0|gtid=10241
+FORGE|EVT|1:226:165828|nj20=5|ht20=281.59|pass=0|gtid=200
+FORGE|EVT|1:226:165837|nj20=6|ht20=422.72|pass=1|gtid=200
+FORGE|EVT|1:226:165826|nj20=6|ht20=195.39|pass=1|gtid=20200
+FORGE|EVT|1:226:165836|nj20=4|ht20=218.08|pass=0|gtid=20100
+FORGE|EVT|1:226:165834|nj20=5|ht20=332.22|pass=0|gtid=200
+FORGE|EVT|1:226:165840|nj20=5|ht20=237.41|pass=0|gtid=10200
+FORGE|EVT|1:226:165835|nj20=8|ht20=387.06|pass=1|gtid=10241
+FORGE|EVT|1:226:165841|nj20=5|ht20=322.75|pass=0|gtid=10200
+FORGE|EVT|1:226:165847|nj20=6|ht20=268.53|pass=1|gtid=10200
+FORGE|EVT|1:226:165850|nj20=7|ht20=336.44|pass=1|gtid=10100
+FORGE|EVT|1:226:165838|nj20=5|ht20=302.12|pass=0|gtid=20100
+FORGE|EVT|1:226:165848|nj20=6|ht20=371.08|pass=1|gtid=10100
+FORGE|EVT|1:226:165842|nj20=5|ht20=466.03|pass=0|gtid=10241
+FORGE|FILE|/store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root|n_in=20000|n_pass=10429|sumw=6952975.79|runs_sumw=284097823|runs_count=818070|t_s=36.5
+FORGE|CHECK|C1|PASS|output Events 10429, RVec pass 10429
+FORGE|CHECK|C2|PASS|every file read to the end of its range (1 files)
+FORGE|CHECK|C2e|PASS|0 ROOT error line(s)
+FORGE|CHECK|C2r|INFO|/store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root: part of the file read, Runs sums not compared
+FORGE|CHECK|write|PASS|ForgeAudit 1 row(s), ForgeTTbbKeys 112 row(s), ForgeProvenance, in out_2024_MC_6j20.root
+FORGE|JOB|files=1|n_in=20000|n_pass=10429|n_out=10429|t_s=2281.0|exit=0
+[run_postproc] : Job Finished Successfully at 2026-09-29 08:59:01 (exit 0)
+[run_postproc] :    Total Runtime: 0:38:01.159304
+===========================================================================
+end_utc     : 2026-09-29T06:59:01Z
+wall_s      : 2286
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p5_2024_MC_6j20_20260929_062052.log
+=== END ===================================================================

@@ -1,0 +1,27 @@
+=== RUNLOG ================================================================
+step        : p5_2024_ZZ_6j20_full_check
+start_utc   : 2026-09-29T09:02:41Z
+host        : lxplus9105   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 039f12b   modified_tracked_files: 1
+cmd         : python3 script/check_forge_output.py localcheck_v15/out_2024_ZZ_6j20_full.root /tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-29 11:02:41.249657119 +0200 CEST m=+0.001680869
+proxy_left_s: 680814
+===========================================================================
+ForgeProvenance: {"branch_file": "branch_hadronic_2024_v15_MC.txt", "branch_md5": "145396d5bddb72433a8f8bd6b66afa0c", "cmssw": "CMSSW_14_2_1", "first_entry": 0, "forge_audit_version": 1, "formula": "Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6", "git": "unknown", "host": "lxplus9105.cern.ch", "imports": ["modules.noop:MODULES"], "inputs": ["/tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root"], "max_events": 0, "rvec": "Sum(Jet_pt>20 && abs(Jet_eta)<2.5)>=6", "skim": "6j20", "utc": "2026-09-29T09:02:33Z"}
+X7   PASS output 3775 events, RVec-passing input events 3775, only in output 0, only in RVec set 0
+ForgeAudit: 1 row(s)
+   /tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root | n_in 150800 | n_pass 3775 | sumw 150800 | Runs sumw 150800, count 150800 | top codes 0:87781, 53:17853, 51:16587, 41:13096, 43:12910, 42:1132
+A    PASS ForgeAudit n_in 150800 / 150800, n_pass 3775 / 3775, sumw 150800 / 150800 (row / recomputed here)
+K    PASS keys 18175 (input events with code 53..55: 18175), pass=1 930 all in the output: True, pass=0 17245 none in the output: True
+RESULT: ALL PASS
+===========================================================================
+end_utc     : 2026-09-29T09:03:13Z
+wall_s      : 32
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p5_2024_ZZ_6j20_full_check_20260929_090234.log
+=== END ===================================================================

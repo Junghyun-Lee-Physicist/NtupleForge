@@ -1,0 +1,95 @@
+=== RUNLOG ================================================================
+step        : p5_2024_ZZ_6j20_full
+start_utc   : 2026-09-29T09:00:50Z
+host        : lxplus9105   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 039f12b   modified_tracked_files: 1
+cmd         : /bin/bash -c cd\ localcheck_v15\ \&\&\ python3\ ../script/run_postproc.py\ /tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root\ -I\ modules.noop:MODULES\ -b\ ../branches/branch_hadronic_2024_v15_MC.txt\ --skim\ 6j20\ --audit\ -o\ out_2024_ZZ_6j20_full.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-29 11:00:50.51915768 +0200 CEST m=+0.001278072
+proxy_left_s: 680925
+===========================================================================
+[run_postproc] : ============================================================
+[run_postproc] : Execution Started at: 2026-09-29 11:00:59
+[run_postproc] : ============================================================
+[run_postproc] : Branch Selection File loaded: ../branches/branch_hadronic_2024_v15_MC.txt
+[run_postproc] :   -> Applied to: OUTPUT tree only (input is read in full)
+[run_postproc] :   -> Preview: ['# =============================================================================', '#  branch_hadronic_2024_v15_MC.txt', '#  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection'] ...
+[run_postproc] : Module Loaded: modules.noop (List Variable: 'MODULES')
+[run_postproc] : Input Files Detected: 1
+[run_postproc] :   -> First file: /tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root
+[run_postproc] : Output Strategy: MERGE (Hadd enabled)
+[run_postproc] :   -> Final Target: out_2024_ZZ_6j20_full.root
+[run_postproc] : ------------------------------------------------------------
+[run_postproc] : ============================================================
+[run_postproc] : EVENT SKIM (production): 6j20
+[run_postproc] :   cut = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6
+[run_postproc] :   Runs / LuminosityBlocks stay whole; audit ON (forge_audit.py)
+[run_postproc] : ============================================================
+[run_postproc] : Initializing PostProcessor engine...
+[run_postproc] : Running Event Loop, then the forge audit...
+Will write selected trees to .
+29-Sep-2026 11:01:00 CEST  Initiating request to open file /tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root
+Error in <TTree::SetBranchStatus>: No branch name is matching wildcard -> LHE_*
+Error in <TTree::SetBranchStatus>: unknown branch -> nLHEPart
+Error in <TTree::SetBranchStatus>: No branch name is matching wildcard -> LHEPart_*
+Error in <TTree::SetBranchStatus>: unknown branch -> LHEScaleWeight
+Error in <TTree::SetBranchStatus>: unknown branch -> nLHEScaleWeight
+Error in <TTree::SetBranchStatus>: unknown branch -> LHEPdfWeight
+Error in <TTree::SetBranchStatus>: unknown branch -> nLHEPdfWeight
+Error in <TTree::SetBranchStatus>: unknown branch -> LHEReweightingWeight
+Error in <TTree::SetBranchStatus>: unknown branch -> nLHEReweightingWeight
+Error in <TTree::SetBranchStatus>: unknown branch -> LHEWeight_originalXWGTUP
+TTree::SetBranchStatus:0: RuntimeWarning: unknown branch -> nLHEPart
+TTree::SetBranchStatus:0: RuntimeWarning: No branch name is matching wildcard -> LHEPart_*
+Adding file ./cccd7f37-0a34-4c58-9d95-ce3b23505f1d_Skim.root
+Merging Events
+Merging LuminosityBlocks
+Merging Runs
+Merging MetaData
+Merging ParameterSets
+Merging tag
+Pre-select 3775 entries out of 150800 (2.50%)
+Selected 3775 / 150800 entries from /tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root (2.50%)
+Done ./cccd7f37-0a34-4c58-9d95-ce3b23505f1d_Skim.root
+Total time 44.8 sec. to process 150800 events. Rate = 3363.7 Hz.
+FORGE|EVT|1:1002:725734|nj20=1|ht20=24.91|pass=0|gtid=0
+FORGE|EVT|1:1002:725735|nj20=2|ht20=163.94|pass=0|gtid=0
+FORGE|EVT|1:1002:725736|nj20=3|ht20=109.42|pass=0|gtid=0
+FORGE|EVT|1:1002:725745|nj20=2|ht20=129.55|pass=0|gtid=0
+FORGE|EVT|1:1002:725738|nj20=3|ht20=120.31|pass=0|gtid=0
+FORGE|EVT|1:1002:725732|nj20=0|ht20=0.00|pass=0|gtid=0
+FORGE|EVT|1:1002:725727|nj20=3|ht20=117.25|pass=0|gtid=0
+FORGE|EVT|1:1002:725741|nj20=2|ht20=94.91|pass=0|gtid=0
+FORGE|EVT|1:1002:725728|nj20=4|ht20=249.27|pass=0|gtid=0
+FORGE|EVT|1:1002:725733|nj20=6|ht20=430.75|pass=1|gtid=0
+FORGE|EVT|1:1002:725731|nj20=3|ht20=116.17|pass=0|gtid=0
+FORGE|EVT|1:1002:725729|nj20=5|ht20=211.61|pass=0|gtid=41
+FORGE|EVT|1:1002:725746|nj20=1|ht20=23.72|pass=0|gtid=0
+FORGE|EVT|1:1002:725739|nj20=2|ht20=111.62|pass=0|gtid=0
+FORGE|EVT|1:1002:725726|nj20=4|ht20=215.53|pass=0|gtid=53
+FORGE|EVT|1:1002:725751|nj20=3|ht20=161.00|pass=0|gtid=53
+FORGE|EVT|1:1002:725737|nj20=4|ht20=213.16|pass=0|gtid=0
+FORGE|EVT|1:1002:725730|nj20=6|ht20=731.42|pass=1|gtid=0
+FORGE|EVT|1:1002:725750|nj20=3|ht20=112.22|pass=0|gtid=41
+FORGE|EVT|1:1002:725742|nj20=3|ht20=212.31|pass=0|gtid=0
+FORGE|FILE|/tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root|n_in=150800|n_pass=3775|sumw=150800|runs_sumw=150800|runs_count=150800|t_s=34.2
+FORGE|CHECK|C1|PASS|output Events 3775, RVec pass 3775
+FORGE|CHECK|C2|PASS|every file read to the end of its range (1 files)
+FORGE|CHECK|C2e|PASS|0 ROOT error line(s)
+FORGE|CHECK|C2w|WARN|keep pattern(s) matching nothing in this file (ROOT SetBranchStatus 'unknown branch' / 'No branch name is matching wildcard'): LHE_*, nLHEPart, LHEPart_*, LHEScaleWeight, nLHEScaleWeight, LHEPdfWeight, nLHEPdfWeight, LHEReweightingWeight, nLHEReweightingWeight, LHEWeight_originalXWGTUP
+FORGE|CHECK|C2r|PASS|/tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root: Runs genEventCount 150800, entries 150800
+FORGE|CHECK|C3|PASS|/tmp/junghyun/p5/cccd7f37-0a34-4c58-9d95-ce3b23505f1d.root: sum genWeight 150800, Runs genEventSumw 150800, relative difference 0 (limit 1e-06)
+FORGE|CHECK|write|PASS|ForgeAudit 1 row(s), ForgeTTbbKeys 18175 row(s), ForgeProvenance, in out_2024_ZZ_6j20_full.root
+FORGE|JOB|files=1|n_in=150800|n_pass=3775|n_out=3775|t_s=93.4|exit=0
+[run_postproc] : Job Finished Successfully at 2026-09-29 11:02:33 (exit 0)
+[run_postproc] :    Total Runtime: 0:01:33.671716
+===========================================================================
+end_utc     : 2026-09-29T09:02:34Z
+wall_s      : 103
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p5_2024_ZZ_6j20_full_20260929_090047.log
+=== END ===================================================================

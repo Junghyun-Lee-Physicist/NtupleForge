@@ -1,0 +1,84 @@
+=== RUNLOG ================================================================
+step        : p5_test_mock
+start_utc   : 2026-09-29T06:10:07Z
+host        : lxplus9105   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 039f12b   modified_tracked_files: 0
+cmd         : python3 script/test_forge_audit_mock.py 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-29 08:10:07.34029068 +0200 CEST m=+0.010086115
+proxy_left_s: 691168
+===========================================================================
+PASS  forge_skims formulas == size_options.py SKIMS (names and strings)
+PASS  forge_skims names: none + the five
+PASS  forge_skims.get: unknown name raises KeyError
+PASS  ASCII only: forge_skims.py
+PASS  ASCII only: forge_audit.py
+PASS  ASCII only: test_forge_audit_mock.py
+PASS  MC skim + audit: exit 0
+PASS  the PostProcessor got the 6j20 formula as cut
+PASS  output Events = events passing 6j20 (16)
+PASS  ForgeAudit: one row per input file
+PASS  ForgeAudit n_in / n_tree / n_pass
+PASS  ForgeAudit sums of genWeight, of its square, negative count
+PASS  ForgeAudit sumw over passing events
+PASS  ForgeAudit code arrays: 101 entries, index 0 = negative id, 1+c = code c
+PASS  ForgeAudit Runs sums and file name
+PASS  ForgeAudit is_mc, entry range
+PASS  ForgeTTbbKeys: every event with code 53..55 (incl. 1053, 10154), with its pass flag
+PASS  ForgeProvenance tree: one row; skim, git columns
+PASS  ForgeProvenance json: skim, formula, rvec, git, branch file md5, inputs
+PASS  FORGE lines: EVT for the first file only (12 <= 20), FILE x2, JOB exit=0
+PASS  FORGE EVT line: key, nj20, ht20, pass, gtid
+PASS  closure C1 C2 C2e PASS, C2r C3 PASS for both files, write PASS
+PASS  one event loop per input file (every result booked before the loop runs)
+PASS  the capture file is gone after a clean run
+PASS  Data: exit 0, is_mc 0, zero sums, no ForgeTTbbKeys, no Runs checks
+PASS  Data: n_pass = events passing 6j20
+PASS  Data: the write line says no ForgeTTbbKeys
+PASS  C1 FAIL: exit 5, no audit objects written
+PASS  ROOT error line during the copy: exit 85 (CRAB retries), C2e FAIL, the line reaches stderr live
+PASS  SetBranchStatus 'unknown branch' and 'No branch name is matching wildcard' lines: exit 0, C2e PASS, C2w WARN naming both patterns
+PASS  ... together with a real read error line: exit 85
+PASS  input Events autosave != 0: C2a WARN, exit 0 while C1 holds
+PASS  ROOT error line from a child process: exit 85
+PASS  ROOT error line during the audit read: exit 85
+PASS  PostProcessor raises: exit 1, JOB exit=1
+PASS  audit exception: exit 7, CHECK audit FAIL, capture file removed
+PASS  input not openable by the audit: exit 84 (CRAB retries)
+PASS  audit read short of the range: exit 85, C2 FAIL
+PASS  -N 5: exit 0, n_in 5, max_entries 5, C2r INFO, no C3
+PASS  --first-entry 4 -N 5: the same range in the copy and the audit (C1 PASS)
+PASS  Runs sums differ: C3 WARN and C2r WARN, exit 0
+PASS  --audit without --skim: exit 0, cut None, every event kept, C1 PASS
+PASS  --skim none behaves as no skim
+PASS  skim 6jcount: exit 0, C1 PASS
+PASS  skim 6j20: exit 0, C1 PASS
+PASS  skim 6j25: exit 0, C1 PASS
+PASS  skim 6j30: exit 0, C1 PASS
+PASS  skim 6j20ht400: exit 0, C1 PASS
+PASS  write error on the output: exit 1 (worker node; CRAB retries), CHECK write FAIL
+PASS  --skim with --cut: exit 2
+PASS  --skim unknown: exit 2
+PASS  --audit without --output-file: exit 2
+PASS  --skim without --audit: exit 0, formula used, no FORGE lines, no audit objects
+PASS  no --skim / --audit, no forge files next to run_postproc.py: exit 0, no forge module imported
+PASS  --skim without forge_skims.py next to run_postproc.py: exit 2 with the reason
+PASS  check_forge_output: MC 6j20 output -> X7, A, K PASS, exit 0
+PASS  check_forge_output: an event (code 0) missing from the output -> X7 FAIL, K PASS, exit 1
+PASS  check_forge_output: a passing code-53..55 event missing from the output -> X7 FAIL, K FAIL
+PASS  check_forge_output: a flipped pass flag in ForgeTTbbKeys -> K FAIL
+PASS  check_forge_output: the same entry range (-N 5 --first-entry 4) -> ALL PASS
+PASS  check_forge_output: Data -> X7 A PASS, no keys expected
+PASS  check_forge_output: an output without --audit -> exit 2
+PASS  crab_script.py: exit code passed on, the capture file printed, a SetBranchStatus line not counted
+RESULT: ALL PASS (63 checks)
+===========================================================================
+end_utc     : 2026-09-29T06:10:41Z
+wall_s      : 34
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p5_test_mock_20260929_061005.log
+=== END ===================================================================

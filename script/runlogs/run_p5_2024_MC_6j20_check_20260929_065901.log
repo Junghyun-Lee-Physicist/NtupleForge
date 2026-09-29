@@ -1,0 +1,27 @@
+=== RUNLOG ================================================================
+step        : p5_2024_MC_6j20_check
+start_utc   : 2026-09-29T06:59:03Z
+host        : lxplus9105   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 039f12b   modified_tracked_files: 1
+cmd         : python3 script/check_forge_output.py localcheck_v15/out_2024_MC_6j20.root root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root -N 20000 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-29 08:59:03.364418351 +0200 CEST m=+0.005328886
+proxy_left_s: 688232
+===========================================================================
+ForgeProvenance: {"branch_file": "branch_hadronic_2024_v15_MC.txt", "branch_md5": "145396d5bddb72433a8f8bd6b66afa0c", "cmssw": "CMSSW_14_2_1", "first_entry": 0, "forge_audit_version": 1, "formula": "Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6", "git": "unknown", "host": "lxplus9105.cern.ch", "imports": ["modules.noop:MODULES"], "inputs": ["/store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root"], "max_events": 20000, "rvec": "Sum(Jet_pt>20 && abs(Jet_eta)<2.5)>=6", "skim": "6j20", "utc": "2026-09-29T06:59:01Z"}
+X7   PASS output 10429 events, RVec-passing input events 10429, only in output 0, only in RVec set 0
+ForgeAudit: 1 row(s)
+   /store/mc/RunIII2024Summer24NanoAODv15/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/4b74f791-673b-4b21-be3e-c9287790bc40.root | n_in 20000 | n_pass 10429 | sumw 6952975.79 | Runs sumw 284097823, count 818070 | top codes 0:17658, 41:1153, 42:455, 51:329, 43:161, 53:108
+A    PASS ForgeAudit n_in 20000 / 20000, n_pass 10429 / 10429, sumw 6952975.79 / 6952975.79 (row / recomputed here)
+K    PASS keys 112 (input events with code 53..55: 112), pass=1 99 all in the output: True, pass=0 13 none in the output: True
+RESULT: ALL PASS
+===========================================================================
+end_utc     : 2026-09-29T06:59:38Z
+wall_s      : 35
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p5_2024_MC_6j20_check_20260929_065901.log
+=== END ===================================================================
