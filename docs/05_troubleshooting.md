@@ -1006,20 +1006,29 @@ project dir 이 없는 dataset 은 **제출한 다음** kill 했다.
 | 5 | 읽기 문제 없는 closure FAIL: C1(출력 event 수 ≠ RVec 통과 수) 또는 C2c(코드 histogram 합 ≠ entries) | 재시도 안 함 | 아래 재현. 해석 전에는 그 dataset 을 쓰지 않는다 |
 | 7 | audit 코드 자체의 예외(버그) | 재시도 안 함 | job 로그의 `forge audit failed` traceback 을 AI 세션에 |
 
-**재현 (exit 5).** job 로그의 `FORGE|FILE|<lfn>|...` 줄에서 LFN 을 얻어, lxplus 컨테이너의 저장소 루트에서 같은 명령을 돌리고 event 단위로 비교한다
-(`<lfn>`, `<list>` 를 채운다; 워크스페이스 RUNBOOK 13 의 4 와 같은 방식):
+**재현 (exit 5).** job 로그의 `FORGE|FILE|<lfn>|...` 줄에서 LFN 을 얻어, lxplus 컨테이너의 저장소 루트에서 입력을 `/tmp` 로 복사한 뒤 같은 명령을 돌리고
+event 단위로 비교한다(`<lfn>`, `<list>` 를 채운다; 워크스페이스 RUNBOOK 13 의 4 와 같은 방식). 복사하는 이유: lxplus 에서 AAA 로 직접 읽으면
+수십 배 느리고 file open 에서 멈추기도 한다(09-29 P5: 9.2 Hz 대 `/tmp` 복사본 3,364 Hz, `docs/08` 2 절 Step 2, `09` 25 절).
 
 ```bash
-mkdir -p localcheck_v15
-/bin/bash script/runlog.sh repro_audit -- /bin/bash -c "cd localcheck_v15 && python3 ../script/run_postproc.py root://cms-xrd-global.cern.ch/<lfn> -I modules.noop:MODULES -b ../branches/<list> --skim 6j20 --audit -o repro.root"
-/bin/bash script/runlog.sh repro_audit_check -- python3 script/check_forge_output.py localcheck_v15/repro.root root://cms-xrd-global.cern.ch/<lfn>
+mkdir -p localcheck_v15 /tmp/$USER/repro && L=/tmp/$USER/repro/$(basename <lfn>)
+/bin/bash script/runlog.sh repro_xrdcp -- env XRD_REQUESTTIMEOUT=120 timeout 1800 xrdcp -f --nopbar root://cms-xrd-global.cern.ch/<lfn> $L || /bin/bash script/runlog.sh repro_xrdcp_eu -- env XRD_REQUESTTIMEOUT=120 timeout 1800 xrdcp -f --nopbar root://xrootd-cms.infn.it/<lfn> $L
+/bin/bash script/runlog.sh repro_audit -- /bin/bash -c "cd localcheck_v15 && python3 ../script/run_postproc.py ${L:?} -I modules.noop:MODULES -b ../branches/<list> --skim 6j20 --audit -o repro.root"
+/bin/bash script/runlog.sh repro_audit_check -- python3 script/check_forge_output.py localcheck_v15/repro.root ${L:?}
 ```
 
 로컬에서 PASS 면 그 job 의 읽기가 문제였을 가능성이 크고(C2e 가 못 본 조용한 읽기), FAIL 이면 X7 줄이 어긋난 event 키 하나를 찍는다.
 어느 쪽이든 LFN 과 함께 원장에 적는다.
 
 **출력의 `failed/`.** CRAB 은 실패한 job 의 출력도 `.../0000/failed/` 아래로 옮긴다(`cmscp.py`). audit FAIL 인 출력에는 `ForgeAudit` 이 없다
-(closure 가 통과해야 쓴다). analyzer 의 file list 와 P8 집계는 `failed/` 를 건너뛰고, 같은 job 의 재시도 출력만 쓴다.
+(closure 가 통과해야 쓴다). analyzer 의 file list 와 P8 집계는 `failed/` 를 건너뛰고, 같은 job 의 재시도 출력만 쓴다. `script/forge_campaign_audit.py`
+는 그 파일을 세지 않고 D7 WARN 으로 job 번호를 알린다. **tempTTHH `make_filelists.py` 는 지금 건너뛰지 않는다**(`find_root_files()` 가 `os.walk`
+로 모든 디렉터리를 모은다): D7 이 파일을 보이면 그 dataset 의 file list 에 실패 사본이 재시도 출력과 함께 들어간다. 고치는 것은 계획 12 A2.
+
+**캠페인 단위 (KNU).** 한 dataset 의 job 이 모두 끝나면 저장소에서 `python3 script/forge_campaign_audit.py -c crabConfig/<config>.yaml --das script/drafts/review_das_<...>.tsv`
+(cmsenv 뒤, 읽기 전용; 명령과 기대값은 워크스페이스 RUNBOOK 14): 출력 수와 job 번호, 입력마다 한 행, Σ`n_in` == DAS nevents, skim·git·branch md5 가
+하나, `Runs` 합(D6, 파일마다의 최대 상대차), `ForgeTTbbKeys`(K), no-skim 캠페인과의 event 단위 비교(X7, `--reference-config`), log tarball 의 ROOT 오류
+줄과 job 시간(`--scan-logs`, L1·T1). FAIL 이면 그 줄이 job 번호나 event 키를 준다.
 
 **`FORGE|CHECK` 의 WARN 은 job 을 실패시키지 않는다**: C2w(그 파일에 없는 keep 패턴, 예: pythia 만 쓴 샘플의 `LHE*`), C2a(입력 autosave),
 C2r·C3(`Runs` 합과의 비교; P5 뒤 FAIL 로 올릴 예정).

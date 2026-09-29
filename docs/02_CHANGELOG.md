@@ -9,6 +9,72 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-29: lxplus checks of the 2024 skim + audit passed (plan 12 P5), skim pilot submitted (P6), campaign audit tool for KNU
+
+### Added
+- `script/forge_campaign_audit.py -c CONFIG --das script/drafts/review_das_*.tsv [--base DIR] [--reference-config CFG]
+  [--scan-logs] [--only KEY ...] [--tsv OUT] [--threads N]`: read-only audit of a whole CRAB campaign where it is stored (default
+  base KNU `/pnfs/knu.ac.kr/data/cms/store/user/junghyun`, CRAB layout `<output_base>/<primary>/<key>/<YYMMDD_hhmmss>/<NNNN>/`),
+  dataset by dataset against the DAS numbers of the review table. D1 outputs == DAS files and job ids 1..nfiles; D2 (audit) every
+  output has `ForgeAudit` + `ForgeProvenance` and its `Events` == its sum of `n_pass`; D3 (audit) every input in exactly one row, none
+  read only in part; D4 sum of `n_in` (audit), or of the output `Events` for a campaign without skim and audit, == DAS nevents; D5
+  (audit) one skim, one git commit, one branch-list md5; D6 WARN (audit, MC) `Runs` sums for the dataset and per file (the largest
+  relative difference and its file, the number the C3 limit is set from); D7 WARN files under `failed/` (not counted; tempTTHH
+  `make_filelists.py` would pick them up); D8 WARN more than one task directory; K (audit, MC) `ForgeTTbbKeys`: rows per output ==
+  its `ForgeAudit` count of codes 53..55, the pass=1 keys == the output events with codes 53..55, and with a reference every key ==
+  the reference events with codes 53..55 (key sets compared as multisets here and in X7); X7 (`--reference-config`, a campaign without a skim on the same dataset) the
+  (run, lumi, event) set of the outputs == the reference outputs that pass the RVec expression, event by event; D0 FAIL for an
+  output that cannot be opened or read (the run goes on); L1 (`--scan-logs`)
+  no ROOT error line (SetBranchStatus lines of C2w excluded) in the log tarball of a counted job and every such log holds the
+  NanoAODTools end line `Total time ...` (else the tarball proves nothing): the after-the-fact C2e for 2018UL, submitted without
+  the audit; T1 (`--scan-logs`, INFO) job time from those logs (NanoAODTools `Total time`, and `t_s` of `FORGE|JOB` with the
+  audit: median and largest), WARN when a counted job's `FORGE|JOB` says exit != 0. Prints `FORGE-CAMPAIGN|key|outputs=|n_in=|n_out=|pass=|MB=|kB/ev=|failed_dir=|verdict`,
+  the checks, `TOTAL|...` and `RESULT`; exit 0 (WARN allowed), 1 a FAIL, 2 arguments or nothing under the base yet.
+- `script/test_forge_campaign_audit_root.py` (real ROOT and NanoAODTools, lxplus or KNU after cmsenv): synthetic inputs, two
+  campaigns made with the real `run_postproc.py` (no skim as the reference; `--skim 6j20 --audit`) in the CRAB layout under a
+  temporary store with a `failed/` copy, log tarballs, a DAS table and YAML configs; 19 checks: the good trees PASS for MC and Data
+  (X7 with 1 and 2 threads, K with the reference), the `failed/` copy not counted (D7 WARN), T1 from real job output, and broken
+  copies each giving the expected verdict (a missing job: D1 D3 D4 X7; an input twice: D1 D3 and K; outputs of another skim: D5 X7;
+  outputs without the audit: D2; DAS nevents off by one: D4; a read error line in a log, and a log without the job output: L1; a
+  `ForgeTTbbKeys` row missing: K, with 2 threads; `Runs` sums off in one input: D6 WARN naming the file; the reference copied into
+  a second task directory: X7 EXCESS and K), and damage that must end in a FAIL line and a RESULT line, not a traceback (an output
+  that is not a ROOT file: D0, X7 not compared; a corrupt log tarball: L1). ROOT 6.40 in the AI session: 19/19 (ledger V52).
+
+### Changed
+- Workspace RUNBOOK 13 4: the local checks copy their inputs to `/tmp` first (`xrdcp` with `XRD_REQUESTTIMEOUT=120`,
+  `timeout 1800`, the EU redirector as fallback), as `docs/08` section 2 Step 2 says; the run lines use `${L_MC:?}` so an empty
+  variable stops them. The first version read over AAA (see Validated).
+- `docs/05_troubleshooting.md` A23: the exit 5 reproduction copies the input first; the campaign audit; tempTTHH
+  `make_filelists.py` walks every directory, `failed/` included.
+- `README.md`, `script/README.md`: the campaign audit.
+
+### Validated
+- lxplus9105, ROOT 6.30.09, commit `039f12b` (P5, workspace RUNBOOK 13; `09` section 25, ledger V51): mock 63/63, CRAB mock ALL PASS,
+  real ROOT 17/17. Real 2024 files, all `EXIT : 0` with C1, C2, C2e (0 ROOT error lines) and write PASS, read-back X7, A, K PASS:
+  `TTto4Q` first 20,000 events 10,429 pass, `JetMET0` 2024C first 20,000 1,764, `ZZ` one whole file 150,800 3,775 (C2r exact, C3
+  relative difference 0 but every `genWeight` is 1, so rounding is not tested; C2w WARN for the 10 LHE keep patterns, both
+  SetBranchStatus messages). Branch counts 524 / 278, 484 / 270, 506 / 278 as V48 predicts. Speed: the copy step read over AAA at
+  9.2 Hz (`TTto4Q`) and 58.7 Hz (`JetMET0`), from `/tmp` at 3,364 Hz (`ZZ`, job 93 s); the first `ZZ` attempt hung at the AAA open.
+  Preflights of the four 2024 configs as expected (MC 38 / 0 / 0, Data 36 / 2 / 0; `forge git 039f12b40630`).
+- Skim pilot submitted (P6): 3 tasks (`ZZ` 76, `TTbb_Hadronic` 189, `JetMET0_Run2024H` 82 jobs), job arguments
+  `... --skim 6j20 --audit --forge-git 039f12b40630 ...`, the two helpers in the sandbox. lxplus commit `e61130c`.
+- 2018UL first `--report`, 16 h after the submission: MC 2,199 / 2,277 done, 78 failed; Data 1,382 / 1,466 done, 82 failed,
+  2 transferring. Exit codes: 50115 (no valid FrameworkJobReport: the payload died before NanoAODTools wrote it) for 149 jobs in
+  six tasks, 50664 (wall time, 600 min) 2 + 2, 50660 (memory, 2,500 MB) 3, 60328 (stageout) 1, and 3 jobs `failed in postprocessing
+  step` (the CRAB post-job, normally the output transfer). Resubmitted per task on 09-29 (50664 `--maxjobruntime=1440`, 50660
+  `--maxmemory=4000`, the rest plain).
+
+### Note
+- C3 limit still open: set it from `TTbb_Hadronic` in the pilot (powheg weights, 189 whole files: D6 per file).
+- Review of the campaign audit by a separate agent (before any real run): no check that can PASS on wrong data; one crash path fixed
+  (ROOT 6.30 `TFile.Open` raises `OSError` instead of returning a zombie, so one unreadable output ended the run with a traceback;
+  now D0 FAIL; likewise an RDataFrame error in X7 or K and a `zlib.error` from a damaged tarball become FAIL lines); comparisons
+  are multisets (a key twice on both sides is the dataset, a key twice on one side is a doubled job or reference); T1 says it is
+  payload time only; TSV floats with 12 digits. The same `OSError` means `forge_audit.py` gives 85 (the open prints a ROOT error
+  line) or 7, not 84, for an input it cannot open; both 84 and 85 are retried at another site, so this waits for the P7 batch.
+- The six plain resubmits were run through a `grep` that matched nothing CRAB prints on success (`Resubmit request sent to the
+  server.`), so they printed nothing; their runlogs are the record, and all nine show `Resubmit request sent` (workspace RUNBOOK 14).
+
 ## [Unreleased], 2026-09-28 (4): event skim and job audit for 2024 (plan 12 P4; `skim: 6j20`, `audit: true`)
 
 ### Added

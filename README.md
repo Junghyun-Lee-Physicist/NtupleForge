@@ -118,6 +118,9 @@ python3 script/run_postproc.py <MC_nanoaod.root> \
 `script/forge_skims.py`, `script/forge_audit.py` 가 sandbox 에 들어가고 `--forge-git` 에 제출한 checkout 의 commit 이 적힌다
 (`script/runlogs/` 밖의 tracked 파일이 수정돼 있으면 `+dirty`, job 이 받는 파일이 git 에 없으면 `+untracked`). preflight 는 branch 목록 점검 다음에
 `[PASS] recipe  slim (postproc; skim 6j20 = <식>; audit on)` 처럼 무엇을 할지를 찍는다.
+job 이 끝난 캠페인은 출력이 있는 곳(KNU)에서 `python3 script/forge_campaign_audit.py -c crabConfig/<config>.yaml --das script/drafts/review_das_<...>.tsv`
+로 dataset 마다 판정한다(2026-09-29; 출력 수와 job 번호, Σ`n_in` 또는 Σ`Events` == DAS nevents, `failed/` 사본, `--reference-config` 로 no-skim 캠페인과
+event 단위 비교, `--scan-logs` 로 log 의 ROOT 오류 줄과 job 시간; 읽는 법 `docs/05_troubleshooting.md` A23).
 
 ```bash
 # 제출. 이미 존재하는 task는 실패 job을 AUTO-RESUBMIT합니다

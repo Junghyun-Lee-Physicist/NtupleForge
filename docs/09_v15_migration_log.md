@@ -810,3 +810,62 @@ lxplus941, git `31beadf`(slimB 채택 커밋), 명령은 워크스페이스 RUNB
 - **커밋** `ff52d5f`(lxplus): runlog 3, pf 2, `LEDGER.tsv` 뿐. `nocommit/` 없음, 여섯 파일에서 S3 서명 grep 0(AI 가 맥에서 확인).
 - 출력: T3_KR_KNU `/store/user/junghyun/ttHH2018UL_v15_had_{MC,Data}_v1`, 3,743 job, 예상 3.05 TB(원장 V47). 다음은 `--report`(RUNBOOK §12 8),
   전부 끝나면 KNU 에서 dataset 별 파일·event 수 대 DAS(계획 12 P8).
+
+## 25. 2026-09-29: 2024 skim + audit 의 lxplus 점검(P5) 통과, skim 파일럿 제출(P6), 2018UL 첫 `--report`
+
+lxplus9105, git `039f12b`(P4 커밋), 명령은 워크스페이스 RUNBOOK §13. lxplus 커밋 `e61130c`(runlog 18 개; `nocommit/` 없음, S3 서명 grep 0, AI 가 맥에서 확인).
+
+- **시험 셋** (ROOT 6.30.09, Python 3.9.14): `test_forge_audit_mock.py` 63/63, `test_submit_crab_mock.py` ALL PASS,
+  `test_forge_audit_root.py` 17/17(wall 493 s) (`run_p5_test_mock_20260929_061005.log`, `run_p5_test_root_20260929_061109.log`).
+- **실제 2024 파일 셋**, 모두 `EXIT : 0`, C1·C2·C2e(ROOT 오류 줄 0)·write PASS, 읽기 전용 점검 X7·A·K PASS:
+
+  | 입력 | 범위 | 통과 | X7 (출력 = RVec 통과 입력, event 단위) | 기타 |
+  |---|---|---:|---|---|
+  | TTto4Q `4b74f791-...` (AAA 직독) | 첫 20,000 / 818,070 | 10,429 (52.1 %) | 10,429 = 10,429, 어긋남 0 | C2r INFO(일부), `ForgeTTbbKeys` 112 = 코드 53~55 event, 코드 0 이 17,658 |
+  | JetMET0 2024C `064aaf18-...` (AAA 직독) | 첫 20,000 | 1,764 (8.8 %) | 1,764 = 1,764 | `ForgeTTbbKeys` 없음(Data) |
+  | ZZ `cccd7f37-...` (`/tmp` 복사, 269 MB, xrdcp 15 s) | 전체 150,800 | 3,775 (2.5 %) | 3,775 = 3,775 | C2r PASS(`genEventCount` 150,800 = entries), C3 상대차 0, C2w WARN(LHE 계열 패턴 10 개), `ForgeTTbbKeys` 18,175(12 %, Z→bb) |
+
+  요약(`run_p5_summary_20260929_090313.log`): branch `524 | HLT_ 278`, `484 | HLT_ 270`, `506 | HLT_ 278`, gen 세 열 MC y / Data n. 원장 V48 의 예측과 같다
+  (ZZ 는 TTto4Q 의 524 에서 LHE 계열 18 개를 뺀 수).
+- **C2w 가 실제로 나왔다**: ZZ 에서 `Error in <TTree::SetBranchStatus>: No branch name is matching wildcard -> LHE_*`(wildcard 둘)과
+  `unknown branch -> nLHEPart` 등(이름 여덟). 09-28 의 수정 전 `BENIGN_RE` 였다면 이 job 은 C2e FAIL, exit 85 였다(02_CHANGELOG 2026-09-28 (4) Note).
+  drop 패턴이 못 찾은 것은 ROOT Warning 이고 PyROOT 가 `RuntimeWarning` 으로 찍는다(오류로 세지 않는다).
+- **C3 의 한도는 아직 못 정했다**: ZZ 는 pythia 단독이라 `genWeight` 가 모두 1 이어서 상대차 0 은 float 반올림을 시험하지 않는다.
+  powheg 가중치가 있는 `TTbb_Hadronic` 이 파일럿에서 파일 전체(189 개)로 잰 뒤 C2r·C3 을 FAIL 로 올릴지 정한다(계획 12 §2.3).
+- **속도: AAA 직독이 병목이었다.** TTto4Q 20,000 event 의 복사 단계 2,177.5 s(9.2 Hz), JetMET0 341.0 s(58.7 Hz); `/tmp` 복사본의 ZZ 는
+  150,800 event 에 44.8 s(3,364 Hz), job 전체 93 s(audit 의 두 번째 읽기 34 s). 첫 ZZ 시도는 AAA 의 file open 에서 멈춰 끊었다
+  (`run_p5_2024_ZZ_6j20_full_20260929_070848.log`, 끝부분 없음). `docs/08` 2 절 Step 2 의 규칙(로컬 점검은 `/tmp` 로 xrdcp 먼저)을 AI 가 RUNBOOK §13
+  에 적용하지 않은 탓이고, §13 의 4 를 고쳤다. CRAB job 은 데이터가 있는 사이트에서 읽으므로 이 속도와 무관하다; 실제 job 시간은 P6 이 준다.
+- **preflight 넷**: 2024 생산 MC·Data, 파일럿 MC·Data 모두 기대값(MC 38 PASS / 0 WARN, Data 36 PASS / 2 WARN), `forge git 039f12b40630` PASS
+  (`LEDGER.tsv` 수정은 셈하지 않음), recipe 줄 `slim (postproc; skim 6j20 = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6; audit on)`
+  (`pf_config_ttHH2024_v15_had_{MC,Data,skimpilotMC,skimpilotData}_20260929_1107*.log.txt`).
+- **skim 파일럿 제출** (P6): `.requestcache` 3 개(`ZZ` 76, `TTbb_Hadronic` 189, `JetMET0_Run2024H-MINIv6NANOv15-v2` 82 job), transcript 의
+  `Job arguments of tasks submitted now (crab_args.txt): -b branch_hadronic_2024_v15_{MC,Data}.txt -I noop:MODULES --skim 6j20 --audit
+  --forge-git 039f12b40630 --output-file=forgedNtuple.root`, sandbox 에 `forge_skims.py`·`forge_audit.py`. task 이름은 lxplus 의
+  `nocommit/run_submit_ttHH2024_v15_had_skimpilot{MC,Data}_*.log` 에만 있다. 출력: `/store/user/junghyun/ttHH2024_v15_had_{MC,Data}_v1_skimpilot`.
+- **2018UL 첫 `--report`** (09-29 09:19 UTC, 제출 약 16 시간 뒤; `crab_report_ttHH2018UL_v15_had_{MC,Data}_20260929_1119.txt`): 도는 job 없음.
+  MC 2,199 / 2,277 done, 78 fail; Data 1,382 / 1,466 done, 82 fail, 2 transferring. 실패 task 아홉의 exit code(`crab status`, AI 세션에 붙인 출력):
+
+  | task | fail | exit code |
+  |---|---:|---|
+  | `ST_t_top` | 31 | 50115 × 29, `failed in postprocessing step` × 2 |
+  | `ST_t_antitop` | 16 | 50115 × 16 |
+  | `TTbar_Hadronic` | 18 | 50115 × 18 |
+  | `QCD_HT200to300` | 7 | 50115 × 7 |
+  | `QCD_HT300to500` | 1 | 60328 × 1 |
+  | `TTbar_DiLep` | 3 | 50660 × 3 (메모리, 한도 2,500 MB) |
+  | `TTbar_SemiLep` | 2 | 50664 × 2 (시간, 한도 600 분) |
+  | `JetHT_Run2018D` | 40 | 50115 × 39, `failed in postprocessing step` × 1 |
+  | `SingleMuon_Run2018A` | 42 | 50115 × 40, 50664 × 2 |
+
+  50115 는 CRAB 이 job 끝에 유효한 FrameworkJobReport 를 찾지 못했다는 코드다. 이 job 들의 FJR 은 NanoAODTools `PostProcessor.run()` 이 끝에서
+  쓰므로, payload 가 도중에 죽었다(예외나 segfault)는 뜻이다. plain `crab status` 는 개수만 주고 원인 문장은 주지 않는다: 재시도 결과로 가르고,
+  같은 job 이 또 50115 면 `crab getlog --short` 로 그 job 의 stdout 을 본다(워크스페이스 RUNBOOK §14). `failed in postprocessing step` 은
+  job 은 끝났는데 CRAB 의 post-job(보통 출력 전송)이 실패한 것이다. 시간 한도 600 분은 `submit_crab.py` 의 FileBased 기본값(`max_runtime`)으로
+  CRAB 기본 1,315 분보다 짧다.
+- **resubmit** (09:44 UTC 부터, lxplus9105, `e61130c`; runlog 는 `nocommit/run_resubmit_2018_*`): 50664 의 `TTbar_SemiLep` 과
+  `SingleMuon_Run2018A` 는 `--maxjobruntime=1440`, 50660 의 `TTbar_DiLep` 은 `--maxmemory=4000`(셋 다 `Resubmit request sent to the server.`,
+  `EXIT : 0`), 나머지 여섯(`TTbar_Hadronic`, `QCD_HT200to300`, `QCD_HT300to500`, `ST_t_top`, `ST_t_antitop`, `JetHT_Run2018D`)은 기본 자원.
+  여섯의 loop 는 AI 가 준 `grep -iE "success|fail|error|nothing"` 로 걸렀는데 CRAB 의 성공 줄에는 그 말이 없어 아무것도 찍히지 않았다; runlog 로
+  확인했다: 아홉 개 모두 `Resubmit request sent` 한 줄(lxplus934, RUNBOOK §14 1). `crab status` 의 경고 "max jobs memory is less than 70 % of the task requested
+  value (2500 MB)" 는 메모리를 넉넉히 잡았다는 뜻이라 두었다.
