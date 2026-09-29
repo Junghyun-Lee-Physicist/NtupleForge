@@ -1,0 +1,23 @@
+# 2024 v15 hadronic SKIM PILOT, MC (docs/12_fastpath_workflow_plan.md P6; RUNBOOK 13).
+# The production recipe of config_ttHH2024_v15_had_MC.yaml (slimB list, skim
+# 6j20, audit on) on two datasets:
+#   ZZ             the dataset of the 2026-09-24 no-skim pilot (76 files, ledger
+#                  V43); that output at KNU is the reference for a dataset-level
+#                  X7 (skim output == the 6j20 events of the no-skim output)
+#   TTbb_Hadronic  a tt+bb sample (189 files): high pass rate (job time) and
+#                  most events in ForgeTTbbKeys
+# Submit only after the plan 12 P5 local checks passed (RUNBOOK 13).
+common:
+  jobID: "campaign_ttHH2024_v15_had_MC_v1_skimpilot"
+  site: "T3_KR_KNU"
+  output_base: "ttHH2024_v15_had_MC_v1_skimpilot"
+  analysis_module: ["modules/noop.py", "MODULES"]
+  branch_file: "branches/branch_hadronic_2024_v15_MC.txt"
+  splitting: "FileBased"
+  units_per_job: 1
+  skim: "6j20"
+  audit: true
+
+datasets:
+  ZZ: "/ZZ_TuneCP5_13p6TeV_pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM"
+  TTbb_Hadronic: "/TTBBto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM"

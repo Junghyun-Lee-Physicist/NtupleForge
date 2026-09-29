@@ -97,11 +97,15 @@ python3 script/run_postproc.py <MC_nanoaod.root> \
 | `-o`, `--output-file` | | 지정 시 모든 출력을 이 파일 하나로 `hadd`. |
 | `-N`, `--max-events` | | 처리 이벤트 수 제한 (기본: 전체). |
 | `--first-entry` | | 앞쪽 N개 entry 건너뛰기 (기본: 0). |
+| `--skim NAME` | | **생산용 event 선택** (2026-09-28). `script/forge_skims.py` 의 이름(`none`, `6jcount`, `6j20`, `6j25`, `6j30`, `6j20ht400`); 그 TTreeFormula 가 `PostProcessor(cut=...)` 로 간다(모듈 없이 C++ 경로). `Runs`/`LuminosityBlocks` 는 그대로 전부. `--cut` 과 같이 쓰지 않는다. 2024 = `6j20` (`docs/03_DECISIONS.md` D-2026-09-28-volume). |
+| `--audit` | | `-o` 필요. 복사 뒤 입력 파일마다 RDataFrame 으로 다시 읽어 closure(C1 출력 event 수 = RVec 통과 수, C2 끝까지 읽음, C2e ROOT 오류 줄 0, C2r/C3 Runs 합)를 보고 `ForgeAudit`·`ForgeTTbbKeys`·`ForgeProvenance` 를 출력에 붙인다(`script/forge_audit.py`). exit: closure FAIL 5, 읽기 문제(C2, C2e) 85, 입력을 못 엶 84, audit 오류 7 (CRAB 재시도 규칙에 맞춘 값: 84·85 는 다른 사이트에서 재시도, 5·7 은 재시도 안 함). |
+| `--forge-git` | | `ForgeProvenance` 에 적을 git commit (`submit_crab.py` 가 넣는다). |
+| `--cut` | | **검증 전용** 사전 선택식(생산 config 에 쓰지 않는다). 생산 skim 은 `--skim`. |
 | `--ttcat-debug-csv`, `--ttcat-debug-csv-path`, `--ttcat-quiet` | | **DEPRECATED (dead flags)**. 환경변수로 `modules/ttbarCategorizer.py`에 옵션을 넘기던 것이나 그 모듈은 이 저장소에 없다(`modules/`에는 `noop`, `topCPVCategorizer`, `jetsMETcut`, `nanoaod_branch_access`만 있다). 파싱은 되지만 아무 효과가 없다. |
 
-skim을 적용하려면 cut 모듈을 끼우십시오 — 예제:
-[`modules/jetsMETcut.py`](modules/jetsMETcut.py). 커스텀 branch 작성 방법은
-[`docs/04_architecture.md`](docs/04_architecture.md) §4를 보십시오.
+생산 skim 은 `--skim`(CRAB 에서는 YAML `skim:`)으로 한다: 모듈이 없으면 NanoAODTools 가 선택과 복사를 C++ 로 한다
+(`docs/12_fastpath_workflow_plan.md` §2.3). python cut 모듈([`modules/jetsMETcut.py`](modules/jetsMETcut.py) 같은 gatekeeper)은
+모든 event 에 python 루프를 돌리므로 느리다. 커스텀 branch 작성 방법은 [`docs/04_architecture.md`](docs/04_architecture.md) §4를 보십시오.
 
 ---
 
@@ -109,7 +113,11 @@ skim을 적용하려면 cut 모듈을 끼우십시오 — 예제:
 
 작업은 [`crabConfig/`](crabConfig/)의 YAML 파일로 정의합니다.
 `analysis_module`과 `branch_file` 필드가 worker의 `run_postproc.py`
-(`-I` / `-b`)로 전달됩니다.
+(`-I` / `-b`)로 전달됩니다. 선택 키(2026-09-28, 없으면 전과 같다): `recipe: slim`(지금은 slim 만),
+`skim: <이름>`(`--skim`), `audit: true|false`(`--audit`, skim 이 있으면 기본 true). skim 이나 audit 이 있으면
+`script/forge_skims.py`, `script/forge_audit.py` 가 sandbox 에 들어가고 `--forge-git` 에 제출한 checkout 의 commit 이 적힌다
+(`script/runlogs/` 밖의 tracked 파일이 수정돼 있으면 `+dirty`, job 이 받는 파일이 git 에 없으면 `+untracked`). preflight 는 branch 목록 점검 다음에
+`[PASS] recipe  slim (postproc; skim 6j20 = <식>; audit on)` 처럼 무엇을 할지를 찍는다.
 
 ```bash
 # 제출. 이미 존재하는 task는 실패 job을 AUTO-RESUBMIT합니다

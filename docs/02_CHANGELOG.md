@@ -9,6 +9,76 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-28 (4): event skim and job audit for 2024 (plan 12 P4; `skim: 6j20`, `audit: true`)
+
+### Added
+- `script/forge_skims.py`: the production event selections in one table (`6jcount`, `6j20`, `6j25`, `6j30`, `6j20ht400`), each
+  written twice: the TTreeFormula string for `PostProcessor(cut=...)` (the strings `size_options.py` measured on 09-28; the mock test
+  compares the two tables) and the same selection as an RVec expression for the audit. The HT of `6j20ht400` is a declared C++
+  `forge_ht()` summing in double like `Sum$` (a NaN or inf jet pt gives NaN in both).
+- `script/forge_audit.py` (`run_postproc.py --audit`): after NanoAODTools has copied and merged (`-o`, the unchanged C++ path of the
+  noop module), every input file is read once more with RDataFrame over the same entry range, reading only `nJet`, `Jet_pt`,
+  `Jet_eta`, `genWeight`, `genTtbarId` and the event key. Closure (plan 12 section 2.3): C1 output `Events` == events passing the RVec
+  expression (without a skim: == entries read), C2 every file read to the end of its range, C2e no ROOT error line during the copy
+  or the audit (fd 2 goes through a separate `tee` process: live in the job log, a copy in `forge_stderr.txt` that is scanned and
+  removed; an error level that would hide Error lines is set back to kWarning), C2c the genTtbarId code histogram adds up; WARN only: C2w a keep pattern
+  that matches nothing in that file (`Error in <TTree::SetBranchStatus>: unknown branch -> X` for a plain name, `No branch name is
+  matching wildcard -> X` for a wildcard, e.g. `LHE_*` in a pythia-only sample; not a read error), C2a input `Events` autosave not 0, C2r `Runs.genEventCount` vs entries and C3 sum of `genWeight` vs
+  `Runs.genEventSumw` (relative 1e-6) for a whole MC file; C2r and C3 become FAIL once P5 has measured real files. Only when all
+  pass does it append three TTrees (autosave 0): `ForgeAudit` (one row per input: entries, passing, sums of weights, `Runs` sums,
+  per `genTtbarId % 100` code count and sum of weights), `ForgeTTbbKeys` (every MC input event with code 53..55 before the skim: key,
+  `genTtbarId`, `genWeight`, pass), `ForgeProvenance` (one row per job: json of skim, formulas, branch file and md5, git commit,
+  CMSSW, inputs). TTrees because haddnano concatenates them (a TObjString it writes under its own text as key name). Exit codes
+  follow CRABServer's retry policy (`RetryJob.py`): 0; 1 NanoAODTools failed or the output could not be written (as before);
+  84 an input the audit cannot open and 85 read trouble (C2, C2e, an RDataFrame read exception), both retried at another site;
+  5 a closure FAIL without read trouble and 7 an audit bug, not retried. `FORGE|EVT` (the first 20 events of the job), `FORGE|FILE`,
+  `FORGE|CHECK`, `FORGE|JOB` lines as in plan 12 section 5.2.
+- `script/check_forge_output.py OUT INPUT [--first-entry K] [-N n]`: read-only read-back with real ROOT. X7 the (run, lumi, event)
+  set of the output == the input events in that range that pass the RVec expression (event by event, not only counts), A the
+  `ForgeAudit` row recomputed, K `ForgeTTbbKeys` == the code 53..55 events, pass=1 all in the output, pass=0 none.
+- Tests: `script/test_forge_audit_mock.py` (a JSON-backed mock ROOT and PostProcessor, runs anywhere: 63 checks incl. every exit
+  code, the tee capture with a child process, `crab_script.py` passing the code on and printing the capture of a killed job, the
+  old sandbox layout and command line) and `script/test_forge_audit_root.py` (real ROOT and NanoAODTools on synthetic
+  NanoAODv15-typed files: pt exactly 20 and the next float, abs(eta) exactly 2.5, NaN and inf, no jets, Data, Data with the MC list,
+  nothing passing, an empty file, an entry range, two inputs, a haddnano merge, the command line without the new flags, a
+  wildcard keep that matches nothing; 17 checks). In the AI session: 63/63 and, with ROOT 6.40 and NanoAODTools 14_2_X, 17/17;
+  lxplus (ROOT 6.30) in P5.
+- `crabConfig/config_ttHH2024_v15_had_skimpilot{MC,Data}.yaml` (plan 12 P6): the production recipe on `ZZ` and
+  `JetMET0_Run2024H` (the datasets of the 09-24 no-skim pilot, whose outputs at KNU are the reference for a dataset-level X7) and on
+  `TTbb_Hadronic` (189 files, high pass rate, most events in `ForgeTTbbKeys`).
+
+### Changed
+- `script/run_postproc.py`: `--skim NAME` (its formula becomes `PostProcessor(cut=...)`; not together with the validation-only
+  `--cut`, exit 2), `--audit` (needs `-o`), `--forge-git`. `forge_skims.py` / `forge_audit.py` are imported only with these flags,
+  so a sandbox without them runs every older command line; without the flags the output and the log are what they were.
+- `crab/submit_crab.py`: YAML `common` keys `recipe` (only `slim`), `skim`, `audit` (default true with a skim, false without, so the
+  submitted 2018UL configs are unchanged); an invalid value is a preflight FAIL and stops a submit before any CRAB call (exit 1).
+  With a skim or the audit the two helpers go into the sandbox and `crab_args.txt` gets `--skim`, `--audit`, `--forge-git` (the
+  short commit, `+dirty` when tracked files outside `script/runlogs/` are modified, both sides of a rename counted: `runlog.sh`
+  appends to `LEDGER.tsv` at every step; `+untracked` when a file the jobs get is not in git, e.g. a new module sibling, which
+  is shipped automatically). Preflight lines: `recipe` (what the job will do, with the formula), the two worker files,
+  `forge git` (WARN when unknown, dirty or untracked), WARN for a skim with the audit off and for a module other than noop (C1
+  assumes no event is dropped). A plain submit logs `Job arguments of tasks submitted now (crab_args.txt): ...` (the file is
+  removed at the end of the run; a resubmitted task keeps the sandbox of its first submission).
+- `crab/crab_script.py`: when the payload fails and `forge_stderr.txt` is still there (the process died inside the capture), prints
+  its first 20 lines, its ROOT error lines (at most 40, without the benign SetBranchStatus lines of C2w) and its last 20; the exit
+  code is passed on as before.
+- `crabConfig/config_ttHH2024_v15_had_{MC,Data}.yaml`: `skim: "6j20"`, `audit: true` (D-2026-09-28-volume); not submitted before P5
+  and P6 (RUNBOOK 13).
+- `script/test_submit_crab_mock.py`: cases 11-16 (old config ships nothing new; skim ships both helpers and the arguments, and the
+  transcript shows them; audit without skim; unknown skim / recipe stop before CRAB; the preflight lines; `forge git` in a real git
+  checkout with the repository's `.gitignore`: a modified `LEDGER.tsv` is clean, an untracked module sibling is `+untracked`, a
+  rename out of `script/runlogs/` and a modified branch list are `+dirty`).
+- `README.md`, `script/README.md`: the new flags, YAML keys and tools.
+- `docs/05_troubleshooting.md` A23: how to read the exit code of an `--audit` job.
+
+### Note
+- Found by a dry run of workspace RUNBOOK 13 as written (the real 2024 lists on synthetic inputs, mock CRAB): a wildcard keep
+  pattern that matches nothing makes ROOT print `No branch name is matching wildcard -> X` (ROOT 6.30 `tree/tree/src/TTree.cxx`),
+  not `unknown branch -> X`. With only the latter treated as benign, every `ZZ` job (pythia only; the 2024 MC list keeps `LHE_*`)
+  would have ended in C2e FAIL, exit 85, retried at other sites. Both are C2w now; with the old pattern 14 of the 17 real-ROOT
+  checks fail. The same dry run showed that `crab_args.txt` is gone after a submit, hence the new log line.
+
 ## [Unreleased], 2026-09-28 (3): 2018UL v15 hadronic submitted with the slimB lists (plan 12 P3)
 
 ### Validated

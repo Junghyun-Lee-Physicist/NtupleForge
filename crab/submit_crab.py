@@ -148,6 +148,97 @@ def check_voms():
         logger.error("Run: voms-proxy-init --voms cms --valid 168:00")
         sys.exit(1)
 
+# --- recipe / skim / audit (2026-09-28, docs/12_fastpath_workflow_plan.md 2.2-2.3) ---
+# YAML `common` keys, all optional (absent = exactly the behaviour before):
+#   recipe: slim            the only recipe implemented here (categorize / derive = Phase 0)
+#   skim:   none | 6jcount | 6j20 | 6j25 | 6j30 | 6j20ht400   (script/forge_skims.py)
+#   audit:  true | false    default: true when a skim is set, else false
+# A skim or the audit ships script/forge_skims.py and script/forge_audit.py and
+# adds --skim / --audit / --forge-git to crab_args.txt (run_postproc.py).
+FORGE_FILES = ("script/forge_skims.py", "script/forge_audit.py")
+
+
+def forge_options(common):
+    """(recipe, skim or None, audit) from the YAML common block; ValueError if invalid."""
+    recipe = common.get("recipe") or "slim"
+    if recipe != "slim":
+        raise ValueError("recipe %r is not implemented in this submitter (only 'slim'; categorize / derive "
+                         "are Phase 0, docs/11_unified_forge_plan.md)" % (recipe,))
+    skim = common.get("skim")
+    skim = None if skim in (None, "", "none") else str(skim)
+    if skim is not None:
+        repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        sys.path.insert(0, os.path.join(repo, "script"))
+        try:
+            import forge_skims
+        except ImportError as e:
+            raise ValueError("skim %r set but script/forge_skims.py is not importable (%s)" % (skim, e))
+        if skim not in forge_skims.NAMES:
+            raise ValueError("skim %r is not in script/forge_skims.py (known: %s)"
+                             % (skim, ", ".join(forge_skims.NAMES)))
+    audit = common.get("audit")
+    if audit is None:
+        audit = skim is not None
+    elif not isinstance(audit, bool):
+        raise ValueError("audit must be true or false, got %r" % (audit,))
+    return recipe, skim, audit
+
+
+# Tracked paths whose modification does not change what a job runs: runlog.sh
+# appends a line to script/runlogs/LEDGER.tsv at every step, so without this a
+# checkout that has just run its local checks would always be '+dirty'.
+FORGE_GIT_IGNORE = ("script/runlogs/",)
+
+
+def forge_shipped(config_path, common):
+    """The files of this checkout that a job gets (as main() ships them): for the
+    preflight's forge git line, which runs before the CRAB config exists."""
+    files = [config_path, "crab/PSet.py", "crab/crab_script.py", "script/run_postproc.py"] + list(FORGE_FILES)
+    module_cfg = common.get("analysis_module")
+    if isinstance(module_cfg, list) and len(module_cfg) == 2 and os.path.exists(str(module_cfg[0])):
+        mod = str(module_cfg[0])
+        files.append(mod)
+        files += sorted(h for h in glob.glob(os.path.join(os.path.dirname(mod) or ".", "*.py"))
+                        if os.path.basename(h) != os.path.basename(mod) and not os.path.basename(h).startswith("__"))
+    if common.get("branch_file"):
+        files.append(str(common.get("branch_file")))
+    return files
+
+
+def forge_git(paths=()):
+    """Short commit of this checkout for ForgeProvenance. '+dirty' if tracked files
+    outside script/runlogs/ are modified (both sides of a rename count), '+untracked'
+    if one of `paths` (files the jobs get) is not in git; 'unknown' without git."""
+    repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    try:
+        head = subprocess.run(["git", "-C", repo, "rev-parse", "--short=12", "HEAD"], stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, universal_newlines=True, timeout=30)
+        if head.returncode != 0 or not head.stdout.strip():
+            return "unknown"
+        st = subprocess.run(["git", "--no-optional-locks", "-C", repo, "status", "--porcelain", "--untracked-files=no"],
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, timeout=30)
+        if st.returncode != 0:
+            return "unknown"
+        changed = []
+        for line in st.stdout.splitlines():
+            if len(line) > 3:
+                changed += [q.strip().strip('"') for q in line[3:].split(" -> ")]
+        dirty = any(not q.startswith(FORGE_GIT_IGNORE) for q in changed)
+        rel = []
+        for q in paths:
+            a = os.path.abspath(str(q))
+            if a.startswith(repo + os.sep) and os.path.exists(a):
+                rel.append(os.path.relpath(a, repo))
+        untracked = False
+        if rel:
+            ls = subprocess.run(["git", "--no-optional-locks", "-C", repo, "ls-files", "--error-unmatch", "--"] + rel,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, timeout=30)
+            untracked = ls.returncode != 0
+        return head.stdout.strip() + ("+dirty" if dirty else "") + ("+untracked" if untracked else "")
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+
+
 # --- Outcome helpers (2026-09-23) --------------------------------------------
 # CRABClient facts these rely on (read in the v3.260630 source, the client on
 # lxplus that day):
@@ -384,6 +475,36 @@ def run_preflight(args):
     else:
         pf.fail("branch file", "not found: %r" % bsel)
 
+    # ---- 4b. recipe / skim / audit (2026-09-28) -------------------------------
+    try:
+        recipe, skim, audit = forge_options(common)
+    except ValueError as e:
+        pf.fail("recipe / skim / audit", str(e))
+        recipe, skim, audit = None, None, False
+    if recipe:
+        if skim:
+            import forge_skims   # forge_options put script/ on sys.path
+            pf.ok("recipe", "slim (postproc; skim %s = %s; audit %s)"
+                  % (skim, forge_skims.get(skim)[0], "on" if audit else "OFF"))
+            if not audit:
+                pf.warn("audit", "off with a skim: nothing records the sums of weights before the skim")
+        else:
+            pf.ok("recipe", "slim (postproc; no event skim; audit %s)" % ("on" if audit else "off"))
+        if skim or audit:
+            repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            for rel in FORGE_FILES:
+                q = os.path.join(repo, rel)
+                (pf.ok if os.path.exists(q) else pf.fail)("worker file %s" % rel, q if os.path.exists(q)
+                                                          else "not found: %s" % q)
+            g = forge_git(forge_shipped(args.config, common))
+            (pf.warn if g == "unknown" or "+" in g else pf.ok)(
+                "forge git (ForgeProvenance)", g + ("  (modified tracked files: the commit does not name the code)"
+                                                    if "+dirty" in g else "")
+                + ("  (a file the jobs get is not in git)" if "+untracked" in g else ""))
+            if isinstance(module_cfg, list) and module_cfg and os.path.basename(str(module_cfg[0])) != "noop.py":
+                pf.warn("audit closure C1", "assumes the module drops no event; %s is not modules/noop.py"
+                        % module_cfg[0])
+
     # ---- 5. Rule 6: output filename hardcoded in two places ------------------
     here = os.path.dirname(os.path.abspath(__file__))
     pset = os.path.join(here, "PSet.py")
@@ -469,7 +590,9 @@ def run_preflight(args):
     if data and bsel and os.path.exists(bsel):
         rules = [l.strip() for l in open(bsel) if l.strip() and not l.strip().startswith("#")]
         if any(r.split()[1:2] == ["genWeight"] for r in rules if r.split()[0].lower() == "keep"):
-            pf.ok("Data + MC-only keeps", "harmless: keep patterns matching nothing are ignored")
+            pf.ok("Data + MC-only keeps", "the output just lacks them; ROOT prints one 'Error in "
+                  "<TTree::SetBranchStatus>' line per such pattern and job ('unknown branch' or 'No branch name is "
+                  "matching wildcard'; --audit reports them as C2w WARN)")
 
     # ---- 9. per-task preview (names/paths CRAB will use) --------------------
     # getUsername() talks to the proxy/CRAB config, so it can raise when the
@@ -569,6 +692,11 @@ def main(args):
 
     common = cfg.get('common', {})
     datasets = cfg.get('datasets', {})
+    try:
+        forge_recipe, forge_skim, forge_audit_on = forge_options(common)
+    except ValueError as e:
+        logger.error(f"YAML Error: {e}")
+        sys.exit(1)
     
     logger.info(f"Loaded Configuration: {args.config}")
     logger.info(f"Common Work Area: {common.get('jobID', 'crab_projects')}")
@@ -676,6 +804,16 @@ def main(args):
     # Add YAML Config (Provenance)
     conf.JobType.inputFiles.append(args.config)
 
+    # Event skim / audit helpers (run_postproc.py imports them only with --skim / --audit)
+    if forge_skim or forge_audit_on:
+        for rel in FORGE_FILES:
+            if not os.path.exists(rel):
+                logger.error(f"CRITICAL: {rel} not found (needed for skim / audit)")
+                sys.exit(1)
+            conf.JobType.inputFiles.append(rel)
+            logger.info(f"Adding Forge File: {rel}")
+        logger.info(f"Recipe: {forge_recipe}, skim {forge_skim or 'none'}, audit {'on' if forge_audit_on else 'off'}")
+
 
     # ------------------------------------------------------
     # Output Filename Logic
@@ -704,9 +842,22 @@ def main(args):
         if common.get('max_events'): 
             f.write(f"-N\n{common.get('max_events')}\n")
 
+        if forge_skim:
+            f.write(f"--skim\n{forge_skim}\n")
+        if forge_audit_on:
+            f.write("--audit\n")
+            shipped = list(conf.JobType.inputFiles) + [conf.JobType.psetName, conf.JobType.scriptExe]
+            f.write(f"--forge-git\n{forge_git(shipped)}\n")
+
         # Pass the output filename to the worker node script
         f.write(f"--output-file={out_name}\n")
 
+    # the transcript keeps what new tasks will run (the file itself is removed at the
+    # end; a resubmitted task keeps the sandbox of its first submission)
+    if not (args.status or args.report or args.kill or args.resubmit):
+        with open(args_file) as f:
+            logger.info("Job arguments of tasks submitted now (crab_args.txt): "
+                        + " ".join(l.strip() for l in f if l.strip()))
     conf.JobType.inputFiles.append(args_file)
     conf.JobType.scriptArgs = [] 
 

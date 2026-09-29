@@ -1,0 +1,18 @@
+# 2024 v15 hadronic SKIM PILOT, Data (docs/12_fastpath_workflow_plan.md P6; RUNBOOK 13).
+# The production recipe of config_ttHH2024_v15_had_Data.yaml (slimB list, skim
+# 6j20, audit on) on the dataset of the 2026-09-24 no-skim pilot (82 files,
+# ledger V43); that output at KNU is the reference for a dataset-level X7.
+# Submit only after the plan 12 P5 local checks passed (RUNBOOK 13).
+common:
+  jobID: "campaign_ttHH2024_v15_had_Data_v1_skimpilot"
+  site: "T3_KR_KNU"
+  output_base: "ttHH2024_v15_had_Data_v1_skimpilot"
+  analysis_module: ["modules/noop.py", "MODULES"]
+  branch_file: "branches/branch_hadronic_2024_v15_Data.txt"
+  splitting: "FileBased"
+  units_per_job: 1
+  skim: "6j20"
+  audit: true
+
+datasets:
+  JetMET0_Run2024H-MINIv6NANOv15-v2: "/JetMET0/Run2024H-MINIv6NANOv15-v2/NANOAOD"

@@ -990,3 +990,36 @@ project dir 이 없는 dataset 은 **제출한 다음** kill 했다.
 (만료 시 재위임, 덮어쓰기 확인).
 (b) wrapper 의 exit code 는 사람이 결과를 판정하는 첫 신호다. 실패를 로그로만 남기는 도구는 성공과 실패를 구별하지 못하게 만든다
 (A16 의 `SUBMITREFUSED` 와 같은 축: 성공처럼 보이는 실패).
+
+## A23 · (PREVENTIVE) `--audit` job 이 non-zero 로 끝났다: exit code 로 읽는 법 (2026-09-28)
+
+2024 생산(`skim: 6j20`, `audit: true`)부터 job 은 복사 뒤 closure 를 보고 exit code 로 원인을 나눈다(`script/forge_audit.py` 머리글,
+`12_fastpath_workflow_plan.md` §2.3). 값은 CRABServer `RetryJob.py` 의 `EXIT_RETRY_POLICY` 에 맞췄다: 목록에 없는 코드는 fatal(재시도 없음),
+8020·8021 은 하위 8 bit 인 84·85 로도 다른 사이트에서 재시도.
+
+| exit | 뜻 | CRAB | 사람이 할 일 |
+|---|---|---|---|
+| 1 | NanoAODTools 예외, 또는 출력 쓰기 실패(`kWriteError`) | 재시도 | 예전과 같다. 반복되면 job 로그의 traceback |
+| 2 | 인자 오류: 모르는 `--skim`, `--skim` 과 `--cut` 을 함께, `-o` 없는 `--audit`, sandbox 에 `forge_skims.py` 없음 | 재시도 안 함 | 모든 job 이 같이 실패한다. config 와 `submit_crab.py` 판을 본다(preflight 가 먼저 잡는다) |
+| 84 | audit 이 입력 파일을 못 엶, 또는 입력에 `Events` tree 가 없음 | 다른 사이트에서 재시도 | 반복되면 그 LFN 의 replica(`dasgoclient -query "site file=<LFN>"`) |
+| 85 | 읽기 문제: C2(범위 끝까지 못 읽음), C2e(ROOT 오류 줄), RDataFrame 읽기 예외 | 다른 사이트에서 재시도 | 재시도 뒤에도 실패면 `--resubmit`. job 로그의 `FORGE\|CHECK\|C2e\|FAIL` 줄이 첫 오류 줄을 담는다 |
+| 5 | 읽기 문제 없는 closure FAIL: C1(출력 event 수 ≠ RVec 통과 수) 또는 C2c(코드 histogram 합 ≠ entries) | 재시도 안 함 | 아래 재현. 해석 전에는 그 dataset 을 쓰지 않는다 |
+| 7 | audit 코드 자체의 예외(버그) | 재시도 안 함 | job 로그의 `forge audit failed` traceback 을 AI 세션에 |
+
+**재현 (exit 5).** job 로그의 `FORGE|FILE|<lfn>|...` 줄에서 LFN 을 얻어, lxplus 컨테이너의 저장소 루트에서 같은 명령을 돌리고 event 단위로 비교한다
+(`<lfn>`, `<list>` 를 채운다; 워크스페이스 RUNBOOK 13 의 4 와 같은 방식):
+
+```bash
+mkdir -p localcheck_v15
+/bin/bash script/runlog.sh repro_audit -- /bin/bash -c "cd localcheck_v15 && python3 ../script/run_postproc.py root://cms-xrd-global.cern.ch/<lfn> -I modules.noop:MODULES -b ../branches/<list> --skim 6j20 --audit -o repro.root"
+/bin/bash script/runlog.sh repro_audit_check -- python3 script/check_forge_output.py localcheck_v15/repro.root root://cms-xrd-global.cern.ch/<lfn>
+```
+
+로컬에서 PASS 면 그 job 의 읽기가 문제였을 가능성이 크고(C2e 가 못 본 조용한 읽기), FAIL 이면 X7 줄이 어긋난 event 키 하나를 찍는다.
+어느 쪽이든 LFN 과 함께 원장에 적는다.
+
+**출력의 `failed/`.** CRAB 은 실패한 job 의 출력도 `.../0000/failed/` 아래로 옮긴다(`cmscp.py`). audit FAIL 인 출력에는 `ForgeAudit` 이 없다
+(closure 가 통과해야 쓴다). analyzer 의 file list 와 P8 집계는 `failed/` 를 건너뛰고, 같은 job 의 재시도 출력만 쓴다.
+
+**`FORGE|CHECK` 의 WARN 은 job 을 실패시키지 않는다**: C2w(그 파일에 없는 keep 패턴, 예: pythia 만 쓴 샘플의 `LHE*`), C2a(입력 autosave),
+C2r·C3(`Runs` 합과의 비교; P5 뒤 FAIL 로 올릴 예정).

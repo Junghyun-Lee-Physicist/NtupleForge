@@ -43,6 +43,21 @@ When submitting jobs via CRAB using 'submit_crab.py', the arguments for this scr
 (e.g., 'crabConfig/config_crabTest.yaml'). 
 Make sure the values in the YAML file correctly point to existing files and modules.
 
+[Event skim and audit (2026-09-28, docs/12_fastpath_workflow_plan.md section 2.3)]
+--skim NAME is the PRODUCTION event selection: NAME is one of the table in
+forge_skims.py (none, 6jcount, 6j20, 6j25, 6j30, 6j20ht400) and its TTreeFormula
+goes to PostProcessor(cut=...). With no python module (modules/noop.py)
+NanoAODTools selects with TTree::Draw('>>elist') and copies with CopyTree, all
+C++; Runs and LuminosityBlocks are still copied whole. --cut stays the
+validation-only preselection described at its argument; the two exclude each
+other. --audit (needs --output-file) reads every input file once more with
+RDataFrame after the copy, checks the closure and appends ForgeAudit,
+ForgeTTbbKeys and ForgeProvenance to the output (forge_audit.py); a closure
+FAIL gives exit 5, read trouble 85, an input the audit cannot open 84, an audit
+error 7 (codes chosen for CRAB's retry policy, forge_audit.py). Without the
+two flags nothing changes. submit_crab.py sets both from the YAML keys
+`skim:` and `audit:` and ships forge_skims.py and forge_audit.py.
+
 [Branch Selection Policy — INPUT vs OUTPUT]
 The keep/drop file passed via -b is applied ONLY to the OUTPUT tree
 (`outputbranchsel`). The INPUT tree is NOT filtered (`branchsel=None`),
@@ -126,6 +141,16 @@ def main():
                              "cross-version comparison to a shared set of luminosity blocks, "
                              "e.g. --cut 'luminosityBlock==12||luminosityBlock==57'. "
                              "Default None = process every entry.")
+    parser.add_argument("--skim", type=str, default=None,
+                        help="PRODUCTION event selection by name from forge_skims.py (none, 6jcount, "
+                             "6j20, 6j25, 6j30, 6j20ht400); its formula goes to PostProcessor(cut=...). "
+                             "Not together with --cut. 2024: 6j20 (docs/03_DECISIONS.md D-2026-09-28-volume).")
+    parser.add_argument("--audit", action="store_true",
+                        help="after the copy, read every input file again with RDataFrame, check the closure "
+                             "(C1-C3) and append ForgeAudit / ForgeTTbbKeys / ForgeProvenance to --output-file "
+                             "(forge_audit.py). Exit 5 closure FAIL, 85 read trouble, 84 input not openable, 7 audit error.")
+    parser.add_argument("--forge-git", type=str, default=None,
+                        help="git commit of the submitting checkout, recorded in ForgeProvenance (submit_crab.py)")
 
     # [3] ttbarCategorizer Options -- DEPRECATED / DEAD
     # ────────────────────────────────────────────────────────────────────
@@ -193,6 +218,29 @@ def main():
         os.environ["TTCAT_QUIET"] = "1"
         logger.info("ttcat: endJob report SUPPRESSED")
 
+    # --skim / --audit (forge_skims.py and forge_audit.py are imported only here,
+    # so a sandbox without them still runs every older command line)
+    skim_name, skim_formula = None, None
+    if args.skim is not None or args.audit:
+        try:
+            import forge_skims
+        except ImportError as e:
+            logger.error("forge_skims.py is not importable (%s); it must sit next to run_postproc.py" % e)
+            sys.exit(2)
+        try:
+            skim_formula, _rvec = forge_skims.get(args.skim)
+        except KeyError as e:
+            logger.error(str(e))
+            sys.exit(2)
+        if skim_formula:
+            skim_name = args.skim
+        if skim_formula and args.cut:
+            logger.error("--skim and --cut exclude each other (production selection vs validation cut)")
+            sys.exit(2)
+    if args.audit and not args.output_file:
+        logger.error("--audit needs --output-file (the audit is appended to the merged output)")
+        sys.exit(2)
+
     # -------------------------------------------------------------------------
     # Hardcoded Configuration (Default Settings)
     # -------------------------------------------------------------------------
@@ -204,7 +252,7 @@ def main():
     # analyze(). --cut exists ONLY for cross-version validation (restricting two
     # runs to a shared lumi set so they can be compared event by event) and is
     # logged loudly below so it can never slip into production unnoticed.
-    CUT_STRING  = args.cut
+    CUT_STRING  = skim_formula if skim_name else args.cut
     POSTFIX     = "_Skim"     # Suffix for split output mode
     COMPRESSION = "LZMA:9"    # Compression algorithm (Use "LZ4:4" for faster testing)
     FRIEND      = False       # Run in friend tree mode
@@ -283,7 +331,14 @@ def main():
     # Execution
     # -------------------------------------------------------------------------
     logger.info("-" * 60)
-    if CUT_STRING:
+    if skim_name:
+        logger.info("=" * 60)
+        logger.info("EVENT SKIM (production): %s", skim_name)
+        logger.info("  cut = %s", CUT_STRING)
+        logger.info("  Runs / LuminosityBlocks stay whole; %s", "audit ON (forge_audit.py)" if args.audit
+                    else "audit OFF: nothing records the sums of weights before the skim")
+        logger.info("=" * 60)
+    elif CUT_STRING:
         logger.warning("=" * 60)
         logger.warning("PRESELECTION CUT ACTIVE -- VALIDATION MODE")
         logger.warning("  cut = %s", CUT_STRING)
@@ -323,6 +378,24 @@ def main():
             fwkJobReport=True, # Set "True" for CRAB job
         )
         
+        if args.audit:
+            import ROOT
+            import forge_audit
+            logger.info("Running Event Loop, then the forge audit...")
+            try:
+                code = forge_audit.run_job(ROOT, args, p.run, logger)
+            except Exception:
+                logger.exception("forge audit crashed outside its own checks")
+                code = forge_audit.EXIT_AUDIT
+            end_time = datetime.datetime.now()
+            logger.info("%s at %s (exit %d)", "Job Finished Successfully" if code == 0 else "Job FAILED",
+                        end_time.strftime('%Y-%m-%d %H:%M:%S'), code)
+            logger.info("   Total Runtime: %s", end_time - start_time)
+            sys.stdout.flush()
+            sys.stderr.flush()
+            forge_audit.c_flush()
+            os._exit(code)   # no PyROOT teardown after the RDataFrame work (size_options.py v1 crashed in one)
+
         logger.info("Running Event Loop...")
         p.run()
         

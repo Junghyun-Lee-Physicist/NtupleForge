@@ -144,6 +144,34 @@ def main():
         logger.info("✅ Post-processing completed successfully.")
     except subprocess.CalledProcessError as e:
         logger.error(f"❌ Execution failed with exit code {e.returncode}")
+        # run_postproc.py --audit copies ROOT's stderr into forge_stderr.txt while
+        # NanoAODTools copies and the audit reads (forge_audit.py; normally the
+        # lines also reach stderr at once through tee). If the process died inside
+        # that block the file is still here: print its first and last 20 lines and
+        # every ROOT error line in it, at most 40 (2026-09-28).
+        cap = "forge_stderr.txt"
+        if os.path.exists(cap):
+            try:
+                import collections
+                import re
+                head, tail, errs, n = [], collections.deque(maxlen=20), [], 0
+                with open(cap, "rb") as f:
+                    for raw in f:
+                        line = raw.decode("utf-8", "replace").rstrip("\n")
+                        n += 1
+                        if len(head) < 20:
+                            head.append(line)
+                        else:
+                            tail.append(line)
+                        if (line.startswith(("Error in <", "SysError in <", "Fatal in <")) and len(errs) < 40
+                                and not re.match(r"Error in <TTree::SetBranchStatus>: (?:unknown branch|No branch "
+                                                 r"name is matching wildcard) -> ", line)):
+                            errs.append(line)   # a keep pattern matching nothing is not an error (C2w)
+                logger.error("%s: %d line(s); first 20, ROOT error lines (%d shown), last 20:" % (cap, n, len(errs)))
+                for line in head + ["  --- ROOT error lines ---"] + errs + ["  --- last lines ---"] + list(tail):
+                    logger.error("  " + line)
+            except OSError as ex:
+                logger.error("cannot read %s: %s" % (cap, ex))
         sys.exit(e.returncode)
 
 if __name__ == "__main__":

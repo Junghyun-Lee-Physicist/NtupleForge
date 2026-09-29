@@ -26,6 +26,11 @@ common:
   branch_file: "branches/branch_hadronic_2024_v15_MC.txt"
   splitting: "FileBased"
   units_per_job: 1
+  # 2026-09-28 (docs/03_DECISIONS.md D-2026-09-28-volume): six jets with stored
+  # pT > 20 GeV and |eta| < 2.5 (script/forge_skims.py), audit on (script/forge_audit.py).
+  # Submit only after the plan 12 P5 local checks and the P6 skim pilot (RUNBOOK 13).
+  skim: "6j20"
+  audit: true
 
 datasets:
   # --- signal ---

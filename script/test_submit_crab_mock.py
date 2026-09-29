@@ -73,6 +73,13 @@ def crabCommand(cmd, **kw):
     if cmd == "submit":
         conf = kw["config"]
         name = conf.General.requestName
+        dump = os.environ.get("MOCK_CONF_DUMP")
+        if dump:                                     # what this task's sandbox would carry
+            import json
+            args = open("crab_args.txt").read() if os.path.exists("crab_args.txt") else None
+            with open(dump, "a") as f:
+                f.write(json.dumps({"name": name, "inputFiles": list(conf.JobType.inputFiles),
+                                    "crab_args": args}) + "\\n")
         p = os.path.join(os.path.abspath(conf.General.workArea), "crab_" + name)
         _log("submit " + name)
         if os.path.exists(p):                       # createWorkArea refuses
@@ -124,6 +131,13 @@ datasets:
   C: "/C/Run-v1/NANOAODSIM"
 '''
 CONFIG_D = CONFIG + '  D: "/D/Run-v1/NANOAODSIM"\n'
+# 2026-09-28: recipe / skim / audit keys (docs/12 section 2.2)
+CONFIG_SKIM = CONFIG.replace('jobID: "campaign_test"', 'jobID: "campaign_skim"').replace(
+    '  units_per_job: 1\n', '  units_per_job: 1\n  skim: 6j20\n')
+CONFIG_SKIM_NOAUDIT = CONFIG_SKIM.replace('  skim: 6j20\n', '  skim: 6j20\n  audit: false\n')
+CONFIG_AUDIT_ONLY = CONFIG_SKIM.replace('  skim: 6j20\n', '  audit: true\n')
+CONFIG_BADSKIM = CONFIG_SKIM.replace('skim: 6j20', 'skim: 6j21')
+CONFIG_RECIPE = CONFIG_SKIM.replace('  skim: 6j20\n', '  recipe: derive\n')
 
 
 def write(path, text, mode=0o644):
@@ -141,6 +155,15 @@ def setup(tmp):
     write(os.path.join(repo, "modules", "noop.py"), "MODULES = []\n")
     write(os.path.join(repo, "branches", "x.txt"), "drop *\nkeep run\nkeep luminosityBlock\nkeep event\n")
     write(os.path.join(repo, "script", "run_postproc.py"), "")
+    write(os.path.join(repo, "script", "forge_skims.py"), open(os.path.join(REPO, "script", "forge_skims.py")).read())
+    write(os.path.join(repo, "script", "forge_audit.py"), "")
+    write(os.path.join(repo, "script", "runlogs", "LEDGER.tsv"), "utc_start\tstep\texit\n")
+    # the repository's own ignore rules (preflight_*.log, campaign_*, crab_args.txt, __pycache__, ...), so that
+    # case 16's git checkout tracks what the real one tracks
+    write(os.path.join(repo, ".gitignore"), open(os.path.join(REPO, ".gitignore")).read())
+    for name, text in (("skim", CONFIG_SKIM), ("skim_noaudit", CONFIG_SKIM_NOAUDIT), ("audit_only", CONFIG_AUDIT_ONLY),
+                       ("badskim", CONFIG_BADSKIM), ("recipe", CONFIG_RECIPE)):
+        write(os.path.join(repo, "crabConfig", "c_%s.yaml" % name), text)
     write(os.path.join(repo, "crabConfig", "c.yaml"), CONFIG)
     write(os.path.join(repo, "crabConfig", "cD.yaml"), CONFIG_D)
     mock = os.path.join(tmp, "mock")
@@ -159,6 +182,7 @@ class Runner(object):
     def __init__(self, tmp):
         self.repo, self.mock, self.bindir = setup(tmp)
         self.calls = os.path.join(tmp, "calls.txt")
+        self.dump = os.path.join(tmp, "conf_dump.txt")
         self.failures = []
 
     def env(self, mode="ok"):
@@ -167,7 +191,14 @@ class Runner(object):
         env["PATH"] = self.bindir + os.pathsep + env.get("PATH", "")
         env["MOCK_MODE"] = mode
         env["MOCK_CALLS"] = self.calls
+        env["MOCK_CONF_DUMP"] = self.dump
         return env
+
+    def dumped(self):
+        import json
+        if not os.path.exists(self.dump):
+            return []
+        return [json.loads(l) for l in open(self.dump).read().split("\n") if l.strip()]
 
     def mock_is_active(self):
         """Fail closed: the wrapper must import the MOCK CRAB modules, never a
@@ -182,8 +213,9 @@ class Runner(object):
         return ok, p.stdout.strip()
 
     def run(self, mode, *args):
-        if os.path.exists(self.calls):
-            os.remove(self.calls)
+        for p in (self.calls, self.dump):
+            if os.path.exists(p):
+                os.remove(p)
         p = subprocess.run([sys.executable, "crab/submit_crab.py"] + list(args), cwd=self.repo, env=self.env(mode),
                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
         calls = open(self.calls).read().split("\n")[:-1] if os.path.exists(self.calls) else []
@@ -280,6 +312,102 @@ def main():
         r.check("10 preflight: stale FAIL", "[FAIL] stale CRAB project dirs" in out)
         r.check("10 preflight: live WARN", "[WARN] existing CRAB projects" in out and "auto-RESUBMITS" in out)
         r.check("10 preflight: submitted nothing", calls == [], calls)
+
+        # 11. an older config (no recipe / skim / audit keys): the sandbox is what it was
+        r.rm("campaign_test")
+        rc, calls, out = r.run("ok", *c)
+        d = r.dumped()
+        r.check("11 old config: exit 0, no forge files shipped, no --skim / --audit",
+                rc == 0 and d and all(not any("forge_" in x for x in e["inputFiles"]) for e in d)
+                and all("--skim" not in e["crab_args"] and "--audit" not in e["crab_args"] for e in d),
+                (rc, d[:1]))
+
+        # 12. skim: 6j20 -> forge files shipped, crab_args carries --skim / --audit / --forge-git
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_skim.yaml")
+        d = r.dumped()
+        want = "-b\nx.txt\n-I\nnoop:MODULES\n--skim\n6j20\n--audit\n--forge-git\nunknown\n--output-file=forgedNtuple.root\n"
+        r.check("12 skim config: exit 0, 3 submits", rc == 0 and calls == ["submit A", "submit B_x", "submit C"],
+                (rc, calls))
+        r.check("12 skim config: forge_skims.py and forge_audit.py in every sandbox",
+                d and all("script/forge_skims.py" in e["inputFiles"] and "script/forge_audit.py" in e["inputFiles"]
+                          for e in d), d[:1])
+        r.check("12 skim config: crab_args = -b, -I, --skim 6j20, --audit, --forge-git, --output-file",
+                d and all(e["crab_args"] == want for e in d), (d[0]["crab_args"] if d else None, want))
+        r.check("12 skim config: the transcript shows the job arguments",
+                "Job arguments of tasks submitted now (crab_args.txt): -b x.txt -I noop:MODULES --skim 6j20 --audit "
+                "--forge-git unknown --output-file=forgedNtuple.root" in out, out[-1200:])
+
+        # 13. audit only: --audit without --skim
+        r.rm("campaign_skim")
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_audit_only.yaml")
+        d = r.dumped()
+        r.check("13 audit: true without a skim: --audit, no --skim",
+                rc == 0 and d and "--audit\n" in d[0]["crab_args"] and "--skim" not in d[0]["crab_args"], d[:1])
+
+        # 14. invalid keys stop before any CRAB call
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_badskim.yaml")
+        r.check("14 unknown skim: exit 1, no CRAB call", rc == 1 and calls == [] and "6j21" in out, (rc, calls))
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_recipe.yaml")
+        r.check("14 recipe derive: exit 1, no CRAB call", rc == 1 and calls == [] and "not implemented" in out,
+                (rc, calls))
+
+        # 15. preflight lines
+        r.rm("campaign_skim")
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_skim.yaml", "--preflight")
+        r.check("15 preflight skim: recipe line with the formula, forge files, forge git WARN (no git here)",
+                "[PASS] recipe" in out and "skim 6j20 = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6; audit on" in out
+                and "[PASS] worker file script/forge_skims.py" in out and "[PASS] worker file script/forge_audit.py" in out
+                and "[WARN] forge git (ForgeProvenance)" in out and calls == [], out[-1500:])
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_badskim.yaml", "--preflight")
+        r.check("15 preflight unknown skim: FAIL, exit 1", rc == 1 and "[FAIL] recipe / skim / audit" in out, rc)
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_skim_noaudit.yaml", "--preflight")
+        r.check("15 preflight skim with audit false: WARN audit", "[WARN] audit" in out and "audit OFF" in out,
+                out[-800:])
+        rc, calls, out = r.run("ok", *(c + ["--preflight"]))
+        r.check("15 preflight old config: recipe line, no forge worker files",
+                "[PASS] recipe" in out and "no event skim; audit off" in out and "forge_skims.py" not in out, out[-800:])
+
+        # 16. forge git (ForgeProvenance) in a git checkout: runlog.sh appends to the tracked
+        #     script/runlogs/LEDGER.tsv at every step, which must not make the code '+dirty';
+        #     a modified branch list must
+        if not shutil.which("git"):
+            r.check("16 forge git: git in PATH (needed for this case)", False, "git not found")
+        else:
+            genv = dict(os.environ, GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@t", GIT_COMMITTER_NAME="t",
+                        GIT_COMMITTER_EMAIL="t@t")
+            for cmd in (["init", "-q"], ["add", "-A"], ["-c", "commit.gpgsign=false", "commit", "-q", "-m", "init"]):
+                subprocess.run(["git", "-C", r.repo] + cmd, env=genv, stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT, check=True)
+            with open(os.path.join(r.repo, "script", "runlogs", "LEDGER.tsv"), "a") as f:
+                f.write("20260928_120000\tp5_step\t0\n")
+            rc, calls, out = r.run("ok", "-c", "crabConfig/c_skim.yaml", "--preflight")
+            r.check("16 forge git: only LEDGER.tsv modified -> PASS, no +dirty",
+                    "[PASS] forge git (ForgeProvenance)" in out and "+dirty" not in out and "+untracked" not in out,
+                    out[-1200:])
+            # a file the jobs get but git does not know (a module sibling is shipped automatically)
+            extra = os.path.join(r.repo, "modules", "zz_untracked.py")
+            with open(extra, "w") as f:
+                f.write("X = 1\n")
+            rc, calls, out = r.run("ok", "-c", "crabConfig/c_skim.yaml", "--preflight")
+            r.check("16 forge git: an untracked shipped module sibling -> WARN +untracked",
+                    "[WARN] forge git (ForgeProvenance)" in out and "+untracked" in out and "+dirty" not in out,
+                    out[-1200:])
+            os.remove(extra)
+            # a rename out of the ignored directory still counts (both sides of 'old -> new')
+            subprocess.run(["git", "-C", r.repo, "mv", "script/runlogs/LEDGER.tsv", "branches/ledger_moved.txt"],
+                           env=genv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+            p = subprocess.run([sys.executable, "-c", "import sys; sys.path.insert(0, 'crab'); import submit_crab; "
+                                "print(submit_crab.forge_git())"], cwd=r.repo, env=r.env(), stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT, universal_newlines=True)
+            r.check("16 forge git: a staged rename script/runlogs/ -> branches/ -> +dirty",
+                    p.stdout.strip().endswith("+dirty"), p.stdout[-300:])
+            subprocess.run(["git", "-C", r.repo, "mv", "branches/ledger_moved.txt", "script/runlogs/LEDGER.tsv"],
+                           env=genv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+            with open(os.path.join(r.repo, "branches", "x.txt"), "a") as f:
+                f.write("keep nJet\n")
+            rc, calls, out = r.run("ok", "-c", "crabConfig/c_skim.yaml", "--preflight")
+            r.check("16 forge git: branch list modified -> WARN +dirty",
+                    "[WARN] forge git (ForgeProvenance)" in out and "+dirty" in out, out[-1200:])
 
         n = len(r.failures)
         print("-" * 60)
