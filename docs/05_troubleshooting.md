@@ -1102,7 +1102,11 @@ overflow 에서는 재시도가 다시 파일 없는 사이트로 갈 수 있다
   (파일을 열 수 있는 사이트로 갔다는 뜻이다; 어느 사이트였는지는 보지 않았다). whitelist resubmit 은 필요 없었다(09-30 07:06 의 시도는 빈 `$D` 로
   들어가지 않았다). 이미 제출한 task 에서는 이 절의 증상이 보이면 plain resubmit 을 한두 번 하고, 같은 job 이 또 파일 없는 사이트에서 죽을 때만
   whitelist 로 보낸다.
-- P7 (대응 2): (결과가 나오면 여기에: lxplus 의 실제 LFN 시험, P7 에서 fallback 으로 읽은 job 수, xrdcp 시간, 그 job 들의 closure.)
+- P7 (대응 2), lxplus 시험(09-30, lxplus9109, `d626a55`): 사본이 CERN 에 없는 `ST_t_top` LFN 하나를 `--input-fallback` 으로. `edmFileUtil` 의 EOS
+  경로는 `OSError: Failed to open file root://eoscms.cern.ch//eos/cms/store/...` 로 안 열렸고(ROOT 오류 줄은 찍히지 않음), AAA 에서 `xrdcp` 로
+  2,600 MB 를 149 s(약 17 MB/s)에 복사해 읽었다. 2,000 event 에서 C1·C2·C2e·write PASS, exit 0. 같은 파일(1,133,000 event)을 AAA 로 직접 읽었다면
+  P5 의 9.2 Hz 로 30 시간이 넘는다.
+- P7 (대응 2), grid: (결과가 나오면 여기에: P7 에서 fallback 으로 읽은 job 수, xrdcp 시간, 그 job 들의 closure.)
 
 ## A25 · 출력 전송이 사이트에서 거절됐다: 60322 "User is not authorized to write to destination site" (2026-09-29)
 
@@ -1117,3 +1121,29 @@ overflow 에서는 재시도가 다시 파일 없는 사이트로 갈 수 있다
 **대응.** 한 번은 plain resubmit(09-29 13:14 UTC, 들어감). 같은 사이트에서 되풀이되면 그 task 에 `crab resubmit -d <project dir>
 --siteblacklist=<사이트>`, 새 제출은 YAML `site_blacklist: [<사이트>]`(2026-09-30 부터 `submit_crab.py` 가 `config.Site.blacklist` 로 넘기고
 preflight 에 `site blacklist` 줄). 되풀이되지 않으면 blacklist 하지 않는다(그 사이트의 slot 을 잃는다).
+
+## A26 · 제출이 모두 FAILED 였는데 요약 칸에는 curl 진행 표시뿐: CRAB 서버가 `502 Bad Gateway` (2026-09-30)
+
+**증상.** 2024 MC 제출(09-30 13:19 UTC, lxplus9109, `d626a55`): `SUMMARY (submit): 60 dataset(s): 0 OK, 0 WARN, 60 FAILED, 0 SKIPPED`. FAILED 칸에는
+오류 대신 curl 의 진행 표시(`% Total % Received % Xferd ... * Trying 188....`)만 있어 원인이 안 보인다. `ls -d <jobID>/crab_*/.requestcache` 는 0 개,
+`<jobID>/crab_*` 디렉터리는 60 개(서버에 간 적 없는 stale 디렉터리). 7 분 뒤 같은 노드, 같은 코드의 Data 제출은 32 개 모두 OK.
+
+**원인.** 제출 transcript 의 HTTP 줄: CRAB client 가 제출 전에 서버에 묻는 `GET /crabserver/prod/info?subresource=delegatedn` 에 cmsweb 이
+`HTTP/1.1 502 Bad Gateway` 로 답했다(그 순간 CRAB REST 서버가 응답하지 않았다). 요청을 보내기 전에 멈췄으므로 서버에 task 는 없고, client 가
+만든 project 디렉터리만 남았다. 우리 코드나 proxy 의 문제가 아니다. (AI 는 처음에 sandbox 의 S3 업로드로 짐작했는데 틀렸다: `188.` 은 cmsweb
+의 CERN 주소였다.)
+
+**진단** (transcript 는 `script/runlogs/nocommit/` 에 있고 서명이 들어 있으니 서명 줄을 거른다):
+`grep -m8 -E "curl: \([0-9]+\)|Failed to connect|timed out|Could not resolve|Connection refused|SSL|HTTP/[12]" <transcript> | grep -viE "x-amz|signature|policy|awsaccesskeyid"`.
+`< HTTP/1.1 5xx` 가 보이면 이 절이다.
+
+**대응.** (1) 서버에 없는지 본다(crab 한 줄): `crab tasks --days=1 | grep -E "_crab_(<key>|<key>)([[:space:]]|$)" || echo "not on the server"`.
+(2) `.requestcache` 가 하나도 없을 때만 지운다: `test $(ls -d <jobID>/crab_*/.requestcache 2>/dev/null | wc -l) -eq 0 && rm -r <jobID> && echo removed`.
+(3) 같은 제출 줄을 다시. `submit_crab.py` 는 stale 디렉터리가 있으면 그 task 를 다시 내지 않는다(`FAILED ... stale` 과 `rm -r` 힌트). 또 5xx 면
+서버 쪽 장애가 풀릴 때까지 기다렸다가 다시 낸다.
+
+**나중 개선 (미적용).** 제출 실패의 요약 칸에 예외 문자열의 앞 200 자 대신 `HTTP/1.1 NNN ...` 줄이나 `curl: (N)` 줄을 보이게 하면 이 절의
+진단이 필요 없다.
+
+**해결 기록.** 09-30 저녁(lxplus966, 새 proxy): 서버에 없음을 확인(`not on the server`), stale 디렉터리 60 개를 지우고 같은 제출 줄을 다시 냈다:
+`SUMMARY (submit): 60 dataset(s): 60 OK`(16:26~16:31 UTC), `.requestcache` 60. 서버 쪽 장애였고 우리 쪽에서 바꾼 것은 없다.

@@ -9,6 +9,28 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-30 (2): P6 done, 2024 production submitted (P7), 2018UL Data campaign audit passed (P8); records only
+
+### Added
+- `docs/05_troubleshooting.md` A26: a submission where every task is FAILED and the summary column shows only curl's progress
+  meter: the CRAB server answered `502 Bad Gateway` to the client's first query (`info?subresource=delegatedn`) before any request
+  was sent (2024 MC, 13:19 UTC). Diagnosis from the transcript without its signature lines, a check that no task reached the server
+  (`crab tasks`), removal of the stale project directories only when none has a `.requestcache`, and the same submit line again
+  (60 OK at 16:31 UTC). A possible later change to `submit_crab.py` (show the `HTTP/1.1 NNN` or `curl: (N)` line in the summary) is
+  noted, not made.
+
+### Changed
+- `docs/05_troubleshooting.md` A24: the diagnosis says that a CRAB project directory is `<jobID>/crab_<key>` with `-` turned into
+  `_` (`submit_crab.py`: `req_name = key.replace("-", "_")`); the resolution record has `ST_t_top` (169/169 after the second plain
+  resubmit, no whitelist needed) and the lxplus test of the fallback on a real LFN (EOS open fails, xrdcp 2,600 MB in 149 s,
+  closure PASS on 2,000 events).
+- Plan `12`: P6 DONE, P7 SUBMITTED, P8 2018UL Data PASS; `01_STATUS.md` row 21; `09` section 27.
+
+### Validated
+- Ledger V53 (the pilot Data audit, now 82/82: ALL PASS, the output event set equal to the no-skim pilot after the RVec
+  expression), V54 (the P7 code on lxplus: tests 76 / ALL PASS / 20, the real-LFN fallback, preflights MC 41/0/0 and Data 39/2/0),
+  V55 (the 2018UL Data campaign audit at KNU: 8 datasets, 1,466/1,466 outputs, sum of `Events` = DAS 1,660,950,742, 773.7 GB).
+
 ## [Unreleased], 2026-09-30: input fallback to AAA, audit v2 (C2r and C3 can fail a job), 2024 wall time 1440 min (D-2026-09-30-p7); P6 KNU audit
 
 ### Added

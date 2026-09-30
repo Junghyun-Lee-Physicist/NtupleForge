@@ -906,3 +906,25 @@ lxplus9105, git `039f12b`(P4 커밋), 명령은 워크스페이스 RUNBOOK §13.
   리뷰가 짚은 시간 위험: P5 의 AAA 직독 9.2 Hz 면 2024 의 가장 큰 입력(611k event)을 복사 단계만 18 시간 넘게 읽는다. 그래서 fallback 은
   `xrdcp` 로 job 디렉터리에 복사한 뒤 읽는다(P5 의 xrdcp 269 MB 15 s; 2 GB 면 수 분). 복사가 실패할 때만 직접 읽는다. 2026-07-27 에 되돌린
   fallback(A15)의 이유를 어떻게 다뤘는지는 docs/05 A24 "A15 와의 관계".
+
+## 27. 2026-09-30 오후: P7 전 lxplus 점검, P6 Data 통과, 2024 전체 제출(P7), 2018UL Data 집계(P8)
+
+- **lxplus 점검** (워크스페이스 RUNBOOK §15 3~5, `d626a55`, CMSSW_14_2_1, ROOT 6.30.09): 시험 셋 76 checks / ALL PASS / 20 checks, 모두 `EXIT : 0`.
+  실제 LFN fallback(lxplus9109): 사본이 CERN 에 없는 2018UL `ST_t_top` 파일 하나에서 `edmFileUtil` 의 EOS 경로는
+  `OSError: Failed to open file root://eoscms.cern.ch//eos/cms/store/...`, AAA 에서 `xrdcp` 로 2,600 MB 를 149 s(약 17 MB/s)에 복사, 사본에서
+  2,000 event 의 C1·C2·C2e(0 줄)·write PASS, `exit=0`, 전체 171 s, ROOT 오류 줄 없음. 이 파일(1,133,000 event)을 AAA 로 직접 읽었다면 P5 의
+  9.2 Hz 로 30 시간이 넘는다. preflight: MC 41 PASS / 0 / 0, Data 39 / 2 / 0, `forge git (ForgeProvenance) d626a55004b1`, 새 세 줄 PASS.
+- **2018UL**: `ST_t_top` 169/169 finished(09-29 의 두 번째 plain resubmit 으로 풀림, docs/05 A24 해결 기록). `--report`(13:42 CEST): Data 1,466/1,466
+  done, MC 2,276 done 과 1 fail(`TTbar_Hadronic`; 저녁의 `crab status` 는 `finished 99.8% (406/407)` 이고 남은 하나는 `failed` 로 나오지 않았다,
+  RUNBOOK §16 1). 파일럿 Data 는 `finished 100.0% (82/82)`. CRAB project 디렉터리 이름은 key 의 `-` 를 `_` 로 바꾼 것이다
+  (`crab_JetMET0_Run2024H_MINIv6NANOv15_v2`; AI 가 `-` 그대로 준 명령은 CRAB 오류 줄만 내고 grep 에 걸러졌다).
+- **KNU 집계** (cms01, `d626a55`): 파일럿 Data **ALL PASS**: `outputs=82/82|n_in=55794457/55794457|n_out=6150050|pass=11.02%|MB=4894.9|kB/ev=0.796`,
+  D1~D5 PASS, X7 은 기준(09-24 no-skim 파일럿, 82 출력)에 RVec 식을 적용한 집합과 같다(81/82 때의 `only in the reference 5338` 이 job 82 로 채워짐),
+  L1 PASS(log 82, ROOT 오류 줄 0), T1 NanoAODTools 중앙값 761 s·최대 3,281 s, `FORGE|JOB` 중앙값 845 s·최대 3,400 s(job 42). 이로써 P6 끝(원장 V53).
+  2018UL Data(P8) **ALL PASS**: `TOTAL|datasets=8|outputs=1466/1466|n_out=1660950742|GB=773.706|failed_dir=0`, FAIL·WARN 줄 없음(원장 V55).
+- **P7 제출**: Data 32 task OK(13:26~13:28 UTC, lxplus9109). MC 첫 시도(13:19 UTC)는 60 FAILED: CRAB 서버가 제출 전 질의
+  `GET /crabserver/prod/info?subresource=delegatedn` 에 `HTTP/1.1 502 Bad Gateway`. 요약 칸에는 curl 진행 표시만 보여 AI 가 처음에 S3 업로드로 잘못
+  짐작했다(docs/05 A26). 서버에 없음을 확인하고 stale 디렉터리 60 개를 지운 뒤 다시 냈다: 60 OK(16:26~16:31 UTC, lxplus966, 새 proxy).
+  `.requestcache` 60 과 32, 두 config 의 인자 `-b branch_hadronic_2024_v15_{MC,Data}.txt -I noop:MODULES --input-fallback root://cms-xrd-global.cern.ch/
+  --skim 6j20 --audit --forge-git d626a55004b1 --output-file=forgedNtuple.root`. lxplus 커밋 `b739e4e`. 출력:
+  `/store/user/junghyun/ttHH2024_v15_had_{MC,Data}_v1`.

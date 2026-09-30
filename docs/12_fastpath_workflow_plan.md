@@ -7,7 +7,7 @@
 > **상태**: 2026-09-27 작성, **PROPOSED**. 09-28 갱신: V1 **DONE**(ALL SAMPLES PASS, 원장 V45); P1 [7c] 의 v1 측정은 쓰지 않고 `size_options.py` v2 로 34 개를 다시 잰다(원장 V46, RUNBOOK §11). 09-28 (2): P1 **DONE**(34/34, 원장 V47), P2 **DECIDED**(한도 10 TB, 네 목록 slimB, 2018UL skim 없음, 2024 `6j20`: 합계 5.16 TB; `03_DECISIONS.md` D-2026-09-28-volume, slimB 채택 원장 V48), P3 명령은 RUNBOOK §12. 09-28 (3): P3 **SUBMITTED**(V49).
 > 09-28 (4): P4 **CODE DONE**(skim + audit, §2.3, 원장 V50), P5 명령은 RUNBOOK §13. 09-29: P5 **DONE**(lxplus ROOT 6.30, 실제 2024 파일 셋, V51),
 > P6 **SUBMITTED**(skim 파일럿 3 task), P6·P8 의 KNU 집계 도구 `script/forge_campaign_audit.py`(V52), 명령은 RUNBOOK §14. 09-30: P6 KNU 집계 MC
-> **ALL PASS**, Data 는 job 하나 남음(V53); 사용자 결정 D-2026-09-30-p7(C2r·C3 FAIL, 2024 `max_runtime` 1440, AAA fallback)과 그 코드(V54), 명령은 RUNBOOK §15. 방향 두 가지는 사용자 제안(09-27): (1) 검증이 생산을 막지 않는다, analyzer 는 기존 방식의
+> **ALL PASS**, Data 는 job 하나 남음(V53); 사용자 결정 D-2026-09-30-p7(C2r·C3 FAIL, 2024 `max_runtime` 1440, AAA fallback)과 그 코드(V54), 명령은 RUNBOOK §15. 09-30 (2): P6 Data **ALL PASS**(P6 끝, V53), P7 **SUBMITTED**(MC 60 + Data 32 task, `d626a55`; 첫 MC 제출은 CRAB 서버 502 로 실패해 다시 냄, docs/05 A26), P8 2018UL Data **ALL PASS**(V55); 다음 명령은 RUNBOOK §16. 방향 두 가지는 사용자 제안(09-27): (1) 검증이 생산을 막지 않는다, analyzer 는 기존 방식의
 > ntuple(NanoAOD + categorizer 산출물)로 돌리고 MiniAOD 산출물은 병행해 교차 검증한다; (2) NtupleForge 한 도구가 세 역할을 직관적으로 한다.
 > 세부와 순서는 AI 제안이고 §7 의 결정을 받으면 DECIDED 로 옮긴다.
 > **관련**: [11](11_unified_forge_plan.md)(도구 통합 설계, Phase 0~2 와 완료 판정 (i)(ii)), 명령은 워크스페이스 `RUNBOOK_lxplus_2026-09-16.md` §11,
@@ -25,7 +25,7 @@
   (RUNBOOK §10 [7b], 원장 V44). **09-28 결정(P2)**: slimB 목록으로 2018UL 은 3.05 TB 이고(V47) skim 없이 지금의 noop 경로(파일럿 V43 통과)로 먼저 낸다(P3).
   모든 event 가 남으므로 analyzer 의 prescan 도 지금 코드 그대로 쓴다. 2024 는 `6j20`(2.11 TB)이고 그 코드(§2.3)는 09-28 에 끝났다(P4, V50).
   09-29 에 lxplus 의 실제 파일 점검(P5)을 통과했고(V51), 09-30 에 skim 파일럿(P6)의 KNU 집계가 MC 에서 ALL PASS 였다(V53; Data 는 job 하나 남음).
-  P7 전 코드(입력 AAA fallback, audit v2, 1440 분)는 09-30(V54), 제출 명령은 RUNBOOK §15.
+  P7 전 코드(입력 AAA fallback, audit v2, 1440 분)는 09-30(V54), P6 Data 도 09-30 에 통과했고 2024 전체(P7)는 같은 날 제출했다(`09` 27 절).
 - **2018 plot 의 critical path 는 ntuple 이 아니라 analyzer 다.** v15 스키마(eventBuffer 재생성, `Jet_jetId`/`Jet_puId` 재계산), 2018 배관
   (tempTTHH STATUS OPEN 6 의 P0', 07-26 부터 미해결), 2018A 트리거 결정(D-2026-09-18-2018A-trigger), 그리고 07-29 의 P0 수정 7 건이
   **한 번도 빌드되지 않았다**(tempTTHH `docs/STATUS.md` "❌ make 미수행"). 그래서 오늘 KNU 에서 빌드부터 한다(§3 A0).
@@ -185,9 +185,9 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 | P3 | **2018UL 제출** (skim 없음): 고른 목록을 `branches/` 로(09-28 끝, V48) → `check_branchlist.py` → 로컬 500 event 점검 2 → preflight 2 → [8] 두 config | lxplus | **SUBMITTED 09-28** (42 + 8 task OK, 로컬 점검 551 / 485 = 예측; V49, `09` 24 절). 09-29 첫 `--report`: 3,581 / 3,743 done, 실패 160(50115 가 149) 을 task 별로 resubmit(`09` 25 절). 다음 `--report`, P8 | S1 |
 | P4 | skim + audit 코드(§2.3), `submit_crab.py` 의 `recipe`/`skim`/`audit`, mock test. 2024 는 `skim: 6j20` | AI | **CODE DONE 09-28** (mock 63/63, submit mock 11~16, 실제 ROOT 6.40 + NanoAODTools 17/17; 원장 V50) | P5 |
 | P5 | 로컬 점검: lxplus 의 ROOT 6.30 에서 시험 셋, 실제 2024 파일 셋(TTto4Q MC, JetMET0 2024C Data 는 20,000 event; ZZ MC 는 파일 전체로 C2r·C3), 각각 `check_forge_output.py`(X7, A, K), 2024 preflight 의 recipe 줄. X5 는 A5 와 함께 | lxplus 컨테이너 | **DONE 09-29** (시험 63 / ALL / 17, 파일 셋 X7·A·K PASS, preflight 넷 기대값; V51, `09` 25 절) | P6 |
-| P6 | skim 파일럿(`crabConfig/config_ttHH2024_v15_had_skimpilot{MC,Data}.yaml`): `ZZ` 76 job 과 `JetMET0_Run2024H` 82 job(09-24 no-skim 파일럿과 같은 dataset: 그 KNU 출력에 RVec 식을 적용한 event 집합 == skim 출력, dataset 단위 X7), `TTbb_Hadronic` 189 job(ttbar, 통과율 높음, `ForgeTTbbKeys` 대부분); job 시간, KNU 에서 audit 합산 | lxplus, KNU | **MC PASS 09-30** (KNU 집계 ALL PASS: `ZZ` X7·K 가 no-skim 파일럿과 event 단위로 같음, TTbb D6 4.68e-8; V53). Data 는 job 82 가 끝나면 집계 한 번 더(RUNBOOK §15 2) | P7 |
-| P7 | 2024 전체 두 config (MC 60 task 19,136 job, Data 32 task 7,811 job). 전제: P6 Data 집계 PASS, 09-30 코드(`--input-fallback`, audit v2, `max_runtime: 1440`; V54)의 lxplus 시험과 실제 LFN 의 fallback 점검(RUNBOOK §15 3·4), preflight 둘 | lxplus | **READY 뒤 P6 Data** (코드 CODE DONE 09-30, V54) | S5 |
-| P8 | 캠페인 audit 집계: dataset 마다 Σ`n_in` == DAS nevents, 출력 파일마다 audit 행, dataset 별 크기, `failed/` 제외. audit 없이 낸 2018UL 은 출력 `Events` 합 == DAS nevents 와, CRAB log tarball(`transferLogs = True`)의 `Error in <` 줄 검사(C2e 의 사후판) | KNU | 도구 **CODE DONE 09-29** (`script/forge_campaign_audit.py` D1~D8·K·X7·L1·T1, 합성 시험 19/19, 별도 검토 agent 한 번, V52; RUNBOOK §14). 2018UL 은 resubmit 뒤 WAITS | S1/S5 |
+| P6 | skim 파일럿(`crabConfig/config_ttHH2024_v15_had_skimpilot{MC,Data}.yaml`): `ZZ` 76 job 과 `JetMET0_Run2024H` 82 job(09-24 no-skim 파일럿과 같은 dataset: 그 KNU 출력에 RVec 식을 적용한 event 집합 == skim 출력, dataset 단위 X7), `TTbb_Hadronic` 189 job(ttbar, 통과율 높음, `ForgeTTbbKeys` 대부분); job 시간, KNU 에서 audit 합산 | lxplus, KNU | **DONE 09-30** (KNU 집계 ALL PASS: `ZZ` X7·K 가 no-skim 파일럿과 event 단위로 같음, TTbb D6 4.68e-8; Data 82/82 X7 이 기준과 같은 집합; V53) | P7 |
+| P7 | 2024 전체 두 config (MC 60 task 19,136 job, Data 32 task 7,811 job). 전제: P6 Data 집계 PASS, 09-30 코드(`--input-fallback`, audit v2, `max_runtime: 1440`; V54)의 lxplus 시험과 실제 LFN 의 fallback 점검(RUNBOOK §15 3·4), preflight 둘 | lxplus | **SUBMITTED 09-30** (Data 32 task 13:26 UTC, MC 60 task 16:31 UTC; 첫 MC 시도는 CRAB 서버 502, docs/05 A26; lxplus 시험·실제 LFN fallback·preflight 기대대로, V54; `09` 27 절) | S5 |
+| P8 | 캠페인 audit 집계: dataset 마다 Σ`n_in` == DAS nevents, 출력 파일마다 audit 행, dataset 별 크기, `failed/` 제외. audit 없이 낸 2018UL 은 출력 `Events` 합 == DAS nevents 와, CRAB log tarball(`transferLogs = True`)의 `Error in <` 줄 검사(C2e 의 사후판) | KNU | 도구 **CODE DONE 09-29** (`script/forge_campaign_audit.py` D1~D8·K·X7·L1·T1, 합성 시험 19/19, 별도 검토 agent 한 번, V52; RUNBOOK §14). 2018UL Data **PASS 09-30**(8 dataset 1,466/1,466, `Events` 합 = DAS, 773.7 GB; V55), MC 는 `TTbar_Hadronic` job 하나 남음(RUNBOOK §16) | S1/S5 |
 
 ### 트랙 A: analyzer (tempTTHH)
 
@@ -229,6 +229,8 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 **09-29 기준**: P5 끝, P6 제출, 2018UL 실패 160 job resubmit. (맥) 커밋, (lxplus) 몇 시간 뒤 `--report`(RUNBOOK §14 2), (KNU) 파일럿이 끝나면 집계(§14 3~4)와 A0, (AI) A1·A2.
 **09-30 기준**: P6 MC 집계 PASS, 결정 D-2026-09-30-p7 과 그 코드. (맥) 커밋, (lxplus) RUNBOOK §15 = `ST_t_top` whitelist resubmit, 새 코드 시험과 fallback 점검,
 preflight, P6 Data 가 PASS 면 P7 제출, (KNU) Data 집계 한 번 더와 A0, (AI) A1·A2.
+**09-30 (2) 기준**: P6 끝, P7 제출, P8 2018UL Data PASS. (맥) 커밋, (lxplus) 몇 시간마다 진행 보기와 실패 처리, 2018UL `TTbar_Hadronic` 의 마지막 job
+(RUNBOOK §16 1·2), (KNU) 그 job 이 끝나면 2018UL MC 집계(§16 3), 2024 가 끝나면 2024 집계(§16 4)와 A0, (AI) A1·A2.
 
 ## 4. 교차 검증 표
 
