@@ -38,7 +38,10 @@ Checks (FAIL makes the exit code 1; WARN does not):
             line (Total time ...: then the tarball does not hold the job output and proves nothing): for
             campaigns without --audit, the read error check C2e after the fact
   T1  INFO  (--scan-logs) job time from the logs: NanoAODTools Total time and, with the audit, t_s of FORGE|JOB
-            (median and largest); WARN when a counted job's FORGE|JOB line says exit != 0
+            (median and largest), and the jobs that read an input through run_postproc.py --input-fallback
+            (FORGE|INPUT ... |fallback|: CRAB ran them at a site without the file, docs/05 A24) with their
+            xrdcp time (not in the payload times) and those that read it directly without a copy (slow);
+            WARN when a counted job's FORGE|JOB line says exit != 0
 Prints a FORGE-CAMPAIGN line and the checks per dataset, a TOTAL line and a RESULT
 line. Exit 0 all PASS (WARN allowed), 1 a FAIL, 2 bad arguments. Read-only.
 Needs PyROOT, numpy and PyYAML (cmsenv). ASCII only.
@@ -65,6 +68,8 @@ ERR_PREFIXES = ("Error in <", "SysError in <", "Fatal in <")
 BENIGN_RE = re.compile(r"^Error in <TTree::SetBranchStatus>: (?:unknown branch|No branch name is matching wildcard) -> ")
 # the last line NanoAODTools PostProcessor.run() prints before hadd and the job report (CMSSW 14_2_X postprocessor.py)
 TOTAL_RE = re.compile(r"Total time ([0-9.]+) sec\. to process (\d+) events")
+# run_postproc.py --input-fallback: FORGE|INPUT|<lfn>|fallback|<url>|<why>|copy (<MB> MB in <s> s) <path>
+COPY_RE = re.compile(r"\|copy \([0-9.]+ MB in ([0-9.]+) s\) ")
 C3_TOL = 1e-6
 NCODE = 101                             # ForgeAudit code_n[NCODE] (forge_audit.NCODE, audit version 1)
 KEY_IDX = (1 + 53, 1 + 54, 1 + 55)      # its bins of genTtbarId % 100 in 53..55 (forge_audit.KEY_CODES)
@@ -242,7 +247,7 @@ def scan_log(path):
     """One CRAB log tarball: {n: ROOT error lines (SetBranchStatus lines excluded), first: the first one,
     total_s: NanoAODTools Total time of the last such line or None, forge: {field: value} of the last
     FORGE|JOB line or None}."""
-    res = {"n": 0, "first": "", "total_s": None, "forge": None}
+    res = {"n": 0, "first": "", "total_s": None, "forge": None, "fallback": 0, "stream": 0, "copy_s": None}
     with tarfile.open(path, "r:*") as tf:
         for m in tf.getmembers():
             if not m.isfile():
@@ -260,6 +265,13 @@ def scan_log(path):
                             res["first"] = "%s: %s" % (m.name, part[:200])
                     elif part.startswith("FORGE|JOB|"):
                         res["forge"] = dict(x.split("=", 1) for x in part.split("|")[2:] if "=" in x)
+                    elif part.startswith("FORGE|INPUT|") and "|fallback|" in part:
+                        res["fallback"] += 1
+                        c = COPY_RE.search(part)
+                        if c:
+                            res["copy_s"] = max(res["copy_s"] or 0.0, float(c.group(1)))
+                        elif "|stream (" in part:
+                            res["stream"] += 1
                     else:
                         t = TOTAL_RE.search(part)
                         if t:
@@ -413,7 +425,8 @@ def audit_dataset(ROOT, np, args, cfg, ref_cfg, key, dataset, das, rvec):
     if args.scan_logs:
         used = set(i for i in ids if i is not None)
         logs = [p for p in found["logs"] if job_id(p, LOGID_RE) in used]
-        hits, first, unread, no_end, t_nano, t_forge, bad_exit, no_forge = [], "", 0, [], [], [], [], []
+        hits, first, unread, no_end, t_nano, t_forge, bad_exit, no_forge, via_aaa = [], "", 0, [], [], [], [], [], []
+        streamed, t_copy = [], []
         for p in logs:
             j = job_id(p, LOGID_RE)
             try:
@@ -428,6 +441,12 @@ def audit_dataset(ROOT, np, args, cfg, ref_cfg, key, dataset, das, rvec):
                 no_end.append(j)
             else:
                 t_nano.append((res["total_s"], j))
+            if res["fallback"]:
+                via_aaa.append(j)
+                if res["stream"]:
+                    streamed.append(j)
+                if res["copy_s"] is not None:
+                    t_copy.append((res["copy_s"], j))
             fj = res["forge"]
             if fj is None:
                 no_forge.append(j)
@@ -451,6 +470,12 @@ def audit_dataset(ROOT, np, args, cfg, ref_cfg, key, dataset, das, rvec):
             parts.append("FORGE|JOB t_s of %d jobs: %s" % (len(t_forge), spread(t_forge)))
         if cfg["audit"] and no_forge:
             parts.append("%d log(s) without a FORGE|JOB line (%s)" % (len(no_forge), short(sorted(no_forge))))
+        if via_aaa:
+            parts.append("input read through the fallback (AAA) in %d job(s) (%s)%s%s"
+                         % (len(via_aaa), short(sorted(via_aaa)),
+                            ", xrdcp time (not in the times above) %s" % spread(t_copy) if t_copy else "",
+                            ", read directly without a copy (slow) in %d (%s)" % (len(streamed), short(sorted(streamed)))
+                            if streamed else ""))
         if bad_exit:
             parts.append("FORGE|JOB exit != 0 in %d counted job(s) (%s)" % (len(bad_exit), short(sorted(bad_exit))))
         add("T1", "WARN" if bad_exit or (cfg["audit"] and no_forge) else "INFO",

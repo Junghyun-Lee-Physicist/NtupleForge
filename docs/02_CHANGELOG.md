@@ -9,6 +9,71 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-09-30: input fallback to AAA, audit v2 (C2r and C3 can fail a job), 2024 wall time 1440 min (D-2026-09-30-p7); P6 KNU audit
+
+### Added
+- `script/run_postproc.py --input-fallback URL`: CRAB can run a job at a site that does not hold its input (CMS overflow); cmsRun
+  falls back to AAA there, NanoAODTools does not (it opens the site's PFN from `edmFileUtil -d`), so the job died in two minutes
+  with 50115 (2018UL, docs/05 A24). With the flag every LFN is opened at the site first, the same way. If that fails, URL + LFN
+  (`root://cms-xrd-global.cern.ch//store/...`) is copied with `xrdcp -f -N` into `./forge_aaa/store/...` (timeout 3600 s) and
+  NanoAODTools and the audit read the copy: reading through AAA event by event ran at 9 and 59 events/s in P5, hours to a day for
+  the largest 2024 file (2 GB, 611k events), while xrdcp moved 269 MB in 15 s. Only if the copy fails is URL + LFN read directly.
+  The probe's ROOT error lines are silenced (`gErrorIgnoreLevel` kFatal for the probe only, restored on every path): a missing
+  local replica is not a read error of the job, and the campaign audit's L1 counts every `Error in <` line of the job log (C2e's
+  capture starts later). The reasons are kept: one `FORGE|INPUT|<lfn>|local|<pfn>`, or
+  `FORGE|INPUT|<lfn>|fallback|<url>|<why the site failed>|copy (<MB> MB in <s> s) <path>` or `...|stream (<why the copy failed>)`
+  line per input. `ForgeAudit`, `ForgeProvenance` and `FORGE|FILE` record the LFN given, not the name opened (`args.input_lfn`,
+  `forge_audit.INPUT_LFN`). Other names are kept; without the flag nothing changes. A15 (the 2026-07-27 fallback, reverted then)
+  is marked superseded; A24 says how its reasons were met.
+- `crab/submit_crab.py`: YAML `aaa_fallback` (default true: `--input-fallback root://cms-xrd-global.cern.ch/` in `crab_args.txt`;
+  false gives the arguments of before; `"root://<host>[:<port>]/"` picks another redirector) and `site_blacklist` (a list or a
+  comma string of CRAB site names or wildcards such as `T2_US_*` -> `config.Site.blacklist`); an invalid value (`"root://"`
+  alone, a number, `T0_...`) stops before any CRAB call. Preflight lines `input fallback` (WARN when off), `site blacklist`,
+  `job resources` (max_memory, max_runtime).
+- `script/forge_campaign_audit.py` T1: the counted jobs whose log has a `FORGE|INPUT ... |fallback|` line, their xrdcp time
+  (outside the payload times) and those that read the input directly without a copy.
+- `docs/05_troubleshooting.md` A24 (overflow and the missing AAA fallback: symptoms, diagnosis with `crab status --long`,
+  `crab getlog --short` and `dasgoclient site file=`, handling for running and for new tasks, a "resolution record" to fill in)
+  and A25 (60322 at stage-out, T2_US_Vanderbilt refusing an X509 write).
+
+### Changed
+- `script/forge_audit.py` audit version 2 (the trees are unchanged): C2r FAIL when `Runs.genEventCount` != entries read (whole
+  file); C3 WARN above 1e-6 and FAIL above `C3_FAIL = 1e-5`; both give exit 5; both sums 0 is a PASS (0 vs 0 agrees, as the
+  campaign audit's D6). `TFile.Open` raising `OSError` (ROOT 6.30) in the audit now gives 84 like a null pointer did, not 85 or 7.
+  `lfn_of` drops a `?query` (as NanoAODTools' job report does).
+- `crabConfig/config_ttHH2024_v15_had_{MC,Data}.yaml`: `max_runtime: 1440` (the FileBased default of 600 min would cut the slowest
+  `TTbar_Hadronic` jobs: 611k input events per file, the slowest pilot job took 7,042 s on 79k).
+- Tests: `test_forge_audit_mock.py` 76 checks (C2r FAIL, C3 WARN and FAIL, both sums 0, an `OSError` open -> 84, nine fallback
+  cases with a mock `edmFileUtil` and `xrdcp`: local replica, no replica -> copy, a raising open, no `edmFileUtil` (PATH without
+  any, also after cmsenv), xrdcp failing -> direct read, no flag, no audit (the error level is restored), a site PFN with a
+  `?query` (the LFN is recorded), a non-LFN name); `test_submit_crab_mock.py` 48 checks, case 17 (default on,
+  `aaa_fallback: false` = the old arguments, blacklist and 1440 reach the CRAB config, a wildcard and a redirector with a port,
+  five invalid values, the preflight lines); `test_forge_audit_root.py` 20 checks (the fallback with real ROOT and NanoAODTools,
+  a fake `edmFileUtil` and `xrdcp`: copy, direct read, local; no ROOT error line from the probe, the ForgeAudit file is the LFN,
+  read-back PASS); `test_forge_campaign_audit_root.py` 21 checks (the D6 case is now a 5e-6 offset that the job audit lets
+  through; T1 with a copy job and a direct-read job).
+- `README.md`: `--input-fallback`, `aaa_fallback`, `site_blacklist`, `max_runtime`.
+
+### Review (2026-09-30, before deploying)
+- An independent review of the P7 diff (all four suites reproduced) found: the mock fallback case "no `edmFileUtil`" used the
+  caller's PATH and would fail on lxplus after cmsenv (fixed: PATH without any `edmFileUtil`); the recorded LFN came from the
+  site PFN and kept a `?query` (fixed: the LFN given is recorded); C3 FAILed 0 vs 0 (fixed); no test checked that the probe
+  restores the error level (added, with a negative control); exceptions other than `OSError` could leave the probe (now caught,
+  the input falls back); an empty `edmFileUtil` answer gave an empty reason; `job_options` accepted `"root://"` and rejected
+  CRAB wildcards (fixed); RUNBOOK section 15 step 1 needed a `cd` and step 3 its md5 values. Reading through AAA directly would
+  take hours to a day for a 2 GB input (P5 rates), hence the copy. Not changed: `pin_error_level` does nothing while ROOT's level
+  is still unset (-1) and a `.rootrc` would raise it later (since P4; no such `.rootrc` on the grid is known); the campaign test
+  no longer has an input with a `genEventCount` mismatch (audit v2 fails such a job, so D6's count branch only matters for audit
+  v1 outputs such as the P6 pilot).
+
+### Validated
+- KNU (cms01, ROOT 6.30/09), `forge_campaign_audit.py` on the skim pilot (plan 12 P6, `09` section 26, ledger V53): tool test 19/19;
+  MC ALL PASS (`ZZ` 76/76 and 4,800,000 input events = DAS, X7 against the 09-24 no-skim pilot the same 122,447 events, K the same
+  579,624 keys; `TTbb_Hadronic` 189/189, 14,990,580 = DAS, `genEventCount` exact in every file, sum of weights 4.68e-8 off in
+  every file); Data 81/82 (job 82 still running; the missing events are exactly one file's). Sizes against the 09-28 projection:
+  `ZZ` +54 % (about 1.5 MB per file of non-Events trees), `TTbb_Hadronic` +32 % (65 % pass against the 52 % of its proxy),
+  `JetMET0` 2024H -9.5 %; 2024 total about 2.1-2.2 TB.
+
 ## [Unreleased], 2026-09-29: lxplus checks of the 2024 skim + audit passed (plan 12 P5), skim pilot submitted (P6), campaign audit tool for KNU
 
 ### Added

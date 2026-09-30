@@ -79,7 +79,8 @@ def crabCommand(cmd, **kw):
             args = open("crab_args.txt").read() if os.path.exists("crab_args.txt") else None
             with open(dump, "a") as f:
                 f.write(json.dumps({"name": name, "inputFiles": list(conf.JobType.inputFiles),
-                                    "crab_args": args}) + "\\n")
+                                    "crab_args": args, "blacklist": getattr(conf.Site, "blacklist", None),
+                                    "runtime": getattr(conf.JobType, "maxJobRuntimeMin", None)}) + "\\n")
         p = os.path.join(os.path.abspath(conf.General.workArea), "crab_" + name)
         _log("submit " + name)
         if os.path.exists(p):                       # createWorkArea refuses
@@ -138,6 +139,20 @@ CONFIG_SKIM_NOAUDIT = CONFIG_SKIM.replace('  skim: 6j20\n', '  skim: 6j20\n  aud
 CONFIG_AUDIT_ONLY = CONFIG_SKIM.replace('  skim: 6j20\n', '  audit: true\n')
 CONFIG_BADSKIM = CONFIG_SKIM.replace('skim: 6j20', 'skim: 6j21')
 CONFIG_RECIPE = CONFIG_SKIM.replace('  skim: 6j20\n', '  recipe: derive\n')
+# 2026-09-30: input fallback (default on), site blacklist, max_runtime (D-2026-09-30-p7, docs/05 A24)
+CONFIG_NOFB = CONFIG.replace('jobID: "campaign_test"', 'jobID: "campaign_nofb"').replace(
+    '  units_per_job: 1\n', '  units_per_job: 1\n  aaa_fallback: false\n')
+CONFIG_BL = CONFIG.replace('jobID: "campaign_test"', 'jobID: "campaign_bl"').replace(
+    '  units_per_job: 1\n', '  units_per_job: 1\n  site_blacklist: [T2_US_Vanderbilt, T2_US_UCSD]\n  max_runtime: 1440\n'
+    '  aaa_fallback: "root://xrootd-cms.infn.it"\n')
+CONFIG_BADBL = CONFIG_BL.replace('[T2_US_Vanderbilt, T2_US_UCSD]', '"Vanderbilt"')
+CONFIG_BADFB = CONFIG_NOFB.replace('aaa_fallback: false', 'aaa_fallback: 3')
+# review 2026-09-30: a CRAB wildcard and a redirector with a port and a trailing space are fine; "root://" alone
+# (it would give root://store/... URLs) and a number as the blacklist are not
+CONFIG_BL2 = CONFIG_BL.replace('[T2_US_Vanderbilt, T2_US_UCSD]', '"T2_US_*"').replace(
+    '"root://xrootd-cms.infn.it"', '"root://cmsxrootd.fnal.gov:1094 "').replace('campaign_bl"', 'campaign_bl2"')
+CONFIG_BADFB2 = CONFIG_NOFB.replace('aaa_fallback: false', 'aaa_fallback: "root://"')
+CONFIG_BADBL2 = CONFIG_BL.replace('[T2_US_Vanderbilt, T2_US_UCSD]', '0')
 
 
 def write(path, text, mode=0o644):
@@ -162,7 +177,9 @@ def setup(tmp):
     # case 16's git checkout tracks what the real one tracks
     write(os.path.join(repo, ".gitignore"), open(os.path.join(REPO, ".gitignore")).read())
     for name, text in (("skim", CONFIG_SKIM), ("skim_noaudit", CONFIG_SKIM_NOAUDIT), ("audit_only", CONFIG_AUDIT_ONLY),
-                       ("badskim", CONFIG_BADSKIM), ("recipe", CONFIG_RECIPE)):
+                       ("badskim", CONFIG_BADSKIM), ("recipe", CONFIG_RECIPE), ("nofb", CONFIG_NOFB),
+                       ("bl", CONFIG_BL), ("badbl", CONFIG_BADBL), ("badfb", CONFIG_BADFB), ("bl2", CONFIG_BL2),
+                       ("badfb2", CONFIG_BADFB2), ("badbl2", CONFIG_BADBL2)):
         write(os.path.join(repo, "crabConfig", "c_%s.yaml" % name), text)
     write(os.path.join(repo, "crabConfig", "c.yaml"), CONFIG)
     write(os.path.join(repo, "crabConfig", "cD.yaml"), CONFIG_D)
@@ -325,17 +342,19 @@ def main():
         # 12. skim: 6j20 -> forge files shipped, crab_args carries --skim / --audit / --forge-git
         rc, calls, out = r.run("ok", "-c", "crabConfig/c_skim.yaml")
         d = r.dumped()
-        want = "-b\nx.txt\n-I\nnoop:MODULES\n--skim\n6j20\n--audit\n--forge-git\nunknown\n--output-file=forgedNtuple.root\n"
+        want = ("-b\nx.txt\n-I\nnoop:MODULES\n--input-fallback\nroot://cms-xrd-global.cern.ch/\n--skim\n6j20\n--audit\n"
+                "--forge-git\nunknown\n--output-file=forgedNtuple.root\n")
         r.check("12 skim config: exit 0, 3 submits", rc == 0 and calls == ["submit A", "submit B_x", "submit C"],
                 (rc, calls))
         r.check("12 skim config: forge_skims.py and forge_audit.py in every sandbox",
                 d and all("script/forge_skims.py" in e["inputFiles"] and "script/forge_audit.py" in e["inputFiles"]
                           for e in d), d[:1])
-        r.check("12 skim config: crab_args = -b, -I, --skim 6j20, --audit, --forge-git, --output-file",
+        r.check("12 skim config: crab_args = -b, -I, --input-fallback, --skim 6j20, --audit, --forge-git, --output-file",
                 d and all(e["crab_args"] == want for e in d), (d[0]["crab_args"] if d else None, want))
         r.check("12 skim config: the transcript shows the job arguments",
-                "Job arguments of tasks submitted now (crab_args.txt): -b x.txt -I noop:MODULES --skim 6j20 --audit "
-                "--forge-git unknown --output-file=forgedNtuple.root" in out, out[-1200:])
+                "Job arguments of tasks submitted now (crab_args.txt): -b x.txt -I noop:MODULES --input-fallback "
+                "root://cms-xrd-global.cern.ch/ --skim 6j20 --audit --forge-git unknown --output-file=forgedNtuple.root"
+                in out, out[-1200:])
 
         # 13. audit only: --audit without --skim
         r.rm("campaign_skim")
@@ -408,6 +427,53 @@ def main():
             rc, calls, out = r.run("ok", "-c", "crabConfig/c_skim.yaml", "--preflight")
             r.check("16 forge git: branch list modified -> WARN +dirty",
                     "[WARN] forge git (ForgeProvenance)" in out and "+dirty" in out, out[-1200:])
+
+        # 17. input fallback (default on), aaa_fallback: false, site blacklist, max_runtime (2026-09-30)
+        for w in ("campaign_test", "campaign_skim"):
+            if os.path.isdir(os.path.join(r.repo, w)):
+                r.rm(w)
+        rc, calls, out = r.run("ok", *c)
+        d = r.dumped()
+        r.check("17 old config: the input fallback is on by default (--input-fallback root://cms-xrd-global.cern.ch/), "
+                "no blacklist, max_runtime 600",
+                rc == 0 and d and all("--input-fallback\nroot://cms-xrd-global.cern.ch/\n" in e["crab_args"]
+                                      and e["blacklist"] is None and e["runtime"] == 600 for e in d), d[:1])
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_nofb.yaml")
+        d = r.dumped()
+        r.check("17 aaa_fallback: false -> crab_args exactly as before 2026-09-30",
+                rc == 0 and d and all(e["crab_args"] == "-b\nx.txt\n-I\nnoop:MODULES\n--output-file=forgedNtuple.root\n"
+                                      for e in d), d[:1])
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_bl.yaml")
+        d = r.dumped()
+        r.check("17 site_blacklist, max_runtime 1440 and a fallback URL without a trailing slash reach the CRAB config",
+                rc == 0 and d and all(e["blacklist"] == ["T2_US_Vanderbilt", "T2_US_UCSD"] and e["runtime"] == 1440
+                                      and "--input-fallback\nroot://xrootd-cms.infn.it/\n" in e["crab_args"] for e in d)
+                and "Site blacklist: T2_US_Vanderbilt, T2_US_UCSD" in out, (d[:1], out[-600:]))
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_bl2.yaml")
+        d = r.dumped()
+        r.check("17 site_blacklist \"T2_US_*\" (a CRAB wildcard) and aaa_fallback \"root://host:1094 \" are accepted",
+                rc == 0 and d and all(e["blacklist"] == ["T2_US_*"] and "--input-fallback\nroot://cmsxrootd.fnal.gov:1094/\n"
+                                      in e["crab_args"] for e in d), (rc, d[:1], out[-600:]))
+        for name in ("badbl", "badfb", "badfb2", "badbl2"):
+            rc, calls, out = r.run("ok", "-c", "crabConfig/c_%s.yaml" % name)
+            r.check("17 invalid %s: exit 1 before any CRAB call" % name, rc == 1 and calls == [] and "YAML Error" in out,
+                    (rc, calls, out[-400:]))
+            rc, calls, out = r.run("ok", "-c", "crabConfig/c_%s.yaml" % name, "--preflight")
+            r.check("17 preflight invalid %s: FAIL line" % name, rc == 1 and "[FAIL] aaa_fallback / site_blacklist" in out,
+                    (rc, out[-600:]))
+        for w in ("campaign_test", "campaign_nofb", "campaign_bl", "campaign_bl2"):
+            if os.path.isdir(os.path.join(r.repo, w)):
+                r.rm(w)
+        rc, calls, out = r.run("ok", *(c + ["--preflight"]))
+        r.check("17 preflight default: input fallback PASS (AAA), site blacklist none, job resources 2500 MB / 600 min",
+                "[PASS] input fallback" in out and "root://cms-xrd-global.cern.ch/" in out
+                and "[PASS] site blacklist                     none" in out
+                and "max_memory 2500 MB, max_runtime 600 min" in out, out[-1500:])
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_nofb.yaml", "--preflight")
+        r.check("17 preflight aaa_fallback false: input fallback WARN", "[WARN] input fallback" in out, out[-800:])
+        rc, calls, out = r.run("ok", "-c", "crabConfig/c_bl.yaml", "--preflight")
+        r.check("17 preflight blacklist + 1440: both shown",
+                "T2_US_Vanderbilt, T2_US_UCSD" in out and "max_runtime 1440 min" in out, out[-800:])
 
         n = len(r.failures)
         print("-" * 60)

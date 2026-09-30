@@ -13,7 +13,7 @@ plus a failed/ copy, log tarballs and a DAS table. Checks the verdicts on the go
 tree and on broken copies of it: a missing job, an input processed twice, an
 output made with another skim, an output without the audit, a wrong DAS count, a
 ROOT error line in a log, a log without the job output, a ForgeTTbbKeys row
-missing, an input whose Runs sums disagree with its events (D6 per file), and
+missing, an input whose Runs genEventSumw disagrees (D6 per file), and
 damage that must give a FAIL line, not a traceback: an output that is not a ROOT
 file, a corrupt log tarball, a reference campaign copied twice.
 
@@ -129,14 +129,15 @@ def main():
             p = os.path.join(inp, "data_%d.root" % (j + 1))
             n_ev["JetFake_Run2024X-v1"] += tfa.make(ROOT, p, 900, False, seed=20 + j, run=381001 + j, edges=False)
             ins["JetFake_Run2024X-v1"].append(p)
-        # one MC input whose Runs tree disagrees with its events: genEventSumw times (1 + 2e-5), genEventCount + 1
+        # one MC input whose Runs genEventSumw is off by 5e-6: above D6's 1e-6, below the job audit's C3 FAIL
+        # limit 1e-5 (audit v2, D-2026-09-30-p7: a genEventCount mismatch now fails the job, C2r)
         p = os.path.join(inp, "mcw_1.root")
         n_ev["ZZw"] = tfa.make(ROOT, p, 500, True, seed=40, run=9, edges=False)
         ins["ZZw"].append(p)
         runs = read_rows(ROOT, p, "Runs", ("run", "genEventCount", "genEventSumw", "genEventSumw2"))
         rewrite_tree(ROOT, p, "Runs", [("run", "I", "i"), ("genEventCount", "q", "L"), ("genEventSumw", "d", "D"),
                                        ("genEventSumw2", "d", "D")],
-                     [(int(r[0]), int(r[1]) + 1, float(r[2]) * (1 + 2e-5), float(r[3])) for r in runs])
+                     [(int(r[0]), int(r[1]), float(r[2]) * (1 + 5e-6), float(r[3])) for r in runs])
         wz_ds = "/ZZwprim/Fake-mc-v1/NANOAODSIM"
         prim = {"ZZ": "ZZprim", "JetFake_Run2024X-v1": "JetFake", "ZZw": "ZZwprim"}
         brs = {"ZZ": br_mc, "JetFake_Run2024X-v1": br_data, "ZZw": br_mc}
@@ -217,10 +218,31 @@ def main():
         check("skim MC with the log scan: L1 PASS, T1 INFO with the NanoAODTools and FORGE|JOB times of 3 jobs",
               rc == 0 and level(out, "L1") == ["PASS"] and level(out, "T1") == ["INFO"]
               and "Total time of 3 jobs" in out and "FORGE|JOB t_s of 3 jobs" in out, out)
+        # job 1 copied its input through the fallback (xrdcp), job 2 read it through the fallback directly
+        lg1, lg2 = [os.path.join(zz_skim, "log", "cmsRun_%d.log.tar.gz" % j) for j in (1, 2)]
+        for lg in (lg1, lg2):
+            shutil.copy(lg, lg + ".keep")
+        url = "root://cms-xrd-global.cern.ch//store/mc/x/%d.root"
+        add_log(lg1, ("FORGE|INPUT|/store/mc/x/1.root|fallback|" + url + "|OSError: Failed to open file /cms/store/mc/x/"
+                      "1.root|copy (2040 MB in 131 s) /srv/forge_aaa/store/mc/x/1.root\n") % 1 + TOTAL_LINE
+                + "FORGE|JOB|files=1|n_in=700|n_pass=50|n_out=50|t_s=12.0|exit=0\n")
+        add_log(lg2, ("FORGE|INPUT|/store/mc/x/2.root|fallback|" + url + "|OSError: Failed to open file /cms/store/mc/x/"
+                      "2.root|stream (xrdcp exit 54: Run: [ERROR] Server responded with an error: [3011] No servers are "
+                      "available to read the file.)\n") % 2 + TOTAL_LINE
+                + "FORGE|JOB|files=1|n_in=700|n_pass=50|n_out=50|t_s=12.0|exit=0\n")
+        rc, out = run("-c", cfgs["skimMC"], "--das", das, "--scan-logs")
+        check("jobs that read their input through the fallback: T1 counts them (jobs 1, 2), L1 still PASS",
+              rc == 0 and level(out, "T1") == ["INFO"] and "through the fallback (AAA) in 2 job(s) (1, 2)" in out
+              and level(out, "L1") == ["PASS"], out)
+        check("... T1 gives the xrdcp time of job 1 and names job 2 as read without a copy",
+              "xrdcp time (not in the times above) median 131 s, largest 131 s (job 1)" in out
+              and "read directly without a copy (slow) in 1 (2)" in out, out)
+        for lg in (lg1, lg2):
+            shutil.move(lg + ".keep", lg)
         rc, out = run("-c", cfgs["skimMCw"], "--das", das_w)
-        check("Runs sums off in one file: D6 WARN with the per-file count and relative difference, exit 0",
-              rc == 0 and level(out, "D6") == ["WARN"] and "genEventCount != n_in in 1" in out
-              and "largest relative difference 2e-05 (" in out and level(out, "K") == ["PASS"], out)
+        check("Runs genEventSumw off by 5e-6 in one file: D6 WARN naming the file and the relative difference, exit 0",
+              rc == 0 and level(out, "D6") == ["WARN"] and "genEventCount != n_in in 0" in out
+              and "largest relative difference 5e-06 (" in out and level(out, "K") == ["PASS"], out)
         # 2. the reference campaign itself (no skim, no audit) with the log scan
         rc, out = run("-c", cfgs["refMC"], "--das", das, "--scan-logs")
         check("reference MC, no audit: D4 from the Events sum PASS, L1 PASS (a SetBranchStatus line is not an error)",

@@ -11,6 +11,36 @@
 
 ---
 
+## D-2026-09-30-p7: before the 2024 production, C2r and C3 fail a job, 1440 min wall time, AAA fallback for the input
+**DECIDED · 2026-09-30 · user** (asked with the P6 pilot results; plan 12 P6 / P7)
+
+- **Decision (user).** Three answers to the AI's questions (after an explanation of each): (1) "C2r 정확 + C3 1e-5": the job audit fails
+  a job (exit 5) when `Runs.genEventCount` differs from the entries read by one event, and when the sum of `genWeight` differs from
+  `Runs.genEventSumw` by more than 1e-5 relative (WARN above 1e-6 as before). (2) "1440 분": `max_runtime: 1440` in the two 2024
+  configs. (3) "AAA fallback을 하고 이러한 크랩 문제점을 문서에 기록해 두어라. 이 문제가 해결되면 처리 방식도 기록하라.": a job that
+  cannot open its input at the site reads it through AAA; the CRAB problem and, once solved, its handling are recorded
+  (`05_troubleshooting.md` A24).
+- **Evidence** (plan 12 P6, `09` section 26, ledger V53). (1) All 265 MC files of the skim pilot: `genEventCount` exact; the sum of
+  weights off by at most 4.68e-8, the same value in every `TTbb_Hadronic` file (powheg, nearly constant |w|, Float_t rounding;
+  the bound is 2^-24 x sum|w| / |sum w|, so 1e-5 leaves room for NLO samples with many negative weights, while a lost event is
+  C2r's job: one of 600k events is 1.7e-6). (2) The slowest pilot payload was 7,042 s (`TTbb_Hadronic`, 79k events per file,
+  median 821 s); 2024 `TTbar_Hadronic` has 611k events per file. (3) 2018UL: 149 of 160 failed jobs were 50115; `ST_t_top`'s 16
+  repeated failures ran at T2_US_Vanderbilt and T2_US_UCSD, which do not hold those files (`dasgoclient site file=`): CMS overflow
+  sends a job to a site without its input, cmsRun falls back to AAA there, NanoAODTools opens the site's PFN and dies.
+- **Alternatives.** (1) C2r only, or both WARN (a wrong normalization would go unnoticed until the KNU campaign audit). (2) 600 min
+  with manual `--maxjobruntime` resubmits, or 2000 min. (3) Turning overflow off (`CMS_ALLOW_OVERFLOW=False`: fewer slots, and a
+  broken local replica still kills the job), or both.
+- **Consequences.** `script/forge_audit.py` audit version 2 (C2r / C3 FAIL, `C3_FAIL = 1e-5`; `TFile.Open` raising `OSError` in
+  ROOT 6.30 now gives 84, not 85 or 7); `script/run_postproc.py --input-fallback URL`; `crab/submit_crab.py` YAML `aaa_fallback`
+  (default true: adds `--input-fallback root://cms-xrd-global.cern.ch/`; false = the behaviour before) and `site_blacklist`
+  (`config.Site.blacklist`), preflight lines `input fallback`, `site blacklist`, `job resources`; the 2024 configs get
+  `max_runtime: 1440`; `forge_campaign_audit.py` T1 counts the jobs that used the fallback. Running tasks keep their sandbox:
+  `ST_t_top` is resubmitted with a site whitelist (A24). How the fallback reads (AI, after the review the same day; within the
+  decision): it copies URL + LFN with `xrdcp` into the job directory and reads the copy, because reading through AAA event by
+  event ran at 9 and 59 events/s in P5 (hours to a day for a 2 GB, 611k-event input); it reads the URL directly only when the
+  copy fails. The audit records the LFN given. `05_troubleshooting.md` A15 (the 2026-07-27 fallback, reverted then) is marked
+  superseded, and A24 says how its four reasons were met.
+
 ## D-2026-09-28-volume: output limit 10 TB; slimB branch lists for all four configs; 2018UL without event skim, 2024 with `6j20`
 **DECIDED · 2026-09-28 · user**
 

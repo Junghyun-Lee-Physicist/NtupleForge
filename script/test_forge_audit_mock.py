@@ -3,8 +3,8 @@
 """
 test_forge_audit_mock.py -- offline test of the NtupleForge event skim and
 audit: script/forge_skims.py, script/forge_audit.py, the --skim / --audit /
---forge-git options of script/run_postproc.py and the capture echo in
-crab/crab_script.py.
+--forge-git / --input-fallback options of script/run_postproc.py and the
+capture echo in crab/crab_script.py.
 
 Nothing real runs: the real run_postproc.py is started as a child process with
 a mock ROOT module and a mock NanoAODTools PostProcessor in front of
@@ -131,7 +131,7 @@ class TObjString(object):
     def GetString(self):
         return self.s
 
-kPrint, kInfo, kWarning, kError = 0, 1000, 2000, 3000
+kPrint, kInfo, kWarning, kError, kFatal = 0, 1000, 2000, 3000, 6000
 gErrorIgnoreLevel = -1
 
 class _GROOT(object):
@@ -153,10 +153,15 @@ class TFile(object):
         TFile.CURRENT[0] = self
     @staticmethod
     def Open(path, mode=""):
-        if mode in ("", "READ", "UPDATE") and not os.path.exists(path):
-            print("Error in <TFile::TFile>: file %s does not exist" % path, file=sys.stderr)
-            return None
-        if os.environ.get("MOCK_OPENFAIL") and os.environ["MOCK_OPENFAIL"] in path and mode == "":
+        path = path.split("?", 1)[0]        # as ROOT: ?... holds options of the URL, not the file name
+        # MOCK_OPEN_RAISES: ROOT >= 6.30 (PyROOT raises OSError instead of returning a null pointer)
+        fails = (mode in ("", "READ", "UPDATE") and not os.path.exists(path)) or \
+            (os.environ.get("MOCK_OPENFAIL") and os.environ["MOCK_OPENFAIL"] in path and mode == "")
+        if fails:
+            if gErrorIgnoreLevel < kError:
+                print("Error in <TFile::TFile>: file %s does not exist" % path, file=sys.stderr)
+            if os.environ.get("MOCK_OPEN_RAISES"):
+                raise OSError("Failed to open file %s" % path)
             return None
         return TFile(path, mode)
     def IsZombie(self):
@@ -227,7 +232,7 @@ class _Hist(object):
 
 class _Root(object):
     def __init__(self, path, treename="Events"):
-        with open(path) as f:
+        with open(path.split("?", 1)[0]) as f:     # as TFile.Open: ?... are URL options
             doc = json.load(f)
         self.events = doc["Events"]["events"] if treename == "Events" else doc[treename]
         if os.environ.get("MOCK_RDF_SHORT"):
@@ -313,8 +318,9 @@ class PostProcessor(object):
                  haddFileName=None, provenance=False, fwkJobReport=False, outputbranchsel=None, **kw):
         self.inputs, self.cut, self.out = inputFiles, cut, haddFileName
         self.maxEntries, self.firstEntry = maxEntries, firstEntry
+        level = getattr(sys.modules.get("ROOT"), "gErrorIgnoreLevel", None)   # when run_postproc.py imported ROOT
         with open(os.environ["MOCK_PP_LOG"], "a") as f:
-            f.write(json.dumps({"cut": cut, "out": haddFileName, "inputs": inputFiles,
+            f.write(json.dumps({"cut": cut, "out": haddFileName, "inputs": inputFiles, "level": level,
                                 "forge_modules": sorted(m for m in sys.modules if m.startswith("forge_"))}) + "\n")
     def run(self):
         if os.environ.get("MOCK_PP_RAISE"):
@@ -328,7 +334,7 @@ class PostProcessor(object):
             os.system("echo 'Error in <TTree::Merge>: from a child process' 1>&2")
         events, runs = [], []
         for p in self.inputs:
-            with open(p) as f:
+            with open(p.split("?", 1)[0]) as f:
                 doc = json.load(f)
             ev = doc["Events"]["events"]
             b = self.firstEntry or 0
@@ -637,6 +643,10 @@ def main():
         rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_OPENFAIL="mc_a")
         check("input not openable by the audit: exit 84 (CRAB retries)", rc == 84 and "cannot open" in out,
               (rc, out[-300:]))
+        rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_OPENFAIL="mc_a",
+                           MOCK_OPEN_RAISES="1")
+        check("... when TFile.Open raises OSError (ROOT 6.30): still exit 84, not 85 or 7",
+              rc == 84 and "cannot open" in out, (rc, out[-300:]))
 
         # 10. a read that stops early
         rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_RDF_SHORT="1")
@@ -656,12 +666,26 @@ def main():
               rc == 0 and "FORGE|CHECK|C1|PASS" in out and d.get("ForgeAudit", [{}])[0].get("first_entry") == 4,
               (rc, forge(out, "CHECK")))
 
-        # 12. Runs sums that disagree: WARN only (limits are set in P5)
+        # 12. Runs sums that disagree (audit v2, D-2026-09-30-p7): C2r exact, C3 WARN above 1e-6, FAIL above 1e-5
         m = os.path.join(work, "mc_m.root")
-        make_mc(m, ga, na, wa, runs_sumw=sum(wa) * 1.001, runs_count=13)
+        make_mc(m, ga, na, wa, runs_count=13)
         rc, out, err = run([m], "-o", "out.root", "--skim", "6j20", "--audit")
-        check("Runs sums differ: C3 WARN and C2r WARN, exit 0",
-              rc == 0 and "FORGE|CHECK|C3|WARN" in out and "FORGE|CHECK|C2r|WARN" in out, (rc, forge(out, "CHECK")))
+        d = out_doc() if os.path.exists(os.path.join(work, "out.root")) else {}
+        check("Runs genEventCount != entries: C2r FAIL, exit 5 (a human looks), no audit objects written",
+              rc == 5 and "FORGE|CHECK|C2r|FAIL" in out and "FORGE|CHECK|C3|PASS" in out and "ForgeAudit" not in d,
+              (rc, forge(out, "CHECK")))
+        make_mc(m, ga, na, wa, runs_sumw=sum(wa) * (1 + 5e-6))
+        rc, out, err = run([m], "-o", "out.root", "--skim", "6j20", "--audit")
+        check("sum genWeight off by 5e-6: C3 WARN, C2r PASS, exit 0",
+              rc == 0 and "FORGE|CHECK|C3|WARN" in out and "FORGE|CHECK|C2r|PASS" in out, (rc, forge(out, "CHECK")))
+        make_mc(m, ga, na, wa, runs_sumw=sum(wa) * 1.001)
+        rc, out, err = run([m], "-o", "out.root", "--skim", "6j20", "--audit")
+        check("sum genWeight off by 1e-3: C3 FAIL, exit 5",
+              rc == 5 and "FORGE|CHECK|C3|FAIL" in out and "FAIL above 1e-05" in out, (rc, forge(out, "CHECK")))
+        make_mc(m, ga, na, [0.0] * len(wa))
+        rc, out, err = run([m], "-o", "out.root", "--skim", "6j20", "--audit")
+        check("12 entries whose genWeight sum and Runs genEventSumw are both 0: C3 PASS (0 vs 0 agrees), exit 0",
+              rc == 0 and "FORGE|CHECK|C3|PASS|%s: 12 entries, both sums 0" % m in out, (rc, forge(out, "CHECK")))
 
         # 13. audit without a skim: C1 compares with the entries read
         rc, out, err = run([a], "-o", "out.root", "--audit")
@@ -762,6 +786,109 @@ def main():
         run([a], "-o", "out.root", "--skim", "6j20")
         rc2, out2 = check_out(a)
         check("check_forge_output: an output without --audit -> exit 2", rc2 == 2, (rc2, out2[-300:]))
+
+        # 18b. --input-fallback (2026-09-30, docs/05 A24): an LFN is opened at the site first (edmFileUtil), else
+        # copied from the fallback prefix with xrdcp and read from the copy, else read through the prefix; the
+        # probe's ROOT error lines are silenced and the error level is restored; the LFN is what gets recorded
+        binx, bin_noedm = os.path.join(tmp, "bin"), os.path.join(tmp, "bin_noedm")
+        os.makedirs(binx)
+        os.makedirs(bin_noedm)
+        with open(os.path.join(binx, "edmFileUtil"), "w") as f:
+            f.write('#!/bin/sh\n# mock of CMSSW edmFileUtil -d "-f <lfn>": the site PFN\n'
+                    'lfn="${2#-f }"\necho "${MOCK_LOCAL_PREFIX}${lfn}${MOCK_LOCAL_SUFFIX}"\n')
+        xrdcp_log = os.path.join(tmp, "xrdcp_log.txt")
+        for d in (binx, bin_noedm):
+            with open(os.path.join(d, "xrdcp"), "w") as f:
+                f.write('#!/bin/sh\n# mock of xrdcp -f -N <src> <dest>: a local copy, or the error of a missing replica\n'
+                        'echo "$@" >> "%s"\n'
+                        'if [ -n "$MOCK_XRDCP_FAIL" ]; then echo "[0B/0B][100%%][====][0B/s]"; '
+                        'echo "Run: [ERROR] Server responded with an error: [3011] No servers are available to read '
+                        'the file." 1>&2; exit 54; fi\ncp "$3" "$4"\n' % xrdcp_log)
+        for x in ("bin/edmFileUtil", "bin/xrdcp", "bin_noedm/xrdcp"):
+            os.chmod(os.path.join(tmp, x), 0o755)
+        site, aaa = os.path.join(work, "site"), os.path.join(work, "aaa")
+        lfn_a, lfn_b = "/store/mc/Fake/NANOAODSIM/v1/a.root", "/store/mc/Fake/NANOAODSIM/v1/b.root"
+        for base, lfn, src in ((site, lfn_a, a), (aaa, lfn_a, a), (aaa, lfn_b, b)):
+            os.makedirs(os.path.dirname(base + lfn), exist_ok=True)
+            shutil.copy(src, base + lfn)
+        path_env = binx + os.pathsep + os.environ.get("PATH", "")
+        # lxplus after cmsenv has a real edmFileUtil: keep only the directories without one
+        path_noedm = os.pathsep.join([bin_noedm] + [x for x in os.environ.get("PATH", "").split(os.pathsep)
+                                                    if x and not os.path.exists(os.path.join(x, "edmFileUtil"))])
+        copy_b = os.path.join(work, "forge_aaa") + lfn_b      # run_postproc.py copies into ./forge_aaa<lfn>
+        url_b = aaa + "/" + lfn_b
+
+        def pp_last():
+            return json.loads(open(pp_log).read().splitlines()[-1]) if os.path.exists(pp_log) else {}
+
+        def pp_inputs():
+            return pp_last().get("inputs")
+
+        def fb_run(inputs, *extra, **kw):
+            for x in (xrdcp_log, copy_b):
+                if os.path.exists(x):
+                    os.remove(x)
+            return run(inputs, "-o", "out.root", *extra, **kw)
+
+        def xrdcp_calls():
+            return open(xrdcp_log).read().splitlines() if os.path.exists(xrdcp_log) else []
+
+        rc, out, err = fb_run([lfn_a], "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                              PATH=path_env, MOCK_LOCAL_PREFIX=site)
+        d = out_doc() if rc == 0 else {}
+        check("fallback: an LFN with a replica at the site is opened there (FORGE|INPUT local), exit 0, no xrdcp, "
+              "ForgeAudit file = the LFN, error level restored before the PostProcessor",
+              rc == 0 and pp_inputs() == [site + lfn_a] and "FORGE|INPUT|%s|local|%s" % (lfn_a, site + lfn_a) in out
+              and not xrdcp_calls() and d.get("ForgeAudit", [{}])[0].get("file") == lfn_a and pp_last().get("level") == -1,
+              (rc, pp_last(), forge(out, "INPUT"), err[-300:]))
+        rc, out, err = fb_run([lfn_b], "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                              PATH=path_env, MOCK_LOCAL_PREFIX=site)
+        d = out_doc() if rc == 0 else {}
+        line = (forge(out, "INPUT") or [""])[0]
+        check("fallback: no replica at the site -> xrdcp -f -N fallback + LFN into ./forge_aaa<lfn>, the job reads the "
+              "copy (FORGE|INPUT fallback ... copy), exit 0, C2e PASS, no ROOT error line printed by the probe, "
+              "ForgeAudit file and ForgeProvenance inputs = the LFN",
+              rc == 0 and pp_inputs() == [copy_b] and xrdcp_calls() == ["-f -N %s %s" % (url_b, copy_b)]
+              and line.startswith("FORGE|INPUT|%s|fallback|%s|" % (lfn_b, url_b)) and "|copy (" in line
+              and line.endswith(" " + copy_b) and "FORGE|CHECK|C2e|PASS" in out and "Error in <" not in err
+              and d.get("ForgeAudit", [{}])[0].get("file") == lfn_b and prov_of(d).get("inputs") == [lfn_b],
+              (rc, pp_inputs(), xrdcp_calls(), line, err[-400:]))
+        rc, out, err = fb_run([lfn_b], "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                              PATH=path_env, MOCK_LOCAL_PREFIX=site, MOCK_OPEN_RAISES="1")
+        check("fallback: the probe's open raises OSError (ROOT 6.30) -> copy, exit 0",
+              rc == 0 and pp_inputs() == [copy_b] and "OSError: Failed to open file" in "".join(forge(out, "INPUT")),
+              (rc, forge(out, "INPUT")))
+        rc, out, err = fb_run([lfn_b], "--skim", "6j20", "--audit", "--input-fallback", aaa + "/",
+                              PATH=path_noedm, MOCK_LOCAL_PREFIX=site)
+        check("fallback: no edmFileUtil at all -> copy (a trailing / in the prefix is fine), exit 0",
+              rc == 0 and pp_inputs() == [copy_b] and "edmFileUtil" in "".join(forge(out, "INPUT")),
+              (rc, pp_inputs(), forge(out, "INPUT"), path_noedm))
+        rc, out, err = fb_run([lfn_b], "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                              PATH=path_env, MOCK_LOCAL_PREFIX=site, MOCK_XRDCP_FAIL="1")
+        line = (forge(out, "INPUT") or [""])[0]
+        check("fallback: xrdcp fails too -> the job reads fallback + LFN directly (FORGE|INPUT ... stream (xrdcp exit "
+              "54: ...)), no partial copy left, exit 0, ForgeAudit file = the LFN",
+              rc == 0 and pp_inputs() == [url_b] and "|stream (xrdcp exit 54: Run: [ERROR]" in line
+              and not os.path.exists(copy_b) and out_doc().get("ForgeAudit", [{}])[0].get("file") == lfn_b,
+              (rc, pp_inputs(), line, err[-300:]))
+        rc, out, err = fb_run([lfn_b], PATH=path_env, MOCK_LOCAL_PREFIX=site)
+        check("without --input-fallback the LFN goes to NanoAODTools unchanged (as before): no FORGE|INPUT line",
+              pp_inputs() == [lfn_b] and not forge(out, "INPUT") and not xrdcp_calls() and rc != 0, (rc, pp_inputs()))
+        rc, out, err = fb_run([lfn_b], "--input-fallback", aaa, PATH=path_env, MOCK_LOCAL_PREFIX=site)
+        check("fallback without --audit: the PostProcessor gets the copy, and the error level the probe raised is "
+              "restored (-1) before it runs, exit 0",
+              rc == 0 and pp_inputs() == [copy_b] and forge(out, "INPUT") and pp_last().get("level") == -1,
+              (rc, pp_last(), err[-300:]))
+        rc, out, err = fb_run([lfn_a], "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                              PATH=path_env, MOCK_LOCAL_PREFIX=site, MOCK_LOCAL_SUFFIX="?svcClass=cms")
+        d = out_doc() if rc == 0 else {}
+        check("fallback: a site PFN with a ?query is opened there, and the LFN (without the query) is recorded",
+              rc == 0 and pp_inputs() == [site + lfn_a + "?svcClass=cms"] and d.get("ForgeAudit", [{}])[0].get("file")
+              == lfn_a and prov_of(d).get("inputs") == [lfn_a], (rc, pp_inputs(), d.get("ForgeAudit", [{}])[0].get("file")))
+        rc, out, err = fb_run([a], "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                              PATH=path_env, MOCK_LOCAL_PREFIX=site)
+        check("fallback: a name that is not an LFN is kept, no FORGE|INPUT line, exit 0",
+              rc == 0 and pp_inputs() == [a] and not forge(out, "INPUT"), (rc, pp_inputs(), forge(out, "INPUT")))
 
         # 19. crab_script.py prints the capture file when run_postproc.py dies inside the capture
         cs = os.path.join(tmp, "crab_job")

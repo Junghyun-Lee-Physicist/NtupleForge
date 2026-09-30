@@ -17,8 +17,11 @@ RVec expression EVENT BY EVENT (X7), the ForgeAudit row (A) and the keys (K).
 Also: a Data file, a Data file given the MC list (a keep pattern that matches
 nothing is a WARN, not a failure), a file where nothing passes, an empty file,
 an entry range (-N, --first-entry), two inputs, a haddnano.py merge of two
-outputs (the audit trees must be concatenated), and the command line without
-the new flags (unchanged behaviour).
+outputs (the audit trees must be concatenated), --input-fallback with a fake
+edmFileUtil and a fake xrdcp (an LFN without a replica at the "site" is copied
+from the fallback prefix and read there, or read through the prefix when the
+copy fails; real ROOT's error line of the failed probe is silenced), and the
+command line without the new flags (unchanged behaviour).
 
     python3 script/test_forge_audit_root.py        # last line: RESULT: ALL PASS (N checks)
 
@@ -177,12 +180,13 @@ def main():
         with open(br_data, "w") as f:
             f.write("drop *\nkeep run\nkeep luminosityBlock\nkeep event\nkeep nJet\nkeep Jet_*\nkeep HLT_PFJet*\n")
 
-        def run(name, inputs, br, *extra):
+        def run(name, inputs, br, *extra, **kw):
             job = os.path.join(tmp, "jobs", name)
             os.makedirs(job)
             cmd = [sys.executable, os.path.join(SCRIPT, "run_postproc.py")] + inputs + \
                   ["-I", "modules.noop:MODULES", "-b", br, "-o", "forgedNtuple.root"] + list(extra)
-            p = subprocess.run(cmd, cwd=job, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            p = subprocess.run(cmd, cwd=job, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True,
+                               env=kw.get("env"))
             checks = dict()
             for l in p.stdout.splitlines():
                 if l.startswith("FORGE|CHECK|"):
@@ -259,6 +263,59 @@ def main():
             t.GetEntry(0)
             check("merged ForgeProvenance row 0 is json with the skim", json.loads(str(t.json)).get("skim") == "6j20",
                   str(t.json)[:200])
+        # --input-fallback (2026-09-30, docs/05 A24): a fake edmFileUtil maps an LFN to a "site" path, a fake xrdcp
+        # copies (or fails like a missing replica), so that real ROOT and NanoAODTools read what run_postproc.py chose
+        binx, site, aaa = os.path.join(tmp, "bin"), os.path.join(tmp, "site"), os.path.join(tmp, "aaa")
+        os.makedirs(binx)
+        with open(os.path.join(binx, "edmFileUtil"), "w") as f:
+            f.write('#!/bin/sh\nlfn="${2#-f }"\necho "%s${lfn}"\n' % site)
+        with open(os.path.join(binx, "xrdcp"), "w") as f:
+            f.write('#!/bin/sh\nif [ -n "$FAKE_XRDCP_FAIL" ]; then echo "Run: [ERROR] Server responded with an error: '
+                    '[3011] No servers are available to read the file." 1>&2; exit 54; fi\ncp "$3" "$4"\n')
+        for x in ("edmFileUtil", "xrdcp"):
+            os.chmod(os.path.join(binx, x), 0o755)
+        lfn_a, lfn_b = "/store/mc/Fake/NANOAODSIM/v1/a.root", "/store/mc/Fake/NANOAODSIM/v1/b.root"
+        for base, lfn in ((site, lfn_a), (aaa, lfn_a), (aaa, lfn_b)):
+            os.makedirs(os.path.dirname(base + lfn), exist_ok=True)
+            shutil.copy(paths["mc2"], base + lfn)
+        fenv = dict(os.environ, PATH=binx + os.pathsep + os.environ.get("PATH", ""))
+
+        def audit_file_of(o):
+            fo = ROOT.TFile.Open(o)
+            if not fo or not fo.Get("ForgeAudit"):
+                return ""
+            ta = fo.Get("ForgeAudit")
+            ta.GetEntry(0)
+            name = str(ta.file)
+            fo.Close()
+            return name
+
+        def input_lines(out):
+            return [l for l in out.splitlines() if l.startswith("FORGE|INPUT|")]
+
+        rc, ck, out, err, o = run("fb_aaa", [lfn_b], br_mc, "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                                  env=fenv)
+        rc2, txt = readback(o, aaa + "/" + lfn_b)
+        copy_b = os.path.join(tmp, "jobs", "fb_aaa", "forge_aaa") + lfn_b
+        il = input_lines(out)
+        check("fallback: no replica at the site -> xrdcp copy into ./forge_aaa<lfn>, NanoAODTools reads the copy, "
+              "exit 0, C1 C2 C2e write PASS, no ROOT error line from the probe, ForgeAudit file = the LFN, read-back PASS",
+              rc == 0 and core_pass(ck) and len(il) == 1 and il[0].startswith("FORGE|INPUT|%s|fallback|" % lfn_b)
+              and "|copy (" in il[0] and il[0].endswith(" " + copy_b) and os.path.isfile(copy_b)
+              and "Error in <TFile" not in err and audit_file_of(o) == lfn_b and rc2 == 0,
+              (rc, ck, il, err[-400:], audit_file_of(o) if rc == 0 else "", txt[-300:]))
+        rc, ck, out, err, o = run("fb_stream", [lfn_b], br_mc, "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                                  env=dict(fenv, FAKE_XRDCP_FAIL="1"))
+        il = input_lines(out)
+        check("fallback: xrdcp fails -> ROOT reads fallback + LFN directly (FORGE|INPUT ... stream), exit 0, "
+              "C1 C2 C2e write PASS, ForgeAudit file = the LFN",
+              rc == 0 and core_pass(ck) and len(il) == 1 and "|stream (xrdcp exit 54: Run: [ERROR]" in il[0]
+              and audit_file_of(o) == lfn_b, (rc, ck, il, err[-400:]))
+        rc, ck, out, err, o = run("fb_local", [lfn_a], br_mc, "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                                  env=fenv)
+        check("fallback: a replica at the site is opened there (FORGE|INPUT local), exit 0, ForgeAudit file = the LFN",
+              rc == 0 and core_pass(ck) and ("FORGE|INPUT|%s|local|%s" % (lfn_a, site + lfn_a)) in out
+              and audit_file_of(o) == lfn_a, (rc, ck, input_lines(out)))
         # the command line of the 2018UL production: no new flag, nothing new happens
         rc, ck, out, err, o = run("old", [paths["mc1"]], br_mc)
         f = ROOT.TFile.Open(o)

@@ -31,6 +31,10 @@ common:
   # Submit only after the plan 12 P5 local checks and the P6 skim pilot (RUNBOOK 13).
   skim: "6j20"
   audit: true
+  # 2026-09-30 (docs/03_DECISIONS.md D-2026-09-30-p7): wall-time limit 1440 min (the 600 min default of
+  # submit_crab.py FileBased would cut the slowest TTbar_Hadronic jobs: 611k input events per file). An input
+  # the site cannot open is read through AAA (aaa_fallback, default true, docs/05_troubleshooting.md A24).
+  max_runtime: 1440
 
 datasets:
   # --- Data (JetMET0) --- canonical processing; alternates commented

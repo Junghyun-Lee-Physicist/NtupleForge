@@ -58,6 +58,19 @@ error 7 (codes chosen for CRAB's retry policy, forge_audit.py). Without the
 two flags nothing changes. submit_crab.py sets both from the YAML keys
 `skim:` and `audit:` and ships forge_skims.py and forge_audit.py.
 
+[Input fallback (2026-09-30, docs/05_troubleshooting.md A24)]
+--input-fallback URL: CRAB can run a job at a site that does not hold its input
+(CMS overflow); cmsRun falls back to AAA there, NanoAODTools does not (it turns
+the LFN into the site's PFN with edmFileUtil and opens that, so the job dies
+with 'file ... does not exist' and CRAB reports 50115). With the flag every LFN
+(/store/...) is first opened at the site the same way; if that fails, URL + LFN
+(e.g. root://cms-xrd-global.cern.ch//store/...) is copied with xrdcp into
+./forge_aaa/store/... and the job reads the copy (reading through AAA event by
+event was 9-59 events/s in P5); only if the copy fails does it read URL + LFN
+directly. A FORGE|INPUT line says which (resolve_inputs); ForgeAudit and
+ForgeProvenance record the LFN. submit_crab.py adds the flag unless YAML
+`aaa_fallback: false`.
+
 [Branch Selection Policy — INPUT vs OUTPUT]
 The keep/drop file passed via -b is applied ONLY to the OUTPUT tree
 (`outputbranchsel`). The INPUT tree is NOT filtered (`branchsel=None`),
@@ -84,6 +97,8 @@ import argparse
 import importlib
 import logging
 import datetime
+import subprocess
+import time
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 
 
@@ -101,6 +116,120 @@ sys.path.insert(0, parent_dir)
 # -------------------------------------------------------------------------
 logging.basicConfig(level=logging.INFO, format='[run_postproc] : %(message)s')
 logger = logging.getLogger("NtupleForge")
+
+
+FALLBACK_DIR = "forge_aaa"      # ./forge_aaa/store/...: the copy keeps the LFN in its path (FJR, lfn_of)
+FALLBACK_COPY_TIMEOUT_S = 3600
+
+
+def one_line(s, n=200):
+    """A reason for a FORGE|INPUT field: one line, no '|', at most n characters."""
+    return " ".join(str(s).replace("|", "/").split())[:n]
+
+
+def probe_open(ROOT, pfn):
+    """(True, "") if ROOT opens pfn, else (False, why). ROOT's error lines of a
+    failed open are not printed (gErrorIgnoreLevel kFatal for the probe only,
+    restored on every path): a replica missing at this site is not a read error
+    of the job, and forge_campaign_audit.py (L1) counts every 'Error in <' line
+    of the job log. (forge_audit.py C2e counts only what its capture sees, which
+    starts after this.)"""
+    level = ROOT.gErrorIgnoreLevel
+    ROOT.gErrorIgnoreLevel = ROOT.kFatal
+    f = None
+    try:
+        f = ROOT.TFile.Open(pfn)
+        if f and not f.IsZombie():
+            return True, ""
+        return False, "TFile::Open(%s) gave %s" % (pfn, "a zombie" if f else "no file")
+    except Exception as e:              # ROOT >= 6.30 raises OSError instead of returning a null pointer
+        return False, "%s: %s" % (type(e).__name__, e)
+    finally:
+        try:
+            if f:
+                f.Close()
+        except Exception:
+            pass
+        ROOT.gErrorIgnoreLevel = level
+
+
+def copy_input(url, lfn, timeout=FALLBACK_COPY_TIMEOUT_S):
+    """xrdcp url to ./forge_aaa<lfn>: (local path, how) or (None, why). The job
+    then reads a local file; reading through AAA event by event ran at 9 and 59
+    events/s in P5 (docs/09 25), hours to a day for a 600k-event file, while
+    xrdcp moved 269 MB in 15 s."""
+    dest = os.path.join(os.getcwd(), FALLBACK_DIR + lfn)
+    t0 = time.time()
+    try:
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        p = subprocess.run(["xrdcp", "-f", "-N", url, dest], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                           timeout=timeout)
+        text = p.stdout.decode("utf-8", "replace")
+        if p.returncode == 0 and os.path.isfile(dest):
+            return dest, "copy (%.0f MB in %.0f s) %s" % (os.path.getsize(dest) / 1e6, time.time() - t0, dest)
+        last = [l for l in text.splitlines() if l.strip()]
+        why = "xrdcp exit %d: %s" % (p.returncode, last[-1] if last else "no output")
+    except subprocess.TimeoutExpired:
+        why = "xrdcp did not finish in %d s" % timeout
+    except Exception as e:              # no xrdcp, a disk problem
+        why = "xrdcp: %s: %s" % (type(e).__name__, e)
+    try:
+        if os.path.exists(dest):
+            os.remove(dest)             # a partial copy
+    except OSError:
+        pass
+    return None, why
+
+
+def resolve_inputs(files, fallback, log):
+    """--input-fallback: every LFN is opened at the site first, as NanoAODTools
+    PostProcessor.run() would open it (edmFileUtil -d gives the site's PFN). If
+    that fails, fallback + LFN (AAA) is copied into the job directory with xrdcp
+    and the job reads the copy; if the copy fails too, the job reads fallback +
+    LFN directly (slow, see copy_input). Other names are kept. One FORGE|INPUT
+    line per LFN:
+      FORGE|INPUT|<lfn>|local|<pfn>
+      FORGE|INPUT|<lfn>|fallback|<url>|<why the site failed>|copy (<MB> MB in <s> s) <path>
+      FORGE|INPUT|<lfn>|fallback|<url>|<why the site failed>|stream (<why the copy failed>)
+    Returns (names the job opens, {name opened: LFN given}); forge_audit.py
+    records the LFN, not the name opened."""
+    import ROOT
+    out, lfns = [], {}
+    for name in files:
+        name = name.strip()
+        if not name.startswith("/store/"):
+            out.append(name)
+            continue
+        why, pfn = "", ""
+        try:     # the call NanoAODTools makes (postprocessor.py), stdout only
+            pfn = subprocess.check_output(["edmFileUtil", "-d", "-f " + name]).decode("utf-8", "replace").strip()
+            if not pfn:
+                why = "edmFileUtil gave no PFN"
+        except Exception as e:
+            why = "edmFileUtil: %s: %s" % (type(e).__name__, e)
+        if pfn:
+            ok, why = probe_open(ROOT, pfn)
+            if ok:
+                log.info("Input %s: opened at the site as %s", name, pfn)
+                print("FORGE|INPUT|%s|local|%s" % (name, pfn))
+                sys.stdout.flush()
+                out.append(pfn)
+                lfns[pfn] = name
+                continue
+        url = fallback.rstrip("/") + "/" + name
+        log.warning("Input %s: not readable at the site (%s); copying %s", name, one_line(why, 300), url)
+        sys.stderr.flush()
+        opened, how = copy_input(url, name)
+        if opened:
+            log.info("Input %s: the job reads the %s", name, how)
+        else:
+            log.warning("Input %s: the copy failed (%s); the job reads %s directly", name, one_line(how, 300), url)
+            opened, how = url, "stream (%s)" % how
+        print("FORGE|INPUT|%s|fallback|%s|%s|%s" % (name, url, one_line(why), one_line(how, 500)))
+        sys.stdout.flush()
+        out.append(opened)
+        lfns[opened] = name
+    return out, lfns
 
 
 def main():
@@ -151,6 +280,11 @@ def main():
                              "(forge_audit.py). Exit 5 closure FAIL, 85 read trouble, 84 input not openable, 7 audit error.")
     parser.add_argument("--forge-git", type=str, default=None,
                         help="git commit of the submitting checkout, recorded in ForgeProvenance (submit_crab.py)")
+    parser.add_argument("--input-fallback", type=str, default=None, metavar="URL",
+                        help="an LFN input (/store/...) that cannot be opened at the site is copied from URL + LFN "
+                             "with xrdcp into ./forge_aaa/ and read there (URL + LFN directly if the copy fails), "
+                             "e.g. root://cms-xrd-global.cern.ch/ (AAA; a job CRAB sent to a site without its input). "
+                             "submit_crab.py sets it unless YAML aaa_fallback: false. Default: off, as before.")
 
     # [3] ttbarCategorizer Options -- DEPRECATED / DEAD
     # ────────────────────────────────────────────────────────────────────
@@ -318,6 +452,10 @@ def main():
         logger.info(f"  -> First file: {args.input_files[0]}")
         if n_files > 1:
             logger.info(f"  -> ... and {n_files - 1} more files.")
+    args.input_lfn = {}
+    if args.input_fallback:
+        # the PostProcessor and the audit both open these names; the audit records args.input_lfn[name]
+        args.input_files, args.input_lfn = resolve_inputs(args.input_files, args.input_fallback, logger)
 
     # 4. Confirm Output Strategy
     if args.output_file:

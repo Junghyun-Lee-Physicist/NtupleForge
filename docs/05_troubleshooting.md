@@ -812,6 +812,10 @@ automatic retries; it is visible now only because the first job log was read by
 hand. 2018 is somewhat more exposed: `TTbar_SemiLep` is 1 TB / 391 files, so
 there is more room for an incomplete block replica.
 
+> **[SUPERSEDED 2026-09-30, D-2026-09-30-p7]** New submissions have `run_postproc.py --input-fallback` (A24): an LFN the site
+> cannot open is copied through AAA with xrdcp and read from the copy; `submit_crab.py` turns it on by default. A24 ("A15 와의
+> 관계") says how the reasons below were weighed. The paragraph below describes the code of 2026-07-27 to 2026-09-29.
+
 **There is NO AAA fallback in the code.** One was written on 2026-07-27
 (`resolve_input_files()` + `--xrd-fallback`), demoted to opt-in the same day, and
 then **fully reverted at the user's request** — `run_postproc.py` contains zero
@@ -1001,9 +1005,9 @@ project dir 이 없는 dataset 은 **제출한 다음** kill 했다.
 |---|---|---|---|
 | 1 | NanoAODTools 예외, 또는 출력 쓰기 실패(`kWriteError`) | 재시도 | 예전과 같다. 반복되면 job 로그의 traceback |
 | 2 | 인자 오류: 모르는 `--skim`, `--skim` 과 `--cut` 을 함께, `-o` 없는 `--audit`, sandbox 에 `forge_skims.py` 없음 | 재시도 안 함 | 모든 job 이 같이 실패한다. config 와 `submit_crab.py` 판을 본다(preflight 가 먼저 잡는다) |
-| 84 | audit 이 입력 파일을 못 엶, 또는 입력에 `Events` tree 가 없음 | 다른 사이트에서 재시도 | 반복되면 그 LFN 의 replica(`dasgoclient -query "site file=<LFN>"`) |
+| 84 | audit 이 입력 파일을 못 엶(ROOT 6.30 에서 `TFile.Open` 이 예외를 던져도, audit v2), 또는 입력에 `Events` tree 가 없음 | 다른 사이트에서 재시도 | 반복되면 그 LFN 의 replica(`dasgoclient -query "site file=<LFN>"`, A24) |
 | 85 | 읽기 문제: C2(범위 끝까지 못 읽음), C2e(ROOT 오류 줄), RDataFrame 읽기 예외 | 다른 사이트에서 재시도 | 재시도 뒤에도 실패면 `--resubmit`. job 로그의 `FORGE\|CHECK\|C2e\|FAIL` 줄이 첫 오류 줄을 담는다 |
-| 5 | 읽기 문제 없는 closure FAIL: C1(출력 event 수 ≠ RVec 통과 수) 또는 C2c(코드 histogram 합 ≠ entries) | 재시도 안 함 | 아래 재현. 해석 전에는 그 dataset 을 쓰지 않는다 |
+| 5 | 읽기 문제 없는 closure FAIL: C1(출력 event 수 ≠ RVec 통과 수), C2c(코드 histogram 합 ≠ entries), audit v2 부터 C2r(`Runs.genEventCount` ≠ 읽은 수)·C3(가중치 합 상대차 > 1e-5) | 재시도 안 함 | 아래 재현. 해석 전에는 그 dataset 을 쓰지 않는다 |
 | 7 | audit 코드 자체의 예외(버그) | 재시도 안 함 | job 로그의 `forge audit failed` traceback 을 AI 세션에 |
 
 **재현 (exit 5).** job 로그의 `FORGE|FILE|<lfn>|...` 줄에서 LFN 을 얻어, lxplus 컨테이너의 저장소 루트에서 입력을 `/tmp` 로 복사한 뒤 같은 명령을 돌리고
@@ -1031,4 +1035,78 @@ mkdir -p localcheck_v15 /tmp/$USER/repro && L=/tmp/$USER/repro/$(basename <lfn>)
 줄과 job 시간(`--scan-logs`, L1·T1). FAIL 이면 그 줄이 job 번호나 event 키를 준다.
 
 **`FORGE|CHECK` 의 WARN 은 job 을 실패시키지 않는다**: C2w(그 파일에 없는 keep 패턴, 예: pythia 만 쓴 샘플의 `LHE*`), C2a(입력 autosave),
-C2r·C3(`Runs` 합과의 비교; P5 뒤 FAIL 로 올릴 예정).
+C3 의 상대차 1e-6~1e-5. **audit v2(2026-09-30, D-2026-09-30-p7)부터는 C2r(`Runs.genEventCount` != 읽은 event 수)과 C3 상대차 1e-5 초과가 FAIL
+(exit 5)** 이다. 파일럿 265 파일에서 C2r 은 모두 정확히 같았고 C3 은 최대 4.68e-8 이었다(Float_t 반올림). exit 5 가 나오면 그 LFN 의 `Runs` 를
+직접 본다: `python3 -c "import ROOT; f=ROOT.TFile.Open('root://cms-xrd-global.cern.ch/<lfn>'); r=f.Get('Runs'); e=f.Get('Events'); print(sum(x.genEventCount for x in r), e.GetEntries())"`.
+
+## A24 · CRAB 이 입력 파일이 없는 사이트로 job 을 보냈고(overflow), 우리 job 은 AAA 로 돌아가지 않아 2 분 만에 50115 로 죽었다 (2026-09-29, 기록 2026-09-30)
+
+**상태: 원인 확인, 대응 둘 중 하나는 적용 전**. 진행 중인 task 는 whitelist resubmit(대응 1), 새 제출은 `--input-fallback`(대응 2, P7 부터).
+두 대응의 결과가 나오면 이 절 끝 "해결 기록" 에 적는다(사용자 지시, 2026-09-30).
+
+**증상.** 2018UL 첫 `--report`(09-29): 실패 160 job 중 149 개가 50115(유효한 FrameworkJobReport 없음). plain resubmit 으로 대부분 풀렸지만
+`ST_t_top` 16 개는 두 번째 시도에서도 같은 코드. `crab status --long` 에서 실패 job 은 모두 T2_US_Vanderbilt(11)·T2_US_UCSD(5)에서
+2 분 남짓 돌았다(Runtime 0:02:1x, Retries 5). `crab getlog --short --jobids=31` 의 job stdout:
+- 09-28 시도: `Error in <TNetXNGFile::Open>: [ERROR] Server responded with an error: [3011] Too many DFS read attempts; operation terminated`
+- 09-29 시도: `Error in <TFile::TFile>: file /cms/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_.../2a7bb4f0-....root does not exist`
+- 그 뒤 `Traceback` 과 `ERROR: Exceptional exit ... 50115: BadFWJRXML`.
+
+**원인.** 16 개 입력 모두 replica 가 Vanderbilt·UCSD 에 없다(`dasgoclient -query "site file=<lfn>"`: T2_DE_DESY, T2_FR_GRIF, T2_FR_IPHC,
+T2_PT_NCG_Lisbon, T2_RU_JINR, T2_US_Florida, T2_US_Nebraska, T2_US_Purdue, T1_RU_JINR_Tape). 데이터가 있는 사이트가 바쁘면 CMS 는 job 을
+근처(미국 안)의 다른 사이트로 보낸다(overflow). 그 job 은 입력을 AAA 로 읽는다는 전제이고, cmsRun job 은 사이트 설정의 fallback 으로 그렇게 한다.
+우리 job 은 cmsRun 이 아니라 `crab_script.py` → `run_postproc.py` → NanoAODTools 이고, NanoAODTools 는 LFN 을 `edmFileUtil -d` 로 **그 사이트의
+PFN** 으로 바꿔 ROOT 로 바로 연다(CMSSW 14_2_X `postprocessor.py`). fallback 이 없어서 파일이 없는 사이트에서는 열기에서 예외가 나고,
+FJR 은 PostProcessor 가 끝에서 쓰므로 CRAB 은 FJR 없음 = 50115 로 적는다(payload 의 exit code 는 보이지 않는다). resubmit 은 다음 시도가
+우연히 데이터 사이트로 갈 때만 통과한다. 같은 데이터 사이트(Nebraska)로 간 job 78 은 2 시간 40 분 돌고 성공했다.
+
+**진단 순서** (lxplus 컨테이너, crab-setup 뒤; 셸 변수에 기대지 말고 경로를 직접 쓴다. 2026-09-30 에 전날 셸의 `$D` 가 비어 `-d` 뒤에 옵션이
+들어가 CRAB 이 `is not a valid CRAB project directory`, EXIT 192 로 거절했다):
+1. 실패 job 번호·사이트: `crab status -d <project dir> --long > <file> 2>&1` 한 줄, 그다음 `grep -E "Most Recent Site|50115" <file>`.
+2. 그 job 의 stdout: `crab getlog -d <project dir> --short --jobids=<N,...>`(job 번호. exit code 가 아니다), 그다음
+   `grep -h -i -m8 -E "segmentation|traceback|exception|error in <|fatal|total time" <project dir>/results/job_out.<N>.*.txt`.
+3. 입력 LFN 과 replica: `grep -h -o '/store/mc/[^ "]*\.root' <project dir>/results/job_out.<N>.*.txt | sort -u`, 그다음
+   `dasgoclient -query "site file=<lfn>"`. job 이 돈 사이트가 목록에 없으면 이 절이다.
+
+**대응 1: 이미 제출한 task.** sandbox 는 첫 제출 때 것이라 코드로는 못 고친다. 데이터가 있는 디스크 사이트로만 보낸다(한 줄):
+`crab resubmit -d <project dir> --sitewhitelist=<replica 사이트들, tape 제외>`. `ST_t_top`(2018UL MC):
+`--sitewhitelist=T2_US_Nebraska,T2_US_Purdue,T2_US_Florida,T2_DE_DESY,T2_FR_GRIF,T2_FR_IPHC,T2_PT_NCG_Lisbon,T2_RU_JINR`.
+
+**대응 2: 새 제출 (2026-09-30 코드, D-2026-09-30-p7).** `run_postproc.py --input-fallback URL`: LFN 마다 먼저 사이트에서(NanoAODTools 와 같은
+`edmFileUtil` PFN) 열어 본다. 안 열리면 `URL + LFN`(`root://cms-xrd-global.cern.ch//store/...`)을 `xrdcp -f -N` 으로 job 디렉터리의
+`forge_aaa/store/...` 에 복사하고(3600 s 제한) NanoAODTools 와 audit 이 그 사본을 읽는다. 복사하는 이유: P5 에서 AAA 로 event 단위로 읽기는
+9·59 event/s 였고(`docs/09` 25 절) xrdcp 는 269 MB 에 15 s 였다. 2024 의 가장 큰 입력(2 GB, 61 만 event)을 직접 읽으면 수 시간~하루, 복사는
+수 분이다. 복사도 실패하면(`xrdcp` 이 없음, 어디서도 못 읽음, 시간 초과) `URL + LFN` 을 직접 읽는다. 실패한 시험 열기의 ROOT 오류 줄은
+찍지 않는다(`gErrorIgnoreLevel` 을 그 열기 동안만 kFatal, 어느 경로로 나가든 되돌림): 로컬 사본이 없는 것은 이 job 의 읽기 오류가 아니고,
+KNU 집계의 L1 은 job log 의 `Error in <` 줄을 모두 센다(job audit 의 C2e 는 그 뒤에 시작하는 capture 만 센다). 못 연 이유는 버리지 않고
+한 줄에 남긴다: `FORGE|INPUT|<lfn>|local|<pfn>`, 또는 `FORGE|INPUT|<lfn>|fallback|<url>|<사이트에서 못 연 이유>|copy (<MB> MB in <s> s) <사본>`,
+또는 `...|stream (<복사가 실패한 이유>)`. `ForgeAudit`·`ForgeProvenance` 에는 여는 이름이 아니라 받은 LFN 을 적는다. `submit_crab.py` 는 YAML
+`aaa_fallback: false` 가 아니면 이 flag 를 `crab_args.txt` 에 넣는다(기본 on; `aaa_fallback: "root://<host>[:<port>]/"` 로 다른 redirector).
+KNU 집계의 T1 이 fallback 으로 읽은 job 수, 그 xrdcp 시간(payload 시간 밖), 복사 없이 직접 읽은 job 을 적는다. overflow 자체는 끄지 않았다
+(slot 이 많다; 사용자 결정).
+
+**A15(2026-07-27)와의 관계.** 그때 쓴 fallback(`--xrd-fallback`)은 사용자 요청으로 되돌렸고 이유는 넷이었다: CRAB 재시도가 더 낫다, 일시적인
+로컬 실패도 WAN streaming 으로 느려져 walltime 을 넘길 수 있다, 시험 열기가 로컬 실패 이유를 가린다, grid 에서 시험하지 않았다. 이번에는:
+overflow 에서는 재시도가 다시 파일 없는 사이트로 갈 수 있다(`ST_t_top` 16 개가 두 번 연속); 복사가 먼저라 WAN streaming 은 복사까지
+실패한 때뿐이다; 이유는 `FORGE|INPUT` 줄에 남는다; grid 의 첫 사용은 P7 이고 T1 과 아래 해결 기록으로 본다. 기본 on 은 사용자 결정이다
+(D-2026-09-30-p7).
+
+**남는 것.** 입력이 어디서도 안 열리면(복사도 직접 읽기도 실패) 여전히 NanoAODTools 예외 → FJR 없음 → 50115 이고 CRAB 이 재시도한다. 그때는
+위 진단 3 으로 replica 를 본다. 사이트의 사본이 열리기는 하는데 읽다가 깨지는 경우는 audit 의 C2e/C2 가 exit 85 로 잡고 CRAB 이 다른
+사이트에서 재시도한다. 사본은 job 디렉터리에 남고 job 이 끝나면 batch 가 지운다(2024 입력은 파일당 최대 2 GB). 이미 제출한 task 에는
+닿지 않는다(A15 Ops note: sandbox 는 제출 때 것).
+
+**해결 기록.** (결과가 나오면 여기에: `ST_t_top` whitelist resubmit 의 결과, P7 에서 fallback 으로 읽은 job 수와 그 job 들의 closure.)
+
+## A25 · 출력 전송이 사이트에서 거절됐다: 60322 "User is not authorized to write to destination site" (2026-09-29)
+
+**증상.** skim 파일럿 Data job 77(T2_US_Vanderbilt): payload 는 끝났고 audit 도 전부 PASS(`FORGE|JOB ... exit=0`, 240 s)였는데 job 이 60322 로
+실패. `crab getlog --short --jobids=77` 의 stageout 부분: `Stageout policy: local, remote`, `Stage out to : T2_US_Vanderbilt using: gfal2`,
+`Stage out requested with tokens, but environment variable is not defined. Forcing it to use X509 authentication method instead.`,
+`ERROR:root:Exception During Stage Out` / `StageOutError`.
+
+**원인.** 실행 사이트의 저장소가 X509 쓰기를 거절했다(토큰 인증 전환 중인 사이트로 보인다). 우리 코드와 무관. 같은 파일럿의 81 개는 다른
+사이트에서 정상.
+
+**대응.** 한 번은 plain resubmit(09-29 13:14 UTC, 들어감). 같은 사이트에서 되풀이되면 그 task 에 `crab resubmit -d <project dir>
+--siteblacklist=<사이트>`, 새 제출은 YAML `site_blacklist: [<사이트>]`(2026-09-30 부터 `submit_crab.py` 가 `config.Site.blacklist` 로 넘기고
+preflight 에 `site blacklist` 줄). 되풀이되지 않으면 blacklist 하지 않는다(그 사이트의 slot 을 잃는다).

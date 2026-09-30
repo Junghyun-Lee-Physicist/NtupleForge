@@ -45,10 +45,13 @@ Closure, printed as FORGE|CHECK lines (docs/12 section 5.2):
             a keep pattern of the branch list matches nothing in this file (e.g.
             LHE_* in a pythia-only sample). The output just lacks X; not a read
             error.
-  C2r WARN  MC, whole file read: Runs genEventCount != entries (FAIL after P5)
-  C3  WARN  MC, whole file read: sum genWeight vs Runs genEventSumw, relative
-            difference above C3_TOL (genWeight is Float_t; the limit comes from
-            P5)
+  C2r FAIL  MC, whole file read: Runs genEventCount != entries (audit v2,
+            2026-09-30, D-2026-09-30-p7: exact in all 265 files of the P6 pilot)
+  C3  FAIL  MC, whole file read: sum genWeight vs Runs genEventSumw, relative
+            difference above C3_FAIL (1e-5); WARN above C3_TOL (1e-6). genWeight
+            is Float_t: the P6 pilot gave 4.68e-8 in every TTbb file (powheg,
+            nearly constant |w|), the float rounding bound is 2^-24 x sum|w| /
+            |sum w|; a lost event is C2r's job
 
 Exit codes of run_postproc.py --audit, chosen for CRAB's retry policy
 (CRABServer TaskWorker/Actions/RetryJob.py EXIT_RETRY_POLICY: codes it does not
@@ -61,7 +64,8 @@ another site):
      (FileOpenError; CRAB retries at another site)
   85 read trouble: a ROOT error line (C2e), a short read (C2), an RDataFrame
      read exception (FileReadError; CRAB retries at another site)
-  5  a closure FAIL without read trouble (C1): not retried, a human looks
+  5  a closure FAIL without read trouble (C1, C2c, C2r, C3): not retried, a
+     human looks
   7  the audit itself failed otherwise (a bug): not retried
 CRAB copies the outputs of a failed job under .../failed/: file lists for the
 analysis must skip that directory (plan 12 P8).
@@ -83,11 +87,12 @@ from array import array
 
 import forge_skims
 
-AUDIT_VERSION = 1
+AUDIT_VERSION = 2            # 2 (2026-09-30): C2r and C3 can FAIL, TFile.Open raising -> 84; same trees
 N_EVT_LINES = 20
 NCODE = 101                  # 0: genTtbarId < 0; 1 + c: genTtbarId % 100 == c
 KEY_CODES = (53, 54, 55)
-C3_TOL = 1e-6
+C3_TOL = 1e-6                # C3 WARN above
+C3_FAIL = 1e-5               # C3 FAIL above (D-2026-09-30-p7)
 ROOT_ERROR_PREFIXES = ("Error in <", "SysError in <", "Fatal in <")
 # TTree::SetBranchStatus (ROOT 6.30 tree/tree/src/TTree.cxx): a keep pattern that matches no branch prints
 # "unknown branch -> X" for a plain name and "No branch name is matching wildcard -> X" for a wildcard
@@ -243,9 +248,17 @@ def to_pfn(fname):
     return fname
 
 
+INPUT_LFN = {}   # name the job opened -> the LFN it was given (run_postproc.py --input-fallback, args.input_lfn)
+
+
 def lfn_of(fname):
+    """The LFN recorded for an input: the one run_postproc.py was given when it
+    opened another name (a site PFN, a fallback copy or URL), else the part from
+    /store/ on without a ?query (as NanoAODTools' job report takes it)."""
+    if fname in INPUT_LFN:
+        return INPUT_LFN[fname]
     i = fname.find("/store/")
-    return fname[i:] if i >= 0 else fname
+    return fname[i:].split("?", 1)[0] if i >= 0 else fname
 
 
 def md5_of(path):
@@ -296,7 +309,10 @@ def audit_file(ROOT, fname, rvec, first_entry=0, max_entries=None):
     N_EVT_LINES events."""
     t0 = time.time()
     pfn = to_pfn(fname)
-    f = ROOT.TFile.Open(pfn)
+    try:
+        f = ROOT.TFile.Open(pfn)
+    except OSError as e:                 # ROOT >= 6.30 raises instead of returning a null pointer
+        raise AuditError("cannot open %s: %s" % (pfn, e), EXIT_OPEN)
     if not f or f.IsZombie():
         raise AuditError("cannot open %s" % pfn, EXIT_OPEN)
     KEEP.append(f)
@@ -415,15 +431,16 @@ def closure(rows, n_out, n_root_errors, first_root_error, skim, benign=()):
         if not whole:
             out.append(("C2r", "INFO", "%s: part of the file read, Runs sums not compared" % r["file"]))
             continue
-        out.append(("C2r", "PASS" if r["runs_count"] == r["n_in"] else "WARN",
+        out.append(("C2r", "PASS" if r["runs_count"] == r["n_in"] else "FAIL",
                     "%s: Runs genEventCount %d, entries %d" % (r["file"], r["runs_count"], r["n_in"])))
-        if r["n_in"] == 0 and r["runs_sumw"] == 0 and r["sumw"] == 0:
-            out.append(("C3", "PASS", "%s: empty file, both sums 0" % r["file"]))
+        if r["runs_sumw"] == 0 and r["sumw"] == 0:     # as forge_campaign_audit.py rel_diff: 0 vs 0 agrees
+            out.append(("C3", "PASS", "%s: %s, both sums 0" % (r["file"], "empty file" if r["n_in"] == 0
+                                                                else "%d entries" % r["n_in"])))
             continue
         d = abs(r["sumw"] - r["runs_sumw"]) / abs(r["runs_sumw"]) if r["runs_sumw"] else float("inf")
-        out.append(("C3", "PASS" if d <= C3_TOL else "WARN",
-                    "%s: sum genWeight %s, Runs genEventSumw %s, relative difference %.3g (limit %g)"
-                    % (r["file"], fmt(r["sumw"]), fmt(r["runs_sumw"]), d, C3_TOL)))
+        out.append(("C3", "PASS" if d <= C3_TOL else "WARN" if d <= C3_FAIL else "FAIL",
+                    "%s: sum genWeight %s, Runs genEventSumw %s, relative difference %.3g (WARN above %g, FAIL above %g)"
+                    % (r["file"], fmt(r["sumw"]), fmt(r["runs_sumw"]), d, C3_TOL, C3_FAIL)))
     return out
 
 
@@ -553,6 +570,8 @@ def run_job(ROOT, args, run_postprocessor, logger):
     Returns the exit code (see the module docstring)."""
     skim = args.skim if args.skim not in (None, "", forge_skims.NONE) else None
     formula, rvec = forge_skims.get(skim)
+    INPUT_LFN.clear()
+    INPUT_LFN.update(getattr(args, "input_lfn", None) or {})
     pin_error_level(ROOT, logger)
     declare(ROOT)
     rows, keys_list = [], []

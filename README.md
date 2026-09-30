@@ -100,6 +100,7 @@ python3 script/run_postproc.py <MC_nanoaod.root> \
 | `--skim NAME` | | **생산용 event 선택** (2026-09-28). `script/forge_skims.py` 의 이름(`none`, `6jcount`, `6j20`, `6j25`, `6j30`, `6j20ht400`); 그 TTreeFormula 가 `PostProcessor(cut=...)` 로 간다(모듈 없이 C++ 경로). `Runs`/`LuminosityBlocks` 는 그대로 전부. `--cut` 과 같이 쓰지 않는다. 2024 = `6j20` (`docs/03_DECISIONS.md` D-2026-09-28-volume). |
 | `--audit` | | `-o` 필요. 복사 뒤 입력 파일마다 RDataFrame 으로 다시 읽어 closure(C1 출력 event 수 = RVec 통과 수, C2 끝까지 읽음, C2e ROOT 오류 줄 0, C2r/C3 Runs 합)를 보고 `ForgeAudit`·`ForgeTTbbKeys`·`ForgeProvenance` 를 출력에 붙인다(`script/forge_audit.py`). exit: closure FAIL 5, 읽기 문제(C2, C2e) 85, 입력을 못 엶 84, audit 오류 7 (CRAB 재시도 규칙에 맞춘 값: 84·85 는 다른 사이트에서 재시도, 5·7 은 재시도 안 함). |
 | `--forge-git` | | `ForgeProvenance` 에 적을 git commit (`submit_crab.py` 가 넣는다). |
+| `--input-fallback URL` | | LFN(`/store/...`) 입력을 먼저 사이트의 PFN(`edmFileUtil`)으로 열어 보고, 안 열리면 `URL + LFN` 을 `xrdcp` 로 `./forge_aaa/store/...` 에 복사해 그 사본을 읽는다(복사도 실패하면 `URL + LFN` 을 직접 읽는다; 2026-09-30; 예: `root://cms-xrd-global.cern.ch/`). CRAB 이 입력이 없는 사이트로 보낸 job(overflow)이 50115 로 죽지 않게 한다(`docs/05_troubleshooting.md` A24). `FORGE|INPUT` 줄이 어느 쪽인지와 이유를 적고, audit 은 받은 LFN 을 기록한다. `submit_crab.py` 가 기본으로 넣는다. |
 | `--cut` | | **검증 전용** 사전 선택식(생산 config 에 쓰지 않는다). 생산 skim 은 `--skim`. |
 | `--ttcat-debug-csv`, `--ttcat-debug-csv-path`, `--ttcat-quiet` | | **DEPRECATED (dead flags)**. 환경변수로 `modules/ttbarCategorizer.py`에 옵션을 넘기던 것이나 그 모듈은 이 저장소에 없다(`modules/`에는 `noop`, `topCPVCategorizer`, `jetsMETcut`, `nanoaod_branch_access`만 있다). 파싱은 되지만 아무 효과가 없다. |
 
@@ -118,6 +119,9 @@ python3 script/run_postproc.py <MC_nanoaod.root> \
 `script/forge_skims.py`, `script/forge_audit.py` 가 sandbox 에 들어가고 `--forge-git` 에 제출한 checkout 의 commit 이 적힌다
 (`script/runlogs/` 밖의 tracked 파일이 수정돼 있으면 `+dirty`, job 이 받는 파일이 git 에 없으면 `+untracked`). preflight 는 branch 목록 점검 다음에
 `[PASS] recipe  slim (postproc; skim 6j20 = <식>; audit on)` 처럼 무엇을 할지를 찍는다.
+2026-09-30 부터: `aaa_fallback: true|false|"root://<host>[:<port>]/"`(기본 true = `--input-fallback root://cms-xrd-global.cern.ch/`, false 면 그 전과 같은 인자),
+`site_blacklist: [T2_XX_Yyy, ...]`(`config.Site.blacklist`; `T2_US_*` 같은 CRAB wildcard 도 된다), 그리고 원래 있던 `max_runtime`(분, FileBased 기본 600; 2024 두 config 는 1440)·`max_memory`(MB, 기본 2500).
+preflight 는 `input fallback`, `site blacklist`, `job resources` 줄을 찍는다.
 job 이 끝난 캠페인은 출력이 있는 곳(KNU)에서 `python3 script/forge_campaign_audit.py -c crabConfig/<config>.yaml --das script/drafts/review_das_<...>.tsv`
 로 dataset 마다 판정한다(2026-09-29; 출력 수와 job 번호, Σ`n_in` 또는 Σ`Events` == DAS nevents, `failed/` 사본, `--reference-config` 로 no-skim 캠페인과
 event 단위 비교, `--scan-logs` 로 log 의 ROOT 오류 줄과 job 시간; 읽는 법 `docs/05_troubleshooting.md` A23).

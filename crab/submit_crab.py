@@ -184,6 +184,46 @@ def forge_options(common):
     return recipe, skim, audit
 
 
+# --- input fallback / site blacklist (2026-09-30, D-2026-09-30-p7, docs/05 A24) ---
+# YAML `common` keys, both optional:
+#   aaa_fallback:   true (default) | false | "root://<redirector>/"
+#                   true adds --input-fallback root://cms-xrd-global.cern.ch/ to
+#                   crab_args.txt: a job CRAB ran at a site without its input
+#                   (overflow) copies it through AAA (xrdcp) and reads the copy
+#                   instead of dying with 50115 (run_postproc.py resolve_inputs).
+#                   false = the behaviour before 2026-09-30.
+#   site_blacklist: [T2_US_Xyz, ...] or "T2_US_Xyz,T2_..."  -> config.Site.blacklist
+#                   (CRAB site names, or a CRAB wildcard such as T2_US_*)
+AAA_REDIRECTOR = "root://cms-xrd-global.cern.ch/"
+REDIRECTOR_RE = re.compile(r"^root://[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?(:[0-9]+)?/?$")
+SITE_RE = re.compile(r"^T[1-3]_[A-Z]{2}(_[A-Za-z0-9]+)+$")     # the pattern CRAB checks a site name with
+SITE_GLOB_RE = re.compile(r"^T[1-3]_[A-Za-z0-9_]*\*$")         # a wildcard (CRAB expands it)
+
+
+def job_options(common):
+    """(input fallback URL or None, [blacklisted sites]) from the YAML common block; ValueError if invalid."""
+    fb = common.get("aaa_fallback", True)
+    if fb is True or fb is None:
+        url = AAA_REDIRECTOR
+    elif fb is False:
+        url = None
+    elif isinstance(fb, str) and REDIRECTOR_RE.match(fb.strip()):
+        url = fb.strip().rstrip("/") + "/"
+    else:
+        raise ValueError("aaa_fallback must be true, false or a redirector URL root://<host>[:<port>]/, got %r" % (fb,))
+    bl = common.get("site_blacklist")
+    if bl is None:
+        bl = []
+    elif isinstance(bl, str):
+        bl = [x.strip() for x in bl.split(",") if x.strip()]
+    if not isinstance(bl, list) or not all(isinstance(x, str) for x in bl):
+        raise ValueError("site_blacklist must be a list of site names, got %r" % (bl,))
+    bad = [x for x in bl if not (SITE_RE.match(x) or SITE_GLOB_RE.match(x))]
+    if bad:
+        raise ValueError("site_blacklist: not a CMS site name: %s" % ", ".join(bad))
+    return url, bl
+
+
 # Tracked paths whose modification does not change what a job runs: runlog.sh
 # appends a line to script/runlogs/LEDGER.tsv at every step, so without this a
 # checkout that has just run its local checks would always be '+dirty'.
@@ -505,6 +545,26 @@ def run_preflight(args):
                 pf.warn("audit closure C1", "assumes the module drops no event; %s is not modules/noop.py"
                         % module_cfg[0])
 
+    # ---- 4c. input fallback, site blacklist, job resources (2026-09-30) ------
+    try:
+        fb_url, blacklist = job_options(common)
+    except ValueError as e:
+        pf.fail("aaa_fallback / site_blacklist", str(e))
+        fb_url, blacklist = None, []
+    else:
+        if fb_url:
+            pf.ok("input fallback", "%s (an input the job's site cannot open is copied through AAA with xrdcp "
+                                    "and read from the copy; docs/05 A24)" % fb_url)
+        else:
+            pf.warn("input fallback", "off (aaa_fallback: false): a job CRAB runs at a site without its input "
+                                      "dies with 50115 (docs/05 A24)")
+        pf.ok("site blacklist", ", ".join(blacklist) if blacklist else "none")
+    split_mode = common.get("splitting", "Automatic")
+    pf.ok("job resources", "max_memory %s MB, %s" % (
+        common.get("max_memory", 2500),
+        "max_runtime %s min" % common.get("max_runtime", 600) if split_mode != "Automatic"
+        else "max_runtime CRAB default (Automatic splitting)"))
+
     # ---- 5. Rule 6: output filename hardcoded in two places ------------------
     here = os.path.dirname(os.path.abspath(__file__))
     pset = os.path.join(here, "PSet.py")
@@ -694,6 +754,7 @@ def main(args):
     datasets = cfg.get('datasets', {})
     try:
         forge_recipe, forge_skim, forge_audit_on = forge_options(common)
+        input_fallback, site_blacklist = job_options(common)
     except ValueError as e:
         logger.error(f"YAML Error: {e}")
         sys.exit(1)
@@ -842,6 +903,8 @@ def main(args):
         if common.get('max_events'): 
             f.write(f"-N\n{common.get('max_events')}\n")
 
+        if input_fallback:
+            f.write(f"--input-fallback\n{input_fallback}\n")
         if forge_skim:
             f.write(f"--skim\n{forge_skim}\n")
         if forge_audit_on:
@@ -935,6 +998,9 @@ def main(args):
          conf.Data.outLFNDirBase = f'/store/user/{username}/'
 
     conf.Site.storageSite = common.get('site', 'T3_KR_KNU')
+    if site_blacklist:
+        conf.Site.blacklist = list(site_blacklist)
+        logger.info(f"Site blacklist: {', '.join(site_blacklist)}")
 
     # Accumulators for --report (printed once, after the loop, so columns align)
     report_rows = []

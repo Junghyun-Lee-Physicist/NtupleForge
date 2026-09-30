@@ -869,3 +869,40 @@ lxplus9105, git `039f12b`(P4 커밋), 명령은 워크스페이스 RUNBOOK §13.
   여섯의 loop 는 AI 가 준 `grep -iE "success|fail|error|nothing"` 로 걸렀는데 CRAB 의 성공 줄에는 그 말이 없어 아무것도 찍히지 않았다; runlog 로
   확인했다: 아홉 개 모두 `Resubmit request sent` 한 줄(lxplus934, RUNBOOK §14 1). `crab status` 의 경고 "max jobs memory is less than 70 % of the task requested
   value (2500 MB)" 는 메모리를 넉넉히 잡았다는 뜻이라 두었다.
+
+## 26. 2026-09-29~30: skim 파일럿 KNU 집계(P6), 2018UL 두 번째 report 와 `ST_t_top` 의 원인(overflow), P7 결정
+
+- **KNU 집계** (`script/forge_campaign_audit.py`, `8d8b3ba`; KNU cms01, CMSSW_14_2_1, ROOT 6.30/09, numpy 1.23.3; 명령은 워크스페이스
+  RUNBOOK §14 3·4, 출력은 사용자가 AI 세션에 붙임). 도구 시험 19/19. 2018UL log tarball 하나(`TTbb_DiLep` job 1)에 `cmsRun-stdout-1.log`,
+  `FrameworkJobReport-1.xml` 이 있고 `Total time` 줄이 1 개: L1 의 전제(tarball 이 job 출력을 담는다)가 맞다.
+
+  | dataset | 출력 | Σ`n_in` (= DAS) | 통과 | 크기 | kB/event | 판정 |
+  |---|---|---:|---:|---:|---:|---|
+  | `ZZ` | 76/76 | 4,800,000 | 122,447 (2.55 %) | 319.1 MB | 2.606 | D1~D6, K, X7, L1 PASS. X7: 09-24 no-skim 파일럿(76 파일, 4,800,000 event)에 RVec 식을 적용한 집합과 event 단위로 같다(20 s). K: key 579,624 = ForgeAudit 코드 53~55 수 = 기준의 코드 53~55 event, pass=1 29,334 = 출력의 코드 53~55 event |
+  | `TTbb_Hadronic` | 189/189 | 14,990,580 | 9,748,019 (65.03 %) | 14,830.9 MB | 1.521 | D1~D6, K, L1 PASS, X7 은 기준 없음(INFO). D6: `genEventCount` 189 파일 모두 정확, 가중치 합 상대차 4.68e-8(파일마다 같은 값: powheg 의 거의 일정한 \|w\| 를 Float_t 로 반올림한 값). K: key 1,734,040, pass=1 1,525,597 |
+  | `JetMET0_Run2024H` | 81/82 | 55,745,692 / 55,794,457 | 6,144,712 (11.02 %) | 4,887.8 MB | 0.795 | **FAIL, job 82 가 아직 안 끝나서**: D1·D3·D4 가 한 파일분(입력 48,765 event), X7 은 `only in the reference 5338, only in the outputs 0`; D2, D5, L1 PASS. job 77(A25)은 resubmit 뒤 들어왔다. 82 가 끝나면 Data 줄을 한 번 더 |
+
+  job 시간(T1, payload 만: NanoAODTools 와 audit, CRAB wrapper 와 전송은 빠짐): `ZZ` 중앙값 234 s / 최대 3,989 s, `TTbb_Hadronic` 821 s / 7,042 s
+  (job 93), `JetMET0` 845 s / 3,400 s.
+- **용량, 09-28 예측([7c] v2, slimB + `6j20`)과 비교.** `ZZ` 예측 207 MB → 319 MB(+54 %): 파일마다 약 1.5 MB 의 `Events` 밖 tree(Runs,
+  LuminosityBlocks, 그리고 `run_postproc.py` 의 `provenance=True` 로 NanoAODTools 가 옮기는 MetaData, ParameterSets). skim 뒤 파일당 event 가
+  1,600 개라 커 보인다. 09-24 no-skim 파일럿의 calibration 비 1.023(115 MB)과 같은 양이다. `TTbb_Hadronic` 예측 11.27 GB → 14.83 GB(+32 %):
+  예측이 TTto4Q 의 `6j20` 통과율 52 % 를 썼는데 TTbb 는 65 % 가 통과한다. 통과 event 당 크기는 3 % 안이다. `JetMET0` 2024H(81 파일분) 예측
+  5.40 GB → 4.89 GB(−9.5 %). 2024 전체로는 파일 26,947 개 × 약 1.5 MB = 약 40 GB 와 TTbb 세 샘플의 통과율 차이 약 10 GB 가 더해지고 Data 는
+  조금 줄어 2.11 TB → 약 2.1~2.2 TB, 네 config 합계 5.2 TB 안팎(한도 10 TB).
+- **2018UL 두 번째 `--report`** (09-29 14:33 CEST, lxplus934): MC 2,242 done / 9 run / 10 transferring / 16 fail, Data 1,447 / 8 / 11 / 0.
+  첫 resubmit 의 여덟 task 는 풀렸고 실패 16 개는 모두 `ST_t_top`(50115). 다시 plain resubmit(runlog `Resubmit request sent` 1 개).
+  원인 조사(`crab status --long`, `crab getlog --short`, `dasgoclient site file=`): 16 개 모두 T2_US_Vanderbilt(11)·T2_US_UCSD(5)에서 2 분 남짓 돌고
+  죽었는데 그 16 파일의 replica 는 두 사이트에 없다(DESY, GRIF, IPHC, Lisbon, JINR, Florida, Nebraska, Purdue, JINR tape). job 31 의 stdout:
+  09-28 은 `[3011] Too many DFS read attempts`, 09-29 는 `file /cms/store/mc/... does not exist`. overflow 로 간 job 이 NanoAODTools 의 로컬 PFN
+  열기에서 죽은 것이다(docs/05 A24). 그 뒤 status: finished 154 / running 10 / transferring 5, 실패 0.
+- **whitelist resubmit 시도** (09-30 07:06 UTC, lxplus973): 새 셸이라 전날의 `$D` 가 비어 `crab resubmit -d --sitewhitelist=...` 가 되었고, CRAB 이
+  `is not a valid CRAB project directory`(EXIT 192)로 거절해 아무것도 바뀌지 않았다. 경로를 직접 쓴 명령은 RUNBOOK §15 1.
+- **결정** (사용자, 09-30, D-2026-09-30-p7): C2r 은 정확히 같지 않으면 FAIL, C3 은 1e-5 초과 FAIL; 2024 `max_runtime: 1440`; AAA fallback,
+  그리고 이 CRAB 문제와 해결 방식을 기록(docs/05 A24). 코드와 시험은 같은 날(02_CHANGELOG 2026-09-30, 원장 V54), 명령은 RUNBOOK §15.
+- **배포 전 독립 리뷰** (09-30, 네 시험 재현): lxplus 에서 cmsenv 뒤에는 진짜 `edmFileUtil` 이 PATH 에 있어 mock 의 "edmFileUtil 없음" check 가
+  FAIL 할 것(고침), 사이트 PFN 에 `?query` 가 있으면 ForgeAudit 의 file 에 붙음(받은 LFN 을 기록하게 고침), C3 가 0 대 0 을 FAIL(고침), 오류
+  수준 복원을 보는 check 없음(더함), 검증이 `"root://"` 만 있는 값을 받고 CRAB wildcard 를 거절(고침), RUNBOOK §15 1 의 `cd` 와 3 의 md5.
+  리뷰가 짚은 시간 위험: P5 의 AAA 직독 9.2 Hz 면 2024 의 가장 큰 입력(611k event)을 복사 단계만 18 시간 넘게 읽는다. 그래서 fallback 은
+  `xrdcp` 로 job 디렉터리에 복사한 뒤 읽는다(P5 의 xrdcp 269 MB 15 s; 2 GB 면 수 분). 복사가 실패할 때만 직접 읽는다. 2026-07-27 에 되돌린
+  fallback(A15)의 이유를 어떻게 다뤘는지는 docs/05 A24 "A15 와의 관계".
