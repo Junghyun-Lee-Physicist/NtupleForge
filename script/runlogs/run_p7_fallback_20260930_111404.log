@@ -1,0 +1,79 @@
+=== RUNLOG ================================================================
+step        : p7_fallback
+start_utc   : 2026-09-30T11:14:06Z
+host        : lxplus9109   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : d626a55   modified_tracked_files: 1
+cmd         : /bin/bash -c cd\ /tmp/junghyun/p7\ \&\&\ python3\ /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/run_postproc.py\ /store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root\ -I\ modules.noop:MODULES\ -b\ /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/branches/branch_hadronic_2018_v15_MC.txt\ --audit\ --input-fallback\ root://cms-xrd-global.cern.ch/\ -N\ 2000\ -o\ out_p7_fallback.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-30 13:14:06.47317596 +0200 CEST m=+0.003696840
+proxy_left_s: 690530
+===========================================================================
+[run_postproc] : ============================================================
+[run_postproc] : Execution Started at: 2026-09-30 13:14:20
+[run_postproc] : ============================================================
+[run_postproc] : Branch Selection File loaded: /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/branches/branch_hadronic_2018_v15_MC.txt
+[run_postproc] :   -> Applied to: OUTPUT tree only (input is read in full)
+[run_postproc] :   -> Preview: ['# =============================================================================', '#  branch_hadronic_2018_v15_MC.txt', '#  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection'] ...
+[run_postproc] : Module Loaded: modules.noop (List Variable: 'MODULES')
+[run_postproc] : Input Files Detected: 1
+[run_postproc] :   -> First file: /store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root
+[run_postproc] : Input /store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root: not readable at the site (OSError: Failed to open file root://eoscms.cern.ch//eos/cms/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root); copying root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root
+[run_postproc] : Input /store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root: the job reads the copy (2600 MB in 149 s) /tmp/junghyun/p7/forge_aaa/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root
+FORGE|INPUT|/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root|fallback|root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root|OSError: Failed to open file root://eoscms.cern.ch//eos/cms/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realist|copy (2600 MB in 149 s) /tmp/junghyun/p7/forge_aaa/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root
+[run_postproc] : Output Strategy: MERGE (Hadd enabled)
+[run_postproc] :   -> Final Target: out_p7_fallback.root
+[run_postproc] : ------------------------------------------------------------
+[run_postproc] : Initializing PostProcessor engine...
+[run_postproc] : Running Event Loop, then the forge audit...
+Will write selected trees to .
+30-Sep-2026 13:16:50 CEST  Initiating request to open file /tmp/junghyun/p7/forge_aaa/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root
+Adding file ./2a7bb4f0-3650-4fb3-b48d-05d493ebde55_Skim.root
+Merging Events
+Merging LuminosityBlocks
+Merging Runs
+Merging MetaData
+Merging ParameterSets
+Merging tag
+Pre-select 2000 entries out of 2000 (100.00%)
+Selected 2000 / 2000 entries from /tmp/junghyun/p7/forge_aaa/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root (100.00%)
+Done ./2a7bb4f0-3650-4fb3-b48d-05d493ebde55_Skim.root
+Total time 5.4 sec. to process 2000 events. Rate = 368.7 Hz.
+FORGE|EVT|1:190084:190083005|nj20=3|ht20=231.95|pass=1|gtid=10151
+FORGE|EVT|1:190084:190083006|nj20=4|ht20=160.00|pass=1|gtid=10100
+FORGE|EVT|1:190084:190083007|nj20=4|ht20=159.77|pass=1|gtid=100
+FORGE|EVT|1:190084:190083004|nj20=1|ht20=61.78|pass=1|gtid=100
+FORGE|EVT|1:190084:190083002|nj20=3|ht20=177.73|pass=1|gtid=100
+FORGE|EVT|1:190084:190083010|nj20=2|ht20=71.75|pass=1|gtid=100
+FORGE|EVT|1:190084:190083008|nj20=5|ht20=284.61|pass=1|gtid=151
+FORGE|EVT|1:190084:190083003|nj20=4|ht20=278.88|pass=1|gtid=10151
+FORGE|EVT|1:190084:190083013|nj20=2|ht20=55.62|pass=1|gtid=100
+FORGE|EVT|1:190084:190083016|nj20=2|ht20=104.25|pass=1|gtid=100
+FORGE|EVT|1:190084:190083014|nj20=3|ht20=192.53|pass=1|gtid=100
+FORGE|EVT|1:190084:190083020|nj20=3|ht20=121.47|pass=1|gtid=0
+FORGE|EVT|1:190084:190083009|nj20=6|ht20=709.22|pass=1|gtid=10100
+FORGE|EVT|1:190084:190083012|nj20=5|ht20=391.38|pass=1|gtid=10100
+FORGE|EVT|1:190084:190083023|nj20=1|ht20=90.31|pass=1|gtid=51
+FORGE|EVT|1:190084:190083018|nj20=3|ht20=154.02|pass=1|gtid=151
+FORGE|EVT|1:190084:190083001|nj20=5|ht20=420.72|pass=1|gtid=10151
+FORGE|EVT|1:190084:190083017|nj20=2|ht20=149.28|pass=1|gtid=100
+FORGE|EVT|1:190084:190083015|nj20=2|ht20=79.78|pass=1|gtid=10000
+FORGE|EVT|1:190084:190083021|nj20=2|ht20=121.56|pass=1|gtid=100
+FORGE|FILE|/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root|n_in=2000|n_pass=2000|sumw=211892.841|runs_sumw=120395064|runs_count=1133000|t_s=11.0
+FORGE|CHECK|C1|PASS|output Events 2000, entries read 2000
+FORGE|CHECK|C2|PASS|every file read to the end of its range (1 files)
+FORGE|CHECK|C2e|PASS|0 ROOT error line(s)
+FORGE|CHECK|C2r|INFO|/store/mc/RunIISummer20UL18NanoAODv15/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/2560000/2a7bb4f0-3650-4fb3-b48d-05d493ebde55.root: part of the file read, Runs sums not compared
+FORGE|CHECK|write|PASS|ForgeAudit 1 row(s), ForgeTTbbKeys 6 row(s), ForgeProvenance, in out_p7_fallback.root
+FORGE|JOB|files=1|n_in=2000|n_pass=2000|n_out=2000|t_s=21.6|exit=0
+[run_postproc] : Job Finished Successfully at 2026-09-30 13:17:12 (exit 0)
+[run_postproc] :    Total Runtime: 0:02:51.462232
+===========================================================================
+end_utc     : 2026-09-30T11:17:12Z
+wall_s      : 186
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p7_fallback_20260930_111404.log
+=== END ===================================================================

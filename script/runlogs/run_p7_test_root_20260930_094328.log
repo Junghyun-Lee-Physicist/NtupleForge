@@ -1,0 +1,41 @@
+=== RUNLOG ================================================================
+step        : p7_test_root
+start_utc   : 2026-09-30T09:43:34Z
+host        : lxplus973   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : d626a55   modified_tracked_files: 1
+cmd         : python3 script/test_forge_audit_root.py 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-09-30 11:43:34.559099696 +0200 CEST m=+0.001179658
+proxy_left_s: 690806
+===========================================================================
+PASS  MC 6j20: exit 0, C1 C2 C2e write PASS, C2r C3 PASS
+PASS  MC 6j20: the wildcard keep LHE_* that matches nothing is C2w WARN, not a C2e error
+PASS  MC 6j20 read-back: X7 event by event, A, K
+PASS  MC 6j20ht400 (NaN / inf edge events): exit 0 and read-back PASS
+PASS  MC 6jcount: exit 0 and read-back PASS
+PASS  MC 6j25: exit 0 and read-back PASS
+PASS  MC 6j30: exit 0 and read-back PASS
+PASS  Data 6j20: exit 0, no Runs checks, read-back PASS
+PASS  Data with the MC list: exit 0, C2w WARN (genWeight, genTtbarId, LHE_*), C2e PASS
+PASS  nothing passes: exit 0, C1 PASS with 0 events, read-back PASS
+PASS  empty input: exit 0
+PASS  -N 100 --first-entry 7: exit 0, C2r INFO, read-back of the same range PASS
+PASS  two inputs: exit 0, one ForgeAudit row each
+PASS  two inputs: ForgeAudit 2 rows
+PASS  haddnano.py merge: ForgeAudit 2, ForgeProvenance 2, keys and Events summed
+PASS  merged ForgeProvenance row 0 is json with the skim
+PASS  fallback: no replica at the site -> xrdcp copy into ./forge_aaa<lfn>, NanoAODTools reads the copy, exit 0, C1 C2 C2e write PASS, no ROOT error line from the probe, ForgeAudit file = the LFN, read-back PASS
+PASS  fallback: xrdcp fails -> ROOT reads fallback + LFN directly (FORGE|INPUT ... stream), exit 0, C1 C2 C2e write PASS, ForgeAudit file = the LFN
+PASS  fallback: a replica at the site is opened there (FORGE|INPUT local), exit 0, ForgeAudit file = the LFN
+PASS  no --skim / --audit: exit 0, all events, no ForgeAudit, no FORGE lines
+RESULT: ALL PASS (20 checks)
+===========================================================================
+end_utc     : 2026-09-30T09:59:26Z
+wall_s      : 951
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p7_test_root_20260930_094328.log
+=== END ===================================================================

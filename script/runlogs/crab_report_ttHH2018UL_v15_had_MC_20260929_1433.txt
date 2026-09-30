@@ -1,0 +1,53 @@
+CRAB job report (per sample)  [done=finished, transf=transferring]
+============================================================================
+sample                  done     run    idle  transf    fail   other   total
+----------------------------------------------------------------------------
+TTbar_SemiLep            587       2       0       0       0       0     589
+TTbar_Hadronic           396       3       0       8       0       0     407
+TTbar_DiLep              169       0       0       0       0       0     169
+TTbb_SemiLep              15       0       0       0       0       0      15
+TTbb_Hadronic             14       0       0       0       0       0      14
+TTbb_DiLep                 8       0       0       0       0       0       8
+QCD_HT200to300            64       0       0       0       0       0      64
+QCD_HT300to500            65       0       0       0       0       0      65
+QCD_HT500to700            79       0       0       0       0       0      79
+QCD_HT700to1000           77       0       0       0       0       0      77
+QCD_HT1000to1500          24       0       0       0       0       0      24
+QCD_HT1500to2000          22       0       0       0       0       0      22
+QCD_HT2000toInf           13       0       0       0       0       0      13
+ttHTobb                   18       0       0       0       0       0      18
+ttHToNonbb                17       0       0       0       0       0      17
+tHq                       41       0       0       0       0       0      41
+TTZToQQ                   34       0       0       0       0       0      34
+TTWJetsToQQ                3       0       0       0       0       0       3
+TTWJetsToLNu              21       0       0       0       0       0      21
+TTZToLLNuNu               29       0       0       0       0       0      29
+TTWW                       3       0       0       0       0       0       3
+TTWW_ext1                 27       0       0       0       0       0      27
+TTWH                       2       0       0       0       0       0       2
+TTWZ                       2       0       0       0       0       0       2
+TTTWminus                  9       0       0       0       0       0       9
+TTTWplus                   7       0       0       0       0       0       7
+TTTT                      31       0       0       0       0       0      31
+ST_t_top                 152       1       0       0      16       0     169
+ST_t_antitop              96       3       0       2       0       0     101
+ST_tW_top                 15       0       0       0       0       0      15
+ST_tW_antitop             12       0       0       0       0       0      12
+ST_s_lep                  21       0       0       0       0       0      21
+ST_s_had                  19       0       0       0       0       0      19
+WW                        14       0       0       0       0       0      14
+WZ                        11       0       0       0       0       0      11
+ZZ                         5       0       0       0       0       0       5
+WJetsToQQ_HT400to600      15       0       0       0       0       0      15
+WJetsToQQ_HT600to800      21       0       0       0       0       0      21
+WJetsToQQ_HT800toInf      23       0       0       0       0       0      23
+ZJetsToQQ_HT400to600      26       0       0       0       0       0      26
+ZJetsToQQ_HT600to800      18       0       0       0       0       0      18
+ZJetsToQQ_HT800toInf      17       0       0       0       0       0      17
+----------------------------------------------------------------------------
+TOTAL                   2242       9       0      10      16       0    2277
+============================================================================
+==============================================================================
+SUMMARY (report): 42 dataset(s): 42 OK, 0 WARN, 0 FAILED, 0 SKIPPED
+RESULT: OK
+==============================================================================

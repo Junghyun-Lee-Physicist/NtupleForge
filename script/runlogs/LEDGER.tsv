@@ -68,3 +68,6 @@ utc_start	step	exit	wall_s	host	git_head	log	outputs
 2026-09-29T09:00:50Z	p5_2024_ZZ_6j20_full	0	103	lxplus9105	039f12b	script/runlogs/run_p5_2024_ZZ_6j20_full_20260929_090047.log	none
 2026-09-29T09:02:41Z	p5_2024_ZZ_6j20_full_check	0	32	lxplus9105	039f12b	script/runlogs/run_p5_2024_ZZ_6j20_full_check_20260929_090234.log	none
 2026-09-29T09:03:18Z	p5_summary	0	11	lxplus9105	039f12b	script/runlogs/run_p5_summary_20260929_090313.log	none
+2026-09-30T09:39:03Z	p7_test_mock	0	155	lxplus973	d626a55	script/runlogs/run_p7_test_mock_20260930_093855.log	none
+2026-09-30T09:43:34Z	p7_test_root	0	951	lxplus973	d626a55	script/runlogs/run_p7_test_root_20260930_094328.log	none
+2026-09-30T11:14:06Z	p7_fallback	0	186	lxplus9109	d626a55	script/runlogs/run_p7_fallback_20260930_111404.log	none
