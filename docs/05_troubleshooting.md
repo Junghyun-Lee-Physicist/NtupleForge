@@ -1062,6 +1062,8 @@ FJR 은 PostProcessor 가 끝에서 쓰므로 CRAB 은 FJR 없음 = 50115 로 �
 **진단 순서** (lxplus 컨테이너, crab-setup 뒤; 셸 변수에 기대지 말고 경로를 직접 쓴다. 2026-09-30 에 전날 셸의 `$D` 가 비어 `-d` 뒤에 옵션이
 들어가 CRAB 이 `is not a valid CRAB project directory`, EXIT 192 로 거절했다):
 1. 실패 job 번호·사이트: `crab status -d <project dir> --long > <file> 2>&1` 한 줄, 그다음 `grep -E "Most Recent Site|50115" <file>`.
+   `<project dir>` 는 `<jobID>/crab_<key>` 이고 key 의 `-` 는 `_` 로 바뀐다(`submit_crab.py`: `req_name = key.replace("-", "_")`; 09-30 에
+   `-` 그대로 쓴 경로는 CRAB 오류 줄만 내고 grep 에 걸러져 빈 출력이었다).
 2. 그 job 의 stdout: `crab getlog -d <project dir> --short --jobids=<N,...>`(job 번호. exit code 가 아니다), 그다음
    `grep -h -i -m8 -E "segmentation|traceback|exception|error in <|fatal|total time" <project dir>/results/job_out.<N>.*.txt`.
 3. 입력 LFN 과 replica: `grep -h -o '/store/mc/[^ "]*\.root' <project dir>/results/job_out.<N>.*.txt | sort -u`, 그다음
@@ -1095,7 +1097,12 @@ overflow 에서는 재시도가 다시 파일 없는 사이트로 갈 수 있다
 사이트에서 재시도한다. 사본은 job 디렉터리에 남고 job 이 끝나면 batch 가 지운다(2024 입력은 파일당 최대 2 GB). 이미 제출한 task 에는
 닿지 않는다(A15 Ops note: sandbox 는 제출 때 것).
 
-**해결 기록.** (결과가 나오면 여기에: `ST_t_top` whitelist resubmit 의 결과, P7 에서 fallback 으로 읽은 job 수와 그 job 들의 closure.)
+**해결 기록.**
+- `ST_t_top` (2018UL, 대응 1): 09-30 lxplus 확인 `finished 100.0% (169/169)`. 09-29 의 두 번째 plain resubmit 으로 남은 16 개가 모두 끝났다
+  (파일을 열 수 있는 사이트로 갔다는 뜻이다; 어느 사이트였는지는 보지 않았다). whitelist resubmit 은 필요 없었다(09-30 07:06 의 시도는 빈 `$D` 로
+  들어가지 않았다). 이미 제출한 task 에서는 이 절의 증상이 보이면 plain resubmit 을 한두 번 하고, 같은 job 이 또 파일 없는 사이트에서 죽을 때만
+  whitelist 로 보낸다.
+- P7 (대응 2): (결과가 나오면 여기에: lxplus 의 실제 LFN 시험, P7 에서 fallback 으로 읽은 job 수, xrdcp 시간, 그 job 들의 closure.)
 
 ## A25 · 출력 전송이 사이트에서 거절됐다: 60322 "User is not authorized to write to destination site" (2026-09-29)
 
