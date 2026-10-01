@@ -71,6 +71,32 @@ directly. A FORGE|INPUT line says which (resolve_inputs); ForgeAudit and
 ForgeProvenance record the LFN. submit_crab.py adds the flag unless YAML
 `aaa_fallback: false`.
 
+[Input copy (2026-10-01, P7.1, docs/05_troubleshooting.md A27)]
+--input-copy: an LFN whose site PFN is remote (root://, roots://, xroot://)
+is first copied from the site with xrdcp into ./forge_in/store/... and
+NanoAODTools and the audit read that copy, so the job touches the remote file
+once. In the 2024 production, jobs at T1_US_FNAL opened the PFN (the probe
+of --input-fallback) and then failed to open it again in NanoAODTools ([3011]
+No servers are available to read the file), and Brunel's gateway broke reads
+in the middle ([3005] I/O limit exceeded). If the copy fails: the AAA copy of
+--input-fallback, then the PFN opened at the site, then AAA directly (see
+resolve_inputs). A local PFN (/path or file:) is not copied.
+FORGE|INPUT|<lfn>|copy|<pfn>|copy (<MB> MB in <s> s) <path>.
+submit_crab.py adds the flag unless YAML `input_copy: false`.
+
+[Exit codes and CRAB (2026-10-01, P7.1, docs/05_troubleshooting.md A28)]
+CRAB's job wrapper (CRABServer CMSRunAnalysis.py) takes the exit code from
+the first FrameworkError in FrameworkJobReport.xml; only when the report has
+none does it use the scriptExe's exit code, and in 2024 that arrived as 5
+for this script's 85 (so: not retried); without a report it records 50115.
+So when --audit gives a non-zero code and NanoAODTools has written the report,
+fjr_mark_error() puts <FrameworkError ExitStatus=N Type=Forge...> first in it
+(CRAB_ERROR: 85 -> 8021 and 84 -> 8020, retried at another site; 1 after the
+copy -> 1, retried; 5 -> 80005 and 7 -> 80007, not retried). The exit code of
+this script and of crab_script.py is unchanged (non-zero), so a job whose
+report CRAB could not read still fails. Without a report (NanoAODTools
+raised) nothing is written: CRAB records 50115 and retries, as before.
+
 [Branch Selection Policy — INPUT vs OUTPUT]
 The keep/drop file passed via -b is applied ONLY to the OUTPUT tree
 (`outputbranchsel`). The INPUT tree is NOT filtered (`branchsel=None`),
@@ -119,12 +145,47 @@ logger = logging.getLogger("NtupleForge")
 
 
 FALLBACK_DIR = "forge_aaa"      # ./forge_aaa/store/...: the copy keeps the LFN in its path (FJR, lfn_of)
+SITE_COPY_DIR = "forge_in"      # ./forge_in/store/...: --input-copy, the copy from the site
 FALLBACK_COPY_TIMEOUT_S = 3600
+REMOTE_PREFIXES = ("root://", "roots://", "xroot://")
+FJR = "FrameworkJobReport.xml"  # NanoAODTools PostProcessor(fwkJobReport=True) writes it last, in the cwd
+# --audit exit code -> (ExitStatus, Type) of the FrameworkError CRAB fails the job with (docs/05 A28).
+# CRABServer RetryJob.py EXIT_RETRY_POLICY: 8020 FileOpenError and 8021 FileReadError are retried at
+# another site (change_site); 1 is retried ("likely a worker node issue": here the output could not be
+# written or read back); 80005 and 80007 are ours, unknown to CRAB, so not retried (a human looks, A23).
+CRAB_ERROR = {85: (8021, "ForgeReadError"), 84: (8020, "ForgeOpenError"), 5: (80005, "ForgeClosureFail"),
+              7: (80007, "ForgeAuditError"), 1: (1, "ForgeOutputError")}
 
 
 def one_line(s, n=200):
     """A reason for a FORGE|INPUT field: one line, no '|', at most n characters."""
     return " ".join(str(s).replace("|", "/").split())[:n]
+
+
+def fjr_mark_error(code, why, path=FJR):
+    """Put <FrameworkError ExitStatus=N Type=T>why</FrameworkError> first in the
+    report NanoAODTools wrote, N and T from CRAB_ERROR[code] (80000 + code for
+    another code), so that CRAB fails the job with N (it reads the first
+    FrameworkError and does not see the exit code of a scriptExe; docs/05
+    A28). Nothing when there is no report (NanoAODTools raised: CRAB records
+    50115 and retries). Returns N, or None if nothing was written."""
+    if not os.path.exists(path):
+        return None
+    import xml.etree.ElementTree as ET
+    status, kind = CRAB_ERROR.get(code, (80000 + code, "ForgeExit%d" % code))
+    try:
+        tree = ET.parse(path)
+        root = tree.getroot()
+        if root.tag != "FrameworkJobReport":
+            raise ValueError("the root element is <%s>" % root.tag)
+        err = ET.Element("FrameworkError", {"ExitStatus": str(status), "Type": kind})
+        err.text = "".join(c if " " <= c <= "~" else "?" for c in one_line(why, 1000))   # printable ASCII only
+        root.insert(0, err)
+        tree.write(path, encoding="UTF-8", xml_declaration=True)
+    except Exception as e:              # a report CRAB could not parse either: it then records 50115 (retried)
+        logger.error("cannot add the FrameworkError to %s: %s: %s", path, type(e).__name__, e)
+        return None
+    return status
 
 
 def probe_open(ROOT, pfn):
@@ -153,12 +214,12 @@ def probe_open(ROOT, pfn):
         ROOT.gErrorIgnoreLevel = level
 
 
-def copy_input(url, lfn, timeout=FALLBACK_COPY_TIMEOUT_S):
-    """xrdcp url to ./forge_aaa<lfn>: (local path, how) or (None, why). The job
+def copy_input(url, lfn, timeout=FALLBACK_COPY_TIMEOUT_S, dirname=FALLBACK_DIR):
+    """xrdcp url to ./<dirname><lfn>: (local path, how) or (None, why). The job
     then reads a local file; reading through AAA event by event ran at 9 and 59
     events/s in P5 (docs/09 25), hours to a day for a 600k-event file, while
     xrdcp moved 269 MB in 15 s."""
-    dest = os.path.join(os.getcwd(), FALLBACK_DIR + lfn)
+    dest = os.path.join(os.getcwd(), dirname + lfn)
     t0 = time.time()
     try:
         os.makedirs(os.path.dirname(dest), exist_ok=True)
@@ -181,16 +242,24 @@ def copy_input(url, lfn, timeout=FALLBACK_COPY_TIMEOUT_S):
     return None, why
 
 
-def resolve_inputs(files, fallback, log):
-    """--input-fallback: every LFN is opened at the site first, as NanoAODTools
-    PostProcessor.run() would open it (edmFileUtil -d gives the site's PFN). If
-    that fails, fallback + LFN (AAA) is copied into the job directory with xrdcp
-    and the job reads the copy; if the copy fails too, the job reads fallback +
-    LFN directly (slow, see copy_input). Other names are kept. One FORGE|INPUT
-    line per LFN:
-      FORGE|INPUT|<lfn>|local|<pfn>
+def resolve_inputs(files, fallback, log, copy=False):
+    """--input-copy / --input-fallback, for every LFN (other names are kept):
+    edmFileUtil -d gives the site's PFN, as in NanoAODTools PostProcessor.run().
+    With copy (--input-copy) and a remote PFN the order is: (1) xrdcp the PFN
+    into ./forge_in<lfn> and read the copy, so the remote file is opened once
+    (docs/05 A27); (2) if that fails and fallback (--input-fallback) is set,
+    xrdcp fallback + LFN (AAA) into ./forge_aaa<lfn> and read that copy; (3)
+    open the PFN at the site and read it there (a disk too small for a copy);
+    (4) read fallback + LFN directly (slow, see copy_input). Without copy, or
+    with a local PFN (a path), the order is as before: open at the site, then
+    the AAA copy, then AAA directly. Without fallback the LFN is kept when the
+    site fails (NanoAODTools fails on it as before). One FORGE|INPUT line per
+    LFN:
+      FORGE|INPUT|<lfn>|copy|<pfn>|copy (<MB> MB in <s> s) <path>
+      FORGE|INPUT|<lfn>|local|<pfn>[|stream (<why the copies failed>)]
       FORGE|INPUT|<lfn>|fallback|<url>|<why the site failed>|copy (<MB> MB in <s> s) <path>
       FORGE|INPUT|<lfn>|fallback|<url>|<why the site failed>|stream (<why the copy failed>)
+      FORGE|INPUT|<lfn>|none|<why the site failed>          (no fallback)
     Returns (names the job opens, {name opened: LFN given}); forge_audit.py
     records the LFN, not the name opened."""
     import ROOT
@@ -200,32 +269,71 @@ def resolve_inputs(files, fallback, log):
         if not name.startswith("/store/"):
             out.append(name)
             continue
-        why, pfn = "", ""
+        why, pfn, site_copy_why, aaa_copy_why = "", "", "", ""
+        url = fallback.rstrip("/") + "/" + name if fallback else ""
         try:     # the call NanoAODTools makes (postprocessor.py), stdout only
             pfn = subprocess.check_output(["edmFileUtil", "-d", "-f " + name]).decode("utf-8", "replace").strip()
             if not pfn:
                 why = "edmFileUtil gave no PFN"
         except Exception as e:
             why = "edmFileUtil: %s: %s" % (type(e).__name__, e)
+        if pfn and copy and pfn.startswith(REMOTE_PREFIXES):
+            opened, how = copy_input(pfn, name, dirname=SITE_COPY_DIR)
+            if opened:
+                log.info("Input %s: the job reads the %s (from the site)", name, how)
+                print("FORGE|INPUT|%s|copy|%s|%s" % (name, pfn, one_line(how, 500)))
+                sys.stdout.flush()
+                out.append(opened)
+                lfns[opened] = name
+                continue
+            site_copy_why = "copy: %s" % one_line(how, 150)
+            if url:
+                log.warning("Input %s: the copy from the site failed (%s); copying %s", name, one_line(how, 300), url)
+                sys.stderr.flush()
+                opened, how2 = copy_input(url, name)
+                if opened:
+                    log.info("Input %s: the job reads the %s", name, how2)
+                    print("FORGE|INPUT|%s|fallback|%s|%s|%s" % (name, url, one_line(site_copy_why, 500),
+                                                              one_line(how2, 500)))
+                    sys.stdout.flush()
+                    out.append(opened)
+                    lfns[opened] = name
+                    continue
+                aaa_copy_why = how2
+                site_copy_why += "; AAA copy: %s" % one_line(how2, 150)
+            log.warning("Input %s: no copy (%s); opening %s", name, one_line(site_copy_why, 300), pfn)
+            sys.stderr.flush()
         if pfn:
             ok, why = probe_open(ROOT, pfn)
             if ok:
                 log.info("Input %s: opened at the site as %s", name, pfn)
-                print("FORGE|INPUT|%s|local|%s" % (name, pfn))
+                print("FORGE|INPUT|%s|local|%s%s" % (name, pfn, "|stream (%s)" % one_line(site_copy_why, 500)
+                                                    if site_copy_why else ""))
                 sys.stdout.flush()
                 out.append(pfn)
                 lfns[pfn] = name
                 continue
-        url = fallback.rstrip("/") + "/" + name
-        log.warning("Input %s: not readable at the site (%s); copying %s", name, one_line(why, 300), url)
-        sys.stderr.flush()
-        opened, how = copy_input(url, name)
-        if opened:
-            log.info("Input %s: the job reads the %s", name, how)
+            if site_copy_why:
+                why = "%s; open: %s" % (site_copy_why, why)
+        if not url:
+            log.warning("Input %s: not readable at the site (%s); no --input-fallback", name, one_line(why, 300))
+            print("FORGE|INPUT|%s|none|%s" % (name, one_line(why, 500)))
+            sys.stdout.flush()
+            out.append(name)
+            continue
+        if aaa_copy_why:                # the AAA copy failed already (copy-first order)
+            opened, how = url, "stream (%s)" % aaa_copy_why
+            log.warning("Input %s: the job reads %s directly", name, url)
         else:
-            log.warning("Input %s: the copy failed (%s); the job reads %s directly", name, one_line(how, 300), url)
-            opened, how = url, "stream (%s)" % how
-        print("FORGE|INPUT|%s|fallback|%s|%s|%s" % (name, url, one_line(why), one_line(how, 500)))
+            log.warning("Input %s: not readable at the site (%s); copying %s", name, one_line(why, 300), url)
+            sys.stderr.flush()
+            opened, how = copy_input(url, name)
+            if opened:
+                log.info("Input %s: the job reads the %s", name, how)
+            else:
+                log.warning("Input %s: the copy failed (%s); the job reads %s directly", name, one_line(how, 300), url)
+                opened, how = url, "stream (%s)" % how
+        print("FORGE|INPUT|%s|fallback|%s|%s|%s" % (name, url, one_line(why, 500), one_line(how, 500)))
         sys.stdout.flush()
         out.append(opened)
         lfns[opened] = name
@@ -285,6 +393,11 @@ def main():
                              "with xrdcp into ./forge_aaa/ and read there (URL + LFN directly if the copy fails), "
                              "e.g. root://cms-xrd-global.cern.ch/ (AAA; a job CRAB sent to a site without its input). "
                              "submit_crab.py sets it unless YAML aaa_fallback: false. Default: off, as before.")
+    parser.add_argument("--input-copy", action="store_true",
+                        help="an LFN input whose site PFN is remote (root://) is first copied from the site with xrdcp "
+                             "into ./forge_in/ and read there, so the job opens the remote file once (docs/05 A27); "
+                             "if that copy fails: the AAA copy of --input-fallback, the PFN at the site, AAA directly. "
+                             "submit_crab.py sets it unless YAML input_copy: false. Default: off.")
 
     # [3] ttbarCategorizer Options -- DEPRECATED / DEAD
     # ────────────────────────────────────────────────────────────────────
@@ -453,9 +566,10 @@ def main():
         if n_files > 1:
             logger.info(f"  -> ... and {n_files - 1} more files.")
     args.input_lfn = {}
-    if args.input_fallback:
+    if args.input_fallback or args.input_copy:
         # the PostProcessor and the audit both open these names; the audit records args.input_lfn[name]
-        args.input_files, args.input_lfn = resolve_inputs(args.input_files, args.input_fallback, logger)
+        args.input_files, args.input_lfn = resolve_inputs(args.input_files, args.input_fallback, logger,
+                                                          copy=args.input_copy)
 
     # 4. Confirm Output Strategy
     if args.output_file:
@@ -522,9 +636,18 @@ def main():
             logger.info("Running Event Loop, then the forge audit...")
             try:
                 code = forge_audit.run_job(ROOT, args, p.run, logger)
-            except Exception:
+            except Exception as e:
                 logger.exception("forge audit crashed outside its own checks")
                 code = forge_audit.EXIT_AUDIT
+                forge_audit.LAST_FAIL[0] = "audit crashed: %s: %s" % (type(e).__name__, e)
+            if code != 0:
+                # CRAB takes the code from the report's first FrameworkError (docs/05 A28)
+                status = fjr_mark_error(code, forge_audit.LAST_FAIL[0] or "exit %d" % code)
+                if status is not None:
+                    logger.error("%s: FrameworkError ExitStatus %d added first (exit %d); CRAB fails the job with %d",
+                                 FJR, status, code, status)
+                    print("FORGE|FJR|ExitStatus=%d|exit=%d|%s" % (status, code, one_line(forge_audit.LAST_FAIL[0], 300)))
+                    sys.stdout.flush()
             end_time = datetime.datetime.now()
             logger.info("%s at %s (exit %d)", "Job Finished Successfully" if code == 0 else "Job FAILED",
                         end_time.strftime('%Y-%m-%d %H:%M:%S'), code)

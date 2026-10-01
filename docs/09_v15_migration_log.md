@@ -928,3 +928,18 @@ lxplus9105, git `039f12b`(P4 커밋), 명령은 워크스페이스 RUNBOOK §13.
   `.requestcache` 60 과 32, 두 config 의 인자 `-b branch_hadronic_2024_v15_{MC,Data}.txt -I noop:MODULES --input-fallback root://cms-xrd-global.cern.ch/
   --skim 6j20 --audit --forge-git d626a55004b1 --output-file=forgedNtuple.root`. lxplus 커밋 `b739e4e`. 출력:
   `/store/user/junghyun/ttHH2024_v15_had_{MC,Data}_v1`.
+
+## 28. 2026-10-01: 2024 실패 980 의 진단(FNAL 재열기, CRAB 의 exit code), P7.1 준비
+
+- **report** (10-01 06:37 UTC): 2024 Data 7,400 / 7,811 done(fail 404), MC 18,536 / 19,136(fail 576); 2018UL 은 모두 끝(`TTbar_Hadronic`
+  2,277 / 2,277). fail 이 있는 49 task 를 exit code 로 세면(워크스페이스 RUNBOOK §16 2b) 50115 892, 5 54, 60322 11, 50660 7, postprocessing 16.
+- **50115**: `WJetsToQQ_HT400to800` 의 201 개가 모두 T1_US_FNAL. job 151·159 는 P7 의 시험 열기가 `root://cmsxrootd-site.fnal.gov//store/...` 를
+  열었는데 곧이은 NanoAODTools 의 같은 URL 열기가 `[3011] No servers are available to read the file` → 예외 → FJR 없음 → 50115, 재시도 3 번도 같다
+  (docs/05 A27; 재열기 자체의 문제인지는 lxplus 시험으로 가린다).
+- **"5"**: 같은 task 의 14 개(Brunel 13, QMUL 1). job 1·13 의 payload 는 85(C2e: Brunel gateway 의 `[3005] I/O limit exceeded and wait time
+  hit`, 다른 closure 항목 PASS)인데 CRAB 은 5: wrapper(`CMSRunAnalysis.py`)는 FJR 의 첫 `FrameworkError` 를 쓰고 없으면 application exit code 를 쓰는데, 그것이
+  우리 1 에도 85 에도 `Application exit code: 5` 였다(docs/05 A28; 5 는 RetryJob 이 재시도하지 않는다). 그래서 A23 의 84·85 재시도 설계는 처음부터 동작하지 않았다(정정 노트).
+- **대응**: 옛 sandbox 로 job 번호 지정 resubmit(60322·postprocessing·FNAL 밖의 50115 는 plain, 50660 은 `--maxmemory=4000`), FNAL 50115 와
+  Brunel 85 는 replica 를 보고 `--siteblacklist`, 진짜 closure FAIL 은 resubmit 하지 않는다. 명령: RUNBOOK §17(가짜 crab·DAS 로 문법과 출력 모양을
+  확인한 뒤 줌). 새 코드 P7.1(입력 복사 `--input-copy`, FJR 로 exit code; D-2026-10-01-p71): 오프라인 mock 96, CRAB mock 52, 실제 ROOT
+  6.40 시험 26/26·22/22(6 개와 1 개 새로), 독립 리뷰 1 회 반영(원장 V56). 사용자 결정 "commit 해서 하자"(10-01): 커밋하고 lxplus 시험(RUNBOOK §18).

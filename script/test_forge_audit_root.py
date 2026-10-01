@@ -20,8 +20,12 @@ an entry range (-N, --first-entry), two inputs, a haddnano.py merge of two
 outputs (the audit trees must be concatenated), --input-fallback with a fake
 edmFileUtil and a fake xrdcp (an LFN without a replica at the "site" is copied
 from the fallback prefix and read there, or read through the prefix when the
-copy fails; real ROOT's error line of the failed probe is silenced), and the
-command line without the new flags (unchanged behaviour).
+copy fails; real ROOT's error line of the failed probe is silenced),
+--input-copy with a root:// site PFN (P7.1: the fake xrdcp serves it, real ROOT
+must never open it; then the AAA copy, then the site open), the FrameworkError
+a failing audit puts first in the job report NanoAODTools really wrote,
+crab/crab_script.py on that report in a flattened CRAB-like job directory
+(P7.1), and the command line without the new flags (unchanged behaviour).
 
     python3 script/test_forge_audit_root.py        # last line: RESULT: ALL PASS (N checks)
 
@@ -74,7 +78,7 @@ def edge_events():
     ]
 
 
-def make(ROOT, path, n_random, is_mc, seed=1, run=1, pass_frac=None, edges=True):
+def make(ROOT, path, n_random, is_mc, seed=1, run=1, pass_frac=None, edges=True, runs_count_delta=0):
     random.seed(seed)
     f = ROOT.TFile(path, "RECREATE")
     t = ROOT.TTree("Events", "Events")
@@ -124,7 +128,7 @@ def make(ROOT, path, n_random, is_mc, seed=1, run=1, pass_frac=None, edges=True)
     t.Write()
     r = ROOT.TTree("Runs", "Runs")
     r.SetAutoSave(0)
-    rr, rc, rs, rs2 = array("I", [run]), array("q", [n]), array("d", [sumw]), array("d", [sumw2])
+    rr, rc, rs, rs2 = array("I", [run]), array("q", [n + runs_count_delta]), array("d", [sumw]), array("d", [sumw2])
     r.Branch("run", rr, "run/i")
     if is_mc:
         r.Branch("genEventCount", rc, "genEventCount/L")
@@ -167,7 +171,8 @@ def main():
         for name, n, mc, kw in (("mc1", 3000, True, {}), ("mc2", 1500, True, {"seed": 2, "edges": False}),
                                 ("mc_zero", 500, True, {"seed": 3, "edges": False, "pass_frac": 0.0}),
                                 ("mc_empty", 0, True, {"edges": False}),
-                                ("data1", 3000, False, {"seed": 4, "run": 381000})):
+                                ("data1", 3000, False, {"seed": 4, "run": 381000}),
+                                ("mc_badruns", 800, True, {"seed": 5, "edges": False, "runs_count_delta": 1})):
             paths[name] = os.path.join(data, name + ".root")
             make(ROOT, paths[name], n, mc, **kw)
         br_mc = os.path.join(data, "br_mc.txt")
@@ -316,6 +321,97 @@ def main():
         check("fallback: a replica at the site is opened there (FORGE|INPUT local), exit 0, ForgeAudit file = the LFN",
               rc == 0 and core_pass(ck) and ("FORGE|INPUT|%s|local|%s" % (lfn_a, site + lfn_a)) in out
               and audit_file_of(o) == lfn_a, (rc, ck, input_lines(out)))
+        # P7.1 (docs/05 A27): --input-copy with a root:// site PFN. The fake edmFileUtil gives root://fake.invalid/
+        # + LFN (the .invalid domain never resolves: had real ROOT opened it, the case would fail fast), the fake xrdcp
+        # serves that host from the site directory; NanoAODTools and the audit must read only the copy
+        bin_r = os.path.join(tmp, "bin_remote")
+        os.makedirs(bin_r)
+        with open(os.path.join(bin_r, "edmFileUtil"), "w") as f:
+            f.write('#!/bin/sh\nlfn="${2#-f }"\necho "root://fake.invalid/${lfn}"\n')
+        with open(os.path.join(bin_r, "xrdcp"), "w") as f:
+            f.write('#!/bin/sh\nfail=$FAKE_XRDCP_FAIL\ncase "$3" in root://*) [ -n "$FAKE_XRDCP_FAIL_REMOTE" ] && fail=1;; '
+                    'esac\nif [ -n "$fail" ]; then echo "Run: [ERROR] Server responded with an error: '
+                    '[3011] No servers are available to read the file." 1>&2; exit 54; fi\nsrc="$3"\n'
+                    'case "$src" in root://fake.invalid/*) src="%s/${src#root://fake.invalid/}";; esac\n'
+                    'cp "$src" "$4"\n' % site)
+        for x in ("edmFileUtil", "xrdcp"):
+            os.chmod(os.path.join(bin_r, x), 0o755)
+        renv = dict(os.environ, PATH=bin_r + os.pathsep + os.environ.get("PATH", ""), XRD_CONNECTIONRETRY="1",
+                    XRD_CONNECTIONWINDOW="5", XRD_REQUESTTIMEOUT="10")
+        rc, ck, out, err, o = run("cp_site", [lfn_a], br_mc, "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                                  "--input-copy", env=renv)
+        rc2, txt = readback(o, site + lfn_a)
+        copy_in = os.path.join(tmp, "jobs", "cp_site", "forge_in") + lfn_a
+        il = input_lines(out)
+        check("input copy: a root:// site PFN is copied into ./forge_in<lfn> and real NanoAODTools reads the copy "
+              "(FORGE|INPUT copy), exit 0, C1 C2 C2e write PASS, no ROOT open of the remote PFN, ForgeAudit file = the "
+              "LFN, read-back PASS",
+              rc == 0 and core_pass(ck) and len(il) == 1
+              and il[0].startswith("FORGE|INPUT|%s|copy|root://fake.invalid/%s|copy (" % (lfn_a, lfn_a))
+              and il[0].endswith(" " + copy_in) and os.path.isfile(copy_in) and "fake.invalid" not in err
+              and audit_file_of(o) == lfn_a and rc2 == 0, (rc, ck, il, err[-400:], txt[-300:]))
+        rc, ck, out, err, o = run("cp_site_aaa", [lfn_a], br_mc, "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                                  "--input-copy", env=dict(renv, FAKE_XRDCP_FAIL_REMOTE="1"))
+        il = input_lines(out)
+        copy_aaa = os.path.join(tmp, "jobs", "cp_site_aaa", "forge_aaa") + lfn_a
+        check("input copy: the copy from the site fails -> the AAA copy is read by real NanoAODTools, the remote PFN "
+              "never opened, exit 0, C1 C2 C2e write PASS",
+              rc == 0 and core_pass(ck) and len(il) == 1 and il[0].startswith("FORGE|INPUT|%s|fallback|" % lfn_a)
+              and "|copy: xrdcp exit 54" in il[0] and il[0].endswith(" " + copy_aaa) and os.path.isfile(copy_aaa)
+              and "fake.invalid" not in err and audit_file_of(o) == lfn_a, (rc, ck, il, err[-400:]))
+        rc, ck, out, err, o = run("cp_site_fail", [lfn_a], br_mc, "--skim", "6j20", "--audit", "--input-fallback", aaa,
+                                  "--input-copy", env=dict(renv, FAKE_XRDCP_FAIL="1"))
+        il = input_lines(out)
+        check("input copy: both copies and the site open (root://fake.invalid) fail -> ROOT reads fallback + LFN "
+              "directly, exit 0, the reason names the three, C2e PASS (the probe's ROOT lines stay silent)",
+              rc == 0 and core_pass(ck) and len(il) == 1 and il[0].startswith("FORGE|INPUT|%s|fallback|" % lfn_a)
+              and "|copy: xrdcp exit 54" in il[0] and "; AAA copy: " in il[0] and "; open: " in il[0]
+              and "|stream (xrdcp exit 54" in il[0] and audit_file_of(o) == lfn_a, (rc, ck, il, err[-400:]))
+
+        # P7.1 (docs/05 A28): a failing audit puts its FrameworkError first in the report NanoAODTools wrote
+        import xml.etree.ElementTree as ET
+
+        def fjr_of(job):
+            path = os.path.join(tmp, "jobs", job, "FrameworkJobReport.xml")
+            if not os.path.exists(path):
+                return None
+            root = ET.parse(path).getroot()
+            return root.tag, [(k.tag, k.get("ExitStatus"), k.get("Type"), (k.text or "")[:200]) for k in root]
+
+        clean = fjr_of("mc1_6j20")
+        check("FJR: the report of a clean job (written by real NanoAODTools) has no FrameworkError",
+              clean and clean[0] == "FrameworkJobReport" and clean[1]
+              and not [k for k in clean[1] if k[0] == "FrameworkError"], clean)
+        rc, ck, out, err, o = run("badruns", [paths["mc_badruns"]], br_mc, "--skim", "6j20", "--audit")
+        bad = fjr_of("badruns")
+        check("FJR: Runs genEventCount = entries + 1 -> C2r FAIL, exit 5, FrameworkError 80005 ForgeClosureFail first "
+              "in the real report, then every element NanoAODTools wrote (the same as in the clean job's report), "
+              "FORGE|FJR line",
+              rc == 5 and ck.get("C2r") == ["FAIL"] and bad and bad[1] and bad[1][0][:3] == ("FrameworkError", "80005",
+                                                                                          "ForgeClosureFail")
+              and "C2r FAIL" in bad[1][0][3] and clean and [k[0] for k in bad[1][1:]] == [k[0] for k in clean[1]]
+              and "FORGE|FJR|ExitStatus=80005|exit=5|" in out, (rc, ck, bad, clean, err[-400:]))
+        # ... and crab_script.py, in a flattened job directory as CRAB makes it, passes the exit code on and names
+        # the code CRAB will take from that report
+        cj = os.path.join(tmp, "jobs", "crab_like")
+        os.makedirs(cj)
+        for src in (os.path.join(REPO, "crab", "crab_script.py"), os.path.join(SCRIPT, "run_postproc.py"),
+                    os.path.join(SCRIPT, "forge_audit.py"), os.path.join(SCRIPT, "forge_skims.py"),
+                    os.path.join(REPO, "modules", "noop.py"), br_mc):
+            shutil.copy(src, cj)
+        with open(os.path.join(cj, "PSet.py"), "w") as f:
+            f.write("import FWCore.ParameterSet.Config as cms\nprocess = cms.Process('NANO')\nprocess.source = "
+                    "cms.Source('PoolSource', fileNames=cms.untracked.vstring('%s'))\n" % paths["mc_badruns"])
+        with open(os.path.join(cj, "crab_args.txt"), "w") as f:
+            f.write("-b\n%s\n-I\nnoop:MODULES\n--skim\n6j20\n--audit\n--output-file=forgedNtuple.root\n"
+                    % os.path.basename(br_mc))
+        p = subprocess.run([sys.executable, "crab_script.py", "1"], cwd=cj, stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT, universal_newlines=True)
+        cjr = fjr_of("crab_like")
+        check("crab_script.py in a CRAB-like job directory: run_postproc.py exits 5 and marks the report -> crab_script.py "
+              "exits 5 too and says CRAB fails the job with 80005",
+              p.returncode == 5 and "CRAB fails the job with 80005" in p.stdout and cjr
+              and cjr[1] and cjr[1][0][:2] == ("FrameworkError", "80005"), (p.returncode, p.stdout[-800:], cjr))
         # the command line of the 2018UL production: no new flag, nothing new happens
         rc, ck, out, err, o = run("old", [paths["mc1"]], br_mc)
         f = ROOT.TFile.Open(o)

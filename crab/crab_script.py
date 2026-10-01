@@ -172,7 +172,36 @@ def main():
                     logger.error("  " + line)
             except OSError as ex:
                 logger.error("cannot read %s: %s" % (cap, ex))
+        # CRAB's wrapper takes the job's exit code from the first FrameworkError in
+        # FrameworkJobReport.xml and uses this script's exit code only when there is
+        # none (2024: an audit 85 arrived as 5, not retried; docs/05 A28). Since P7.1
+        # run_postproc.py puts its FrameworkError there (fjr_mark_error); say which
+        # code CRAB will see. The exit code stays non-zero: a report CRAB could not
+        # read must not turn into a success.
+        status = forge_fjr_error("FrameworkJobReport.xml")
+        if status is not None:
+            logger.error("FrameworkJobReport.xml carries FrameworkError ExitStatus=%s (run_postproc.py exit %d): "
+                         "CRAB fails the job with %s" % (status, e.returncode, status))
         sys.exit(e.returncode)
+
+
+def forge_fjr_error(path):
+    """ExitStatus of the first FrameworkError in the report if run_postproc.py
+    wrote it (Type="Forge..."), else None."""
+    import re
+    try:
+        with open(path, "rb") as f:
+            text = f.read().decode("utf-8", "replace")
+    except OSError:
+        return None
+    m = re.search(r"<FrameworkError\b[^>]*>", text)
+    if not m:
+        return None
+    tag = m.group(0)
+    st = re.search(r'ExitStatus="(\d+)"', tag)
+    if st and re.search(r'Type="Forge', tag):
+        return int(st.group(1))
+    return None
 
 if __name__ == "__main__":
     main()

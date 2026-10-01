@@ -11,6 +11,29 @@
 
 ---
 
+## D-2026-10-01-p71: copy the input from the site first, and give CRAB the audit's code through the job report
+**DECIDED · 2026-10-01 · user** (proposed by the AI after the 2024 failure triage and an independent review; the user: "commit 해서 하자")
+
+- **Decision (user, on the AI's proposal).** (1) `input_copy: true` by default: `run_postproc.py --input-copy` copies a remote site PFN into the job directory with
+  xrdcp and reads only the copy. (2) A non-zero `--audit` code goes into `FrameworkJobReport.xml` as the first `FrameworkError`
+  (85 -> 8021 and 84 -> 8020, retried by CRAB at another site; 1 after the copy -> 1, retried; 5 -> 80005 and 7 -> 80007, not
+  retried); the exit codes themselves do not change.
+- **Evidence.** (1) `05_troubleshooting.md` A27: at T1_US_FNAL the probe's open succeeded and NanoAODTools' open of the same URL got
+  `[3011]` (201 jobs, three CRAB retries each); at Brunel streaming reads broke with `[3005] I/O limit exceeded`. A copy is one
+  remote access with large sequential reads, the same mechanism as the AAA fallback that was tested on a real LFN on 2026-09-30
+  (2,600 MB in 149 s). With a skim the basket structure makes NanoAODTools read most of every kept branch anyway; the copy moves the
+  whole file. (2) A28: CRAB's wrapper (`CMSRunAnalysis.py`) uses the report's first `FrameworkError` and only without one the
+  application exit code, which was 5 for our 1 and 85 alike; `RetryJob.py` does not retry 5 and retries 8020 / 8021 at another
+  site. The 2024 85s became 5 and were not retried.
+- **Alternatives.** (1) Keep the probe but open in a subprocess (helps only if the refusal is per process); drop the probe and catch
+  NanoAODTools' open error (a retry inside `PostProcessor.run()` is not clean); blacklist T1_US_FNAL (loses its slots and fails where
+  FNAL holds the only replica). (2) Delete the report so that CRAB records 50115 and retries everything (no code, no reason in
+  `crab status`, closure FAILs retried too); keep the exit codes and accept 5 (read trouble never retried).
+- **Open.** The second-open hypothesis (A27) is checked on lxplus before or with this decision; CRAB's exact handling of 8021 / 80005
+  is seen on the first P7.1 failures (A28 resolution record). Running tasks keep their sandbox: the 2024 failures are recovered with
+  resubmits (blacklist where another replica exists) or, for files only at FNAL, with a recovery task on the P7.1 code (not yet
+  designed).
+
 ## D-2026-09-30-p7: before the 2024 production, C2r and C3 fail a job, 1440 min wall time, AAA fallback for the input
 **DECIDED · 2026-09-30 · user** (asked with the P6 pilot results; plan 12 P6 / P7)
 

@@ -237,6 +237,22 @@ def main():
         check("... T1 gives the xrdcp time of job 1 and names job 2 as read without a copy",
               "xrdcp time (not in the times above) median 131 s, largest 131 s (job 1)" in out
               and "read directly without a copy (slow) in 1 (2)" in out, out)
+        # --input-copy (P7.1, docs/05 A27): job 1 copied its input from the site, job 2's site copy failed and it
+        # read the input at the site directly
+        pfn = "root://cmsxrootd-site.fnal.gov//store/mc/x/%d.root"
+        add_log(lg1, ("FORGE|INPUT|/store/mc/x/1.root|copy|" + pfn + "|copy (2600 MB in 21 s) "
+                      "/srv/forge_in/store/mc/x/1.root\n") % 1 + TOTAL_LINE
+                + "FORGE|JOB|files=1|n_in=700|n_pass=50|n_out=50|t_s=12.0|exit=0\n")
+        add_log(lg2, ("FORGE|INPUT|/store/mc/x/2.root|local|" + pfn + "|stream (xrdcp exit 54: Run: [ERROR] "
+                      "Server responded with an error: [3011] No servers are available to read the file.)\n") % 2
+                + TOTAL_LINE + "FORGE|JOB|files=1|n_in=700|n_pass=50|n_out=50|t_s=12.0|exit=0\n")
+        rc, out = run("-c", cfgs["skimMC"], "--das", das, "--scan-logs")
+        check("--input-copy: T1 counts the site copy of job 1 with its xrdcp time, names job 2 (site copy failed), "
+              "no fallback, L1 PASS",
+              rc == 0 and level(out, "T1") == ["INFO"] and "input copied from the site first (--input-copy) in 1 job(s), "
+              "xrdcp time (not in the times above) median 21 s, largest 21 s (job 1)" in out
+              and "the copy from the site failed and the input was read at the site directly in 1 job(s) (2)" in out
+              and "through the fallback" not in out and level(out, "L1") == ["PASS"], out)
         for lg in (lg1, lg2):
             shutil.move(lg + ".keep", lg)
         rc, out = run("-c", cfgs["skimMCw"], "--das", das_w)

@@ -98,9 +98,10 @@ python3 script/run_postproc.py <MC_nanoaod.root> \
 | `-N`, `--max-events` | | 처리 이벤트 수 제한 (기본: 전체). |
 | `--first-entry` | | 앞쪽 N개 entry 건너뛰기 (기본: 0). |
 | `--skim NAME` | | **생산용 event 선택** (2026-09-28). `script/forge_skims.py` 의 이름(`none`, `6jcount`, `6j20`, `6j25`, `6j30`, `6j20ht400`); 그 TTreeFormula 가 `PostProcessor(cut=...)` 로 간다(모듈 없이 C++ 경로). `Runs`/`LuminosityBlocks` 는 그대로 전부. `--cut` 과 같이 쓰지 않는다. 2024 = `6j20` (`docs/03_DECISIONS.md` D-2026-09-28-volume). |
-| `--audit` | | `-o` 필요. 복사 뒤 입력 파일마다 RDataFrame 으로 다시 읽어 closure(C1 출력 event 수 = RVec 통과 수, C2 끝까지 읽음, C2e ROOT 오류 줄 0, C2r/C3 Runs 합)를 보고 `ForgeAudit`·`ForgeTTbbKeys`·`ForgeProvenance` 를 출력에 붙인다(`script/forge_audit.py`). exit: closure FAIL 5, 읽기 문제(C2, C2e) 85, 입력을 못 엶 84, audit 오류 7 (CRAB 재시도 규칙에 맞춘 값: 84·85 는 다른 사이트에서 재시도, 5·7 은 재시도 안 함). |
+| `--audit` | | `-o` 필요. 복사 뒤 입력 파일마다 RDataFrame 으로 다시 읽어 closure(C1 출력 event 수 = RVec 통과 수, C2 끝까지 읽음, C2e ROOT 오류 줄 0, C2r/C3 Runs 합)를 보고 `ForgeAudit`·`ForgeTTbbKeys`·`ForgeProvenance` 를 출력에 붙인다(`script/forge_audit.py`). exit: closure FAIL 5, 읽기 문제(C2, C2e) 85, 입력을 못 엶 84, audit 오류 7. CRAB 은 이 exit code 를 그대로 받지 않는다(`docs/05_troubleshooting.md` A28: wrapper 는 FJR 의 첫 `FrameworkError` 를 쓰고, 없으면 application exit code 를 쓰는데 2024 에는 우리 1·85 가 모두 5 로 보였다). 2026-10-01(P7.1)부터 0 이 아니면 NanoAODTools 가 쓴 `FrameworkJobReport.xml` 맨 앞에 `FrameworkError` 를 넣는다(85→8021, 84→8020: CRAB 이 다른 사이트에서 재시도; 복사 뒤 출력 쓰기 실패 1→1: 재시도; 5→80005, 7→80007: 재시도 안 함). exit code 자체는 그대로다. |
 | `--forge-git` | | `ForgeProvenance` 에 적을 git commit (`submit_crab.py` 가 넣는다). |
 | `--input-fallback URL` | | LFN(`/store/...`) 입력을 먼저 사이트의 PFN(`edmFileUtil`)으로 열어 보고, 안 열리면 `URL + LFN` 을 `xrdcp` 로 `./forge_aaa/store/...` 에 복사해 그 사본을 읽는다(복사도 실패하면 `URL + LFN` 을 직접 읽는다; 2026-09-30; 예: `root://cms-xrd-global.cern.ch/`). CRAB 이 입력이 없는 사이트로 보낸 job(overflow)이 50115 로 죽지 않게 한다(`docs/05_troubleshooting.md` A24). `FORGE|INPUT` 줄이 어느 쪽인지와 이유를 적고, audit 은 받은 LFN 을 기록한다. `submit_crab.py` 가 기본으로 넣는다. |
+| `--input-copy` | | (2026-10-01, P7.1) LFN 입력의 사이트 PFN 이 `root://` 면 먼저 `xrdcp` 로 `./forge_in/store/...` 에 복사하고 NanoAODTools 와 audit 은 그 사본만 읽는다(원격 파일을 한 번만 연다; 2024 에 T1_US_FNAL 에서 시험 열기 뒤의 두 번째 열기가 실패했다, `docs/05_troubleshooting.md` A27). 복사가 실패하면 `--input-fallback` 의 AAA 복사, 그다음 사이트에서 열기, 그다음 AAA 직접. 로컬 경로 PFN 은 복사하지 않는다. `submit_crab.py` 가 기본으로 넣는다. |
 | `--cut` | | **검증 전용** 사전 선택식(생산 config 에 쓰지 않는다). 생산 skim 은 `--skim`. |
 | `--ttcat-debug-csv`, `--ttcat-debug-csv-path`, `--ttcat-quiet` | | **DEPRECATED (dead flags)**. 환경변수로 `modules/ttbarCategorizer.py`에 옵션을 넘기던 것이나 그 모듈은 이 저장소에 없다(`modules/`에는 `noop`, `topCPVCategorizer`, `jetsMETcut`, `nanoaod_branch_access`만 있다). 파싱은 되지만 아무 효과가 없다. |
 
@@ -121,7 +122,8 @@ python3 script/run_postproc.py <MC_nanoaod.root> \
 `[PASS] recipe  slim (postproc; skim 6j20 = <식>; audit on)` 처럼 무엇을 할지를 찍는다.
 2026-09-30 부터: `aaa_fallback: true|false|"root://<host>[:<port>]/"`(기본 true = `--input-fallback root://cms-xrd-global.cern.ch/`, false 면 그 전과 같은 인자),
 `site_blacklist: [T2_XX_Yyy, ...]`(`config.Site.blacklist`; `T2_US_*` 같은 CRAB wildcard 도 된다), 그리고 원래 있던 `max_runtime`(분, FileBased 기본 600; 2024 두 config 는 1440)·`max_memory`(MB, 기본 2500).
-preflight 는 `input fallback`, `site blacklist`, `job resources` 줄을 찍는다.
+2026-10-01 부터(P7.1): `input_copy: true|false`(기본 true = `--input-copy`, false 면 2026-09-30 과 같은 인자).
+preflight 는 `input fallback`, `site blacklist`, `input copy`, `job resources` 줄을 찍는다.
 job 이 끝난 캠페인은 출력이 있는 곳(KNU)에서 `python3 script/forge_campaign_audit.py -c crabConfig/<config>.yaml --das script/drafts/review_das_<...>.tsv`
 로 dataset 마다 판정한다(2026-09-29; 출력 수와 job 번호, Σ`n_in` 또는 Σ`Events` == DAS nevents, `failed/` 사본, `--reference-config` 로 no-skim 캠페인과
 event 단위 비교, `--scan-logs` 로 log 의 ROOT 오류 줄과 job 시간; 읽는 법 `docs/05_troubleshooting.md` A23).

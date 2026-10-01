@@ -9,6 +9,57 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-10-01: 2024 failures diagnosed (A27, A28); P7.1 decided (copy-first input, exit codes through the FJR), not yet used on the grid
+
+### Found
+- `docs/05_troubleshooting.md` A27: the 2024 50115 jobs at T1_US_FNAL (all 201 of `WJetsToQQ_HT400to800`): the P7 probe opened
+  `root://cmsxrootd-site.fnal.gov//store/...`, and the next open of the same URL, by NanoAODTools, got `[3011] No servers are
+  available to read the file`; no job report, 50115, and CRAB's three retries ended the same way at FNAL. Whether the second open
+  itself is refused is being checked (lxplus three-open test, FNAL finished-job count; workspace RUNBOOK section 17).
+- `docs/05_troubleshooting.md` A28: CRAB does not get a scriptExe's exit code as it is. Its wrapper (CRABServer `CMSRunAnalysis.py`)
+  uses the first `FrameworkError` of `FrameworkJobReport.xml` and only without one the application exit code, which was 5 for our
+  1 and our 85 alike (job logs of 2024); `RetryJob.py` does not retry 5. So the audit's 85 at Brunel (`[3005] I/O limit exceeded`,
+  6,072 s at 24 Hz) was recorded as 5 and not retried; without a report CRAB records 50115 (retried). The CRAB column of A23 (84 / 85
+  "retried at another site") never applied (an AI design error of 2026-09-28); A23 and A24 carry a correction note.
+
+### Added (P7.1, DECIDED in `03_DECISIONS.md` D-2026-10-01-p71 by the user; only new tasks use it: running tasks keep their sandbox)
+- `script/run_postproc.py --input-copy`: a remote site PFN (`root://`, `roots://`, `xroot://`) is copied with `xrdcp -f -N` into
+  `./forge_in/store/...` first and NanoAODTools and the audit read the copy (one remote open). If that copy fails: the AAA copy of
+  `--input-fallback`, then the PFN opened at the site (`FORGE|INPUT|<lfn>|local|<pfn>|stream (<why the copies failed>)`), then AAA
+  directly; the reasons of every failed step are kept in the line. A local PFN is not copied; without `--input-fallback` a failed
+  site gives `FORGE|INPUT|<lfn>|none|<why>` and the LFN unchanged. FORGE|INPUT reasons may now be 500 characters (was 200).
+- `script/run_postproc.py fjr_mark_error()`: a non-zero `--audit` code puts `<FrameworkError ExitStatus Type="Forge...">` first in the
+  report NanoAODTools wrote (`CRAB_ERROR`: 85 -> 8021 and 84 -> 8020, retried at another site; 1 after the copy -> 1, retried;
+  5 -> 80005 and 7 -> 80007, not retried; the reason in printable ASCII) and prints `FORGE|FJR|...`; nothing without a report (50115
+  as before) or with one that does not parse. `forge_audit.LAST_FAIL` holds the one-line reason. The exit codes do not change.
+- `crab/crab_script.py`: logs the code CRAB will take from the report when its first `FrameworkError` is run_postproc.py's; the exit
+  code is passed on as before.
+- `crab/submit_crab.py`: YAML `input_copy: true|false` (default true: `--input-copy` in `crab_args.txt`), preflight line `input copy`
+  (WARN when off).
+- `script/forge_campaign_audit.py` T1: the jobs that copied their input from the site, with that xrdcp time, and those that read it
+  at the site after both copies failed.
+
+### Review (independent agent, 2026-10-01; both mock suites reproduced, CRABServer sources read)
+- Fixed: `crab_script.py` exited 0 when the report carried a Forge `FrameworkError` (from the CRAB3AdvancedTopic twiki); the wrapper
+  source reads the report whatever the exit code, and exit 0 would have turned an unregistered `FrameworkError` into a success, so
+  the exit code is passed on again. Code 1 went to 8033, which `RetryJob.py` does not retry: now 1 (retried). Control characters in
+  the reason made the report unparseable (expat): printable ASCII only. After a failed site copy the site was opened before the AAA
+  copy, the very open-then-reopen pattern of A27: the AAA copy now comes first. The RUNBOOK section 17 resubmit generator could
+  give two `crab resubmit` lines for one task (the second can be refused while the first is processed): one line per task now;
+  the job table missed the `toRetry` state; the replica check gave dataset-level site names only: now with DAS fractions.
+- Recorded: CRAB prints `Postprocessing failed` in the exit-code column of some jobs (11 fields): they go to the plain resubmit, as
+  intended. Hypothesis wording in README, `run_postproc.py` and the preflight line made factual. The "no partial copy left" checks
+  could not fail (the mock xrdcp wrote nothing): the failing mock now leaves a partial file.
+
+### Validated (offline, this session)
+- `test_forge_audit_mock.py` 96 checks (20 new: the report marking for 85 / 84 / 5 / 7 / 1, no report, an unparseable report, a reason
+  with control characters, the site copy, the AAA copy after a failed site copy, both copies failing, all failing, a local PFN, without
+  `--input-fallback`, `crab_script.py` passing the code on); `test_submit_crab_mock.py` 52 (4 new); nine mutations of the new code each
+  make named checks fail. Real ROOT: 6 new checks in `test_forge_audit_root.py` (the copy with real NanoAODTools, the AAA copy after a
+  failed site copy, all copies failing, a real report marked by a C2r FAIL, `crab_script.py` in a flattened job directory) and 1 in
+  `test_forge_campaign_audit_root.py`: in the AI session with real ROOT 6.40 and NanoAODTools 26/26 and 22/22 ALL PASS; on lxplus
+  (ROOT 6.30) next (workspace RUNBOOK section 18).
+
 ## [Unreleased], 2026-09-30 (2): P6 done, 2024 production submitted (P7), 2018UL Data campaign audit passed (P8); records only
 
 ### Added

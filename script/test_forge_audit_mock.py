@@ -3,8 +3,9 @@
 """
 test_forge_audit_mock.py -- offline test of the NtupleForge event skim and
 audit: script/forge_skims.py, script/forge_audit.py, the --skim / --audit /
---forge-git / --input-fallback options of script/run_postproc.py and the
-capture echo in crab/crab_script.py.
+--forge-git / --input-fallback / --input-copy options of script/run_postproc.py,
+the FrameworkError it puts in the job report (P7.1), and the capture echo, the
+exit code passed on and the report's code logged in crab/crab_script.py.
 
 Nothing real runs: the real run_postproc.py is started as a child process with
 a mock ROOT module and a mock NanoAODTools PostProcessor in front of
@@ -131,6 +132,12 @@ class TObjString(object):
     def GetString(self):
         return self.s
 
+def _local(path):
+    # root://<host>//store/... -> $MOCK_XRD_ROOT/store/... (P7.1 tests: a remote site PFN); else unchanged
+    if path.startswith("root://") and os.environ.get("MOCK_XRD_ROOT"):
+        return os.environ["MOCK_XRD_ROOT"] + "/" + path.split("://", 1)[1].split("/", 1)[1].lstrip("/")
+    return path
+
 kPrint, kInfo, kWarning, kError, kFatal = 0, 1000, 2000, 3000, 6000
 gErrorIgnoreLevel = -1
 
@@ -153,7 +160,8 @@ class TFile(object):
         TFile.CURRENT[0] = self
     @staticmethod
     def Open(path, mode=""):
-        path = path.split("?", 1)[0]        # as ROOT: ?... holds options of the URL, not the file name
+        _log("open", path)
+        path = _local(path.split("?", 1)[0])  # as ROOT: ?... holds options of the URL, not the file name
         # MOCK_OPEN_RAISES: ROOT >= 6.30 (PyROOT raises OSError instead of returning a null pointer)
         fails = (mode in ("", "READ", "UPDATE") and not os.path.exists(path)) or \
             (os.environ.get("MOCK_OPENFAIL") and os.environ["MOCK_OPENFAIL"] in path and mode == "")
@@ -232,7 +240,7 @@ class _Hist(object):
 
 class _Root(object):
     def __init__(self, path, treename="Events"):
-        with open(path.split("?", 1)[0]) as f:     # as TFile.Open: ?... are URL options
+        with open(_local(path.split("?", 1)[0])) as f:     # as TFile.Open: ?... are URL options
             doc = json.load(f)
         self.events = doc["Events"]["events"] if treename == "Events" else doc[treename]
         if os.environ.get("MOCK_RDF_SHORT"):
@@ -316,7 +324,7 @@ class PostProcessor(object):
     def __init__(self, outputDir, inputFiles, cut=None, branchsel=None, modules=[], compression="LZMA:9",
                  friend=False, postfix=None, noOut=False, justcount=False, maxEntries=None, firstEntry=0,
                  haddFileName=None, provenance=False, fwkJobReport=False, outputbranchsel=None, **kw):
-        self.inputs, self.cut, self.out = inputFiles, cut, haddFileName
+        self.inputs, self.cut, self.out, self.fjr = inputFiles, cut, haddFileName, fwkJobReport
         self.maxEntries, self.firstEntry = maxEntries, firstEntry
         level = getattr(sys.modules.get("ROOT"), "gErrorIgnoreLevel", None)   # when run_postproc.py imported ROOT
         with open(os.environ["MOCK_PP_LOG"], "a") as f:
@@ -325,7 +333,9 @@ class PostProcessor(object):
     def run(self):
         if os.environ.get("MOCK_PP_RAISE"):
             raise RuntimeError("mock PostProcessor: cannot open input")
-        if os.environ.get("MOCK_PP_ROOTERR"):
+        if os.environ.get("MOCK_PP_ROOTERR") == "ctrl":     # what an xrootd message can carry (CRABServer #6640)
+            os.write(2, b"Error in <TNetXNGFile::ReadBuffer>: \x1b[31m[3005] I/O limit \xc3\xa9 exceeded\x00\x07\n")
+        elif os.environ.get("MOCK_PP_ROOTERR"):
             os.write(2, b"Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded\n")
         if os.environ.get("MOCK_PP_BENIGN"):            # a keep pattern that matches nothing in this file
             os.write(2, b"Error in <TTree::SetBranchStatus>: unknown branch -> LHEPdfWeight\n")
@@ -334,7 +344,10 @@ class PostProcessor(object):
             os.system("echo 'Error in <TTree::Merge>: from a child process' 1>&2")
         events, runs = [], []
         for p in self.inputs:
-            with open(p.split("?", 1)[0]) as f:
+            q = p.split("?", 1)[0]
+            if q.startswith("root://") and os.environ.get("MOCK_XRD_ROOT"):
+                q = os.environ["MOCK_XRD_ROOT"] + "/" + q.split("://", 1)[1].split("/", 1)[1].lstrip("/")
+            with open(q) as f:
                 doc = json.load(f)
             ev = doc["Events"]["events"]
             b = self.firstEntry or 0
@@ -349,6 +362,22 @@ class PostProcessor(object):
         if self.out:
             with open(self.out, "w") as f:
                 json.dump({"Events": {"branches": [], "events": events}, "Runs": runs}, f)
+        if self.fjr:        # NanoAODTools jobreport.py: ElementTree, written at the very end of run()
+            if os.environ.get("MOCK_PP_BADFJR"):
+                with open("FrameworkJobReport.xml", "w") as f:
+                    f.write("<FrameworkJobReport><InputFile>")       # truncated
+                return
+            import xml.etree.ElementTree as ET
+            fjr = ET.Element("FrameworkJobReport")
+            ET.SubElement(fjr, "ReadBranches")
+            ET.SubElement(fjr, "PerformanceReport")
+            for p in self.inputs:
+                inf = ET.SubElement(fjr, "InputFile")
+                ET.SubElement(inf, "LFN").text = p[p.find("/store/"):] if "/store/" in p else ""
+                ET.SubElement(inf, "PFN").text = p
+            out = ET.SubElement(fjr, "File")
+            ET.SubElement(out, "PFN").text = self.out or ""
+            ET.ElementTree(fjr).write("FrameworkJobReport.xml")
 '''
 
 MOCK_CMS = r'''
@@ -478,7 +507,7 @@ def main():
             return e
 
         def run(inputs, *extra, **kw):
-            for p in (log, pp_log, os.path.join(work, "out.root")):
+            for p in (log, pp_log, os.path.join(work, "out.root"), os.path.join(work, "FrameworkJobReport.xml")):
                 if os.path.exists(p):
                     os.remove(p)
             cmd = [sys.executable, kw.pop("script", RUN_POSTPROC)] + inputs + \
@@ -602,7 +631,8 @@ def main():
 
         # 5. a ROOT error line while NanoAODTools copies
         rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_PP_ROOTERR="1")
-        check("ROOT error line during the copy: exit 85 (CRAB retries), C2e FAIL, the line reaches stderr live",
+        check("ROOT error line during the copy: exit 85 (CRAB: 8021 through the report), C2e FAIL, the line reaches "
+              "stderr live",
               rc == 85 and "FORGE|CHECK|C2e|FAIL" in out and "[3005] I/O limit exceeded" in err, (rc, out[-400:], err[-400:]))
 
         # 5b. keep patterns matching nothing (SetBranchStatus: a plain name and a wildcard): WARN, not a read error
@@ -641,7 +671,7 @@ def main():
               rc == 7 and "FORGE|CHECK|audit|FAIL" in out and not os.path.exists(os.path.join(work, "forge_stderr.txt")),
               (rc, out[-300:]))
         rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_OPENFAIL="mc_a")
-        check("input not openable by the audit: exit 84 (CRAB retries)", rc == 84 and "cannot open" in out,
+        check("input not openable by the audit: exit 84 (CRAB: 8020 through the report)", rc == 84 and "cannot open" in out,
               (rc, out[-300:]))
         rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_OPENFAIL="mc_a",
                            MOCK_OPEN_RAISES="1")
@@ -703,7 +733,7 @@ def main():
 
         # 15. write error on the output (disk full)
         rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_WRITEERR="1")
-        check("write error on the output: exit 1 (worker node; CRAB retries), CHECK write FAIL",
+        check("write error on the output: exit 1 (worker node; CRAB: 1 through the report, retried), CHECK write FAIL",
               rc == 1 and "FORGE|CHECK|write|FAIL" in out,
               (rc, out[-300:]))
 
@@ -801,9 +831,12 @@ def main():
             with open(os.path.join(d, "xrdcp"), "w") as f:
                 f.write('#!/bin/sh\n# mock of xrdcp -f -N <src> <dest>: a local copy, or the error of a missing replica\n'
                         'echo "$@" >> "%s"\n'
-                        'if [ -n "$MOCK_XRDCP_FAIL" ]; then echo "[0B/0B][100%%][====][0B/s]"; '
+                        'fail=$MOCK_XRDCP_FAIL\ncase "$3" in root://*) [ -n "$MOCK_XRDCP_FAIL_REMOTE" ] && fail=1;; esac\n'
+                        'if [ -n "$fail" ]; then echo "[0B/0B][100%%][====][0B/s]"; '
+                        'mkdir -p "$(dirname "$4")"; echo partial > "$4"; '
                         'echo "Run: [ERROR] Server responded with an error: [3011] No servers are available to read '
-                        'the file." 1>&2; exit 54; fi\ncp "$3" "$4"\n' % xrdcp_log)
+                        'the file." 1>&2; exit 54; fi\nsrc="$3"\ncase "$src" in root://*) '
+                        'src="$MOCK_XRD_ROOT/${src#root://*/}";; esac\ncp "$src" "$4"\n' % xrdcp_log)
         for x in ("bin/edmFileUtil", "bin/xrdcp", "bin_noedm/xrdcp"):
             os.chmod(os.path.join(tmp, x), 0o755)
         site, aaa = os.path.join(work, "site"), os.path.join(work, "aaa")
@@ -890,6 +923,133 @@ def main():
         check("fallback: a name that is not an LFN is kept, no FORGE|INPUT line, exit 0",
               rc == 0 and pp_inputs() == [a] and not forge(out, "INPUT"), (rc, pp_inputs(), forge(out, "INPUT")))
 
+        # 18c. P7.1 (docs/05 A28): CRAB does not see the exit code of a scriptExe; a non-zero --audit code goes into
+        # the job report NanoAODTools wrote, as its first element <FrameworkError ExitStatus Type>
+        import xml.etree.ElementTree as ET
+        fjr_path = os.path.join(work, "FrameworkJobReport.xml")
+
+        def fjr_first():
+            if not os.path.exists(fjr_path):
+                return None
+            try:
+                root = ET.parse(fjr_path).getroot()
+            except ET.ParseError:
+                return "unparseable"
+            kids = list(root)
+            return (kids[0].tag, kids[0].get("ExitStatus"), kids[0].get("Type"), kids[0].text or "",
+                    [k.tag for k in kids[1:]]) if kids else ()
+
+        rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit")
+        f0 = fjr_first()
+        check("FJR: a clean job leaves the report NanoAODTools wrote as it was (no FrameworkError, no FORGE|FJR line)",
+              rc == 0 and f0 and f0[0] == "ReadBranches" and not forge(out, "FJR"), (rc, f0))
+        for label, kw, want_rc, want in (
+                ("read trouble (C2e)", {"MOCK_PP_ROOTERR": "1"}, 85, ("8021", "ForgeReadError", "C2e FAIL")),
+                ("an input the audit cannot open", {"MOCK_OPENFAIL": "mc_a"}, 84, ("8020", "ForgeOpenError", "cannot open")),
+                ("a closure FAIL (C1)", {"MOCK_PP_DROP": "1"}, 5, ("80005", "ForgeClosureFail", "C1 FAIL")),
+                ("an audit exception", {"MOCK_RDF_RAISE": "1"}, 7, ("80007", "ForgeAuditError", "audit: RuntimeError")),
+                ("a write error on the output", {"MOCK_WRITEERR": "1"}, 1, ("1", "ForgeOutputError", "write: "))):
+            rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", **kw)
+            f0 = fjr_first()
+            fl = forge(out, "FJR")
+            check("FJR: %s -> exit %d, FrameworkError ExitStatus %s Type %s first in the report with the reason, the "
+                  "report's own elements kept, a FORGE|FJR line" % (label, want_rc, want[0], want[1]),
+                  rc == want_rc and f0 and f0 != "unparseable" and f0[0] == "FrameworkError" and (f0[1], f0[2]) == want[:2]
+                  and want[2] in f0[3] and f0[4][:2] == ["ReadBranches", "PerformanceReport"] and "InputFile" in f0[4]
+                  and fl and fl[0].startswith("FORGE|FJR|ExitStatus=%s|exit=%d|" % (want[0], want_rc)), (rc, f0, fl))
+        rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_PP_RAISE="1")
+        check("FJR: NanoAODTools raised (it writes no report) -> exit 1, no report made up (CRAB: 50115, retried)",
+              rc == 1 and not os.path.exists(fjr_path) and not forge(out, "FJR"), (rc, fjr_first()))
+        rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_PP_ROOTERR="1", MOCK_PP_BADFJR="1")
+        check("FJR: a report that does not parse -> left as it is, exit 85 kept, the reason logged",
+              rc == 85 and fjr_first() == "unparseable" and "cannot add the FrameworkError" in err and not forge(out, "FJR"),
+              (rc, fjr_first(), err[-300:]))
+        rc, out, err = run([a], "-o", "out.root", "--skim", "6j20", "--audit", MOCK_PP_ROOTERR="ctrl")
+        f0 = fjr_first()
+        check("FJR: a reason with control and non-ASCII characters (from a ROOT error line) -> the report still parses, "
+              "those characters are '?'",
+              rc == 85 and f0 and f0 != "unparseable" and f0[1] == "8021" and "\x1b" not in f0[3] and "\x00" not in f0[3]
+              and "?[31m" in f0[3] and all(" " <= c <= "~" for c in f0[3]), (rc, f0))
+
+        # 18d. --input-copy (P7.1, docs/05 A27): a root:// site PFN is copied with xrdcp first and the job reads the
+        # copy, so the remote file is opened once; then the AAA copy, the site open, AAA directly; a local PFN is not
+        # copied
+        xrd_root = os.path.join(work, "xrd")        # what root://site.example/ serves in the mocks
+        os.makedirs(os.path.dirname(xrd_root + lfn_a), exist_ok=True)
+        shutil.copy(a, xrd_root + lfn_a)
+        remote = "root://site.example/"
+        pfn_a = remote + lfn_a                      # root://site.example//store/mc/...
+        copy_in_a = os.path.join(work, "forge_in") + lfn_a
+        copy_aaa_a = os.path.join(work, "forge_aaa") + lfn_a
+        url_a = aaa + "/" + lfn_a
+
+        def cp_run(inputs, *extra, **kw):
+            for x in (xrdcp_log, copy_in_a, copy_b, copy_aaa_a):
+                if os.path.exists(x):
+                    os.remove(x)
+            return run(inputs, "-o", "out.root", *extra, **kw)
+
+        def remote_opens():
+            return [l for l in open(log).read().splitlines() if l.startswith("open root://")] if os.path.exists(log) else []
+
+        rc, out, err = cp_run([lfn_a], "--skim", "6j20", "--audit", "--input-fallback", aaa, "--input-copy",
+                              PATH=path_env, MOCK_LOCAL_PREFIX=remote, MOCK_XRD_ROOT=xrd_root)
+        d = out_doc() if rc == 0 else {}
+        line = (forge(out, "INPUT") or [""])[0]
+        check("input copy: a root:// site PFN is copied with xrdcp -f -N into ./forge_in<lfn>, NanoAODTools and the audit "
+              "read the copy (FORGE|INPUT copy), ROOT never opens the remote PFN, exit 0, ForgeAudit file = the LFN",
+              rc == 0 and pp_inputs() == [copy_in_a] and xrdcp_calls() == ["-f -N %s %s" % (pfn_a, copy_in_a)]
+              and line.startswith("FORGE|INPUT|%s|copy|%s|copy (" % (lfn_a, pfn_a)) and line.endswith(" " + copy_in_a)
+              and not remote_opens() and d.get("ForgeAudit", [{}])[0].get("file") == lfn_a
+              and prov_of(d).get("inputs") == [lfn_a], (rc, pp_inputs(), xrdcp_calls(), line, remote_opens(), err[-300:]))
+        rc, out, err = cp_run([lfn_a], "--skim", "6j20", "--audit", "--input-fallback", aaa, "--input-copy",
+                              PATH=path_env, MOCK_LOCAL_PREFIX=remote, MOCK_XRD_ROOT=xrd_root, MOCK_XRDCP_FAIL_REMOTE="1")
+        line = (forge(out, "INPUT") or [""])[0]
+        check("input copy: the copy from the site fails -> the AAA copy is read (FORGE|INPUT fallback ... |copy: xrdcp "
+              "exit 54 ...|copy (...)), ROOT never opens the remote PFN, the partial site copy removed, exit 0",
+              rc == 0 and pp_inputs() == [copy_aaa_a] and xrdcp_calls() == ["-f -N %s %s" % (pfn_a, copy_in_a),
+                                                                            "-f -N %s %s" % (url_a, copy_aaa_a)]
+              and line.startswith("FORGE|INPUT|%s|fallback|%s|copy: xrdcp exit 54" % (lfn_a, url_a)) and "|copy (" in line
+              and not remote_opens() and not os.path.exists(copy_in_a), (rc, pp_inputs(), xrdcp_calls(), line, err[-300:]))
+        rc, out, err = cp_run([lfn_a], "--skim", "6j20", "--audit", "--input-fallback", aaa, "--input-copy",
+                              PATH=path_env, MOCK_LOCAL_PREFIX=remote, MOCK_XRD_ROOT=xrd_root, MOCK_XRDCP_FAIL="1")
+        line = (forge(out, "INPUT") or [""])[0]
+        check("input copy: both copies fail (a full disk) -> the PFN is opened and read at the site (FORGE|INPUT local "
+              "... |stream (copy: ...; AAA copy: ...)), each copy tried once, no partial copy left, exit 0",
+              rc == 0 and pp_inputs() == [pfn_a] and line.startswith("FORGE|INPUT|%s|local|%s|stream (copy: xrdcp exit 54"
+                                                                      % (lfn_a, pfn_a))
+              and "; AAA copy: xrdcp exit 54" in line and len(xrdcp_calls()) == 2
+              and not os.path.exists(copy_in_a) and not os.path.exists(copy_aaa_a),
+              (rc, pp_inputs(), line, xrdcp_calls(), err[-300:]))
+        rc, out, err = cp_run([lfn_a], "--skim", "6j20", "--audit", "--input-fallback", aaa, "--input-copy",
+                              PATH=path_env, MOCK_LOCAL_PREFIX=remote, MOCK_XRD_ROOT=xrd_root, MOCK_XRDCP_FAIL="1",
+                              MOCK_OPENFAIL="/xrd/")
+        line = (forge(out, "INPUT") or [""])[0]
+        check("input copy: both copies and the site open fail -> fallback + LFN read directly, the reason names the "
+              "three, the AAA copy not tried twice, exit 0",
+              rc == 0 and pp_inputs() == [url_a] and line.startswith("FORGE|INPUT|%s|fallback|%s|copy: xrdcp exit 54"
+                                                                      % (lfn_a, url_a))
+              and "; AAA copy: " in line and "; open: " in line and "|stream (xrdcp exit 54" in line
+              and len(xrdcp_calls()) == 2, (rc, pp_inputs(), line, xrdcp_calls()))
+        rc, out, err = cp_run([lfn_a], "--skim", "6j20", "--audit", "--input-fallback", aaa, "--input-copy",
+                              PATH=path_env, MOCK_LOCAL_PREFIX=site)
+        check("input copy: a local site PFN (a path) is not copied, it is opened at the site (FORGE|INPUT local), exit 0",
+              rc == 0 and pp_inputs() == [site + lfn_a] and not xrdcp_calls()
+              and forge(out, "INPUT") == ["FORGE|INPUT|%s|local|%s" % (lfn_a, site + lfn_a)],
+              (rc, pp_inputs(), forge(out, "INPUT")))
+        rc, out, err = cp_run([lfn_a], "--skim", "6j20", "--audit", "--input-copy",
+                              PATH=path_env, MOCK_LOCAL_PREFIX=remote, MOCK_XRD_ROOT=xrd_root)
+        check("input copy without --input-fallback: the copy from the site is read, exit 0",
+              rc == 0 and pp_inputs() == [copy_in_a] and forge(out, "INPUT")
+              and forge(out, "INPUT")[0].startswith("FORGE|INPUT|%s|copy|" % lfn_a), (rc, pp_inputs(), forge(out, "INPUT")))
+        rc, out, err = cp_run([lfn_a], "--skim", "6j20", "--audit", "--input-copy", PATH=path_env,
+                              MOCK_LOCAL_PREFIX=remote, MOCK_XRD_ROOT=xrd_root, MOCK_XRDCP_FAIL="1", MOCK_OPENFAIL="/xrd/")
+        line = (forge(out, "INPUT") or [""])[0]
+        check("input copy without --input-fallback: copy and open at the site fail -> FORGE|INPUT none, the LFN goes to "
+              "NanoAODTools unchanged and fails there as before (exit 1)",
+              rc == 1 and pp_inputs() == [lfn_a] and line.startswith("FORGE|INPUT|%s|none|copy: xrdcp exit 54" % lfn_a),
+              (rc, pp_inputs(), line))
+
         # 19. crab_script.py prints the capture file when run_postproc.py dies inside the capture
         cs = os.path.join(tmp, "crab_job")
         os.makedirs(cs)
@@ -906,6 +1066,35 @@ def main():
         check("crab_script.py: exit code passed on, the capture file printed, a SetBranchStatus line not counted",
               p.returncode == 9 and "the last words" in p.stdout and "forge_stderr.txt" in p.stdout
               and "ROOT error lines (1 shown)" in p.stdout, (p.returncode, p.stdout[-600:]))
+        # 19b. crab_script.py passes the exit code on in every case (a report CRAB cannot read must still fail the job)
+        # and names the code of run_postproc.py's FrameworkError when the report carries one (P7.1, docs/05 A28)
+        def cs_run(fjr_text, rc_stub):
+            with open(os.path.join(cs, "run_postproc.py"), "w") as f:
+                f.write("import sys\n%ssys.exit(%d)\n" % (
+                    ("open('FrameworkJobReport.xml', 'w').write(%r)\n" % fjr_text) if fjr_text is not None else "",
+                    rc_stub))
+            for x in ("FrameworkJobReport.xml", "forge_stderr.txt"):
+                if os.path.exists(os.path.join(cs, x)):
+                    os.remove(os.path.join(cs, x))
+            p = subprocess.run([sys.executable, "crab_script.py", "1"], cwd=cs, env=env(), stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT, universal_newlines=True)
+            return p.returncode, p.stdout
+
+        rc, out = cs_run('<?xml version="1.0" encoding="UTF-8"?>\n<FrameworkJobReport><FrameworkError ExitStatus="8021" '
+                         'Type="ForgeReadError">C2e FAIL: 1 ROOT error line(s)</FrameworkError><ReadBranches />'
+                         '</FrameworkJobReport>', 85)
+        check("crab_script.py: run_postproc.py exit 85 with its FrameworkError 8021 first in the report -> exit 85 "
+              "passed on, the code CRAB will see logged", rc == 85 and "ExitStatus=8021" in out
+              and "CRAB fails the job with 8021" in out, (rc, out[-500:]))
+        rc, out = cs_run("<FrameworkJobReport><ReadBranches /></FrameworkJobReport>", 85)
+        check("crab_script.py: a report without a FrameworkError -> exit 85 passed on, nothing about a FrameworkError",
+              rc == 85 and "FrameworkError" not in out, (rc, out[-300:]))
+        rc, out = cs_run('<FrameworkJobReport><FrameworkError ExitStatus="8001" Type="Fatal Exception">x'
+                         '</FrameworkError></FrameworkJobReport>', 85)
+        check("crab_script.py: a FrameworkError run_postproc.py did not write (Type not Forge...) -> exit 85 passed on, "
+              "not named", rc == 85 and "CRAB fails the job with" not in out, (rc, out[-300:]))
+        rc, out = cs_run(None, 1)
+        check("crab_script.py: no report at all -> exit 1 passed on (CRAB: 50115, retried)", rc == 1, (rc, out[-300:]))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     n_fail = RESULTS.count(False)

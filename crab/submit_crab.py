@@ -224,6 +224,24 @@ def job_options(common):
     return url, bl
 
 
+# --- input copy (2026-10-01, P7.1, docs/05 A27) ---
+# YAML `common` key, optional:
+#   input_copy: true (default) | false
+#               true adds --input-copy to crab_args.txt: run_postproc.py copies a
+#               remote site PFN (root://) into the job directory with xrdcp first
+#               and NanoAODTools and the audit read the copy (one remote access;
+#               the 2024 jobs at T1_US_FNAL died on the open after the probe).
+#               false = the behaviour of 2026-09-30 (open at the site, read through it).
+def copy_option(common):
+    """True when run_postproc.py gets --input-copy; ValueError if the YAML value is not a boolean."""
+    v = common.get("input_copy", True)
+    if v is None:
+        return True
+    if not isinstance(v, bool):
+        raise ValueError("input_copy must be true or false, got %r" % (v,))
+    return v
+
+
 # Tracked paths whose modification does not change what a job runs: runlog.sh
 # appends a line to script/runlogs/LEDGER.tsv at every step, so without this a
 # checkout that has just run its local checks would always be '+dirty'.
@@ -559,6 +577,18 @@ def run_preflight(args):
             pf.warn("input fallback", "off (aaa_fallback: false): a job CRAB runs at a site without its input "
                                       "dies with 50115 (docs/05 A24)")
         pf.ok("site blacklist", ", ".join(blacklist) if blacklist else "none")
+    try:
+        input_copy = copy_option(common)
+    except ValueError as e:
+        pf.fail("input_copy", str(e))
+    else:
+        if input_copy:
+            pf.ok("input copy", "on (a remote site PFN is copied into the job directory with xrdcp first and read "
+                                "from the copy: one remote access; docs/05 A27)")
+        else:
+            pf.warn("input copy", "off (input_copy: false): the job opens the site PFN twice or more (probe, "
+                                  "NanoAODTools, audit); at T1_US_FNAL the open after the probe failed in 2024 "
+                                  "(docs/05 A27)")
     split_mode = common.get("splitting", "Automatic")
     pf.ok("job resources", "max_memory %s MB, %s" % (
         common.get("max_memory", 2500),
@@ -755,6 +785,7 @@ def main(args):
     try:
         forge_recipe, forge_skim, forge_audit_on = forge_options(common)
         input_fallback, site_blacklist = job_options(common)
+        input_copy = copy_option(common)
     except ValueError as e:
         logger.error(f"YAML Error: {e}")
         sys.exit(1)
@@ -905,6 +936,8 @@ def main(args):
 
         if input_fallback:
             f.write(f"--input-fallback\n{input_fallback}\n")
+        if input_copy:
+            f.write("--input-copy\n")
         if forge_skim:
             f.write(f"--skim\n{forge_skim}\n")
         if forge_audit_on:

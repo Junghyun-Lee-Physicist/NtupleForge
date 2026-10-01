@@ -1001,6 +1001,12 @@ project dir 이 없는 dataset 은 **제출한 다음** kill 했다.
 `12_fastpath_workflow_plan.md` §2.3). 값은 CRABServer `RetryJob.py` 의 `EXIT_RETRY_POLICY` 에 맞췄다: 목록에 없는 코드는 fatal(재시도 없음),
 8020·8021 은 하위 8 bit 인 84·85 로도 다른 사이트에서 재시도.
 
+> **[정정 2026-10-01, A28]** 아래 표의 "CRAB" 칸은 틀렸다. CRAB 은 scriptExe 의 exit code 를 그대로 받지 않는다: P7 까지의 job 은 FJR 이
+> 있으면 **5**, 없으면 **50115** 로 기록됐고(우리 1 도 85 도 wrapper 에는 `Application exit code: 5`), 5 는 재시도되지 않았다(2024: Brunel 의
+> 85). P7.1 부터는 `run_postproc.py` 가 FJR 맨 앞의 `FrameworkError` 로 넘긴다: 85→8021, 84→8020(CRAB 이 다른 사이트에서 재시도), 복사 뒤
+> 출력 쓰기 실패 1→1(재시도), 5→80005, 7→80007(재시도 안 함).
+> "사람이 할 일" 칸과 아래 재현 방법은 그대로 맞다. `crab status` 의 exit code 로 원인을 읽을 때는 이 정정을 따른다.
+
 | exit | 뜻 | CRAB | 사람이 할 일 |
 |---|---|---|---|
 | 1 | NanoAODTools 예외, 또는 출력 쓰기 실패(`kWriteError`) | 재시도 | 예전과 같다. 반복되면 job 로그의 traceback |
@@ -1093,8 +1099,8 @@ overflow 에서는 재시도가 다시 파일 없는 사이트로 갈 수 있다
 (D-2026-09-30-p7).
 
 **남는 것.** 입력이 어디서도 안 열리면(복사도 직접 읽기도 실패) 여전히 NanoAODTools 예외 → FJR 없음 → 50115 이고 CRAB 이 재시도한다. 그때는
-위 진단 3 으로 replica 를 본다. 사이트의 사본이 열리기는 하는데 읽다가 깨지는 경우는 audit 의 C2e/C2 가 exit 85 로 잡고 CRAB 이 다른
-사이트에서 재시도한다. 사본은 job 디렉터리에 남고 job 이 끝나면 batch 가 지운다(2024 입력은 파일당 최대 2 GB). 이미 제출한 task 에는
+위 진단 3 으로 replica 를 본다. 사이트의 사본이 열리기는 하는데 읽다가 깨지는 경우는 audit 의 C2e/C2 가 exit 85 로 잡는다(정정 2026-10-01: CRAB 은 이 85 를
+받지 못하고 5 로 적어 재시도하지 않았다, A28; P7.1 부터 FJR 의 8021 로 넘겨 재시도된다). 사본은 job 디렉터리에 남고 job 이 끝나면 batch 가 지운다(2024 입력은 파일당 최대 2 GB). 이미 제출한 task 에는
 닿지 않는다(A15 Ops note: sandbox 는 제출 때 것).
 
 **해결 기록.**
@@ -1147,3 +1153,81 @@ preflight 에 `site blacklist` 줄). 되풀이되지 않으면 blacklist 하지 
 
 **해결 기록.** 09-30 저녁(lxplus966, 새 proxy): 서버에 없음을 확인(`not on the server`), stale 디렉터리 60 개를 지우고 같은 제출 줄을 다시 냈다:
 `SUMMARY (submit): 60 dataset(s): 60 OK`(16:26~16:31 UTC), `.requestcache` 60. 서버 쪽 장애였고 우리 쪽에서 바꾼 것은 없다.
+
+## A27 · 2024 의 T1_US_FNAL job: 시험 열기는 열렸는데 NanoAODTools 의 두 번째 열기가 `[3011] No servers are available to read the file` (2026-10-01)
+
+**상태: 원인 확인 중**(lxplus 시험과 job 표: 워크스페이스 RUNBOOK §17 1·3). 대응 2(P7.1)는 사용자 결정(10-01, D-2026-10-01-p71)으로 커밋하고
+lxplus 시험(RUNBOOK §18) 뒤 recovery 와 다음 제출에 쓴다.
+결과가 나오면 이 절 끝 "해결 기록" 에 적는다(사용자 지시, 2026-09-30).
+
+**증상.** 2024 MC `WJetsToQQ_HT400to800` 의 50115 201 개가 모두 T1_US_FNAL(10-01 triage: 2024 fail 980 중 50115 892). job 151·159 의
+stdout(`crab getlog --short`):
+- `FORGE|INPUT|/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_.../...root|local|root://cmsxrootd-site.fnal.gov//store/mc/...`:
+  P7 의 시험 열기(`--input-fallback`)는 사이트 PFN 을 열었다.
+- 곧이어 `Error in <TNetXNGFile::Open>: [ERROR] Server responded with an error: [3011] No servers are available to read the file.`
+- `NanoAODTools PostProcessor failed: OSError: Failed to open file root://cmsxrootd-site.fnal.gov//store/...`,
+  `FORGE|JOB|files=1|n_in=-1|...|exit=1` → FJR 없음 → 50115. CRAB 의 자동 재시도 3 번도 FNAL 에서 같은 모양.
+다른 큰 50115 task(JetMET0 2024G 105, ttHTobb_semilep 98, JetMET0 2024F 53, JetMET1 2024E 45)의 사이트는 §17 1 의 표로 본다.
+
+**원인 (가설).** 같은 프로세스가 방금 열고 닫은 파일을 다시 열 때 FNAL site redirector 가 거절한다. P7 의 job 은 LFN 마다 사이트 PFN 을 열어
+보고(probe) 닫은 뒤 NanoAODTools 가 같은 URL 을 다시 열고, audit 이 그 뒤 한 번 더 연다(P6 부터). 가설이 맞으면 P7 이전(P6 audit)에도 FNAL 에서
+audit 의 재열기(84)가 걸렸을 것이다. 가리는 법: (1) lxplus 에서 실패한 job 의 LFN 을 한 프로세스에서 `root://cmsxrootd-site.fnal.gov/` 로 세 번,
+AAA 로 세 번 연다(§17 3; FNAL 에서 끝난 job 의 LFN 으로 대조). (2) 같은 task 에서 FNAL 에서 끝난 job 이 있는지(§17 1). FNAL 에서 끝난 job
+이 많으면 재열기 자체가 아니라 특정 파일이나 시간대의 문제다.
+
+**대응 1: 이미 제출한 task** (sandbox 는 제출 때 것). replica 가 다른 디스크 사이트에도 있으면(§17 4) FNAL 에서 죽은 job 번호만
+`crab resubmit -d <project dir> --jobids=<N,...> --siteblacklist=T1_US_FNAL`. FNAL 에만 있으면 P7.1 코드로 그 파일만 다시 처리한다
+(recovery task; 방법은 결과를 보고 정한다). plain resubmit 은 다시 FNAL 로 가서 같은 식으로 죽을 공산이 크다.
+
+**대응 2: 새 제출 (P7.1, D-2026-10-01-p71).** `run_postproc.py --input-copy`: 사이트 PFN 이 `root://`(`roots://`, `xroot://`)면 먼저
+`xrdcp -f -N` 으로 job 디렉터리의 `forge_in/store/...` 에 복사하고(3600 s 제한) NanoAODTools 와 audit 은 그 사본만 읽는다. 원격 파일은
+xrdcp 가 한 번 연다. 복사가 실패하면 순서는 `--input-fallback` 의 AAA 복사(`forge_aaa/`), 사이트에서 열어 읽기(사본을 둘 디스크가 없을 때),
+AAA 직접 읽기다(이유는 `FORGE|INPUT` 줄에 모두 남는다; 리뷰 10-01: 사이트 열기를 AAA 복사보다 뒤로). 로컬 경로 PFN(`/...`, `file:`)은 복사하지
+않는다. 성공한 복사는 `FORGE|INPUT|<lfn>|copy|<pfn>|copy (<MB> MB in <s> s) <사본>`; KNU 집계의 T1 이 그 job 수와 xrdcp 시간을 적는다.
+`submit_crab.py` 는 YAML `input_copy: false` 가 아니면 이 flag 를 넣는다(기본 on; preflight `input copy` 줄). 대가: 사이트 저장소에서 옮기는
+양이 파일 전체로 늘 수 있다(지금은 브랜치 목록이 남기는 브랜치와 audit 의 몇 브랜치만 읽는다). 대신 원격 접근이 한 번이고 큰 블록 순차
+읽기다. Brunel 의 job 1(A28)은 gateway 를 통해 146,381 event 를 6,072 s(24 Hz)에 읽었다; `/tmp` 사본은 P5 에서 3,364 Hz 였다. 읽기 제한이
+사본 복사에서도 걸리는지는 모른다(그때는 위 순서로 넘어간다). 시험: mock 96(P7.1 20 새로), CRAB mock 52, 실제 ROOT 시험 6 개 추가(AI 세션 ROOT 6.40 에서
+26/26; lxplus 는 RUNBOOK §18), 원장 V56.
+
+**해결 기록.** (결과가 나오면 여기에: §17 3 의 세 번 열기, FNAL 에서 끝난 job 수, resubmit 결과, P7.1 을 쓰면 그 첫 grid 결과.)
+
+## A28 · CRAB 은 scriptExe 의 exit code 를 그대로 받지 않는다: audit 의 85 가 exit code 5 로 기록되고 재시도되지 않았다 (2026-10-01)
+
+**상태: 원인 확인**(job 로그 원문과 CRAB wrapper·RetryJob 소스). 대응 2(P7.1)는 사용자 결정(10-01, D-2026-10-01-p71)으로 커밋하고 lxplus 시험
+(RUNBOOK §18) 뒤 쓴다.
+
+**증상.** 2024 MC `WJetsToQQ_HT400to800` 의 "exit code 5" 14 개(T2_UK_London_Brunel 13, T3_UK_London_QMUL 1; 2024 전체 54). job 1·13 의
+stdout(`crab getlog --short`, 원문):
+- `Error in <TNetXNGFile::ReadBuffer>: [ERROR] Server responded with an error: [3005] I/O limit exceeded and wait time hit`(Brunel 의 xrootd
+  gateway `xrootdgw.brunel.ac.uk`), `Total time 6071.7 sec. to process 146381 events. Rate = 24.1 Hz.`
+- `FORGE|CHECK|C2e|FAIL|2 ROOT error line(s), ...`, C1·C2·C2r·C3 PASS, `FORGE|JOB|...|exit=85`, `[crab_script] : ... exit code 85`
+- 그다음 CRAB wrapper: `Application exit code: 5`, `The application failed with exit code 5`, `==== Job Exit Code from FrameworkJobReport.xml
+  and Application exit code: 5 ====`, `User Application failed (exit code =  5) No stageout will be done`, `Long exit code of the job is 5`.
+같은 task 의 50115 job 151(우리 exit 1, FJR 없음)도 `Application exit code: 5` 를 찍은 뒤 `BadFWJRXML` → 50115 였다(A27).
+
+**원인.** CRAB 의 job wrapper(CRABServer `scripts/job_wrapper/CMSRunAnalysis.py`, 2026-09-28 판)는 scriptExe 를 WMCore `Scram` 으로 돌리고 그
+반환값을 `Application exit code` 로 찍는다. 그다음 `FrameworkJobReport.xml` 을 읽어 첫 `FrameworkError` 의 `ExitStatus` 를 job 의 exit code
+로 쓰고, FJR 에 오류가 없을 때만 application exit code 를 쓴다(FJR 을 못 읽으면 50115). 우리 job 에서 application exit code 는 1 이든 85 든
+**5** 였다(왜 5 인지는 Scram 쪽이라 확인하지 못했다). 그래서 NanoAODTools 가 끝까지 돌아 FJR 이 있으면 5, 없으면 50115. CRABServer
+`RetryJob.py` 의 `EXIT_RETRY_POLICY`: 5 는 표에 없어 fatal(재시도 없음), 50115 는 재시도(메모리 1.3 배), 8020·8021 은 재시도에
+`change_site`(다른 사이트로), 1 은 재시도("likely a worker node issue"). A23 의 "84·85 면 CRAB 이 다른 사이트에서 재시도" 는 RetryJob 표로는
+맞지만 우리 85 가 RetryJob 에 닿지 않아 처음부터 동작하지 않았다. AI 의 설계 오류(2026-09-28): RetryJob 표만 보고 wrapper 가 exit code 를 어떻게
+넘기는지는 보지 않았다. (CRAB3AdvancedTopic twiki 는 "non-zero 로 끝나면 wrapper 가 JSON report 전에 끝난다" 고 쓰지만 지금 wrapper 코드는 FJR
+을 끝까지 읽는다: 코드를 따른다.)
+
+**대응 1: 이미 제출한 task.** exit 5 job 을 로그로 나눈다(워크스페이스 RUNBOOK §17 4: `FORGE|JOB` 의 exit 가 85 냐 5 냐, FAIL 항목, 첫
+`[3xxx]` 오류). 85(읽기 문제)는 resubmit 한다. 같은 사이트로 가면 또 걸릴 수 있으니 replica 를 보고 `--siteblacklist=T2_UK_London_Brunel` 을
+붙일지 정한다. 진짜 closure FAIL(5)은 resubmit 하지 않고 A23 의 재현.
+
+**대응 2: 새 제출 (P7.1, D-2026-10-01-p71).** `--audit` 이 0 이 아니고 NanoAODTools 가 FJR 을 썼으면 `run_postproc.py` 가
+`<FrameworkError ExitStatus="N" Type="Forge...">이유 한 줄</FrameworkError>` 를 FJR 맨 앞에 넣고(`fjr_mark_error`, ElementTree; FJR 의 나머지는
+그대로, 이유는 출력 가능한 ASCII 만) `FORGE|FJR|ExitStatus=N|exit=<code>|<이유>` 를 찍는다. 코드(`CRAB_ERROR`): 85 → 8021(FileReadError),
+84 → 8020(FileOpenError): 다른 사이트에서 재시도. 복사 뒤 출력 쓰기·다시 읽기 실패(1, FJR 있음) → 1: 재시도. 5 → 80005, 7 → 80007: CRAB 이
+모르는 코드라 재시도하지 않는다. NanoAODTools 가 예외로 끝나 FJR 이 없으면 아무것도 쓰지 않는다(50115, 재시도: 예전과 같다). FJR 을 파싱하지
+못하면 손대지 않는다. exit code 는 그대로 non-zero 다: `crab_script.py` 는 FJR 의 코드를 로그에 한 줄 적고 run_postproc.py 의 exit code 를 그대로
+넘긴다(처음 안은 0 으로 끝내는 것이었으나 리뷰 10-01 에서 바꿈: wrapper 가 FrameworkError 를 못 읽는 경우에도 job 이 실패로 남아야 한다; 실패한
+job 은 어느 쪽이든 stage-out 하지 않는다). `crab status` 의 Error Summary 에 이 코드와 이유가 보이게 된다.
+
+**해결 기록.** (P7.1 이 grid 에서 처음 쓰이면 여기에: 8021 job 이 다른 사이트에서 자동 재시도되는지, 80005 가 재시도 없이 멈추는지, Error
+Summary 의 모양.)

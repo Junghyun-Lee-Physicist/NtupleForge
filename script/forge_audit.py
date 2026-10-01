@@ -53,20 +53,24 @@ Closure, printed as FORGE|CHECK lines (docs/12 section 5.2):
             nearly constant |w|), the float rounding bound is 2^-24 x sum|w| /
             |sum w|; a lost event is C2r's job
 
-Exit codes of run_postproc.py --audit, chosen for CRAB's retry policy
-(CRABServer TaskWorker/Actions/RetryJob.py EXIT_RETRY_POLICY: codes it does not
-list are not retried; 8020 / 8021 are, also as their low 8 bits 84 / 85, at
-another site):
+Exit codes of run_postproc.py --audit. CRAB does not get them as they are: its
+wrapper uses the first FrameworkError of the job report and only without one
+the scriptExe's exit code, which in the 2024 production arrived as 5 for an 85
+(not retried; docs/05_troubleshooting.md A28). Since P7.1 run_postproc.py
+writes the code CRAB fails the job with into the report (fjr_mark_error,
+CRAB_ERROR; in brackets; retries per CRABServer RetryJob.py EXIT_RETRY_POLICY):
   0  ok
-  1  NanoAODTools raised, or the output could not be written (as before --audit;
-     CRAB retries 1)
+  1  NanoAODTools raised (no report: CRAB records 50115 and retries), or the
+     output could not be written or read back after the copy [1, retried as
+     a worker-node error]
   84 the audit could not open an input file, or it has no Events tree
-     (FileOpenError; CRAB retries at another site)
+     [8020 FileOpenError, retried at another site]
   85 read trouble: a ROOT error line (C2e), a short read (C2), an RDataFrame
-     read exception (FileReadError; CRAB retries at another site)
-  5  a closure FAIL without read trouble (C1, C2c, C2r, C3): not retried, a
-     human looks
-  7  the audit itself failed otherwise (a bug): not retried
+     read exception [8021 FileReadError, retried at another site]
+  5  a closure FAIL without read trouble (C1, C2c, C2r, C3) [80005: not
+     retried, a human looks]
+  7  the audit itself failed otherwise (a bug) [80007: not retried]
+LAST_FAIL[0] holds the one-line reason that goes with the code.
 CRAB copies the outputs of a failed job under .../failed/: file lists for the
 analysis must skip that directory (plan 12 P8).
 
@@ -101,6 +105,7 @@ CAPTURE_SHOWN = 40
 CAPTURE_FILE = "forge_stderr.txt"   # crab_script.py prints its summary if run_postproc.py dies
 EXIT_NODE, EXIT_CLOSURE, EXIT_AUDIT, EXIT_OPEN, EXIT_READ = 1, 5, 7, 84, 85
 KEEP = []                    # ROOT objects stay referenced until os._exit (no PyROOT dealloc)
+LAST_FAIL = [""]             # run_job: why the last job failed, one line (run_postproc.py puts it in the FJR, A28)
 
 CPP = r"""
 #ifndef FORGE_AUDIT_CPP
@@ -570,6 +575,7 @@ def run_job(ROOT, args, run_postprocessor, logger):
     Returns the exit code (see the module docstring)."""
     skim = args.skim if args.skim not in (None, "", forge_skims.NONE) else None
     formula, rvec = forge_skims.get(skim)
+    LAST_FAIL[0] = ""
     INPUT_LFN.clear()
     INPUT_LFN.update(getattr(args, "input_lfn", None) or {})
     pin_error_level(ROOT, logger)
@@ -602,6 +608,7 @@ def run_job(ROOT, args, run_postprocessor, logger):
         logger.error("NanoAODTools PostProcessor failed: %s: %s\n%s" % (type(pp_error).__name__, pp_error, pp_tb))
         forge_line("JOB", "files=%d" % len(args.input_files), "n_in=-1", "n_pass=-1", "n_out=-1",
                    "exit=%d" % EXIT_NODE)
+        LAST_FAIL[0] = "NanoAODTools: %s: %s" % (type(pp_error).__name__, str(pp_error)[:300])
         return EXIT_NODE
     if audit_error is not None:
         if isinstance(audit_error, AuditError):
@@ -612,9 +619,11 @@ def run_job(ROOT, args, run_postprocessor, logger):
             code = EXIT_AUDIT
         logger.error("forge audit failed: %s: %s\n%s" % (type(audit_error).__name__, audit_error, audit_tb))
         forge_line("CHECK", "audit", "FAIL", "%s: %s" % (type(audit_error).__name__, str(audit_error)[:300]))
+        LAST_FAIL[0] = "audit: %s: %s" % (type(audit_error).__name__, str(audit_error)[:300])
         if cap.n_errors:
             forge_line("CHECK", "C2e", "FAIL", "%d ROOT error line(s), first: %s"
                        % (cap.n_errors, cap.first_error.strip()[:200]))
+            LAST_FAIL[0] += "; C2e: %d ROOT error line(s), first: %s" % (cap.n_errors, cap.first_error.strip()[:200])
         forge_line("JOB", "files=%d" % len(args.input_files), "n_in=-1", "n_pass=-1", "n_out=%d" % n_out,
                    "exit=%d" % code)
         return code
@@ -622,6 +631,9 @@ def run_job(ROOT, args, run_postprocessor, logger):
     for name, level, detail in checks:
         forge_line("CHECK", name, level, detail)
     code = exit_code_of(checks)
+    if code:
+        LAST_FAIL[0] = "; ".join("%s FAIL: %s" % (name, str(detail)[:200]) for name, level, detail in checks
+                                 if level == "FAIL")
     if code == 0:
         try:
             n_keys = write_outputs(ROOT, args.output_file, rows, keys_list,
@@ -632,6 +644,7 @@ def run_job(ROOT, args, run_postprocessor, logger):
         except Exception as e:
             forge_line("CHECK", "write", "FAIL", "%s: %s" % (type(e).__name__, str(e)[:300]))
             code = e.code if isinstance(e, AuditError) else EXIT_NODE
+            LAST_FAIL[0] = "write: %s: %s" % (type(e).__name__, str(e)[:300])
     forge_line("JOB", "files=%d" % len(rows), "n_in=%d" % sum(r["n_in"] for r in rows),
                "n_pass=%d" % sum(r["n_pass"] for r in rows), "n_out=%d" % n_out, "t_s=%.1f" % (time.time() - t0),
                "exit=%d" % code)
