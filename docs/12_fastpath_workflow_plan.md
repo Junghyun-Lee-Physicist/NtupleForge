@@ -191,6 +191,10 @@ X12(patch 경로 ≡ enriched 경로)를 한 번에 풀기 때문이다. 2024 �
 
 ### 트랙 A: analyzer (tempTTHH)
 
+**2026-10-01**: 이 트랙의 구체 계획은 tempTTHH `docs/PLAN_v15_2018UL_2024.md`(PROPOSED): 저장소를 읽어 확인한 막는 것 20 가지(지금 코드는
+v15 에서 `Jet_jetId` 부재로 0 event, 파일 목록이 `failed/` 포함, 출력 디렉터리에 연도 없음 등), 작업 W0·A0~A6 과 순서(2018UL 먼저, 처음 돌릴
+수 있는 것은 2018 prescan), 연도별 드라이버 `tools/run_year.py`, 결정 D1~D9. 아래 표의 A0~A5 는 그 문서 §4 에서 나뉘고 상태도 거기서 갱신한다.
+
 | ID | 무엇 | 어디 | 상태 | 끝나면 |
 |---|---|---|---|---|
 | A0 | 빌드(`make`) + 단위 테스트 3 개 + 2017 `btagtrig` preflight(읽기 전용). 07-29 코드의 첫 빌드 | KNU | **READY** | A1 |
