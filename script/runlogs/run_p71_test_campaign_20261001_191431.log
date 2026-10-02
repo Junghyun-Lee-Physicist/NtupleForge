@@ -1,0 +1,43 @@
+=== RUNLOG ================================================================
+step        : p71_test_campaign
+start_utc   : 2026-10-01T19:14:32Z
+host        : lxplus9103   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : e4ee5a2   modified_tracked_files: 1
+cmd         : python3 script/test_forge_campaign_audit_root.py 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-10-01 21:14:32.643350714 +0200 CEST m=+0.000747704
+proxy_left_s: 42504
+===========================================================================
+PASS  skim MC vs reference: exit 0; D1-D6, K (with the reference) and X7 PASS; D7 WARN for the failed/ copy
+PASS  skim MC: the failed/ copy is not counted (outputs=3/3)
+PASS  skim Data vs reference (2 threads): exit 0, X7 PASS, no D6 and no K (Data)
+PASS  skim MC with the log scan: L1 PASS, T1 INFO with the NanoAODTools and FORGE|JOB times of 3 jobs
+PASS  jobs that read their input through the fallback: T1 counts them (jobs 1, 2), L1 still PASS
+PASS  ... T1 gives the xrdcp time of job 1 and names job 2 as read without a copy
+PASS  --input-copy: T1 counts the site copy of job 1 with its xrdcp time, names job 2 (site copy failed), no fallback, L1 PASS
+PASS  Runs genEventSumw off by 5e-6 in one file: D6 WARN naming the file and the relative difference, exit 0
+PASS  reference MC, no audit: D4 from the Events sum PASS, L1 PASS (a SetBranchStatus line is not an error)
+PASS  a ROOT read error line in the log of job 2: L1 FAIL naming job 2, exit 1
+PASS  a log without the NanoAODTools end line (job 3): L1 FAIL naming job 3, exit 1
+PASS  job 3 missing: D1, D3, D4 and X7 FAIL, exit 1
+PASS  input 1 processed twice (job 4 = copy of job 1): D1 (extra job) and D3 (input in two rows) FAIL
+PASS  job 2 made with another skim (6j25): D5 and X7 FAIL
+PASS  job 2 without the audit trees: D2 FAIL
+PASS  job 1 lost one ForgeTTbbKeys row (2 threads): K FAIL (row count, and 1 only in the reference), X7 still PASS
+PASS  job 3 is not a ROOT file: D0 FAIL, X7 FAIL (not compared), a RESULT line, no traceback
+PASS  a corrupt log tarball (job 2): L1 FAIL, a RESULT line, no traceback
+PASS  the reference copied into a second task directory: X7 FAIL (EXCESS, keys twice in the reference), K FAIL
+PASS  DAS nevents off by one: D4 FAIL with the difference
+PASS  restored tree: exit 0 again, TSV with one row
+PASS  a base without the campaign: exit 2
+RESULT: ALL PASS (22 checks)
+===========================================================================
+end_utc     : 2026-10-01T19:20:30Z
+wall_s      : 358
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p71_test_campaign_20261001_191431.log
+=== END ===================================================================

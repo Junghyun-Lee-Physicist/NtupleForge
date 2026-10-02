@@ -71,3 +71,7 @@ utc_start	step	exit	wall_s	host	git_head	log	outputs
 2026-09-30T09:39:03Z	p7_test_mock	0	155	lxplus973	d626a55	script/runlogs/run_p7_test_mock_20260930_093855.log	none
 2026-09-30T09:43:34Z	p7_test_root	0	951	lxplus973	d626a55	script/runlogs/run_p7_test_root_20260930_094328.log	none
 2026-09-30T11:14:06Z	p7_fallback	0	186	lxplus9109	d626a55	script/runlogs/run_p7_fallback_20260930_111404.log	none
+2026-10-01T19:03:05Z	p71_test_mock	0	48	lxplus9103	e4ee5a2	script/runlogs/run_p71_test_mock_20261001_190304.log	none
+2026-10-01T19:04:22Z	p71_test_root	0	608	lxplus9103	e4ee5a2	script/runlogs/run_p71_test_root_20261001_190421.log	none
+2026-10-01T19:14:32Z	p71_test_campaign	0	358	lxplus9103	e4ee5a2	script/runlogs/run_p71_test_campaign_20261001_191431.log	none
+2026-10-01T19:38:43Z	p71_copy	0	122	lxplus9103	e4ee5a2	script/runlogs/run_p71_copy_20261001_193841.log	none

@@ -1,0 +1,47 @@
+=== RUNLOG ================================================================
+step        : p71_test_root
+start_utc   : 2026-10-01T19:04:22Z
+host        : lxplus9103   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : e4ee5a2   modified_tracked_files: 1
+cmd         : python3 script/test_forge_audit_root.py 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-10-01 21:04:22.603831968 +0200 CEST m=+0.001322733
+proxy_left_s: 43114
+===========================================================================
+PASS  MC 6j20: exit 0, C1 C2 C2e write PASS, C2r C3 PASS
+PASS  MC 6j20: the wildcard keep LHE_* that matches nothing is C2w WARN, not a C2e error
+PASS  MC 6j20 read-back: X7 event by event, A, K
+PASS  MC 6j20ht400 (NaN / inf edge events): exit 0 and read-back PASS
+PASS  MC 6jcount: exit 0 and read-back PASS
+PASS  MC 6j25: exit 0 and read-back PASS
+PASS  MC 6j30: exit 0 and read-back PASS
+PASS  Data 6j20: exit 0, no Runs checks, read-back PASS
+PASS  Data with the MC list: exit 0, C2w WARN (genWeight, genTtbarId, LHE_*), C2e PASS
+PASS  nothing passes: exit 0, C1 PASS with 0 events, read-back PASS
+PASS  empty input: exit 0
+PASS  -N 100 --first-entry 7: exit 0, C2r INFO, read-back of the same range PASS
+PASS  two inputs: exit 0, one ForgeAudit row each
+PASS  two inputs: ForgeAudit 2 rows
+PASS  haddnano.py merge: ForgeAudit 2, ForgeProvenance 2, keys and Events summed
+PASS  merged ForgeProvenance row 0 is json with the skim
+PASS  fallback: no replica at the site -> xrdcp copy into ./forge_aaa<lfn>, NanoAODTools reads the copy, exit 0, C1 C2 C2e write PASS, no ROOT error line from the probe, ForgeAudit file = the LFN, read-back PASS
+PASS  fallback: xrdcp fails -> ROOT reads fallback + LFN directly (FORGE|INPUT ... stream), exit 0, C1 C2 C2e write PASS, ForgeAudit file = the LFN
+PASS  fallback: a replica at the site is opened there (FORGE|INPUT local), exit 0, ForgeAudit file = the LFN
+PASS  input copy: a root:// site PFN is copied into ./forge_in<lfn> and real NanoAODTools reads the copy (FORGE|INPUT copy), exit 0, C1 C2 C2e write PASS, no ROOT open of the remote PFN, ForgeAudit file = the LFN, read-back PASS
+PASS  input copy: the copy from the site fails -> the AAA copy is read by real NanoAODTools, the remote PFN never opened, exit 0, C1 C2 C2e write PASS
+PASS  input copy: both copies and the site open (root://fake.invalid) fail -> ROOT reads fallback + LFN directly, exit 0, the reason names the three, C2e PASS (the probe's ROOT lines stay silent)
+PASS  FJR: the report of a clean job (written by real NanoAODTools) has no FrameworkError
+PASS  FJR: Runs genEventCount = entries + 1 -> C2r FAIL, exit 5, FrameworkError 80005 ForgeClosureFail first in the real report, then every element NanoAODTools wrote (the same as in the clean job's report), FORGE|FJR line
+PASS  crab_script.py in a CRAB-like job directory: run_postproc.py exits 5 and marks the report -> crab_script.py exits 5 too and says CRAB fails the job with 80005
+PASS  no --skim / --audit: exit 0, all events, no ForgeAudit, no FORGE lines
+RESULT: ALL PASS (26 checks)
+===========================================================================
+end_utc     : 2026-10-01T19:14:31Z
+wall_s      : 608
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p71_test_root_20261001_190421.log
+=== END ===================================================================

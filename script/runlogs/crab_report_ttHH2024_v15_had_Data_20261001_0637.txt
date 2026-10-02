@@ -1,0 +1,43 @@
+CRAB job report (per sample)  [done=finished, transf=transferring]
+============================================================================================
+sample                                  done     run    idle  transf    fail   other   total
+--------------------------------------------------------------------------------------------
+JetMET0_Run2024C-MINIv6NANOv15-v1        152       0       0       0       9       0     161
+JetMET0_Run2024D-MINIv6NANOv15-v1        130       1       0       0      20       0     151
+JetMET0_Run2024E-MINIv6NANOv15-v1        231       0       0       0       0       0     231
+JetMET0_Run2024F-MINIv6NANOv15-v2        328       0       0       0      53       0     381
+JetMET0_Run2024G-MINIv6NANOv15-v2        335       0       0       0     108       0     443
+JetMET0_Run2024H-MINIv6NANOv15-v2         79       0       0       0       3       0      82
+JetMET0_Run2024I-MINIv6NANOv15-v2        149       0       0       0       0       0     149
+JetMET0_Run2024I-MINIv6NANOv15_v2-v1     146       3       0       0      30       0     179
+JetMET1_Run2024C-MINIv6NANOv15-v1         91       0       0       0      19       0     110
+JetMET1_Run2024D-MINIv6NANOv15-v1        155       0       0       0       0       0     155
+JetMET1_Run2024E-MINIv6NANOv15-v1        178       2       0       0      48       0     228
+JetMET1_Run2024F-MINIv6NANOv15-v2        381       0       0       0       0       0     381
+JetMET1_Run2024G-MINIv6NANOv15-v2        448       0       0       0       3       0     451
+JetMET1_Run2024H-MINIv6NANOv15-v2         76       0       0       0       0       0      76
+JetMET1_Run2024I-MINIv6NANOv15-v1         68       0       0       0      14       0      82
+JetMET1_Run2024I-MINIv6NANOv15_v2-v2     116       0       0       0       0       0     116
+Muon0_Run2024C-MINIv6NANOv15-v1           79       0       0       0      24       0     103
+Muon0_Run2024D-MINIv6NANOv15-v1          180       0       0       0       0       0     180
+Muon0_Run2024E-MINIv6NANOv15-v1          254       0       0       0       1       0     255
+Muon0_Run2024F-MINIv6NANOv15-v1          571       0       0       0      23       0     594
+Muon0_Run2024G-MINIv6NANOv15-v1          944       1       0       0       3       0     948
+Muon0_Run2024H-MINIv6NANOv15-v1          152       0       0       0       0       0     152
+Muon0_Run2024I-MINIv6NANOv15-v1          173       0       0       0       0       0     173
+Muon0_Run2024I-MINIv6NANOv15_v2-v1       173       0       0       0       1       0     174
+Muon1_Run2024C-MINIv6NANOv15-v1           94       0       0       0       0       0      94
+Muon1_Run2024D-MINIv6NANOv15-v1          168       0       0       0       0       0     168
+Muon1_Run2024E-MINIv6NANOv15-v1          171       0       0       0       0       0     171
+Muon1_Run2024F-MINIv6NANOv15-v1          513       0       0       0      25       0     538
+Muon1_Run2024G-MINIv6NANOv15-v2          565       0       0       0       0       0     565
+Muon1_Run2024H-MINIv6NANOv15-v2           92       0       0       0       1       0      93
+Muon1_Run2024I-MINIv6NANOv15-v1           75       0       0       0      19       0      94
+Muon1_Run2024I-MINIv6NANOv15_v2-v1       133       0       0       0       0       0     133
+--------------------------------------------------------------------------------------------
+TOTAL                                   7400       7       0       0     404       0    7811
+============================================================================================
+==============================================================================
+SUMMARY (report): 32 dataset(s): 32 OK, 0 WARN, 0 FAILED, 0 SKIPPED
+RESULT: OK
+==============================================================================

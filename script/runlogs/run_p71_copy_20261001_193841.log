@@ -1,0 +1,84 @@
+=== RUNLOG ================================================================
+step        : p71_copy
+start_utc   : 2026-10-01T19:38:43Z
+host        : lxplus9103   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : e4ee5a2   modified_tracked_files: 1
+cmd         : /bin/bash -c cd\ /tmp/junghyun/p71\ \&\&\ python3\ /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/run_postproc.py\ /store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root\ -I\ modules.noop:MODULES\ -b\ /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/branches/branch_hadronic_2024_v15_MC.txt\ --skim\ 6j20\ --audit\ --input-fallback\ root://cms-xrd-global.cern.ch/\ --input-copy\ -N\ 2000\ -o\ out_p71.root 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-10-01 21:38:43.318757472 +0200 CEST m=+0.001307903
+proxy_left_s: 41053
+===========================================================================
+[run_postproc] : ============================================================
+[run_postproc] : Execution Started at: 2026-10-01 21:38:46
+[run_postproc] : ============================================================
+[run_postproc] : Branch Selection File loaded: /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/branches/branch_hadronic_2024_v15_MC.txt
+[run_postproc] :   -> Applied to: OUTPUT tree only (input is read in full)
+[run_postproc] :   -> Preview: ['# =============================================================================', '#  branch_hadronic_2024_v15_MC.txt', '#  ttHH -> 4b, fully-hadronic channel -- COMPRESSED output branch selection'] ...
+[run_postproc] : Module Loaded: modules.noop (List Variable: 'MODULES')
+[run_postproc] : Input Files Detected: 1
+[run_postproc] :   -> First file: /store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root
+[run_postproc] : Input /store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root: the copy from the site failed (xrdcp exit 54: Run: [ERROR] Server responded with an error: [3011] Unable to open file /eos/cms/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root; No such ); copying root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root
+[run_postproc] : Input /store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root: the job reads the copy (703 MB in 94 s) /tmp/junghyun/p71/forge_aaa/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root
+FORGE|INPUT|/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root|fallback|root://cms-xrd-global.cern.ch//store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root|copy: xrdcp exit 54: Run: [ERROR] Server responded with an error: [3011] Unable to open file /eos/cms/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-|copy (703 MB in 94 s) /tmp/junghyun/p71/forge_aaa/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root
+[run_postproc] : Output Strategy: MERGE (Hadd enabled)
+[run_postproc] :   -> Final Target: out_p71.root
+[run_postproc] : ------------------------------------------------------------
+[run_postproc] : ============================================================
+[run_postproc] : EVENT SKIM (production): 6j20
+[run_postproc] :   cut = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6
+[run_postproc] :   Runs / LuminosityBlocks stay whole; audit ON (forge_audit.py)
+[run_postproc] : ============================================================
+[run_postproc] : Initializing PostProcessor engine...
+[run_postproc] : Running Event Loop, then the forge audit...
+Will write selected trees to .
+01-Oct-2026 21:40:21 CEST  Initiating request to open file /tmp/junghyun/p71/forge_aaa/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root
+Adding file ./1cc0bdc7-d846-4744-aadb-6e64dbd1ee10_Skim.root
+Merging Events
+Merging LuminosityBlocks
+Merging Runs
+Merging MetaData
+Merging ParameterSets
+Merging tag
+Pre-select 368 entries out of 2000 (18.40%)
+Selected 368 / 2000 entries from /tmp/junghyun/p71/forge_aaa/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root (18.40%)
+Done ./1cc0bdc7-d846-4744-aadb-6e64dbd1ee10_Skim.root
+Total time 3.1 sec. to process 2000 events. Rate = 651.6 Hz.
+FORGE|EVT|1:215580:1075739228|nj20=7|ht20=554.55|pass=1|gtid=10000
+FORGE|EVT|1:215580:1075739215|nj20=5|ht20=438.09|pass=0|gtid=10042
+FORGE|EVT|1:215580:1075739217|nj20=3|ht20=480.72|pass=0|gtid=0
+FORGE|EVT|1:215580:1075739231|nj20=3|ht20=472.50|pass=0|gtid=0
+FORGE|EVT|1:215580:1075739242|nj20=2|ht20=247.19|pass=0|gtid=0
+FORGE|EVT|1:215580:1075739238|nj20=6|ht20=489.00|pass=1|gtid=42
+FORGE|EVT|1:215580:1075739236|nj20=4|ht20=481.59|pass=0|gtid=0
+FORGE|EVT|1:215580:1075739246|nj20=6|ht20=697.25|pass=1|gtid=10000
+FORGE|EVT|1:215580:1075739261|nj20=3|ht20=509.81|pass=0|gtid=41
+FORGE|EVT|1:215580:1075739247|nj20=5|ht20=400.47|pass=0|gtid=10000
+FORGE|EVT|1:215580:1075739255|nj20=4|ht20=385.61|pass=0|gtid=10000
+FORGE|EVT|1:215580:1075739249|nj20=6|ht20=612.84|pass=1|gtid=43
+FORGE|EVT|1:215580:1075739267|nj20=7|ht20=520.91|pass=1|gtid=10000
+FORGE|EVT|1:215580:1075739270|nj20=4|ht20=412.59|pass=0|gtid=0
+FORGE|EVT|1:215580:1075739271|nj20=4|ht20=589.62|pass=0|gtid=0
+FORGE|EVT|1:215580:1075739280|nj20=3|ht20=271.62|pass=0|gtid=0
+FORGE|EVT|1:215580:1075739285|nj20=6|ht20=411.23|pass=1|gtid=10000
+FORGE|EVT|1:215580:1075739268|nj20=8|ht20=579.28|pass=1|gtid=10044
+FORGE|EVT|1:215580:1075739294|nj20=4|ht20=396.38|pass=0|gtid=0
+FORGE|EVT|1:215580:1075739272|nj20=5|ht20=662.20|pass=0|gtid=10052
+FORGE|FILE|/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root|n_in=2000|n_pass=368|sumw=3562830.23|runs_sumw=397905823|runs_count=224159|t_s=17.9
+FORGE|CHECK|C1|PASS|output Events 368, RVec pass 368
+FORGE|CHECK|C2|PASS|every file read to the end of its range (1 files)
+FORGE|CHECK|C2e|PASS|0 ROOT error line(s)
+FORGE|CHECK|C2r|INFO|/store/mc/RunIII2024Summer24NanoAODv15/Wto2Q-3Jets_Bin-HT-400to800_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/1cc0bdc7-d846-4744-aadb-6e64dbd1ee10.root: part of the file read, Runs sums not compared
+FORGE|CHECK|write|PASS|ForgeAudit 1 row(s), ForgeTTbbKeys 35 row(s), ForgeProvenance, in out_p71.root
+FORGE|JOB|files=1|n_in=2000|n_pass=368|n_out=368|t_s=25.0|exit=0
+[run_postproc] : Job Finished Successfully at 2026-10-01 21:40:45 (exit 0)
+[run_postproc] :    Total Runtime: 0:01:59.757005
+===========================================================================
+end_utc     : 2026-10-01T19:40:46Z
+wall_s      : 122
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_p71_copy_20261001_193841.log
+=== END ===================================================================
