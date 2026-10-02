@@ -2,7 +2,7 @@
 
 > **목적**: ttHH → 4b 파이프라인을 Run 3 로 넓히기 위한 단일 참조. ① 범위와 결정, ② Run 2 와 달리 Run 3 에서 **반드시** 지켜야 할 event-level 항목(veto map, MET filter, jet ID 재계산 …)의 체크리스트, ③ 데이터셋을 **추정하지 않고 DAS 로 확정**하는 절차와 도구, ④ hadronic / leptonic 용도 구분(`had`/`lep` 태그)과 hadronic 우선 생산.
 > **대상 독자**: Run 3 registry 를 채우고 첫 ntuple 을 만들 사람; analyzer 에 Run 3 cleaning 을 넣을 사람.
-> **상태**: 살아있는 문서. 작성 **2026-09-07**, 갱신 **2026-09-16** (§6 항목 1·2·5·6: Run 3 had 스캔 2024/2025 완료, `build_from_scan_log.py` Run 3 데이터 변형 처리, `genTtbarId` 존재 확인, 브랜치 인벤토리 스윕 완료), 그 전 **2026-09-10/11** (`TT4b` = 중앙 `TT4B` 확인 §4.6, BTV UParTAK4 WP 답변 §2 행 9, 캠페인 inventory 절차 §4.3 (4) 와 결과 §4.7; 09-11 ttH(bb) 분할 샘플 3 종 VALID 29.5M 씩 → `had`, 2025 MC 캠페인 없음 DAS 확인); 같은 날 **PdmVRun3Analysis twiki r223(2026-09-07)** 과 **PPD "Run3 2025 Summary Table"(2026-01-20)** 원문(PDF)으로 era 경계·golden JSON·루미·GT·데이터 명명 규칙을 대조해 해당 행을 "실측" 으로 올렸다. 남은 "기억" 표시(veto map 키, MET filter 세부, JEC 태그, PU 키, 트리거 경로)는 POG twiki 원문 확인 전까지 **코드에 넣지 않는다**. **2026-09-07 저녁: probe·discovery 완료** — 6 era 의 캠페인 문자열 전부 DAS 로 확정(§4.2), Summer24 에 신호 `TTHH-HHto4B` 를 포함한 hadronic 세트가 **중앙 생산으로 존재**, 2022/2023 v15 는 부분 재생산(§4.5). `script/samples_registry_run3.txt` 작성(MC 77 = had 58 + lep 19, DATA 11).
+> **상태**: 살아있는 문서. 작성 **2026-09-07**, 갱신 **2026-10-02** (§2 머리: 2024 의 기억 항목을 Stage 0 도구로 확인), 그 전 **2026-09-16** (§6 항목 1·2·5·6: Run 3 had 스캔 2024/2025 완료, `build_from_scan_log.py` Run 3 데이터 변형 처리, `genTtbarId` 존재 확인, 브랜치 인벤토리 스윕 완료), 그 전 **2026-09-10/11** (`TT4b` = 중앙 `TT4B` 확인 §4.6, BTV UParTAK4 WP 답변 §2 행 9, 캠페인 inventory 절차 §4.3 (4) 와 결과 §4.7; 09-11 ttH(bb) 분할 샘플 3 종 VALID 29.5M 씩 → `had`, 2025 MC 캠페인 없음 DAS 확인); 같은 날 **PdmVRun3Analysis twiki r223(2026-09-07)** 과 **PPD "Run3 2025 Summary Table"(2026-01-20)** 원문(PDF)으로 era 경계·golden JSON·루미·GT·데이터 명명 규칙을 대조해 해당 행을 "실측" 으로 올렸다. 남은 "기억" 표시(veto map 키, MET filter 세부, JEC 태그, PU 키, 트리거 경로)는 POG twiki 원문 확인 전까지 **코드에 넣지 않는다**. **2026-09-07 저녁: probe·discovery 완료** — 6 era 의 캠페인 문자열 전부 DAS 로 확정(§4.2), Summer24 에 신호 `TTHH-HHto4B` 를 포함한 hadronic 세트가 **중앙 생산으로 존재**, 2022/2023 v15 는 부분 재생산(§4.5). `script/samples_registry_run3.txt` 작성(MC 77 = had 58 + lep 19, DATA 11).
 > **관련**: Run 2 v15 마이그레이션 [`../09_v15_migration_log.md`](../09_v15_migration_log.md), 스캐너 [`../../script/das_scan.sh`](../../script/das_scan.sh), Run 3 discovery [`../../script/das_discover_run3.sh`](../../script/das_discover_run3.sh), 2018 확장 시 정한 multi-year 원칙 (workspace `00_CONTEXT…` §2.3).
 
 ## 결론 먼저 (BLUF)
@@ -33,6 +33,8 @@
 ## 2. Run 3 에서 지켜야 할 event-level 항목
 
 기호: **실측** = 이 세션에서 DAS/로그로 직접 봄 · **기억** = 2026-09 기준 기억이며 twiki 원문과 대조 필요 · **규칙** = 정책이라 값 확인 불필요. "단계" 는 우리 파이프라인에서 어디서 적용하는지 — NtupleForge 는 passthrough 라 대부분 **analyzer(tempTTHH)** 다.
+
+**2026-10-02 (2024 analyzer 의 Stage 0):** 아래에서 **기억** 인 2024 항목(3 jet veto map 의 key·type, 5 jet ID payload, 7 JEC/JER tag, 8 PU key, 9 UParTAK4 WP 와 SF, 12 trigger 의 prescale, 14 C–I lumi; 4 의 MET filter 목록은 payload 가 아니라 JME twiki 로)은 `script/jsonpog_inventory.py`(payload)와 `script/lumi_hlt_check.sh`(lumi·prescale)로 확인해 이 표를 **실측**으로 바꾼다(workspace RUNBOOK §20, tempTTHH `docs/PLAN_v15_2018UL_2024.md` §9). 14 의 2024 값 109.95 는 B 를 포함한다: 우리 Data(C–I)의 합은 같은 표로 109.82 다(예비).
 
 | # | 항목 | era | 무엇을 | 단계 | 어디서 확인 | 상태 |
 |---|---|---|---|---|---|---|

@@ -9,6 +9,36 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-10-02 (2): two read-only Stage 0 checks for the 2024 analyzer (payload inventory; luminosity and HLT prescales)
+
+### Added
+- `script/jsonpog_inventory.py`: lists the central correctionlib payloads (`/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration`)
+  for chosen POGs and eras: each file (bytes, mtime, schema), each correction (name, version, inputs, output), the category keys of
+  its string and int inputs, the range of its binned inputs, the numbers of a correction that is one category of plain values (BTV
+  `*_wp_values`), compound corrections. One `|`-separated line per fact; ERR lines and exit 3 when something cannot be read, the run
+  goes on. Standard library only (gzip + json), so it runs on the lxplus host python3 without cmsenv. Test
+  `script/test_jsonpog_inventory.py`: 27 checks on a synthetic payload tree (all node types of schema v2, a corrupt gzip, a missing
+  POG, an era outside the filter, a big file printed as names only unless `--name-regex` narrows it, a value table with a default);
+  the same tool also read a payload written by correctionlib 2.9's own schema model correctly (AI session).
+- `script/lumi_hlt_check.sh`: golden-JSON facts (md5, runs, LS) and brilcalc luminosity for the whole JSON, the era range and each
+  era, both normtags when present, and the effective luminosity of HLT path patterns (prescale check), printing brilcalc's own
+  summary blocks (lines cut at 400 characters) and one `HLTSUM` line per path: brilcalc gives one row per path version, so the
+  versions are summed and divided by the era-range total. Defaults are 2024: `Cert_Collisions2024_378981_386951_Golden.json`, eras
+  C-I of `docs/ttHH/03_run3_plan.md` §2 row 2, `HLT_PFHT*`, `HLT_IsoMu2*`, `HLT_Ele30_WPTight_Gsf_v*`. brilcalc from PATH, else the
+  LUM POG brilws-docker env file, else brilconda310 (both overridable). Test `script/test_lumi_hlt_check.sh`: 24 checks with a fake
+  brilcalc, including env files that define brilcalc as a function or an alias.
+- An independent review agent read both tools, their tests and the RUNBOOK commands before hand-over; its eight findings (the test
+  that would have used the real lxplus brilws setup, per-version HLT rows, `set -u` around the sourced env file, `--name-regex`
+  detail on big files, the build check, the include path of one unit test, long check-json lines, misleading EDGES/VALUES lines)
+  are fixed.
+
+### Why
+- tempTTHH decided 2024 first for the v15 analyzer (tempTTHH `docs/DECISIONS.md` D-2026-10-02-A) and plans its Stage 0 as checks
+  only (tempTTHH `docs/PLAN_v15_2018UL_2024.md` §9): the 2024 b-tag WPs and SF method, the jet veto map key and types, the jet ID
+  payload, the JEC/JER tags and the pileup key must come from the payloads, and the normalization from the luminosity of the eras
+  we processed (C-I; the golden JSON also covers B). The BTV and JERC web pages could not be read from the AI session on 10-02.
+- Commands: workspace RUNBOOK §20. Ledger V57.
+
 ## [Unreleased], 2026-10-02: the 2024 job table read (A27 not reproduced from lxplus, A28 classified); records only
 
 ### Found

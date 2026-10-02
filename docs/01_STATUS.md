@@ -339,7 +339,10 @@
 17. **standalone C++ `TopCPVGenCategorizer` 는 v9 전용** — `GenPart_statusFlags` 가
     v15 에서 `UShort_t` 라 `Int_t` `SetBranchAddress` 는 조용한 쓰레기 값을 냅니다.
 18. **`tempTTHH/include/eventBuffer.h`** — v15 ntuple 이 나온 뒤 `mkanalyzer` 로
-    재생성. 현재 헤더는 2017+2018 superset(HLT 583) 입니다.
+    재생성. 현재 헤더는 2017+2018 superset(HLT 583) 입니다. **2026-10-02 (tempTTHH D-2026-10-02-B):** branch 목록이 바뀔 때마다
+    생성기로 다시 만들고(생성기는 tempTTHH 저장소에 둠; 지금은 저장소·맥에 없음), 분석이 읽는 branch 는 입력 파일마다 필수 검사(없으면
+    FATAL). 이 저장소의 `branches/*.txt` 를 바꾸면 tempTTHH 쪽 재생성이 따라와야 한다. 순서는 tempTTHH `docs/PLAN_v15_2018UL_2024.md`
+    §9(2024 먼저, Stage 1).
 19. ~~**TTHHGenCategoryTools 2018 `TTToSemiLeptonic` 검증 실패**~~ **CLOSED 2026-09-28** (v15 에서 닫힘, v9 재실행은 하지 않음).
     2018 patch 를 중앙 NanoAODv15 여섯 샘플 전량(972,574,595 event)에 다시 맞춰 `OVERALL: ALL SAMPLES PASS`: unmatched 0, disagree 0,
     extend == v15 인 넷은 patch 행 수와 정확히 같고 v15 가 적은 둘(`TTbar_SemiLep`, `TTbb_Hadronic`)은 기대값대로(원장 V45,
