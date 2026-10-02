@@ -9,6 +9,22 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-10-02: the 2024 job table read (A27 not reproduced from lxplus, A28 classified); records only
+
+### Found
+- `docs/05_troubleshooting.md` A27: from lxplus the file of a job that died at T1_US_FNAL opened three times in one process through
+  the FNAL redirector and three times through AAA, as did the file of a job that finished there; 2,429 jobs finished at FNAL
+  against 762 failed. The second-open hypothesis is not supported; the `[3011]` is taken as an intermittent storage problem at FNAL.
+  The failed jobs' datasets are all on disk at other T1/T2 sites, so no recovery task is needed: the remaining 827 jobs are
+  resubmitted with a site blacklist (workspace RUNBOOK section 19). CRAB's site rules for that, read in its sources, are recorded.
+- `docs/05_troubleshooting.md` A28: the 54 exit-5 jobs of 2024 hold no real closure FAIL: 51 ended with our 85 (read trouble,
+  `[3005] I/O limit exceeded` or `[3011]`), 2 with 84, 1 has no `FORGE|JOB` line in its log.
+- Round 2 (workspace RUNBOOK section 19): 827 jobs in 48 `crab resubmit` lines with a site blacklist, `ok 48 / 48`. The two 84s
+  were the audit's re-open of the input at T1_RU_JINR failing with `[FATAL] Connection error` after NanoAODTools had read the whole
+  file (the case P7.1's `--input-copy` removes); job 24 hit local read errors at T2_EE_Estonia (`TBranch::GetBasket`, basket 77).
+- Proposed by the user (not decided): a site blacklist from submission, with a preflight check that every dataset keeps a full
+  disk replica outside it (CRAB skips blocks whose locations are all blacklisted at submission); plan 12 P7.2.
+
 ## [Unreleased], 2026-10-01: 2024 failures diagnosed (A27, A28); P7.1 decided (copy-first input, exit codes through the FJR), not yet used on the grid
 
 ### Found
@@ -57,8 +73,10 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   `--input-fallback`, `crab_script.py` passing the code on); `test_submit_crab_mock.py` 52 (4 new); nine mutations of the new code each
   make named checks fail. Real ROOT: 6 new checks in `test_forge_audit_root.py` (the copy with real NanoAODTools, the AAA copy after a
   failed site copy, all copies failing, a real report marked by a C2r FAIL, `crab_script.py` in a flattened job directory) and 1 in
-  `test_forge_campaign_audit_root.py`: in the AI session with real ROOT 6.40 and NanoAODTools 26/26 and 22/22 ALL PASS; on lxplus
-  (ROOT 6.30) next (workspace RUNBOOK section 18).
+  `test_forge_campaign_audit_root.py`: in the AI session with real ROOT 6.40 and NanoAODTools 26/26 and 22/22 ALL PASS. On lxplus
+  (2026-10-01, commit `e4ee5a2`, ROOT 6.30.09): 96 / ALL / 26 / 22 PASS; the input of a job that died at FNAL (not at CERN) copied
+  with `--input-copy`: the EOS copy failed, the AAA copy brought 703 MB in 94 s, closure PASS; preflight as expected (workspace
+  RUNBOOK section 18).
 
 ## [Unreleased], 2026-09-30 (2): P6 done, 2024 production submitted (P7), 2018UL Data campaign audit passed (P8); records only
 

@@ -943,3 +943,23 @@ lxplus9105, git `039f12b`(P4 커밋), 명령은 워크스페이스 RUNBOOK §13.
   Brunel 85 는 replica 를 보고 `--siteblacklist`, 진짜 closure FAIL 은 resubmit 하지 않는다. 명령: RUNBOOK §17(가짜 crab·DAS 로 문법과 출력 모양을
   확인한 뒤 줌). 새 코드 P7.1(입력 복사 `--input-copy`, FJR 로 exit code; D-2026-10-01-p71): 오프라인 mock 96, CRAB mock 52, 실제 ROOT
   6.40 시험 26/26·22/22(6 개와 1 개 새로), 독립 리뷰 1 회 반영(원장 V56). 사용자 결정 "commit 해서 하자"(10-01): 커밋하고 lxplus 시험(RUNBOOK §18).
+  lxplus(10-01, `e4ee5a2`, ROOT 6.30.09): 시험 넷 96 / ALL / 26 / 22, FNAL 에서 죽은 파일의 `--input-copy`: EOS 복사 실패 → AAA 복사 703 MB 94 s →
+  closure PASS, preflight 기대대로(원장 V56).
+
+## 29. 2026-10-02: 2024 job 표, FNAL 세 번 열기, exit 5 분류, 사이트 blacklist resubmit
+
+- **job 표**(04:33, 워크스페이스 RUNBOOK §17 1): 26,947 job 중 finished 25,952, failed 995(50115 892: FNAL 758·IIHE 134; 5 54; 50664 15;
+  60322 11; 50660 7; postprocessing 16). FNAL 은 finished 2,429·failed 762, 50115 892 개는 모두 retries=2.
+- **FNAL 세 번 열기**(§17 3): 실패한 job 151 의 파일과 FNAL 에서 끝난 job 의 파일 모두 FNAL·AAA 로 세 번씩 열렸다. docs/05 A27 의 재열기
+  가설은 지지되지 않고, 그 시각 FNAL 저장소 쪽의 간헐적인 읽기 문제로 본다.
+- **exit 5**(§17 4): 85 로 끝난 51, 84 둘, 로그에 `FORGE|JOB` 줄이 없는 하나; 진짜 closure FAIL 은 없다(A28). 오류는 `[3005] I/O limit exceeded`
+  14 job, `[3011]` 7 job.
+- **replica**: 실패한 task 의 dataset 은 모두 FNAL·Brunel·IIHE 밖의 디스크 T1/T2 에도 가장 높은 block completion 으로 있다: recovery task 없이
+  예전 sandbox 로 resubmit 한다. DAS 의 `dataset_fraction`(모두 0 %)과 `block_fraction`(모두 100 %)은 쓸 수 없다.
+- **resubmit**: 안전한 실패 168 은 `ok 24 / 24`(§17 2). 남은 827(FNAL 50115 758, exit 5 54, 50664 15)은 §19 의 생성기로 task 당 한 줄,
+  실패한 사이트와 FNAL·IIHE·Brunel·MIT 를 막는다(DAS 로 replica 가 남는지 확인; AI 세션의 가짜 crab·DAS 시험 28/28, mutation 8 개 모두 잡힘, 독립 리뷰 1 회 반영).
+  CRAB 의 site 규칙(blacklist 는 그 resubmit 의 job 에만, 제출 때의 block 위치를 다 지우면 PreJob 이 job 을 내지 못함, 같은 task 의 다음
+  resubmit 뒤에는 앞 job 의 blacklist 가 한 번만 남음)은 docs/05 A27 대응 1.
+- **round 2 실행**(10-02 09:56 CEST): 48 줄 827 job `ok 48 / 48`. 84 둘은 T1_RU_JINR 에서 audit 의 재열기가 `[FATAL] Connection error`
+  (NanoAODTools 는 파일을 끝까지 읽음: P7.1 의 사본 읽기가 없애는 경우), job 24 는 T2_EE_Estonia 의 로컬 파일 읽기 오류(`TBranch::GetBasket`,
+  nJet basket 77). 사용자 제안(10-02): 다음 제출부터 제출 때 blacklist 와 replica preflight(계획 12 P7.2, 결정 전; docs/05 A27 대응 3).

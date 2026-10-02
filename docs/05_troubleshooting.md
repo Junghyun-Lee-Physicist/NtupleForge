@@ -1156,8 +1156,8 @@ preflight 에 `site blacklist` 줄). 되풀이되지 않으면 blacklist 하지 
 
 ## A27 · 2024 의 T1_US_FNAL job: 시험 열기는 열렸는데 NanoAODTools 의 두 번째 열기가 `[3011] No servers are available to read the file` (2026-10-01)
 
-**상태: 원인 확인 중**(lxplus 시험과 job 표: 워크스페이스 RUNBOOK §17 1·3). 대응 2(P7.1)는 사용자 결정(10-01, D-2026-10-01-p71)으로 커밋하고
-lxplus 시험(RUNBOOK §18) 뒤 recovery 와 다음 제출에 쓴다.
+**상태: 대응 중**(10-02): lxplus 에서는 재열기 거절이 재현되지 않았고 FNAL 에서 끝난 job 이 2,429 개라, 그 시각 FNAL 쪽의 간헐적인 읽기 문제로
+본다. 이미 제출한 task 는 FNAL 등을 뺀 사이트 blacklist resubmit(워크스페이스 RUNBOOK §19), 새 제출은 P7.1(D-2026-10-01-p71, 커밋 `e4ee5a2`).
 결과가 나오면 이 절 끝 "해결 기록" 에 적는다(사용자 지시, 2026-09-30).
 
 **증상.** 2024 MC `WJetsToQQ_HT400to800` 의 50115 201 개가 모두 T1_US_FNAL(10-01 triage: 2024 fail 980 중 50115 892). job 151·159 의
@@ -1174,10 +1174,24 @@ stdout(`crab getlog --short`):
 audit 의 재열기(84)가 걸렸을 것이다. 가리는 법: (1) lxplus 에서 실패한 job 의 LFN 을 한 프로세스에서 `root://cmsxrootd-site.fnal.gov/` 로 세 번,
 AAA 로 세 번 연다(§17 3; FNAL 에서 끝난 job 의 LFN 으로 대조). (2) 같은 task 에서 FNAL 에서 끝난 job 이 있는지(§17 1). FNAL 에서 끝난 job
 이 많으면 재열기 자체가 아니라 특정 파일이나 시간대의 문제다.
+**10-02 판정**: (1) 세 번 열기는 FNAL·AAA 모두 ok(실패한 job 151 의 파일, FNAL 에서 끝난 job 의 파일), (2) FNAL 에서 끝난 job 2,429, 실패 762.
+가설(재열기 거절)은 지지되지 않는다. job 의 사이트 PFN 도 같은 `root://cmsxrootd-site.fnal.gov//store/...` 였으니 다른 것은 시각과 FNAL 안의
+경로다. `[3011] No servers are available to read the file` 은 redirector 가 그 순간 그 파일을 줄 서버를 찾지 못했다는 뜻이라 그 시각 FNAL
+저장소 쪽 문제로 본다(우리 쪽에서 더 가릴 방법은 없다). 50115 892 개는 모두 retries=2(세 번 다 실패; 표에는 마지막 사이트만 나온다)라
+resubmit 은 FNAL 밖으로 보낸다.
 
 **대응 1: 이미 제출한 task** (sandbox 는 제출 때 것). replica 가 다른 디스크 사이트에도 있으면(§17 4) FNAL 에서 죽은 job 번호만
 `crab resubmit -d <project dir> --jobids=<N,...> --siteblacklist=T1_US_FNAL`. FNAL 에만 있으면 P7.1 코드로 그 파일만 다시 처리한다
 (recovery task; 방법은 결과를 보고 정한다). plain resubmit 은 다시 FNAL 로 가서 같은 식으로 죽을 공산이 크다.
+**10-02 실행**: replica 가 모두 다른 사이트에도 있어(RUNBOOK §17 4) recovery task 는 필요 없다. 생성기(RUNBOOK §19 1)가 task 당 한 줄에
+`--siteblacklist=<실패한 사이트>,T1_US_FNAL,T2_BE_IIHE,T2_UK_London_Brunel,T2_US_MIT` 를 붙이고, DAS 에서 그 dataset 의 가장 높은 block
+completion 을 가진 디스크 T1/T2 가 blacklist 밖에 남는지 본다(없으면 blacklist 를 줄이고 표에 적는다). 확인한 CRAB 의 규칙(CRABClient
+`Commands/resubmit.py`, CRABServer `DagmanResubmitter.py`·`DagmanCreator.py`·`PreJob.py`): (1) `--siteblacklist` 는 제출 때의 blacklist 를
+덮어쓰고 그 resubmit 의 job 과 그 자동 재시도에만 쓰인다. (2) job 이 갈 수 있는 사이트는 제출 때(09-30)의 입력 block 위치에서 그날 CRAB 의
+전역 blacklist 를 뺀 것(`site.ad.json`)이다: blacklist 가 그것을 모두 지우면 PreJob 이 `Can not submit since DESIRED_Sites list is empty` 로
+끝나고 job 은 실행 없이 곧 다시 failed. DAS 는 지금의 위치라 다를 수 있어 RUNBOOK §19 2b 로 낸 job 의 상태를 본다. (3) 같은 task 에
+다음 resubmit 을 내면 그 전 resubmit 의 job 은 blacklist 를 다음 재시도 한 번에만 쓴다(`redoSites` 가 읽은 목록을 저장하지 않음): 다음 round 는
+그 task 의 job 이 모두 끝난 뒤에 낸다.
 
 **대응 2: 새 제출 (P7.1, D-2026-10-01-p71).** `run_postproc.py --input-copy`: 사이트 PFN 이 `root://`(`roots://`, `xroot://`)면 먼저
 `xrdcp -f -N` 으로 job 디렉터리의 `forge_in/store/...` 에 복사하고(3600 s 제한) NanoAODTools 와 audit 은 그 사본만 읽는다. 원격 파일은
@@ -1190,12 +1204,31 @@ AAA 직접 읽기다(이유는 `FORGE|INPUT` 줄에 모두 남는다; 리뷰 10-
 사본 복사에서도 걸리는지는 모른다(그때는 위 순서로 넘어간다). 시험: mock 96(P7.1 20 새로), CRAB mock 52, 실제 ROOT 시험 6 개 추가(AI 세션 ROOT 6.40 에서
 26/26; lxplus 는 RUNBOOK §18), 원장 V56.
 
-**해결 기록.** (결과가 나오면 여기에: §17 3 의 세 번 열기, FNAL 에서 끝난 job 수, resubmit 결과, P7.1 을 쓰면 그 첫 grid 결과.)
+**대응 3 (사용자 제안 10-02, 결정 전): 제출 때부터 blacklist.** 다음 제출부터는 지난 캠페인의 job 표에서 되풀이해 실패한 사이트를 YAML
+`site_blacklist`(09-30 부터 `config.Site.blacklist`)에 넣어 처음부터 막고, `submit_crab.py --preflight` 가 dataset 마다 그 blacklist 밖에
+가장 높은 block completion 의 디스크 T1/T2 가 남는지 DAS 로 본다. 제출 때 모든 위치가 막힌 block 은 CRAB 이 경고만 남기고 건너뛰므로
+(`DagmanCreator.py`: `... will be skipped because those sites are in user black list`) 이 확인이 없으면 dataset 이 조용히 비게 된다. 이미
+돌고 있는 task 의 blacklist 는 resubmit 으로만 바꿀 수 있다(대응 1). 사이트 문제는 시간에 따라 바뀌므로(FNAL 은 finished 2,429) 고정 blacklist
+는 보조이고, 실행 중의 읽기 실패는 P7.1(대응 2: 사본 읽기, 85·84 → 8021·8020 이라 CRAB 이 다른 사이트에서 재시도)이 맡는다. 계획 12 의 P7.2.
+
+**해결 기록.**
+- P7.1 lxplus 시험(10-01, lxplus9103, `e4ee5a2`, RUNBOOK §18 3): FNAL 에서 죽은 job 151 의 파일을 `--input-copy` 로 읽었다. CERN 에 없어
+  사이트(EOS) 복사는 `[3011] Unable to open file ... No such` 로 실패했고, AAA 복사가 703 MB 를 94 s(약 7.5 MB/s)에 가져와 2,000 event 에서
+  closure PASS, exit 0. FNAL 에만 있는 파일도 AAA 로 한 번에 가져올 수 있다(recovery 의 전제).
+- 10-02 04:33 job 표(RUNBOOK §17 1): 2024 의 26,947 job 중 failed 995. 50115 는 FNAL 758·T2_BE_IIHE 134(892 개 모두 retries=2). FNAL 은
+  finished 2,429·failed 762(50115 758 + postprocessing 4)이고 실패는 38 task 에 고루 있다. IIHE 에도 50115 134, exit 5 36, 50664 14, 50660 7
+  (finished 1,200): FNAL 만의 문제는 아니다.
+- 10-02 세 번 열기(§17 3): job 151 의 파일 FNAL 3/3·AAA 3/3 ok, FNAL 에서 끝난 JetMET0 2024C job 58 의 파일도 6/6. 재열기 거절은 재현되지
+  않는다.
+- 10-02 resubmit: FNAL 밖의 안전한 실패 168(IIHE 의 50115 134 포함)은 blacklist 없이 §17 2 로 `ok 24 / 24`(IIHE 로 다시 가서 실패하면 다음
+  round 에서 막는다). FNAL 의 50115 758 과 exit 5·50664 는 §19 의 사이트 blacklist resubmit: 10-02 09:56 CEST 에 48 줄 827 job,
+  `ok 48 / 48`(남는 T1/T2 가 가장 적은 task 도 셋). 그 job 들이 도는지는 §19 2b, 끝나면 새 job 표로 본다.
+- (남은 것: §19 의 결과, 그 job 들이 다른 사이트에서 끝나는지, P7.1 의 첫 grid 결과.)
 
 ## A28 · CRAB 은 scriptExe 의 exit code 를 그대로 받지 않는다: audit 의 85 가 exit code 5 로 기록되고 재시도되지 않았다 (2026-10-01)
 
-**상태: 원인 확인**(job 로그 원문과 CRAB wrapper·RetryJob 소스). 대응 2(P7.1)는 사용자 결정(10-01, D-2026-10-01-p71)으로 커밋하고 lxplus 시험
-(RUNBOOK §18) 뒤 쓴다.
+**상태: 원인 확인, 2024 의 54 job 분류 끝**(10-02, 워크스페이스 RUNBOOK §17 4): 진짜 closure FAIL 은 없다. 이미 제출한 task 는 사이트 blacklist
+resubmit(RUNBOOK §19), 새 제출은 P7.1(D-2026-10-01-p71, 커밋 `e4ee5a2`, lxplus 시험 통과).
 
 **증상.** 2024 MC `WJetsToQQ_HT400to800` 의 "exit code 5" 14 개(T2_UK_London_Brunel 13, T3_UK_London_QMUL 1; 2024 전체 54). job 1·13 의
 stdout(`crab getlog --short`, 원문):
@@ -1229,5 +1262,19 @@ stdout(`crab getlog --short`, 원문):
 넘긴다(처음 안은 0 으로 끝내는 것이었으나 리뷰 10-01 에서 바꿈: wrapper 가 FrameworkError 를 못 읽는 경우에도 job 이 실패로 남아야 한다; 실패한
 job 은 어느 쪽이든 stage-out 하지 않는다). `crab status` 의 Error Summary 에 이 코드와 이유가 보이게 된다.
 
-**해결 기록.** (P7.1 이 grid 에서 처음 쓰이면 여기에: 8021 job 이 다른 사이트에서 자동 재시도되는지, 80005 가 재시도 없이 멈추는지, Error
-Summary 의 모양.)
+**해결 기록.**
+- 10-02 분류(RUNBOOK §17 4, 21 task 54 job): `FORGE|JOB` 의 exit 가 85 로 끝난 51(85 만 36, 1 다음 85 14, 0 다음 85 1; FAIL 항목은 C2e 또는
+  C2e·audit), 84 둘(`ttHToNonbb` 102·116, C2e·audit), `FORGE|JOB` 줄 없음 하나(`Muon1_Run2024H` job 24). 진짜 closure FAIL(5)은 없다. 사이트는 IIHE 36,
+  Brunel 14, JINR 2, QMUL 1, Estonia 1. 가장 많은 오류는 `[3005] I/O limit exceeded and wait time hit` 14 job, `[3011] No servers are available
+  to read the file` 7 job, `[3xxx]` 줄이 없는 job 32(84 둘과 job 24 포함), 요약에 안 나온 다른 `[3xxx]` 1. 수는 retries 표와도 맞는다: 85 만 36 과
+  84·`FORGE|JOB` 없음 3 = retries 0 의 39, `1,85` 11 과 `0,85` 1 = retries 1 의 12, `1,1,85` 3 = retries 2 의 3. `1,85` 는 첫 시도가 FJR 없이 끝나(50115,
+  재시도) 둘째가 85(CRAB 에는 5, 재시도 없음)로 끝난 모양이다.
+- 대응 1 의 resubmit: 54 개 모두 실패한 사이트와 FNAL·IIHE·Brunel·MIT 를 뺀 resubmit(RUNBOOK §19, 10-02 `ok 48 / 48`).
+- 10-02 §19 3: 84 둘은 T1_RU_JINR 에서 났다. probe 와 NanoAODTools 는 JINR 의 `root://xrootd01.jinr-t1.ru:1094//pnfs/...` 를 열어 끝까지
+  돌았고(출력 97,605·94,296 event), 세 번째 열기인 audit 의 재열기만 `[FATAL] Connection error` → `AuditError: cannot open ...` → 84. 한 job 이
+  같은 원격 파일을 여러 번 여는 위험(A27 의 가설)이 실제로 드러난 경우다(그 순간의 사이트 문제일 수도 있다): P7.1 의 `--input-copy` 는 원격을
+  xrdcp 로 한 번만 열고 audit 은 사본을 읽으므로 이 경우를 없앤다. 두 파일은 DBS 에서 유효(121,040·116,960 event), lxplus 에서 AAA 로 열리고
+  디스크 replica 가 열 곳 넘게 있다. job 24 는 T2_EE_Estonia 에서 로컬 파일(`file:/cms/store/...`)을 읽다 `TBranch::GetBasket ... at byte:0,
+  branch:nJet, ..., basketnumber=77` 이 되풀이됐다(`FORGE|JOB` 줄 없음): Estonia 의 그 replica 나 저장소 문제로 보인다. 셋 다 실패한 사이트를
+  막고 다시 냈다.
+- (P7.1 이 grid 에서 처음 쓰이면 여기에: 8021 job 이 다른 사이트에서 자동 재시도되는지, 80005 가 재시도 없이 멈추는지, Error Summary 의 모양.)
