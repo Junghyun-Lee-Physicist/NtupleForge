@@ -1278,3 +1278,25 @@ job 은 어느 쪽이든 stage-out 하지 않는다). `crab status` 의 Error Su
   branch:nJet, ..., basketnumber=77` 이 되풀이됐다(`FORGE|JOB` 줄 없음): Estonia 의 그 replica 나 저장소 문제로 보인다. 셋 다 실패한 사이트를
   막고 다시 냈다.
 - (P7.1 이 grid 에서 처음 쓰이면 여기에: 8021 job 이 다른 사이트에서 자동 재시도되는지, 80005 가 재시도 없이 멈추는지, Error Summary 의 모양.)
+
+## A29 · 2024 MC 출력 하나가 크기 0 으로 최종 위치에 남았다: `TTbar_Hadronic` job 443 (2026-10-02, 발견 2026-10-05)
+
+**상태: 원인 미확인, 처리 방법 정함**(10-05). 분석은 그 파일을 빼고 진행하고, 생산은 P8 집계로 같은 경우를 모두 찾아 그 job 만 resubmit 한다.
+
+**증상.** tempTTHH 의 KNU branch 스캔(`tools/stage0/branch_signature.py`, condor job `knu_d16_branchsig_mc`, 10-05)이 2024 MC 의 한 파일에서
+(원문) `Error in <TFile::ReadBuffer>: error reading all requested bytes from file /pnfs/knu.ac.kr/data/cms/store/user/junghyun/ttHH2024_v15_had_MC_v1/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/TTbar_Hadronic/260930_162708/0000/forgedNtuple_443.root, got 0 of 300`
+와 `Error in <TFile::Init>: ... failed to read the file type data.` 를 냈고 그 dataset 을 `files=770 unreadable=1` 로 셌다. 사용자의 `ls -l`(10-05):
+`-rw-r--r-- 1 jhlee cms 0 Oct  2 18:48 .../forgedNtuple_443.root` — **크기 0**, `failed/` 가 아니라 출력 디렉터리 그대로, 10-02 18:48 KST(09:48 UTC).
+같은 dataset 의 나머지 769 파일은 열리고 branch 집합이 하나다.
+
+**알고 있는 것.** 10-02 는 2024 의 두 차례 resubmit 날이다(워크스페이스 RUNBOOK §17 2 의 168, §19 의 827). 크기 0 인 최종 파일은 읽을 수 없으니
+분석에도 생산 완결성(P8 D0)에도 실패다. CRAB 이 job 443 을 지금 무엇으로 아는지(finished/failed/transferring), 그 job 의 시도·사이트·전송
+기록은 아직 보지 않았다 — 그것이 원인을 가른다(전송이 빈 파일을 남기고 성공으로 기록됐는지, 실패 뒤 재시도가 아직인지).
+
+**대응.** (1) 분석(tempTTHH): 2024 파일 목록은 크기 0·열리지 않는 파일을 빼고 그 이름을 기록에 남긴다; prescan(Σ genEventSumw)과 본 실행이 같은
+목록을 쓰므로 정규화는 맞고 통계만 1/770 준다. (2) 생산: KNU 에서 P8 집계(`script/forge_campaign_audit.py`, D0 열리지 않는 출력·D1 빠진
+job 번호·D4 event 합 = DAS)를 2024 MC·Data 에 돌려 같은 경우를 모두 찾는다(워크스페이스 RUNBOOK §21). (3) lxplus 에서 그 job 들의 `crab status
+--long` 상태를 보고 resubmit 한다(finished 로 남아 있으면 finished job 의 resubmit 이 되는지 CRABClient 코드로 먼저 확인한다); 다시 P8.
+
+**해결 기록.**
+- (P8 집계와 crab status 를 본 뒤 여기에: 원인, 같은 경우의 수, 쓴 명령과 결과.)

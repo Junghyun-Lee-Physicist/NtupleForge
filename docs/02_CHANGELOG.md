@@ -9,6 +9,14 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-10-05: incident A29 recorded (one 2024 MC output of size 0)
+
+### Documented
+- `docs/05_troubleshooting.md` A29: `ttHH2024_v15_had_MC_v1/.../TTbar_Hadronic/260930_162708/0000/forgedNtuple_443.root` is 0 bytes in the
+  output directory (not `failed/`), dated 2026-10-02 18:48 KST; found by the tempTTHH KNU branch scan of 2026-10-05. Cause not known yet;
+  handling: left out of the analysis file lists, all such outputs found with the P8 campaign audit (D0), the jobs resubmitted from lxplus
+  after their `crab status --long`.
+
 ## [Unreleased], 2026-10-02 (2): two read-only Stage 0 checks for the 2024 analyzer (payload inventory; luminosity and HLT prescales)
 
 ### Added
