@@ -9,6 +9,17 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-10-06: ParkingHH 2024 campaign config (the 2024 b-tag multijet paths are recorded only there)
+
+### Added
+- `crabConfig/config_ttHH2024_v15_had_ParkingHH.yaml`: the eight `MINIv6NANOv15` ParkingHH datasets of 2024 C–I (2,771 files,
+  1.91 G events, 4.56 TB; DAS V58) with the 2024 Data settings (slimB Data list, `6j20`, audit, 1 file per job, 1440 min), its own
+  CRAB work area `campaign_ttHH2024_v15_had_ParkingHH_v1`, output beside JetMET/Muon in `ttHH2024_v15_had_Data_v1`.
+
+### Why
+- tempTTHH D-2026-10-06-A: the 2024 HLT menus put 4J3T, 6J1T and 6J2T in ParkingHH only; JetMET has `HLT_PFHT1050`.
+  D-2026-10-06-parkinghh has the choices (own work area, shared output base, no trigger-bit skim) and the volume estimate.
+
 ## [Unreleased], 2026-10-05: incident A29 recorded (one 2024 MC output of size 0)
 
 ### Documented

@@ -11,6 +11,31 @@
 
 ---
 
+## D-2026-10-06-parkinghh: produce ParkingHH 2024 (C–I, MINIv6NANOv15) with the 2024 Data settings, as its own CRAB campaign
+**DECIDED · 2026-10-06 · user** ("둘 다": the AI's recommendation; tempTTHH `docs/DECISIONS.md` D-2026-10-06-A)
+
+- **Context.** The 2024 HLT menus (runs 380115, 382913, 386604; `hltGetConfiguration run:<N> --full`, lxplus 2026-10-06) record the
+  four b-tag multijet paths of the ttHH FH trigger OR (4J3T PNet and DeepJet, 6J1T, 6J2T) only in the **`ParkingHH`** primary
+  dataset; `JetMET0/1` hold `HLT_PFHT1050` only. The 2024 Data campaign (`config_ttHH2024_v15_had_Data.yaml`) took JetMET0/1 and
+  Muon0/1, so the analysis Data lack the events that only the b-tag paths selected (details in tempTTHH, not here).
+  ParkingHH is a Run 3 parking PD (from 2022; more rate, reconstruction allowed to come later).
+- **Decision.** `crabConfig/config_ttHH2024_v15_had_ParkingHH.yaml`: the eight `MINIv6NANOv15` datasets of 2024 C–I (era I in two
+  datasets, as JetMET), DAS 2026-10-06 (V58): 2,771 files, 1,913,189,591 events, 4.56 TB. Settings copied from the 2024 Data config:
+  slimB Data list, `skim: 6j20`, audit, FileBased one file per job (2,771 jobs; largest task 856), `max_runtime: 1440`; input copy
+  and AAA fallback are on by default (D-2026-10-01-p71; its first campaign). **Its own `jobID`** (CRAB work area), because
+  `submit_crab.py` resubmits every key whose project directory exists: these keys must not join the Data config. **The Data
+  `output_base`**, so the files land at `<base>/ParkingHH/<key>/` beside JetMET and Muon, where the KNU tools look.
+- **Volume.** The `6j20` pass fraction of these multijet-triggered events is not measured (JetMET 11 %). For 30–70 % at 0.8–1.0 kB per
+  event (slimB) the output is 0.5–1.3 TB, inside the 10 TB budget (planned 5.16 TB; D-2026-09-28-volume). The first finished jobs and
+  the P8 audit give the real figure.
+- **Before the submission** (workspace RUNBOOK §24): the DAS site list of the eight datasets (a disk replica, not only tape), a branch
+  inventory of ParkingHH files compared with the 2024 JetMET ones and `check_branchlist.py` (a keep pattern that matches nothing
+  prints a ROOT error in every job), the preflight.
+- **Alternatives.** Add the keys to the Data config — rejected: the next `submit_crab.py -c ...Data.yaml` would resubmit the 32
+  existing tasks. A trigger-bit skim (only events with the four paths) — rejected for now: it would also drop the events of the
+  HH→4b parking path `HLT_PFHT280_QuadPFJet30_PNet2BTagMean0p55`, which the analysis may add to its OR later, and the volume fits
+  without it. The PromptReco or `2024CDEReprocessing` NanoAOD — rejected: another processing than the JetMET/Muon Data and the MC.
+
 ## D-2026-10-01-p71: copy the input from the site first, and give CRAB the audit's code through the job report
 **DECIDED · 2026-10-01 · user** (proposed by the AI after the 2024 failure triage and an independent review; the user: "commit 해서 하자")
 
