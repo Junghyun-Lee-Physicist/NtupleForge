@@ -1,0 +1,66 @@
+==============================================================================
+NtupleForge CRAB PREFLIGHT (read-only)
+  config : crabConfig/config_ttHH2024_v15_had_ParkingHH.yaml
+  cwd    : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+  time   : 2026-10-06T17:54:59
+  DAS check: ON (--check-das)
+==============================================================================
+[PASS] config file                        crabConfig/config_ttHH2024_v15_had_ParkingHH.yaml
+[PASS] config YAML parse                  ok
+[PASS] common.jobID                       campaign_ttHH2024_v15_had_ParkingHH_v1
+[PASS] common.site                        T3_KR_KNU
+[PASS] common.output_base                 ttHH2024_v15_had_Data_v1
+[PASS] common.analysis_module             ['modules/noop.py', 'MODULES']
+[PASS] common.branch_file                 branches/branch_hadronic_2024_v15_Data.txt
+[PASS] common.splitting                   FileBased
+[PASS] common.units_per_job               1
+[PASS] module file                        modules/noop.py
+[PASS] module list variable               MODULES found in noop.py
+[PASS] module siblings shipped            jetsMETcut.py, nanoaod_branch_access.py, topCPVCategorizer.py
+[PASS] branch file                        branches/branch_hadronic_2024_v15_Data.txt (136 rules: 26 keep / 110 drop)
+[PASS] branch file mode                   SLIM ('drop *' present) -- output keeps 26 explicit patterns
+[PASS] slim keeps run                     present
+[PASS] slim keeps luminosityBlock         present
+[PASS] slim keeps event                   present
+[WARN] slim keeps genWeight               absent -- MC prescan would silently mis-bin (defaults to 0); intended only for Data-only configs
+[WARN] slim keeps genTtbarId              absent -- MC prescan would silently mis-bin (defaults to 0); intended only for Data-only configs
+[PASS] recipe                             slim (postproc; skim 6j20 = Sum$(Jet_pt>20 && abs(Jet_eta)<2.5)>=6; audit on)
+[PASS] worker file script/forge_skims.py  /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/forge_skims.py
+[PASS] worker file script/forge_audit.py  /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/forge_audit.py
+[PASS] forge git (ForgeProvenance)        c168206686db
+[PASS] input fallback                     root://cms-xrd-global.cern.ch/ (an input the job's site cannot open is copied through AAA with xrdcp and read from the copy; docs/05 A24)
+[PASS] site blacklist                     none
+[PASS] input copy                         on (a remote site PFN is copied into the job directory with xrdcp first and read from the copy: one remote access; docs/05 A27)
+[PASS] job resources                      max_memory 2500 MB, max_runtime 1440 min
+[PASS] Rule 6 output filename             forgedNtuple.root (submit_crab.py == PSet.py)
+[PASS] worker file crab/PSet.py           /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/crab/PSet.py
+[PASS] worker file crab/crab_script.py    /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/crab/crab_script.py
+[PASS] worker file script/run_postproc.py /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/run_postproc.py
+[PASS] CRABClient import                  ok
+[PASS] env CMSSW_BASE                     /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+[PASS] env SCRAM_ARCH                     el8_amd64_gcc12
+[PASS] VOMS proxy                         192.0 h left
+[PASS] cwd writable                       crab_args.txt / log can be written here
+------------------------------------------------------------------------------
+[PASS] dataset count                      8
+[PASS] dataset path syntax                all 8 match /primary/processed/TIER
+[PASS] duplicate datasets                 none
+[PASS] tier mix                           NANOAOD=8
+[PASS] MC / Data split                    0 MC, 8 Data
+------------------------------------------------------------------------------
+Per-task preview (workArea=campaign_ttHH2024_v15_had_ParkingHH_v1, storage=T3_KR_KNU):
+  outLFNDirBase = /store/user/junghyun/ttHH2024_v15_had_Data_v1
+  ParkingHH_Run2024C-MINIv6NANOv15-v1 requestName=ParkingHH_Run2024C-MINIv6NANOv15-v1 /ParkingHH/Run2024C-MINIv6NANOv15-v1/NANOAOD
+  ParkingHH_Run2024D-MINIv6NANOv15-v1 requestName=ParkingHH_Run2024D-MINIv6NANOv15-v1 /ParkingHH/Run2024D-MINIv6NANOv15-v1/NANOAOD
+  ParkingHH_Run2024E-MINIv6NANOv15-v1 requestName=ParkingHH_Run2024E-MINIv6NANOv15-v1 /ParkingHH/Run2024E-MINIv6NANOv15-v1/NANOAOD
+  ParkingHH_Run2024F-MINIv6NANOv15-v4 requestName=ParkingHH_Run2024F-MINIv6NANOv15-v4 /ParkingHH/Run2024F-MINIv6NANOv15-v4/NANOAOD
+  ParkingHH_Run2024G-MINIv6NANOv15-v3 requestName=ParkingHH_Run2024G-MINIv6NANOv15-v3 /ParkingHH/Run2024G-MINIv6NANOv15-v3/NANOAOD
+  ParkingHH_Run2024H-MINIv6NANOv15-v3 requestName=ParkingHH_Run2024H-MINIv6NANOv15-v3 /ParkingHH/Run2024H-MINIv6NANOv15-v3/NANOAOD
+  ParkingHH_Run2024I-MINIv6NANOv15-v3 requestName=ParkingHH_Run2024I-MINIv6NANOv15-v3 /ParkingHH/Run2024I-MINIv6NANOv15-v3/NANOAOD
+  ParkingHH_Run2024I-MINIv6NANOv15_v2-v2 requestName=ParkingHH_Run2024I-MINIv6NANOv15_v2-v2 /ParkingHH/Run2024I-MINIv6NANOv15_v2-v2/NANOAOD
+[PASS] existing CRAB projects             none in campaign_ttHH2024_v15_had_ParkingHH_v1
+------------------------------------------------------------------------------
+[PASS] DAS dataset existence              all 8 found, total nevents=1,913,189,591
+------------------------------------------------------------------------------
+PREFLIGHT SUMMARY: 41 PASS, 2 WARN, 0 FAIL
+RESULT: READY TO SUBMIT (review the WARNs first)

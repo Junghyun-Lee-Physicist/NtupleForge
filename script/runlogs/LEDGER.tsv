@@ -75,3 +75,10 @@ utc_start	step	exit	wall_s	host	git_head	log	outputs
 2026-10-01T19:04:22Z	p71_test_root	0	608	lxplus9103	e4ee5a2	script/runlogs/run_p71_test_root_20261001_190421.log	none
 2026-10-01T19:14:32Z	p71_test_campaign	0	358	lxplus9103	e4ee5a2	script/runlogs/run_p71_test_campaign_20261001_191431.log	none
 2026-10-01T19:38:43Z	p71_copy	0	122	lxplus9103	e4ee5a2	script/runlogs/run_p71_copy_20261001_193841.log	none
+2026-10-02T17:12:54Z	jsonpog_inv	0	6	lxplus955	5af9fbe	script/runlogs/nocommit/run_jsonpog_inv_20261002_171253.log	none
+2026-10-02T17:14:49Z	lumi_hlt_2024	0	1015	lxplus955	5af9fbe	script/runlogs/nocommit/run_lumi_hlt_2024_20261002_171448.log	none
+2026-10-02T18:27:22Z	jsonpog_inv	0	4	lxplus955	5af9fbe	script/runlogs/nocommit/run_jsonpog_inv_20261002_182721.log	none
+2026-10-02T18:30:56Z	lumi_hlt_2024_phys	0	303	lxplus955	5af9fbe	script/runlogs/nocommit/run_lumi_hlt_2024_phys_20261002_183055.log	none
+2026-10-06T14:40:17Z	das_parkinghh_2024	0	16	lxplus993	5af9fbe	script/runlogs/run_das_parkinghh_2024_20261006_144016.log	none
+2026-10-06T14:57:48Z	das_parkinghh_2024_sites	0	9	lxplus993	5af9fbe	script/runlogs/run_das_parkinghh_2024_sites_20261006_145747.log	none
+2026-10-06T14:58:15Z	sweep_parkinghh_2024	0	68	lxplus993	5af9fbe	script/runlogs/run_sweep_parkinghh_2024_20261006_145812.log	script/inventory/inv_2024C_v15_ParkingHH.tsv;script/inventory/inv_2024F_v15_ParkingHH.tsv;script/inventory/inv_2024I_v15_ParkingHH.tsv;script/inventory/inv_2024Iv2_v15_ParkingHH.tsv

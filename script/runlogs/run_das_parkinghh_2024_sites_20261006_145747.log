@@ -1,0 +1,36 @@
+=== RUNLOG ================================================================
+step        : das_parkinghh_2024_sites
+start_utc   : 2026-10-06T14:57:48Z
+host        : lxplus993   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 5af9fbe   modified_tracked_files: 1
+cmd         : /bin/bash -c for\ d\ in\ \$\(dasgoclient\ -query\ \"dataset=/ParkingHH/Run2024\*-MINIv6NANOv15\*/NANOAOD\"\)\;\ do\ echo\ \"==\ \$d\"\;\ dasgoclient\ -query\ \"site\ dataset=\$d\"\ \|\ tr\ \"\\n\"\ \"\ \"\;\ echo\;\ done 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-10-06 16:57:48.393681542 +0200 CEST m=+0.001543316
+proxy_left_s: 690144
+===========================================================================
+== /ParkingHH/Run2024C-MINIv6NANOv15-v1/NANOAOD
+T1_DE_KIT_Disk T1_ES_PIC_Disk T1_FR_CCIN2P3_Tape T1_IT_CNAF_Disk T1_US_FNAL_Disk T2_BE_UCL T2_BR_SPRACE T2_CH_CERN T2_DE_DESY T2_DE_RWTH T2_ES_CIEMAT T2_ES_IFCA T2_IT_Legnaro T2_IT_Pisa T2_PT_NCG_Lisbon T2_RU_JINR T2_UA_KIPT T2_US_Caltech T2_US_Florida T2_US_MIT T2_US_Nebraska T2_US_Purdue T2_US_UCSD T2_US_Vanderbilt T2_US_Wisconsin T3_CH_PSI 
+== /ParkingHH/Run2024D-MINIv6NANOv15-v1/NANOAOD
+T1_ES_PIC_Disk T1_FR_CCIN2P3_Disk T1_FR_CCIN2P3_Tape T1_IT_CNAF_Disk T1_US_FNAL_Disk T2_BE_IIHE T2_BE_UCL T2_BR_SPRACE T2_CH_CERN T2_DE_DESY T2_DE_RWTH T2_ES_CIEMAT T2_ES_IFCA T2_IT_Legnaro T2_IT_Pisa T2_IT_Rome T2_PT_NCG_Lisbon T2_RU_JINR T2_UA_KIPT T2_US_UCSD T2_US_Vanderbilt T2_US_Wisconsin T3_CH_PSI 
+== /ParkingHH/Run2024E-MINIv6NANOv15-v1/NANOAOD
+T1_DE_KIT_Disk T1_FR_CCIN2P3_Disk T1_FR_CCIN2P3_Tape T1_US_FNAL_Disk T2_BR_SPRACE T2_CH_CERN T2_DE_DESY T2_DE_RWTH T2_FR_GRIF T2_IT_Bari T2_IT_Rome T2_RU_JINR T2_UK_London_Brunel T2_US_Caltech T2_US_Florida T2_US_Nebraska T2_US_Purdue T2_US_UCSD T2_US_Vanderbilt T2_US_Wisconsin T3_CH_PSI 
+== /ParkingHH/Run2024F-MINIv6NANOv15-v4/NANOAOD
+T1_DE_KIT_Tape T1_FR_CCIN2P3_Disk T1_PL_NCBJ_Disk T2_CH_CERN T2_DE_DESY T2_FR_IPHC T2_PT_NCG_Lisbon T2_US_Vanderbilt T2_US_Wisconsin T3_CH_PSI 
+== /ParkingHH/Run2024G-MINIv6NANOv15-v3/NANOAOD
+T1_UK_RAL_Disk T1_UK_RAL_Tape T1_US_FNAL_Disk T2_BR_SPRACE T2_CH_CERN T2_DE_DESY T2_DE_RWTH T2_FR_IPHC T2_RU_JINR T2_US_Wisconsin T3_CH_PSI 
+== /ParkingHH/Run2024H-MINIv6NANOv15-v3/NANOAOD
+T1_UK_RAL_Tape T1_US_FNAL_Disk T2_CH_CERN T2_CH_CSCS T2_DE_DESY T2_DE_RWTH T2_FR_IPHC T2_RU_JINR T2_US_Nebraska T2_US_UCSD T2_US_Wisconsin T3_CH_PSI 
+== /ParkingHH/Run2024I-MINIv6NANOv15-v3/NANOAOD
+T1_DE_KIT_Disk T1_DE_KIT_Tape T1_ES_PIC_Disk T1_RU_JINR_Disk T1_US_FNAL_Disk T2_BR_SPRACE T2_CH_CERN T2_DE_DESY T2_ES_IFCA T2_IT_Legnaro T2_US_Caltech T2_US_Florida T2_US_Nebraska T2_US_Purdue T2_US_UCSD T2_US_Vanderbilt T2_US_Wisconsin T3_CH_PSI 
+== /ParkingHH/Run2024I-MINIv6NANOv15_v2-v2/NANOAOD
+T1_FR_CCIN2P3_Tape T1_US_FNAL_Disk T2_BR_SPRACE T2_CH_CERN T2_DE_DESY T2_ES_CIEMAT T2_FR_IPHC T2_RU_JINR T2_US_Wisconsin T3_CH_PSI 
+===========================================================================
+end_utc     : 2026-10-06T14:57:57Z
+wall_s      : 9
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_das_parkinghh_2024_sites_20261006_145747.log
+=== END ===================================================================

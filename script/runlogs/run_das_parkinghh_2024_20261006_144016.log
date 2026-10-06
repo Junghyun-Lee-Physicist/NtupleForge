@@ -1,0 +1,110 @@
+=== RUNLOG ================================================================
+step        : das_parkinghh_2024
+start_utc   : 2026-10-06T14:40:17Z
+host        : lxplus993   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 5af9fbe   modified_tracked_files: 1
+cmd         : /bin/bash -c for\ t\ in\ NANOAOD\ MINIAOD\;\ do\ echo\ \"==\ \$t\"\;\ dasgoclient\ -query\ \"dataset=/ParkingHH\*/Run2024\*/\$t\"\;\ done\;\ for\ d\ in\ \$\(dasgoclient\ -query\ \"dataset=/ParkingHH\*/Run2024\*/NANOAOD\"\)\;\ do\ echo\ \"==\ \$d\"\;\ dasgoclient\ -query\ \"summary\ dataset=\$d\"\;\ done 
+CMSSW_BASE  : <unset>
+root        : 6.40.04
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-10-06 16:40:17.568257007 +0200 CEST m=+0.008297474
+proxy_left_s: 691195
+===========================================================================
+== NANOAOD
+/ParkingHH/Run2024A-PromptReco-v1/NANOAOD
+/ParkingHH/Run2024B-PromptReco-v1/NANOAOD
+/ParkingHH/Run2024C-2024CDEReprocessing-v1/NANOAOD
+/ParkingHH/Run2024C-MINIv6NANOv15-v1/NANOAOD
+/ParkingHH/Run2024C-PromptReco-v1/NANOAOD
+/ParkingHH/Run2024D-2024CDEReprocessing-v1/NANOAOD
+/ParkingHH/Run2024D-MINIv6NANOv15-v1/NANOAOD
+/ParkingHH/Run2024D-PromptReco-v1/NANOAOD
+/ParkingHH/Run2024E-2024CDEReprocessing-v1/NANOAOD
+/ParkingHH/Run2024E-MINIv6NANOv15-v1/NANOAOD
+/ParkingHH/Run2024E-PromptReco-v1/NANOAOD
+/ParkingHH/Run2024E-PromptReco-v2/NANOAOD
+/ParkingHH/Run2024F-MINIv6NANOv15-v4/NANOAOD
+/ParkingHH/Run2024F-PromptReco-v1/NANOAOD
+/ParkingHH/Run2024G-MINIv6NANOv15-v3/NANOAOD
+/ParkingHH/Run2024G-PromptReco-v1/NANOAOD
+/ParkingHH/Run2024H-MINIv6NANOv15-v3/NANOAOD
+/ParkingHH/Run2024H-PromptReco-v1/NANOAOD
+/ParkingHH/Run2024I-MINIv6NANOv15-v3/NANOAOD
+/ParkingHH/Run2024I-MINIv6NANOv15_v2-v2/NANOAOD
+/ParkingHH/Run2024I-PromptReco-v1/NANOAOD
+/ParkingHH/Run2024I-PromptReco-v2/NANOAOD
+== MINIAOD
+/ParkingHH/Run2024A-PromptReco-v1/MINIAOD
+/ParkingHH/Run2024B-PromptReco-v1/MINIAOD
+/ParkingHH/Run2024C-2024CDEReprocessing-v1/MINIAOD
+/ParkingHH/Run2024C-MINIv6NANOv15-v1/MINIAOD
+/ParkingHH/Run2024C-PromptReco-v1/MINIAOD
+/ParkingHH/Run2024D-2024CDEReprocessing-v1/MINIAOD
+/ParkingHH/Run2024D-MINIv6NANOv15-v1/MINIAOD
+/ParkingHH/Run2024D-PromptReco-v1/MINIAOD
+/ParkingHH/Run2024E-2024CDEReprocessing-v1/MINIAOD
+/ParkingHH/Run2024E-MINIv6NANOv15-v1/MINIAOD
+/ParkingHH/Run2024E-PromptReco-v1/MINIAOD
+/ParkingHH/Run2024E-PromptReco-v2/MINIAOD
+/ParkingHH/Run2024F-MINIv6NANOv15-v4/MINIAOD
+/ParkingHH/Run2024F-PromptReco-v1/MINIAOD
+/ParkingHH/Run2024G-MINIv6NANOv15-v3/MINIAOD
+/ParkingHH/Run2024G-PromptReco-v1/MINIAOD
+/ParkingHH/Run2024H-MINIv6NANOv15-v3/MINIAOD
+/ParkingHH/Run2024H-PromptReco-v1/MINIAOD
+/ParkingHH/Run2024I-MINIv6NANOv15-v3/MINIAOD
+/ParkingHH/Run2024I-MINIv6NANOv15_v2-v2/MINIAOD
+/ParkingHH/Run2024I-PromptReco-v1/MINIAOD
+/ParkingHH/Run2024I-PromptReco-v2/MINIAOD
+== /ParkingHH/Run2024A-PromptReco-v1/NANOAOD
+[{"file_size":20379107,"max_ldate":1712491435,"median_cdate":1712487031.5,"median_ldate":1712487031.5,"nblocks":6,"nevents":2157,"nfiles":6,"nlumis":154,"num_block":6,"num_event":2157,"num_file":6,"num_lumi":154}]
+== /ParkingHH/Run2024B-PromptReco-v1/NANOAOD
+[{"file_size":5382268356,"max_ldate":1713273157,"median_cdate":1712717600.5,"median_ldate":1712717600.5,"nblocks":29,"nevents":3075909,"nfiles":50,"nlumis":10081,"num_block":29,"num_event":3075909,"num_file":50,"num_lumi":10081}]
+== /ParkingHH/Run2024C-2024CDEReprocessing-v1/NANOAOD
+[{"file_size":197131696295,"max_ldate":1741189360,"median_cdate":1740813002,"median_ldate":1740813002,"nblocks":43,"nevents":105146362,"nfiles":314,"nlumis":24641,"num_block":43,"num_event":105146362,"num_file":314,"num_lumi":24641}]
+== /ParkingHH/Run2024C-MINIv6NANOv15-v1/NANOAOD
+[{"file_size":260003991274,"max_ldate":1745836415,"median_cdate":1745600837,"median_ldate":1745600837,"nblocks":88,"nevents":105158321,"nfiles":237,"nlumis":24642,"num_block":88,"num_event":105158321,"num_file":237,"num_lumi":24642}]
+== /ParkingHH/Run2024C-PromptReco-v1/NANOAOD
+[{"file_size":182483898760,"max_ldate":1714892984,"median_cdate":1714334107,"median_ldate":1714334107,"nblocks":51,"nevents":106099013,"nfiles":333,"nlumis":25902,"num_block":51,"num_event":106099013,"num_file":333,"num_lumi":25902}]
+== /ParkingHH/Run2024D-2024CDEReprocessing-v1/NANOAOD
+[{"file_size":227685133056,"max_ldate":1742020276,"median_cdate":1740913663,"median_ldate":1740913663,"nblocks":158,"nevents":125983634,"nfiles":472,"nlumis":23506,"num_block":158,"num_event":125983634,"num_file":472,"num_lumi":23506}]
+== /ParkingHH/Run2024D-MINIv6NANOv15-v1/NANOAOD
+[{"file_size":302544399723,"max_ldate":1745881727,"median_cdate":1745576936,"median_ldate":1745576936,"nblocks":93,"nevents":125986310,"nfiles":271,"nlumis":23505,"num_block":93,"num_event":125986310,"num_file":271,"num_lumi":23505}]
+== /ParkingHH/Run2024D-PromptReco-v1/NANOAOD
+[{"file_size":238047460791,"max_ldate":1716607024,"median_cdate":1715356739,"median_ldate":1715356739,"nblocks":47,"nevents":126957849,"nfiles":334,"nlumis":24155,"num_block":47,"num_event":126957849,"num_file":334,"num_lumi":24155}]
+== /ParkingHH/Run2024E-2024CDEReprocessing-v1/NANOAOD
+[{"file_size":322381392382,"max_ldate":1741259539,"median_cdate":1740886931,"median_ldate":1740886931,"nblocks":132,"nevents":177876109,"nfiles":550,"nlumis":32427,"num_block":132,"num_event":177876109,"num_file":550,"num_lumi":32427}]
+== /ParkingHH/Run2024E-MINIv6NANOv15-v1/NANOAOD
+[{"file_size":427529265154,"max_ldate":1748666487,"median_cdate":1746220008,"median_ldate":1746220008,"nblocks":114,"nevents":177971586,"nfiles":378,"nlumis":32439,"num_block":114,"num_event":177971586,"num_file":378,"num_lumi":32439}]
+== /ParkingHH/Run2024E-PromptReco-v1/NANOAOD
+[{"file_size":188626823638,"max_ldate":1717659716,"median_cdate":1717041443,"median_ldate":1717041443,"nblocks":28,"nevents":97866547,"nfiles":266,"nlumis":17485,"num_block":28,"num_event":97866547,"num_file":266,"num_lumi":17485}]
+== /ParkingHH/Run2024E-PromptReco-v2/NANOAOD
+[{"file_size":154043461048,"max_ldate":1718819013,"median_cdate":1717902478,"median_ldate":1717902478,"nblocks":15,"nevents":80360852,"nfiles":185,"nlumis":16161,"num_block":15,"num_event":80360852,"num_file":185,"num_lumi":16161}]
+== /ParkingHH/Run2024F-MINIv6NANOv15-v4/NANOAOD
+[{"file_size":1163984642842,"max_ldate":1753326946,"median_cdate":1751263427,"median_ldate":1751263427,"nblocks":45,"nevents":486729639,"nfiles":599,"nlumis":71222,"num_block":45,"num_event":486729639,"num_file":599,"num_lumi":71222}]
+== /ParkingHH/Run2024F-PromptReco-v1/NANOAOD
+[{"file_size":936107635069,"max_ldate":1722683537,"median_cdate":1721263914,"median_ldate":1721263914,"nblocks":156,"nevents":487181013,"nfiles":1134,"nlumis":73037,"num_block":156,"num_event":487181013,"num_file":1134,"num_lumi":73037}]
+== /ParkingHH/Run2024G-MINIv6NANOv15-v3/NANOAOD
+[{"file_size":1688553222445,"max_ldate":1748940819,"median_cdate":1746817421,"median_ldate":1746817421,"nblocks":55,"nevents":709609093,"nfiles":856,"nlumis":95228,"num_block":55,"num_event":709609093,"num_file":856,"num_lumi":95228}]
+== /ParkingHH/Run2024G-PromptReco-v1/NANOAOD
+[{"file_size":1360336662618,"max_ldate":1726810379,"median_cdate":1724857094,"median_ldate":1724857094,"nblocks":156,"nevents":710212271,"nfiles":1609,"nlumis":97352,"num_block":156,"num_event":710212271,"num_file":1609,"num_lumi":97352}]
+== /ParkingHH/Run2024H-MINIv6NANOv15-v3/NANOAOD
+[{"file_size":235455892586,"max_ldate":1749173655,"median_cdate":1746807881,"median_ldate":1746807881,"nblocks":35,"nevents":99559443,"nfiles":136,"nlumis":14666,"num_block":35,"num_event":99559443,"num_file":136,"num_lumi":14666}]
+== /ParkingHH/Run2024H-PromptReco-v1/NANOAOD
+[{"file_size":188611703195,"max_ldate":1727715063,"median_cdate":1727061275,"median_ldate":1727061275,"nblocks":31,"nevents":99679321,"nfiles":243,"nlumis":14904,"num_block":31,"num_event":99679321,"num_file":243,"num_lumi":14904}]
+== /ParkingHH/Run2024I-MINIv6NANOv15-v3/NANOAOD
+[{"file_size":241476353304,"max_ldate":1752597652,"median_cdate":1747745840,"median_ldate":1747745840,"nblocks":30,"nevents":103497248,"nfiles":136,"nlumis":13737,"num_block":30,"num_event":103497248,"num_file":136,"num_lumi":13737}]
+== /ParkingHH/Run2024I-MINIv6NANOv15_v2-v2/NANOAOD
+[{"file_size":243346504000,"max_ldate":1749034777,"median_cdate":1748450253,"median_ldate":1748450253,"nblocks":30,"nevents":104677951,"nfiles":158,"nlumis":14742,"num_block":30,"num_event":104677951,"num_file":158,"num_lumi":14742}]
+== /ParkingHH/Run2024I-PromptReco-v1/NANOAOD
+[{"file_size":198661368850,"max_ldate":1728778652,"median_cdate":1728430877,"median_ldate":1728430877,"nblocks":21,"nevents":105666120,"nfiles":232,"nlumis":14476,"num_block":21,"num_event":105666120,"num_file":232,"num_lumi":14476}]
+== /ParkingHH/Run2024I-PromptReco-v2/NANOAOD
+[{"file_size":197930751189,"max_ldate":1729590966,"median_cdate":1729010958,"median_ldate":1729010958,"nblocks":26,"nevents":105502546,"nfiles":249,"nlumis":15151,"num_block":26,"num_event":105502546,"num_file":249,"num_lumi":15151}]
+===========================================================================
+end_utc     : 2026-10-06T14:40:33Z
+wall_s      : 16
+EXIT        : 0
+outputs     : (none under script/ or branches/)
+log         : script/runlogs/run_das_parkinghh_2024_20261006_144016.log
+=== END ===================================================================

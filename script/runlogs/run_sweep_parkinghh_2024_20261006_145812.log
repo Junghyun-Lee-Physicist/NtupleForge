@@ -1,0 +1,37 @@
+=== RUNLOG ================================================================
+step        : sweep_parkinghh_2024
+start_utc   : 2026-10-06T14:58:15Z
+host        : lxplus993   user: junghyun
+cwd         : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+repo        : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+git_head    : 5af9fbe   modified_tracked_files: 1
+cmd         : /bin/bash script/sweep_inventories.sh /tmp/junghyun/manifest_parkinghh.txt 
+CMSSW_BASE  : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1
+root        : 6.30.09
+dasgoclient : Build: git=v02.04.54 go=go1.26.6 date=2026-10-06 16:58:15.484696104 +0200 CEST m=+0.004883300
+proxy_left_s: 690117
+===========================================================================
+========================================================================
+ sweep_inventories.sh   out=/afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/inventory
+ manifest=/tmp/junghyun/manifest_parkinghh.txt
+========================================================================
+  OK    2024C_v15_ParkingHH    Events=2260  HLT=702   /ParkingHH/Run2024C-MINIv6NANOv15-v1/NANOAOD
+  OK    2024F_v15_ParkingHH    Events=2265  HLT=716   /ParkingHH/Run2024F-MINIv6NANOv15-v4/NANOAOD
+  OK    2024I_v15_ParkingHH    Events=2300  HLT=720   /ParkingHH/Run2024I-MINIv6NANOv15-v3/NANOAOD
+  OK    2024Iv2_v15_ParkingHH  Events=2300  HLT=720   /ParkingHH/Run2024I-MINIv6NANOv15_v2-v2/NANOAOD
+------------------------------------------------------------------------
+ dumped=4  skipped=0  failed=0
+ next: python3 script/branch_presence_matrix.py --inventory-dir /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge/script/inventory \
+           --profile main --mc --era 2017 --partial-only
+------------------------------------------------------------------------
+===========================================================================
+end_utc     : 2026-10-06T14:59:23Z
+wall_s      : 68
+EXIT        : 0
+outputs (modified during the run, under script/ and branches/):
+      102274  script/inventory/inv_2024C_v15_ParkingHH.tsv
+      102265  script/inventory/inv_2024F_v15_ParkingHH.tsv
+      103596  script/inventory/inv_2024I_v15_ParkingHH.tsv
+      103602  script/inventory/inv_2024Iv2_v15_ParkingHH.tsv
+log         : script/runlogs/run_sweep_parkinghh_2024_20261006_145812.log
+=== END ===================================================================

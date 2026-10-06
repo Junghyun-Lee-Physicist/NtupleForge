@@ -1,0 +1,11 @@
+==============================================================================
+NtupleForge CRAB PREFLIGHT (read-only)
+  config : crabConfig/config_ttHH2024_v15_had_ParkingHH.yaml
+  cwd    : /afs/cern.ch/user/j/junghyun/CMSSW_14_2_1/src/NtupleForge
+  time   : 2026-10-06T17:01:45
+  DAS check: ON (--check-das)
+==============================================================================
+[FAIL] config file                        not found: crabConfig/config_ttHH2024_v15_had_ParkingHH.yaml
+------------------------------------------------------------------------------
+PREFLIGHT SUMMARY: 0 PASS, 0 WARN, 1 FAIL
+RESULT: NOT READY TO SUBMIT -- fix the FAIL items above.
