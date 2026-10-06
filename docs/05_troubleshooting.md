@@ -673,6 +673,25 @@ git push --force --all && git push --force --tags
 Note this breaks `devExtendedTtbarId` and `main` for every existing clone, which
 is why it is not worth doing for an already-expired, single-object credential.
 
+**Re-audit (2026-10-06, after the user asked whether committing the CRAB run records
+is safe; CMS had once written to the user about CRAB information pushed to git).**
+`git log --all -G'AWSAccessKeyId|X-Amz-Signature|X-Amz-Credential|[?&]Signature='` over the
+whole history (clone at `d79e120`) finds exactly the two blobs of the table (added by `c72a711`
+and `33e3030`, removed by `c6a770a` and `3eb6913`) and the 2026-08-26 edit of this file
+(`4bd3238`); no other commit ever added such a line, and in HEAD only this file names them.
+The run records committed since 2026-09-16 hold no credential: `crab_report_*.txt` is
+`submit_crab.py --report`'s own table (job counts per sample; no CRAB output, no URL; the
+workspace RUNBOOK greps each new one before its commit); `pf_*.txt` are preflight checks; the DAS
+and inventory runs do not call crab. Every command that mentions crab is logged under `script/runlogs/nocommit/`
+(`script/runlog.sh`), and `.gitignore` blocks `submit_*`, `crab_status_*`, `campaign_*` and
+`crab.log`. The lxplus commit `d79e120` (12 files) was scanned for
+`AWSAccessKeyId|signature=|x-amz-|policy|bearer|token|password|BEGIN ...|x509up|/DC=ch`: 0.
+The purge stays deferred unless CMS asks for the history itself to be cleaned. If it does: run
+the recipe above and **keep `.git/filter-repo/commit-map`** (old → new SHA) in the repo, because
+the ntuples' ForgeProvenance and these docs name commits by their old SHAs (for example
+`d626a55004b1` of the 2024 jobs and `c168206686db` of ParkingHH); re-clone (or fetch and
+`reset --hard`) the lxplus and Mac checkouts; ask GitHub support to drop the cached views.
+
 **Checking for others before any future push:**
 
 ```bash

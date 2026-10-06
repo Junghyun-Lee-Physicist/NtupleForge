@@ -9,6 +9,19 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-10-06 (2): ParkingHH 2024 submitted; credential re-audit of the history
+
+### Production
+- The ParkingHH campaign (`config_ttHH2024_v15_had_ParkingHH.yaml`) is submitted: 8 tasks OK at 15:58 UTC on lxplus9103 with
+  `c168206` (`--forge-git c168206686db`, `--input-copy`, `--skim 6j20`, `--audit`). Checks before it (V59): disk replicas for all 8
+  datasets, the branch names of four eras equal to JetMET's apart from trigger bits, the same `check_branchlist.py` output, preflight
+  41 PASS / 2 WARN / 0 FAIL. The first preflight failed with `config file not found` only because lxplus had not pulled the config
+  (`git pull` without the SSH key, `Permission denied (publickey)`). lxplus records: `d79e120`.
+
+### Documented
+- `docs/05_troubleshooting.md` A17: re-audit of the whole history for pre-signed S3 credentials (only the two expired blobs of
+  A17; the committed run records are clean) and what a purge would have to keep (the old → new SHA map, for ForgeProvenance).
+
 ## [Unreleased], 2026-10-06: ParkingHH 2024 campaign config (the 2024 b-tag multijet paths are recorded only there)
 
 ### Added
