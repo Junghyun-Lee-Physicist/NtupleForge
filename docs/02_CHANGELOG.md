@@ -9,6 +9,16 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-10-07: ParkingHH 2024 produced; the DAS table for its P8 audit
+
+### Production
+- The ParkingHH campaign is done: 2,771 / 2,771 jobs finished, none failed (`--report` of 10-07, V60), one day after the submission.
+
+### Added
+- `script/drafts/review_das_ttHH2024_v15_ParkingHH_20261006.tsv`: the eight ParkingHH datasets with nevents, nfiles and size, made from
+  the DAS log of V58 (`script/runlogs/run_das_parkinghh_2024_20261006_144016.log`), in the column layout `forge_campaign_audit.py --das`
+  reads (type, key, nevents, nfiles, size_TB, dataset). Totals 1,913,189,591 events, 2,771 files, 4.56 TB.
+
 ## [Unreleased], 2026-10-06 (2): ParkingHH 2024 submitted; credential re-audit of the history
 
 ### Production
