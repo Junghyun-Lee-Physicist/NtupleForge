@@ -9,6 +9,16 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [Unreleased], 2026-10-13: AI working agreement: progress logs and logs that expose an abnormal end
+
+### Docs
+- `docs/00_PROMPT.md` §4 gains two mandatory rules the user set on 2026-10-13 (quoted there): work that can run for more than a
+  few minutes prints its total size, one line per finished unit (i/N, the share done, elapsed time, an ETA) and a timed heartbeat
+  when one unit is long, all line-buffered; a normal end prints a result line and returns the verdict as the exit code, failure
+  paths say what failed and why, and long steps run inside a header/footer record so that a missing footer exposes a hard kill.
+  Rationale and the case behind them: workspace `AI_LIMITS_AND_PROTOCOL.md` §5 failure 8, §6 8-9. No code change here;
+  `script/runlog.sh` has no heartbeat or signal handling yet (OPEN; tempTTHH's `tools/runlog/` has both since 2026-10-13).
+
 ## [Unreleased], 2026-10-07: ParkingHH 2024 produced; the DAS table for its P8 audit
 
 ### Production

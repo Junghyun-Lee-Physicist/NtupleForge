@@ -7,7 +7,8 @@
 > (TopCPV and ttHH) — one contract, no per-directory prompts** (see
 > `03_DECISIONS.md` → D-2026-07-01-docs-topcpv-tthh-split for why).
 > **Audience:** AI contributors (humans too). **Status:** active.
-> **Updated:** 2026-09-16 (§3: session-memory limits).
+> **Updated:** 2026-10-13 (§4: progress logs and logs that expose an abnormal end -- the user's two rules);
+> 2026-09-16 (§3: session-memory limits).
 > Read next in order: `01_STATUS.md` → `02_CHANGELOG.md` → `03_DECISIONS.md` → …
 > then the workstream subdir you are touching (`TopCPV/` or `ttHH/`) — see `README.md`.
 
@@ -73,6 +74,34 @@ Any code you add must be validatable:
 - **Equivalence check.** `script/validate_topcpvcat.py` matches events by
   `(run, luminosityBlock, event)`; integers must match exactly, floats within
   `--ftol` (see §8).
+- **Progress logs (user rule, 2026-10-13: "when running a command, put in logs
+  that let one check how far the work has got").** Anything that can run for
+  more than a few minutes (loops over files / samples / jobs / CRAB tasks, audits,
+  scans) prints its total size when it starts and one line per finished unit:
+  `i/N`, the unit's size and time, the share done so far, elapsed time and an ETA
+  at the rate so far. Lines must appear at once: Python to a file or pipe is
+  block-buffered (8 KB), so use `sys.stdout.reconfigure(line_buffering=True)` or
+  `PYTHONUNBUFFERED=1`. When a single unit is long, add a timed heartbeat
+  (elapsed, CPU, memory, time since the last output). Never per event (the
+  verbosity guard above still holds). Every long command you hand to the user
+  comes with how to watch it and its expected duration -- a measured number with
+  its source, or "unknown: judge from the first progress line".
+- **Make an abnormal end visible (user rule, 2026-10-13: "if a task stops for any
+  reason -- an error, debugging, or any other problem -- and does not end
+  properly, make the logs show it as well as possible").** A normal end prints a
+  result line (`RESULT OK|FAIL ...`) and returns the verdict as the exit code; no
+  result line means "did not finish". Failure paths name what failed, why and
+  where to look (never a bare "failed"; do not swallow exceptions: tracebacks go
+  to the log). Long steps run inside a record with a header and a footer
+  (`script/runlog.sh`: start, host, commit, command / end, EXIT); a record
+  without a footer means a hard kill (Ctrl-C, SIGKILL, out of memory, a lost
+  node) or a run still going -- tell the two apart with a heartbeat or the
+  process id. (tempTTHH's copy `tools/runlog/` already writes the footer on
+  SIGTERM/SIGINT/SIGHUP, prints a heartbeat and lists unfinished records with
+  `status.sh`; this repo's `script/runlog.sh` does not yet -- OPEN, 2026-10-13.)
+  Ask the user for the footer (EXIT) and the result line along with
+  any output; without them, do not call a step finished. Rationale and the case
+  that led to these rules: `../../AI_LIMITS_AND_PROTOCOL.md` §5 failure 8, §6 8-9.
 
 ## 5. Announce logic changes
 Whenever you change **logic/behaviour** (not just wording/format), tell the user
